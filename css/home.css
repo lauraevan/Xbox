@@ -49,8 +49,23 @@
   position:relative; flex:none; border-radius:var(--tile-r); overflow:hidden;
   background:var(--panel-2);
   box-shadow:0 .8rem 2.4rem rgba(0,0,0,.45);
-  transition:transform .2s var(--ease), box-shadow .2s var(--ease);
+  transition:transform var(--dur-mid) var(--ease-decel),
+             box-shadow var(--dur-mid) var(--ease-standard);
 }
+
+/* Fluent list reveal: each tile rises and fades on a short stagger,
+   indexed by --i so the row resolves left to right */
+.view.entering .tile,
+.view.entering .card{
+  animation:tileRise var(--dur-slow) var(--ease-decel) backwards;
+  animation-delay:calc(var(--i, 0) * 28ms);
+}
+@keyframes tileRise{
+  from{ opacity:0; transform:translateY(2.2rem) scale(.96); }
+  to{ opacity:1; transform:none; }
+}
+:root[data-motion="reduced"] .view.entering .tile,
+:root[data-motion="reduced"] .view.entering .card{ animation:none; }
 .tile[data-focused]{
   transform:scale(1.06);
   box-shadow:0 1.6rem 4rem rgba(0,0,0,.6);
@@ -83,12 +98,15 @@
 .tile-sm[data-focused] .tile-label{ opacity:1; }
 
 .tile-badge{
-  position:absolute; top:.7rem; left:.7rem; z-index:2;
-  font-size:1.05rem; font-weight:800; letter-spacing:.06rem;
-  padding:.25rem .5rem; border-radius:.25rem;
-  background:rgba(0,0,0,.72); color:#fff; text-transform:uppercase;
-  backdrop-filter:blur(.3rem);
+  position:absolute; top:.6rem; left:.6rem; z-index:2;
+  font-size:1rem; font-weight:700; letter-spacing:.07rem; line-height:1;
+  padding:.3rem .45rem; border-radius:.25rem;
+  background:rgba(0,0,0,.66); color:#fff; text-transform:uppercase;
+  backdrop-filter:blur(.4rem);
+  animation:badgeIn var(--dur-mid) var(--ease-decel) backwards;
+  animation-delay:.12s;
 }
+@keyframes badgeIn{ from{ opacity:0; transform:translateY(-.3rem); } to{ opacity:1; transform:none; } }
 .tile-badge.gp{ background:#107c10; }
 .tile-badge.flash{ background:#b5451b; }
 .tile-badge.emu{ background:#4b2fa8; }
@@ -117,7 +135,8 @@
   position:relative; height:22.5rem; border-radius:var(--card-r); overflow:hidden;
   background:var(--panel-2); text-align:left;
   box-shadow:0 .8rem 2.4rem rgba(0,0,0,.4);
-  transition:transform .2s var(--ease), box-shadow .2s var(--ease);
+  transition:transform var(--dur-mid) var(--ease-decel),
+             box-shadow var(--dur-mid) var(--ease-standard);
 }
 .card[data-focused]{ transform:scale(1.035); box-shadow:0 1.4rem 3.6rem rgba(0,0,0,.6); z-index:2; }
 .card-art{ position:absolute; inset:0; }

@@ -125,6 +125,7 @@ function renderHome(root){
 
   rail.append(strip);
   root.append(rail);
+  [...strip.children].forEach((n, i) => n.style.setProperty('--i', i));
 
   /* ── spotlight cards ── */
   const cards = el('div', 'cards');
@@ -158,6 +159,7 @@ function renderHome(root){
     })
   );
   root.append(cards);
+  [...cards.children].forEach((n, i) => n.style.setProperty('--i', i + 4));
 
   updateHero(headline);
 }

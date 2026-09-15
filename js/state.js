@@ -27,7 +27,7 @@ const DEFAULTS = {
     clock24:   false,
     micMuted:  true,
     heroText:  false,   // the console shows no copy over the backdrop
-    tileBadges:false    // nor any tag badge on a tile
+    tileBadges:true     // tag badges (PORT / FLASH / EMU) ride on the tiles
   }
 };
 

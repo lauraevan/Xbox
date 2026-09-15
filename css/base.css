@@ -27,10 +27,20 @@
   --tile-r:    .6rem;
   --card-r:    .5rem;
 
-  --ease:      cubic-bezier(.2,.9,.25,1);
-  --ease-out:  cubic-bezier(.16,1,.3,1);
-  --dur:       .22s;
-  --dur-slow:  .5s;
+  /* Fluent motion: a decelerating curve for things entering, an
+     accelerating one for things leaving, and the standard curve for
+     anything that moves between two on-screen states. */
+  --ease-decel:    cubic-bezier(.1,.9,.2,1);
+  --ease-accel:    cubic-bezier(.7,0,1,.5);
+  --ease-standard: cubic-bezier(.8,0,.2,1);
+  --ease:      var(--ease-standard);
+  --ease-out:  var(--ease-decel);
+
+  /* Fluent duration ramp */
+  --dur-fast:  .083s;
+  --dur:       .167s;
+  --dur-mid:   .25s;
+  --dur-slow:  .333s;
 
   /* measured from the reference frame at 1920x1080:
      content margin 100px, system-bar content centred at y=107.5 */
