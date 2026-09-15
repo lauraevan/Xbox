@@ -512,6 +512,8 @@ window.addEventListener('nav:button', e => {
 
   if (window.Guide.isOpen){
     if (b === 'b'){ window.Guide.close(); updateLegend(); }
+    if (b === 'rb') window.Guide.cycleTab(1);
+    if (b === 'lb') window.Guide.cycleTab(-1);
     return;
   }
 

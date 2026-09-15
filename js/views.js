@@ -72,7 +72,7 @@ function tile(game, kind = 'sm'){
   btn.setAttribute('aria-label', game.name);
   btn.append(coverArt(game));
 
-  if (game.tag)
+  if (game.tag && window.State.settings.tileBadges)
     btn.append(el('span', `tile-badge ${game.tag.cls}`, game.tag.badge));
   if (window.State.isPinned(game.id))
     btn.append(el('span', 'tile-pin', ICON.pin.replace('class="s"', '')));
@@ -88,7 +88,8 @@ function gridItem(game){
   btn.dataset.gameId = game.id;
   btn.setAttribute('aria-label', game.name);
   btn.append(coverArt(game));
-  if (game.tag) btn.append(el('span', `tile-badge ${game.tag.cls}`, game.tag.badge));
+  if (game.tag && window.State.settings.tileBadges)
+    btn.append(el('span', `tile-badge ${game.tag.cls}`, game.tag.badge));
   btn.append(el('span', 'tile-label', escapeHtml(game.name)));
   btn._navActivate = () => window.App.openDetail(game);
   return btn;
@@ -216,7 +217,7 @@ function makeCard({ label, mosaic, art, artAlt, chip, grad, illus, onActivate })
 function updateHero(game){
   const hero = $('.hero');
   if (!hero) return;
-  if (!game || window.State.settings.heroText === false){ hero.classList.remove('show'); return; }
+  if (!game || !window.State.settings.heroText){ hero.classList.remove('show'); return; }
   $('#heroKicker').textContent = game.featured ? 'Featured' : (game.tag ? game.tag.label : 'Jump back in');
   $('#heroTitle').textContent  = game.name;
   $('#heroMeta').innerHTML =
@@ -579,8 +580,16 @@ function renderSettings(root, opts = {}){
     }));
     body.append(srow({
       name:'Title details on home', desc:'Show the focused game above the tiles',
-      control: toggleControl(set.heroText !== false),
-      onActivate: () => { S.setSetting('heroText', set.heroText === false); renderSettings(root); window.Nav.focusFirst(); }
+      control: toggleControl(set.heroText === true),
+      onActivate: () => { S.setSetting('heroText', !set.heroText); renderSettings(root); window.Nav.focusFirst(); }
+    }));
+    body.append(srow({
+      name:'Tag badges on tiles', desc:'Mark ports, Flash titles and emulators',
+      control: toggleControl(set.tileBadges === true),
+      onActivate: () => {
+        S.setSetting('tileBadges', !set.tileBadges);
+        renderSettings(root); window.Nav.focusFirst();
+      }
     }));
     body.append(srow({
       name:'Navigation sounds', desc:'Audio feedback while moving around',

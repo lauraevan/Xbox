@@ -1,6 +1,9 @@
 /* ═══════════════════════════════════════════════════════════
-   GUIDE — the overlay that slides in from the left on the
+   GUIDE — the sidebar that slides in from the left on the
    Guide button (Esc / G / gamepad button 16).
+
+   The icon rail stays collapsed to glyphs until focus enters
+   it, then flies out over the body to reveal its labels.
    ═══════════════════════════════════════════════════════════ */
 (() => {
 'use strict';
@@ -8,15 +11,17 @@
 const { el, escapeHtml, ICON } = window.Views;
 const $ = sel => document.querySelector(sel);
 
+const CHEVRON = '<svg class="grow-chev" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg>';
+
 const TABS = [
-  { id:'profile',      icon:'avatar', label:'Profile & system' },
-  { id:'home',         icon:ICON.home,    label:'Home' },
-  { id:'party',        icon:ICON.party,   label:'Parties & chats' },
-  { id:'achievements', icon:ICON.trophy,  label:'Achievements' },
-  { id:'capture',      icon:ICON.capture, label:'Capture & share' },
-  { id:'notifications',icon:ICON.bell,    label:'Notifications' },
-  { id:'settings',     icon:ICON.gear,    label:'Settings', bottom:true },
-  { id:'power',        icon:ICON.power,   label:'Power',    bottom:true }
+  { id:'profile',       icon:'avatar',     label:'Profile & system' },
+  { id:'home',          icon:ICON.home,    label:'Home' },
+  { id:'party',         icon:ICON.party,   label:'Parties & chats' },
+  { id:'achievements',  icon:ICON.trophy,  label:'Achievements' },
+  { id:'capture',       icon:ICON.capture, label:'Capture & share' },
+  { id:'notifications', icon:ICON.bell,    label:'Notifications' },
+  { id:'settings',      icon:ICON.gear,    label:'Settings', bottom:true },
+  { id:'power',         icon:ICON.power,   label:'Power',    bottom:true }
 ];
 
 let activeTab = 'profile';
@@ -28,7 +33,7 @@ const rail  = $('#guideRail');
 const body  = $('#guideBody');
 
 /* ───────── rows ───────── */
-function row({ icon, art, name, meta, right, onActivate }){
+function row({ icon, art, name, meta, right, chevron, onActivate }){
   const btn = el('button', 'grow');
   btn.dataset.nav = '';
   const box = el('div', 'grow-icon');
@@ -44,9 +49,32 @@ function row({ icon, art, name, meta, right, onActivate }){
   text.append(el('div', 'grow-name', escapeHtml(name)));
   if (meta) text.append(el('div', 'grow-meta', escapeHtml(meta)));
   btn.append(text);
+
   if (right) btn.append(el('div', 'grow-right', escapeHtml(right)));
+  if (chevron) btn.insertAdjacentHTML('beforeend', CHEVRON);
+
   btn._navActivate = () => onActivate?.();
   return btn;
+}
+
+/** The gamerpic + gamertag block at the top of a tab. */
+function header(title, sub, { pic = false, status = false } = {}){
+  const head = el('div', 'guide-head');
+  if (pic){
+    const box = el('div', 'guide-head-pic');
+    const img = el('img');
+    img.alt = ''; img.src = window.State.avatar();
+    box.append(img);
+    head.append(box);
+  }
+  const text = el('div');
+  text.append(el('h2', 'guide-title', escapeHtml(title)));
+  if (sub) text.append(el('p', 'guide-sub', escapeHtml(sub)));
+  if (status)
+    text.insertAdjacentHTML('beforeend',
+      '<div class="status-pill"><span class="status-dot"></span>Online</div>');
+  head.append(text);
+  return head;
 }
 
 const timeAgo = ts => {
@@ -60,32 +88,43 @@ const timeAgo = ts => {
 /* ───────── tab bodies ───────── */
 function drawBody(){
   body.innerHTML = '';
+  body.scrollTop = 0;
   const S = window.State, C = window.Catalog;
 
   if (activeTab === 'profile'){
-    body.append(el('h2', 'guide-title', escapeHtml(S.data.gamertag)));
-    body.append(el('p', 'guide-sub', `${S.gamerscore} Gamerscore · ${S.data.tier}`));
+    body.append(header(S.data.gamertag, `${S.gamerscore.toLocaleString()} Gamerscore · ${S.data.tier}`,
+      { pic:true, status:true }));
 
-    body.append(el('div', 'guide-section', 'Recently played'));
-    const recents = S.recentIds().map(id => C.get(id)).filter(Boolean).slice(0, 5);
-    if (!recents.length) body.append(el('p', 'guide-sub', 'Nothing yet — launch something.'));
-    recents.forEach(g => body.append(row({
-      art:g.cover, name:g.name, meta:g.author,
-      onActivate: () => { close_(); window.App.openDetail(g); }
-    })));
+    const recents = S.recentIds().map(id => C.get(id)).filter(Boolean).slice(0, 4);
+    if (recents.length){
+      body.append(el('div', 'guide-section', 'Recently played'));
+      recents.forEach(g => body.append(row({
+        art:g.cover, name:g.name, meta:g.author, chevron:true,
+        onActivate: () => { close_(); window.App.openDetail(g); }
+      })));
+    }
 
-    body.append(el('div', 'guide-section', 'Quick actions'));
-    body.append(row({ icon:ICON.search, name:'Search', meta:'Find a game by name',
-      onActivate: () => { close_(); window.App.setView('search'); } }));
-    body.append(row({ icon:ICON.store, name:'Game Pass', meta:`${C.count()} titles included`,
+    body.append(el('div', 'guide-section', 'My Xbox'));
+    body.append(row({ icon:ICON.trophy, name:'Achievements',
+      meta:`${S.unlockedCount()} of ${S.ACHIEVEMENTS.length} unlocked`, chevron:true,
+      onActivate: () => { activeTab = 'achievements'; drawRail(); drawBody();
+                          window.Nav.focusFirst('.guide-tab.active'); } }));
+    body.append(row({ icon:ICON.grid, name:'My games & apps', meta:`${C.count()} titles`, chevron:true,
+      onActivate: () => { close_(); window.App.setView('library'); } }));
+    body.append(row({ icon:ICON.store, name:'Game Pass', meta:'Browse the catalogue', chevron:true,
       onActivate: () => { close_(); window.App.setView('pass'); } }));
-    body.append(row({ icon:ICON.person, name:'Change gamertag', meta:'Rename this profile',
+    body.append(row({ icon:ICON.search, name:'Search', meta:'Find a game by name', chevron:true,
+      onActivate: () => { close_(); window.App.setView('search'); } }));
+
+    body.append(el('div', 'guide-section', 'Account'));
+    body.append(row({ icon:ICON.person, name:'Change gamertag', meta:'Rename this profile', chevron:true,
       onActivate: () => { close_(); window.App.promptGamertag(); } }));
+    body.append(row({ icon:ICON.gear, name:'Settings', meta:'Personalization, devices, system', chevron:true,
+      onActivate: () => { close_(); window.App.setView('settings'); } }));
   }
 
   if (activeTab === 'home'){
-    body.append(el('h2', 'guide-title', 'Home'));
-    body.append(el('p', 'guide-sub', 'Jump straight to a pinned tile'));
+    body.append(header('Home', 'Jump straight to a pinned tile'));
     const pins = S.pins().map(id => C.get(id)).filter(Boolean);
     if (pins.length){
       const grid = el('div', 'guide-tile-row');
@@ -99,29 +138,30 @@ function drawBody(){
       });
       body.append(grid);
     } else {
-      body.append(el('p', 'guide-sub', 'No pins yet. Press Y on any tile to pin it.'));
+      body.append(el('p', 'guide-sub', 'No pins yet. Press Y on any tile to pin it here.'));
     }
+
     body.append(el('div', 'guide-section', 'Go to'));
-    body.append(row({ icon:ICON.home, name:'Dashboard', meta:'Recent & pins',
+    body.append(row({ icon:ICON.home, name:'Dashboard', meta:'Recent & pins', chevron:true,
       onActivate: () => { close_(); window.App.setView('home'); } }));
-    body.append(row({ icon:ICON.grid, name:'My games & apps', meta:`${C.count()} titles`,
+    body.append(row({ icon:ICON.grid, name:'My games & apps', meta:`${C.count()} titles`, chevron:true,
       onActivate: () => { close_(); window.App.setView('library'); } }));
   }
 
   if (activeTab === 'party'){
-    body.append(el('h2', 'guide-title', 'Parties & chats'));
-    body.append(el('p', 'guide-sub', 'This console is running solo'));
+    body.append(header('Parties & chats', 'This console is running solo'));
     body.append(el('div', 'guide-section', 'Party'));
     body.append(row({ icon:ICON.party, name:'Start a party', meta:'No one else is signed in here',
-      onActivate: () => window.App.toast('Parties need a second player', 'Nobody else is signed in on this console.') }));
+      onActivate: () => window.App.toast('Parties need a second player',
+        'Nobody else is signed in on this console.') }));
     body.append(el('div', 'guide-section', 'Friends'));
-    body.append(el('p', 'guide-sub', 'Your friends list lives on the account you sign in with. This replica keeps everything local to your browser.'));
+    body.append(el('p', 'guide-sub',
+      'Your friends list lives on the account you sign in with. This replica keeps everything local to your browser.'));
   }
 
   if (activeTab === 'achievements'){
-    const total = S.ACHIEVEMENTS.length, done = S.unlockedCount();
-    body.append(el('h2', 'guide-title', 'Achievements'));
-    body.append(el('p', 'guide-sub', `${done} of ${total} · ${S.gamerscore} Gamerscore`));
+    body.append(header('Achievements',
+      `${S.unlockedCount()} of ${S.ACHIEVEMENTS.length} · ${S.gamerscore.toLocaleString()} Gamerscore`));
     S.ACHIEVEMENTS.forEach(a => {
       const unlocked = S.isUnlocked(a.id);
       const r = row({
@@ -136,20 +176,19 @@ function drawBody(){
   }
 
   if (activeTab === 'capture'){
-    body.append(el('h2', 'guide-title', 'Capture & share'));
-    body.append(el('p', 'guide-sub', 'Grab what is on screen right now'));
+    body.append(header('Capture & share', 'Grab what is on screen right now'));
     body.append(row({ icon:ICON.capture, name:'Take a screenshot', meta:'Saves a PNG of the dashboard',
-      onActivate: () => { close_(); setTimeout(() => window.App.screenshot(), 380); } }));
+      chevron:true, onActivate: () => { close_(); setTimeout(() => window.App.screenshot(), 380); } }));
     body.append(row({ icon:ICON.link, name:'Copy link to this console', meta:location.host || 'local file',
-      onActivate: async () => {
-        try { await navigator.clipboard.writeText(location.href); window.App.toast('Link copied', location.href); }
+      chevron:true, onActivate: async () => {
+        try { await navigator.clipboard.writeText(location.href);
+              window.App.toast('Link copied', location.href); }
         catch { window.App.toast('Copy failed', 'Your browser blocked clipboard access.'); }
       } }));
   }
 
   if (activeTab === 'notifications'){
-    body.append(el('h2', 'guide-title', 'Notifications'));
-    body.append(el('p', 'guide-sub', notifications.length ? `${notifications.length} recent` : 'Nothing new'));
+    body.append(header('Notifications', notifications.length ? `${notifications.length} recent` : 'Nothing new'));
     notifications.slice().reverse().forEach(n => body.append(row({
       icon: n.icon || ICON.bell, name: n.title, meta: n.text, right: timeAgo(n.at)
     })));
@@ -158,11 +197,11 @@ function drawBody(){
   }
 
   if (activeTab === 'settings'){
-    body.append(el('h2', 'guide-title', 'Settings'));
-    body.append(el('p', 'guide-sub', 'Quick toggles'));
     const set = S.settings;
-    body.append(row({ icon:ICON.gear, name:'All settings', meta:'Open the full settings view',
+    body.append(header('Settings', 'Quick toggles'));
+    body.append(row({ icon:ICON.gear, name:'All settings', meta:'Open the full settings view', chevron:true,
       onActivate: () => { close_(); window.App.setView('settings'); } }));
+    body.append(el('div', 'guide-section', 'Quick toggles'));
     body.append(row({ icon:ICON.bell, name:'Navigation sounds', right: set.sounds ? 'On' : 'Off',
       meta:'Audio feedback while moving around',
       onActivate: () => { S.setSetting('sounds', !set.sounds); drawBody(); window.Nav.restore(); } }));
@@ -183,16 +222,15 @@ function drawBody(){
   }
 
   if (activeTab === 'power'){
-    body.append(el('h2', 'guide-title', 'Power'));
-    body.append(el('p', 'guide-sub', 'What should the console do?'));
+    body.append(header('Power', 'What should the console do?'));
     if (window.App.isPlaying()){
-      body.append(row({ icon:ICON.back, name:'Quit game', meta:'Return to the dashboard',
+      body.append(row({ icon:ICON.back, name:'Quit game', meta:'Return to the dashboard', chevron:true,
         onActivate: () => { close_(); window.App.quitGame(); } }));
     }
-    body.append(row({ icon:ICON.power, name:'Restart console', meta:'Replays the boot sequence',
+    body.append(row({ icon:ICON.power, name:'Restart console', meta:'Replays the boot sequence', chevron:true,
       onActivate: () => location.reload() }));
-    body.append(row({ icon:ICON.clock, name:'Turn off', meta:'Fade to black — reload to wake it',
-      onActivate: () => { close_(); window.App.powerOff(); } }));
+    body.append(row({ icon:ICON.clock, name:'Turn off', meta:'Fade to black — press anything to wake',
+      chevron:true, onActivate: () => { close_(); window.App.powerOff(); } }));
   }
 
   window.Nav.restore();
@@ -201,31 +239,56 @@ function drawBody(){
 /* ───────── rail ───────── */
 function drawRail(){
   rail.innerHTML = '';
-  TABS.filter(t => !t.bottom).forEach(t => rail.append(tabButton(t)));
-  rail.append(el('div', 'rail-spacer'));
-  TABS.filter(t => t.bottom).forEach(t => rail.append(tabButton(t)));
+  const inner = el('div', 'rail-inner');
+  TABS.filter(t => !t.bottom).forEach(t => inner.append(tabButton(t)));
+  inner.append(el('div', 'rail-spacer'));
+  TABS.filter(t => t.bottom).forEach(t => inner.append(tabButton(t)));
+  rail.append(inner);
 }
 
 function tabButton(tab){
   const btn = el('button', 'guide-tab' + (tab.id === activeTab ? ' active' : ''));
   btn.dataset.nav = '';
-  btn.dataset.ringRadius = '1rem';
+  btn.dataset.guideTab = tab.id;
+  btn.dataset.ringRadius = '0';
   btn.title = tab.label;
   btn.setAttribute('aria-label', tab.label);
+
   if (tab.icon === 'avatar'){
     const a = el('span', 'guide-avatar');
     const img = el('img');
     img.alt = ''; img.src = window.State.avatar();
     a.append(img);
     btn.append(a);
-  } else btn.innerHTML = tab.icon;
-  btn._navActivate = () => {
-    activeTab = tab.id;
-    drawRail(); drawBody();
-    window.Nav.focusFirst('.guide-tab.active');
-  };
+  } else btn.insertAdjacentHTML('afterbegin', tab.icon);
+
+  btn.append(el('span', 'tab-label', escapeHtml(tab.label)));
+  btn._navActivate = () => selectTab(tab.id);
   return btn;
 }
+
+function selectTab(id){
+  if (id === activeTab) return;
+  activeTab = id;
+  drawRail(); drawBody();
+  window.Nav.focusFirst('.guide-tab.active');
+}
+
+/** Step through tabs with the shoulder buttons, as the real guide does. */
+function cycleTab(delta){
+  const i = TABS.findIndex(t => t.id === activeTab);
+  selectTab(TABS[(i + delta + TABS.length) % TABS.length].id);
+}
+
+/* the rail flies out whenever focus is sitting on one of its tabs */
+window.addEventListener('nav:focus', () => {
+  const inner = rail.querySelector('.rail-inner');
+  if (!inner) return;
+  const onRail = !!window.Nav.current?.dataset.guideTab;
+  inner.classList.toggle('expanded', onRail);
+  guide.querySelector('.guide-panel')?.classList.toggle('rail-open', onRail);
+  window.Nav.repaint();
+});
 
 /* ───────── open / close ───────── */
 function open_(tab){
@@ -251,7 +314,7 @@ function close_(){
     guide.classList.remove('out');
     window.Nav.popLayer();
     if (window.App.isPlaying()) window.Nav.hideRing();
-  }, 220);
+  }, 200);
 }
 
 document.addEventListener('click', e => {
@@ -262,6 +325,7 @@ window.Guide = {
   open: open_,
   close: close_,
   toggle: tab => (open ? close_() : open_(tab)),
+  cycleTab,
   get isOpen(){ return open; },
   notify(n){
     notifications.push({ ...n, at: Date.now() });

@@ -25,7 +25,9 @@ const DEFAULTS = {
     background:'dynamic',
     scanline:  false,
     clock24:   false,
-    micMuted:  true
+    micMuted:  true,
+    heroText:  false,   // the console shows no copy over the backdrop
+    tileBadges:false    // nor any tag badge on a tile
   }
 };
 
