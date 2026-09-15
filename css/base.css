@@ -32,8 +32,10 @@
   --dur:       .22s;
   --dur-slow:  .5s;
 
-  --safe-x:    6rem;
-  --bar-h:     10.6rem;
+  /* measured from the reference frame at 1920x1080:
+     content margin 100px, system-bar content centred at y=107.5 */
+  --safe-x:    10rem;
+  --bar-h:     21.5rem;
 
   --font: "Segoe UI Variable Display","Segoe UI",-apple-system,BlinkMacSystemFont,
           "Inter","Helvetica Neue",Roboto,system-ui,sans-serif;
@@ -74,7 +76,10 @@ svg .s{ fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; 
 
 .focus-ring{
   position:fixed; z-index:60; pointer-events:none;
-  border:.3rem solid var(--accent);
+  /* content-box so the border lands outside the element it traces:
+     a 257px tile ends up with a 265px ring, as measured */
+  box-sizing:content-box;
+  border:.4rem solid var(--accent);
   border-radius:var(--tile-r);
   box-shadow:0 0 0 .1rem rgba(0,0,0,.55), 0 0 2.4rem rgba(109,252,109,.45),
              inset 0 0 1.2rem rgba(109,252,109,.14);
@@ -90,7 +95,7 @@ svg .s{ fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; 
 /* ───────── stage ───────── */
 .stage{
   position:fixed; inset:0;
-  display:grid; grid-template-rows:var(--bar-h) 1fr auto;
+  display:grid; grid-template-rows:var(--bar-h) 1fr;
   opacity:0; animation:stageIn .6s var(--ease-out) forwards;
 }
 @keyframes stageIn{ from{opacity:0; transform:scale(1.02);} to{opacity:1; transform:none;} }
@@ -98,24 +103,27 @@ svg .s{ fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; 
 /* ───────── dynamic backdrop ───────── */
 .backdrop{ position:fixed; inset:0; z-index:-1; background:var(--bg); overflow:hidden; }
 .backdrop-layer{
-  position:absolute; inset:-4%;
+  position:absolute; inset:-6%;
   background-size:cover; background-position:center;
   opacity:0; transition:opacity .85s var(--ease-out), transform 12s linear;
-  transform:scale(1.06);
-  filter:saturate(1.05);
+  transform:scale(1.08);
+  /* the catalogue only ships square 1:1 covers, so filling a 16:9 frame
+     means zooming hard into one. Blur turns that into an ambient wash
+     instead of a giant cropped face. */
+  filter:saturate(1.15) blur(1.6rem) brightness(.72);
 }
 .backdrop-layer.on{ opacity:1; transform:scale(1.12); }
 .backdrop-scrim{
   position:absolute; inset:0;
   background:
-    linear-gradient(180deg, rgba(6,8,10,.82) 0%, rgba(6,8,10,.34) 26%, rgba(6,8,10,.30) 46%,
-                    rgba(6,8,10,.72) 72%, rgba(6,8,10,.94) 100%),
-    radial-gradient(120% 78% at 50% 34%, transparent 28%, rgba(4,6,8,.68) 100%);
+    linear-gradient(180deg, rgba(6,8,10,.88) 0%, rgba(6,8,10,.52) 24%, rgba(6,8,10,.46) 48%,
+                    rgba(6,8,10,.78) 74%, rgba(6,8,10,.96) 100%),
+    radial-gradient(120% 78% at 50% 34%, transparent 22%, rgba(4,6,8,.74) 100%);
 }
 .backdrop-glow{
   position:absolute; left:50%; top:26%; width:86rem; height:86rem;
   transform:translate(-50%,-50%);
-  background:radial-gradient(circle, rgba(120,190,255,.10), transparent 62%);
+  background:radial-gradient(circle, rgba(120,190,255,.07), transparent 62%);
   pointer-events:none;
 }
 body[data-theme="light"] .backdrop-scrim{

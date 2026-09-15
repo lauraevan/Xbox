@@ -4,7 +4,8 @@
 
 .view-home{
   display:flex; flex-direction:column; justify-content:flex-end;
-  padding:0 var(--safe-x) 1.2rem;
+  /* cards sit 34px off the bottom edge in the reference */
+  padding:0 var(--safe-x) 3.4rem;
   overflow:hidden;
 }
 
@@ -26,7 +27,8 @@
 .hero-meta .dot{ width:.5rem; height:.5rem; border-radius:50%; background:var(--text-3); }
 
 /* ───────── rails ───────── */
-.rail{ margin-bottom:1.6rem; }
+.rail{ margin-bottom:2.4rem; }   /* +4px card padding = 28px to the card row,
+                                    putting the hero bottom on y=793 */
 .rail-head{
   display:flex; align-items:baseline; gap:1.4rem; margin:0 0 1.2rem;
 }
@@ -34,7 +36,7 @@
 .rail-count{ font-size:1.5rem; color:var(--text-3); }
 
 .rail-strip{
-  display:flex; align-items:flex-end; gap:1.4rem;
+  display:flex; align-items:flex-end; gap:2.9rem;   /* measured tile gap */
   overflow-x:auto; overflow-y:visible;
   padding:1.6rem .4rem 1.6rem;
   margin:-1.6rem -.4rem;
@@ -54,10 +56,13 @@
   box-shadow:0 1.6rem 4rem rgba(0,0,0,.6);
   z-index:2;
 }
+/* the hero tile holds its measured size when focused; the ring carries
+   the focus state instead of a scale that would break the row geometry */
+.tile-hero[data-focused]{ transform:none; }
 .tile-art{ position:absolute; inset:0; }
 .tile-art img{ width:100%; height:100%; object-fit:cover; }
 
-.tile-hero{ width:26rem; height:26rem; }
+.tile-hero{ width:25.7rem; height:25.7rem; }
 .tile-hero .tile-label{
   position:absolute; left:0; right:0; bottom:0;
   padding:1.6rem 1.4rem 1.2rem;
@@ -65,7 +70,9 @@
   background:linear-gradient(transparent, rgba(0,0,0,.86) 46%);
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
-.tile-sm{ width:16rem; height:16rem; }
+/* the reference lifts the small tiles 4px off the hero's baseline:
+   hero bottom lands on y=793, the small row on y=789 */
+.tile-sm{ width:15.5rem; height:15.5rem; margin-bottom:.4rem; }
 .tile-sm .tile-label{
   position:absolute; left:0; right:0; bottom:0; padding:2.6rem .9rem .7rem;
   font-size:1.35rem; font-weight:500; opacity:0;
@@ -102,12 +109,12 @@
 
 /* ───────── spotlight card row ───────── */
 .cards{
-  display:grid; grid-template-columns:repeat(4, 1fr); gap:1.4rem;
-  padding:.4rem;
+  display:grid; grid-template-columns:repeat(4, 1fr); gap:3.2rem;
+  padding:.4rem .4rem 0;
   margin:0 -.4rem;
 }
 .card{
-  position:relative; height:20rem; border-radius:var(--card-r); overflow:hidden;
+  position:relative; height:22.5rem; border-radius:var(--card-r); overflow:hidden;
   background:var(--panel-2); text-align:left;
   box-shadow:0 .8rem 2.4rem rgba(0,0,0,.4);
   transition:transform .2s var(--ease), box-shadow .2s var(--ease);
