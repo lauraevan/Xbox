@@ -1,0 +1,140 @@
+/* ═══════════════════════════════════════════════════════════
+   HOME — hero, recent rail, pinned tiles, spotlight cards
+   ═══════════════════════════════════════════════════════════ */
+
+.view-home{
+  display:flex; flex-direction:column; justify-content:flex-end;
+  padding:0 var(--safe-x) 1.2rem;
+  overflow:hidden;
+}
+
+/* hero copy that sits over the artwork */
+.hero{
+  position:absolute; left:var(--safe-x); top:4rem; max-width:62rem;
+  opacity:0; transform:translateY(1.2rem);
+  transition:opacity .4s var(--ease-out), transform .4s var(--ease-out);
+  pointer-events:none;
+}
+.hero.show{ opacity:1; transform:none; }
+.hero-eyebrow{
+  font-size:1.4rem; font-weight:700; letter-spacing:.22rem; text-transform:uppercase;
+  color:var(--green-bright); margin-bottom:1rem;
+}
+.hero-title{ font-size:5.6rem; font-weight:600; line-height:1.04; margin:0 0 1.2rem;
+  text-shadow:0 .4rem 3rem rgba(0,0,0,.7); }
+.hero-meta{ font-size:1.7rem; color:var(--text-2); display:flex; gap:1.4rem; align-items:center; }
+.hero-meta .dot{ width:.5rem; height:.5rem; border-radius:50%; background:var(--text-3); }
+
+/* ───────── rails ───────── */
+.rail{ margin-bottom:1.6rem; }
+.rail-head{
+  display:flex; align-items:baseline; gap:1.4rem; margin:0 0 1.2rem;
+}
+.rail-title{ font-size:2.2rem; font-weight:600; margin:0; }
+.rail-count{ font-size:1.5rem; color:var(--text-3); }
+
+.rail-strip{
+  display:flex; align-items:flex-end; gap:1.4rem;
+  overflow-x:auto; overflow-y:visible;
+  padding:1.6rem .4rem 1.6rem;
+  margin:-1.6rem -.4rem;
+  scroll-behavior:smooth;
+  scrollbar-width:none;
+}
+
+/* the big "jump back in" tile */
+.tile{
+  position:relative; flex:none; border-radius:var(--tile-r); overflow:hidden;
+  background:var(--panel-2);
+  box-shadow:0 .8rem 2.4rem rgba(0,0,0,.45);
+  transition:transform .2s var(--ease), box-shadow .2s var(--ease);
+}
+.tile[data-focused]{
+  transform:scale(1.06);
+  box-shadow:0 1.6rem 4rem rgba(0,0,0,.6);
+  z-index:2;
+}
+.tile-art{ position:absolute; inset:0; }
+.tile-art img{ width:100%; height:100%; object-fit:cover; }
+
+.tile-hero{ width:26rem; height:26rem; }
+.tile-hero .tile-label{
+  position:absolute; left:0; right:0; bottom:0;
+  padding:1.6rem 1.4rem 1.2rem;
+  font-size:2rem; font-weight:500;
+  background:linear-gradient(transparent, rgba(0,0,0,.86) 46%);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.tile-sm{ width:16rem; height:16rem; }
+.tile-sm .tile-label{
+  position:absolute; left:0; right:0; bottom:0; padding:2.6rem .9rem .7rem;
+  font-size:1.35rem; font-weight:500; opacity:0;
+  background:linear-gradient(transparent, rgba(0,0,0,.88));
+  transition:opacity var(--dur) var(--ease);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.tile-sm[data-focused] .tile-label{ opacity:1; }
+
+.tile-badge{
+  position:absolute; top:.7rem; left:.7rem; z-index:2;
+  font-size:1.05rem; font-weight:800; letter-spacing:.06rem;
+  padding:.25rem .5rem; border-radius:.25rem;
+  background:rgba(0,0,0,.72); color:#fff; text-transform:uppercase;
+  backdrop-filter:blur(.3rem);
+}
+.tile-badge.gp{ background:#107c10; }
+.tile-badge.flash{ background:#b5451b; }
+.tile-badge.emu{ background:#4b2fa8; }
+.tile-pin{
+  position:absolute; top:.7rem; right:.7rem; z-index:2;
+  width:2rem; height:2rem; border-radius:50%;
+  background:rgba(0,0,0,.6); display:grid; place-items:center;
+}
+.tile-pin svg{ width:1.2rem; height:1.2rem; fill:#fff; }
+
+/* the tall "add / browse" tile */
+.tile-add{
+  display:grid; place-items:center;
+  background:rgba(255,255,255,.06);
+  border:.2rem dashed var(--stroke-2);
+}
+.tile-add svg{ width:4rem; height:4rem; stroke:var(--text-2); fill:none; stroke-width:1.8; stroke-linecap:round; }
+
+/* ───────── spotlight card row ───────── */
+.cards{
+  display:grid; grid-template-columns:repeat(4, 1fr); gap:1.4rem;
+  padding:.4rem;
+  margin:0 -.4rem;
+}
+.card{
+  position:relative; height:20rem; border-radius:var(--card-r); overflow:hidden;
+  background:var(--panel-2); text-align:left;
+  box-shadow:0 .8rem 2.4rem rgba(0,0,0,.4);
+  transition:transform .2s var(--ease), box-shadow .2s var(--ease);
+}
+.card[data-focused]{ transform:scale(1.035); box-shadow:0 1.4rem 3.6rem rgba(0,0,0,.6); z-index:2; }
+.card-art{ position:absolute; inset:0; }
+.card-art img{ width:100%; height:100%; object-fit:cover; }
+.card-mosaic{ position:absolute; inset:0; display:grid; grid-template-columns:repeat(4,1fr); }
+.card-mosaic div{ background-size:cover; background-position:center; }
+.card-scrim{ position:absolute; inset:0; background:linear-gradient(transparent 38%, rgba(0,0,0,.82)); }
+.card-label{
+  position:absolute; left:1.6rem; right:1.6rem; bottom:1.2rem;
+  font-size:2rem; font-weight:500;
+}
+.card-chip{
+  position:absolute; top:1.2rem; left:1.2rem;
+  display:flex; align-items:center; gap:.5rem;
+  background:rgba(0,0,0,.6); border-radius:.3rem; padding:.35rem .7rem;
+  font-size:1.15rem; font-weight:800; letter-spacing:.05rem;
+}
+.card-chip .mark{ width:1.5rem; height:1.5rem; }
+.card-illus{ position:absolute; inset:0; display:grid; place-items:center; }
+.card-illus svg{ width:8rem; height:8rem; fill:none; stroke:rgba(255,255,255,.62); stroke-width:1.4; stroke-linecap:round; stroke-linejoin:round; }
+
+/* gradient art used when a card has no photo */
+.grad-a{ background:linear-gradient(140deg,#0f3a52,#0b1c2b); }
+.grad-b{ background:linear-gradient(140deg,#123f1d,#08170d); }
+.grad-c{ background:linear-gradient(140deg,#2a1d4e,#120c22); }
+.grad-d{ background:linear-gradient(140deg,#4a2318,#1b0d08); }
+.grad-e{ background:linear-gradient(140deg,#1c1c1c,#050505); }

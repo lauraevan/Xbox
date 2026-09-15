@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0e1013">
+<title>Xbox</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/chrome.css">
+<link rel="stylesheet" href="css/home.css">
+<link rel="stylesheet" href="css/pages.css">
+</head>
+<body data-theme="dark">
+
+<!-- ══════════════════ BOOT ══════════════════ -->
+<div id="boot" class="boot">
+  <div class="boot-orb">
+    <svg viewBox="0 0 120 120" class="boot-mark" aria-hidden="true">
+      <circle class="orb-ring" cx="60" cy="60" r="46"/>
+      <path class="orb-x" d="M42 42 L78 78 M78 42 L42 78"/>
+    </svg>
+    <div class="boot-pulse"></div>
+  </div>
+  <div class="boot-word">XBOX</div>
+</div>
+
+<!-- ══════════════════ STAGE ══════════════════ -->
+<div id="stage" class="stage" hidden>
+
+  <!-- dynamic background -->
+  <div class="backdrop">
+    <div class="backdrop-layer" id="bgA"></div>
+    <div class="backdrop-layer" id="bgB"></div>
+    <div class="backdrop-scrim"></div>
+    <div class="backdrop-glow"></div>
+  </div>
+
+  <!-- ─────────── system bar ─────────── -->
+  <header class="sysbar" id="sysbar">
+    <button class="profile" data-nav data-group="sysbar" data-act="profile">
+      <span class="avatar"><img id="avatarImg" alt=""></span>
+      <span class="profile-text">
+        <span class="profile-line">
+          <span class="gamertag" id="gamertagLabel">NewSasquatch</span>
+          <span class="tier" id="tierBadge">ULTIMATE</span>
+        </span>
+        <span class="profile-line profile-sub">
+          <svg class="g-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M15.4 8.3a4.6 4.6 0 1 0 1 5.2h-4.2" /></svg>
+          <span id="gamerscoreLabel">0</span>
+        </span>
+      </span>
+    </button>
+
+    <nav class="sysnav" id="sysnav">
+      <button class="sysnav-btn" data-nav data-group="sysbar" data-view="home" title="Recent &amp; pins" aria-label="Recent and pins">
+        <svg viewBox="0 0 24 24"><rect x="3" y="5" width="3.6" height="14" rx="1.2"/><rect x="10.2" y="5" width="3.6" height="14" rx="1.2"/><rect x="17.4" y="5" width="3.6" height="14" rx="1.2"/></svg>
+      </button>
+      <button class="sysnav-btn" data-nav data-group="sysbar" data-view="library" title="My games &amp; apps" aria-label="My games and apps">
+        <svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="2.4" class="s"/><path d="M3.5 9.5h17M9.8 9.5V20.5" class="s"/></svg>
+      </button>
+      <button class="sysnav-btn" data-nav data-group="sysbar" data-view="pass" title="Game Pass" aria-label="Game Pass">
+        <span class="gp-chip">GAME<br>PASS</span>
+      </button>
+      <button class="sysnav-btn" data-nav data-group="sysbar" data-view="search" title="Search" aria-label="Search">
+        <svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5" class="s"/><path d="M15.4 15.4 L21 21" class="s"/></svg>
+      </button>
+      <button class="sysnav-btn" data-nav data-group="sysbar" data-view="settings" title="Settings" aria-label="Settings">
+        <svg viewBox="0 0 24 24"><path class="s" d="M19.4 13a7.6 7.6 0 0 0 0-2l2-1.5-2-3.4-2.3 1a7.6 7.6 0 0 0-1.7-1l-.3-2.5h-4l-.3 2.5a7.6 7.6 0 0 0-1.7 1l-2.3-1-2 3.4L4.6 11a7.6 7.6 0 0 0 0 2l-2 1.5 2 3.4 2.3-1a7.6 7.6 0 0 0 1.7 1l.3 2.5h4l.3-2.5a7.6 7.6 0 0 0 1.7-1l2.3 1 2-3.4z"/><circle class="s" cx="12" cy="12" r="2.9"/></svg>
+        <span class="badge-dot" id="settingsDot"></span>
+      </button>
+    </nav>
+
+    <div class="sysstatus">
+      <button class="status-btn" id="micBtn" data-nav data-group="sysbar" data-act="mic" aria-label="Microphone">
+        <svg viewBox="0 0 24 24" id="micIcon"><rect x="9" y="3" width="6" height="11" rx="3" class="s"/><path class="s" d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3"/><path class="s mic-slash" d="M4 3 L20 21"/></svg>
+      </button>
+      <span class="battery" aria-label="Controller battery">
+        <span class="battery-shell"><span class="battery-fill" id="batteryFill"></span></span>
+        <span class="battery-cap"></span>
+      </span>
+      <span class="clock" id="clock">--:--</span>
+    </div>
+  </header>
+
+  <!-- ─────────── views ─────────── -->
+  <main class="views" id="views">
+    <section class="view view-home" id="view-home"></section>
+    <section class="view view-library" id="view-library" hidden></section>
+    <section class="view view-pass" id="view-pass" hidden></section>
+    <section class="view view-search" id="view-search" hidden></section>
+    <section class="view view-settings" id="view-settings" hidden></section>
+  </main>
+
+  <!-- ─────────── button legend ─────────── -->
+  <footer class="legend" id="legend"></footer>
+</div>
+
+<!-- ══════════════════ GAME DETAIL ══════════════════ -->
+<div class="detail" id="detail" hidden></div>
+
+<!-- ══════════════════ LAUNCH / PLAY ══════════════════ -->
+<div class="launch" id="launch" hidden>
+  <div class="launch-art" id="launchArt"></div>
+  <div class="launch-center">
+    <div class="launch-spinner"><span></span><span></span><span></span><span></span></div>
+    <div class="launch-title" id="launchTitle"></div>
+    <div class="launch-sub">Starting game…</div>
+  </div>
+</div>
+<div class="player" id="player" hidden>
+  <iframe id="playerFrame" title="Game" allow="autoplay; fullscreen; gamepad; pointer-lock; cross-origin-isolated"
+          sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-popups allow-forms allow-modals"></iframe>
+  <div class="player-hint" id="playerHint">Press <kbd>Esc</kbd> for the guide</div>
+</div>
+
+<!-- ══════════════════ GUIDE ══════════════════ -->
+<aside class="guide" id="guide" hidden>
+  <div class="guide-scrim" data-guide-close></div>
+  <div class="guide-panel">
+    <nav class="guide-rail" id="guideRail"></nav>
+    <div class="guide-body" id="guideBody"></div>
+  </div>
+</aside>
+
+<!-- ══════════════════ OVERLAYS ══════════════════ -->
+<div class="toasts" id="toasts"></div>
+<div class="modal" id="modal" hidden></div>
+<div class="scanline" id="scanline" hidden></div>
+
+<script src="js/catalog.js"></script>
+<script src="js/state.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/nav.js"></script>
+<script src="js/views.js"></script>
+<script src="js/guide.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
