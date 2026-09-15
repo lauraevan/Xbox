@@ -6,6 +6,26 @@ the guide overlay, spatial focus, controller input, achievements, and a
 
 No build step, no dependencies. Open `index.html` and it runs.
 
+## Play it now
+
+**[▶ Launch the dashboard](https://raw.githack.com/lauraevan/Xbox/claude/xbox-web-replica-v4s0jk/index.html)**
+
+```
+https://raw.githack.com/lauraevan/Xbox/claude/xbox-web-replica-v4s0jk/index.html
+```
+
+That serves the branch live, so it picks up new commits. Two alternatives:
+
+- **CDN-cached** (faster, but caches for a while):
+  `https://rawcdn.githack.com/lauraevan/Xbox/claude/xbox-web-replica-v4s0jk/index.html`
+- **Pinned to a commit**, if the branch URL ever gets confused by the slash in
+  the branch name:
+  `https://raw.githack.com/lauraevan/Xbox/1ce51c26916e63219e6a957ea6b634fb0e0a6f84/index.html`
+
+githack serves GitHub files with real content types, which is what makes the
+CSS and JS load — `raw.githubusercontent.com` hands everything back as
+`text/plain` and the page renders as source.
+
 ---
 
 ## Controls
@@ -98,5 +118,5 @@ themselves belong to their respective developers and are loaded from the CDN
 above at runtime — the manifest credits each developer, and the detail page
 links to them.
 
-Run it from a static server (`python3 -m http.server`) rather than `file://`,
-so the catalogue fetch isn't blocked by CORS.
+To run it locally, use a static server (`python3 -m http.server`) rather than
+`file://`, so the catalogue fetch isn't blocked by CORS.
