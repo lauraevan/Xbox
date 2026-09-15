@@ -96,11 +96,13 @@ a phone.
 
 ```
 index.html
+assets/          boot clip (mp4 + webm), poster, favicon, icon licence
 css/   base      tokens, TV scaling, boot sequence
        chrome    system bar, guide, toasts, modals
        home      hero, tile rail, spotlight cards
        pages     library, Game Pass, search, settings, detail, player
-js/    catalog   manifest loading, mirrors, queries
+js/    icons     Fluent icon path data
+       catalog   manifest loading, mirrors, queries
        state     profile, pins, recents, achievements, settings
        audio     UI sounds, synthesised with WebAudio
        nav       spatial focus engine, gamepad and keyboard input
@@ -109,14 +111,41 @@ js/    catalog   manifest loading, mirrors, queries
        app       boot, routing, backdrop, detail page, launching
 ```
 
+## Boot screen
+
+The startup clip is treated as optional decoration, so a weak connection never
+leaves you on a buffering screen:
+
+| Guard | Behaviour |
+| --- | --- |
+| Ready budget | 2.5s to become playable, else fall back to the still |
+| Stall grace | 1.2s to recover mid-play, else fall back |
+| Hard cap | 10s ceiling on the boot screen, whatever happens |
+| Save-Data | never fetches the clip at all |
+| Reduced motion | never fetches the clip at all |
+
+The poster is the clip's **final** frame, so a skipped boot lands exactly where
+the animation would have ended rather than cutting from an unrelated image. The
+manifest loads in parallel with the clip and is capped at 9s, so a dead network
+surfaces a message instead of hanging.
+
+Encoded weight: 118 KB (H.264) / 97 KB (VP9) / 18 KB poster. Audio is stripped —
+autoplay requires a muted track anyway, so it was 65 KB of dead weight.
+
+## Icons
+
+[Fluent UI System Icons](https://github.com/microsoft/fluentui-system-icons),
+MIT licensed, © Microsoft Corporation — the same system icon family Microsoft
+ships across its own products. 27 of them are vendored into `js/icons.js` as
+path data; the licence is at `assets/FLUENT-ICONS-LICENSE.txt`.
+
 ## Notes
 
-All artwork in this repository is original: the profile avatar is generated
-procedurally from a seed, and every icon is hand-drawn geometry. The UI sounds
-are synthesised at runtime rather than sampled. Game cover art and the games
-themselves belong to their respective developers and are loaded from the CDN
-above at runtime — the manifest credits each developer, and the detail page
-links to them.
+The profile avatar is generated procedurally from a seed, and the UI sounds are
+synthesised at runtime rather than sampled. Game cover art and the games
+themselves belong to their respective developers and load from the CDN above at
+runtime — the manifest credits each developer, and the detail page links to
+them.
 
 To run it locally, use a static server (`python3 -m http.server`) rather than
 `file://`, so the catalogue fetch isn't blocked by CORS.

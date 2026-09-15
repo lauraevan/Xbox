@@ -11,7 +11,7 @@
 const { el, escapeHtml, ICON } = window.Views;
 const $ = sel => document.querySelector(sel);
 
-const CHEVRON = '<svg class="grow-chev" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg>';
+const chevronMark = () => `<span class="grow-chev">${ICON.chevron}</span>`;
 
 const TABS = [
   { id:'profile',       icon:'avatar',     label:'Profile & system' },
@@ -51,7 +51,7 @@ function row({ icon, art, name, meta, right, chevron, onActivate }){
   btn.append(text);
 
   if (right) btn.append(el('div', 'grow-right', escapeHtml(right)));
-  if (chevron) btn.insertAdjacentHTML('beforeend', CHEVRON);
+  if (chevron) btn.insertAdjacentHTML('beforeend', chevronMark());
 
   btn._navActivate = () => onActivate?.();
   return btn;

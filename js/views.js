@@ -14,29 +14,19 @@ const el = (tag, cls, html) => {
   return n;
 };
 
-/* ───────── icon set (original geometry) ───────── */
-const ICON = {
-  play:    '<svg viewBox="0 0 24 24"><path d="M8 5.2v13.6L19 12z"/></svg>',
-  pin:     '<svg viewBox="0 0 24 24"><path d="M14 2 9.6 6.4l-4.3 1.2 11.1 11.1 1.2-4.3L22 10z M8.6 15.4 3 21"/></svg>',
-  plus:    '<svg viewBox="0 0 24 24"><path class="s" d="M12 5v14M5 12h14"/></svg>',
-  grid:    '<svg viewBox="0 0 24 24"><path class="s" d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"/></svg>',
-  brush:   '<svg viewBox="0 0 24 24"><path class="s" d="M3 17.5 13.8 6.7l3.5 3.5L6.5 21H3zM15.5 5l2.4-2.4a1.6 1.6 0 0 1 2.3 0l1.2 1.2a1.6 1.6 0 0 1 0 2.3L19 8.5z"/></svg>',
-  pad:     '<svg viewBox="0 0 24 24"><path class="s" d="M7.5 7h9a5.5 5.5 0 0 1 5.4 4.4l.8 4.3A2.7 2.7 0 0 1 20 19a2.7 2.7 0 0 1-2.1-1L16.4 16H7.6L6.1 18A2.7 2.7 0 0 1 4 19a2.7 2.7 0 0 1-2.7-3.3l.8-4.3A5.5 5.5 0 0 1 7.5 7z"/><path class="s" d="M7 10.4v3M5.5 11.9h3M16 11h.01M18 13h.01"/></svg>',
-  trophy:  '<svg viewBox="0 0 24 24"><path class="s" d="M7 4h10v5a5 5 0 0 1-10 0zM7 6H4.5a2.5 2.5 0 0 0 2.5 4M17 6h2.5a2.5 2.5 0 0 1-2.5 4M9.5 14h5l.7 4.2H8.8zM7.5 20h9"/></svg>',
-  person:  '<svg viewBox="0 0 24 24"><circle class="s" cx="12" cy="8" r="4"/><path class="s" d="M4.5 20a7.5 7.5 0 0 1 15 0"/></svg>',
-  party:   '<svg viewBox="0 0 24 24"><circle class="s" cx="9" cy="8" r="3.4"/><path class="s" d="M2.8 19a6.2 6.2 0 0 1 12.4 0M16 5.2a3.4 3.4 0 0 1 0 6.6M18.4 19a6.3 6.3 0 0 0-2.6-5.1"/></svg>',
-  bell:    '<svg viewBox="0 0 24 24"><path class="s" d="M12 3a6 6 0 0 0-6 6c0 4-1.5 5.5-1.5 5.5h15S18 13 18 9a6 6 0 0 0-6-6zM10 18a2 2 0 0 0 4 0"/></svg>',
-  capture: '<svg viewBox="0 0 24 24"><rect class="s" x="3" y="6" width="18" height="13" rx="2.4"/><circle class="s" cx="12" cy="12.5" r="3.4"/><path class="s" d="M8.6 6l1.4-2.2h4L15.4 6"/></svg>',
-  power:   '<svg viewBox="0 0 24 24"><path class="s" d="M12 3.5v8M6.8 6.4a7.5 7.5 0 1 0 10.4 0"/></svg>',
-  gear:    '<svg viewBox="0 0 24 24"><path class="s" d="M19.4 13a7.6 7.6 0 0 0 0-2l2-1.5-2-3.4-2.3 1a7.6 7.6 0 0 0-1.7-1l-.3-2.5h-4l-.3 2.5a7.6 7.6 0 0 0-1.7 1l-2.3-1-2 3.4L4.6 11a7.6 7.6 0 0 0 0 2l-2 1.5 2 3.4 2.3-1a7.6 7.6 0 0 0 1.7 1l.3 2.5h4l.3-2.5a7.6 7.6 0 0 0 1.7-1l2.3 1 2-3.4z"/><circle class="s" cx="12" cy="12" r="2.9"/></svg>',
-  home:    '<svg viewBox="0 0 24 24"><path class="s" d="M3.5 10.5 12 3.5l8.5 7M5.8 9.2V20h12.4V9.2"/></svg>',
-  search:  '<svg viewBox="0 0 24 24"><circle class="s" cx="10.5" cy="10.5" r="6.5"/><path class="s" d="m15.4 15.4 5.6 5.6"/></svg>',
-  store:   '<svg viewBox="0 0 24 24"><path class="s" d="M4 8h16l-1.2 11.2A2 2 0 0 1 16.8 21H7.2a2 2 0 0 1-2-1.8L4 8zM8.6 8V6a3.4 3.4 0 0 1 6.8 0v2"/></svg>',
-  clock:   '<svg viewBox="0 0 24 24"><circle class="s" cx="12" cy="12" r="8.6"/><path class="s" d="M12 7v5.3l3.3 2"/></svg>',
-  back:    '<svg viewBox="0 0 24 24"><path class="s" d="M10 5 3.5 12 10 19M3.5 12H20"/></svg>',
-  info:    '<svg viewBox="0 0 24 24"><circle class="s" cx="12" cy="12" r="8.6"/><path class="s" d="M12 11v5.5M12 7.8h.01"/></svg>',
-  link:    '<svg viewBox="0 0 24 24"><path class="s" d="M10.5 13.5a4 4 0 0 0 5.7 0l2.6-2.6a4 4 0 0 0-5.7-5.7l-1.3 1.3M13.5 10.5a4 4 0 0 0-5.7 0l-2.6 2.6a4 4 0 0 0 5.7 5.7l1.3-1.3"/></svg>'
-};
+/* ───────── icon set ─────────
+   Fluent UI System Icons (MIT, Microsoft) via js/icons.js. Named here by
+   role so call sites read as intent rather than as glyph names. */
+const ICON = new Proxy({
+  play:'play', pin:'pin', plus:'add', grid:'grid', brush:'paint_brush',
+  pad:'games', trophy:'trophy', person:'person', party:'people',
+  bell:'alert', capture:'screenshot', power:'power', gear:'settings',
+  home:'home', search:'search', store:'shopping_bag', clock:'clock',
+  back:'arrow_left', link:'link', chevron:'chevron_right',
+  library:'library', apps:'apps_list', mic:'mic', micOff:'mic_off'
+}, {
+  get: (map, key) => (key in map ? window.Icons.icon(map[key]) : '')
+});
 
 /* ───────── cover art with graceful degradation ───────── */
 function coverArt(game, sizes){

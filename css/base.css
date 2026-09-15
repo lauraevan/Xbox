@@ -123,42 +123,30 @@ body[data-theme="light"] .backdrop-scrim{
 }
 body[data-bg="plain"] .backdrop-layer{ opacity:0 !important; }
 
-/* ───────── boot ───────── */
+/* ───────── boot ─────────
+   The startup video plays over black and is allowed to fail: the poster
+   frame stands in on its own, so a slow connection degrades to a still
+   image rather than a stalling, half-buffered clip. */
 .boot{
   position:fixed; inset:0; z-index:200; background:#000;
-  display:grid; place-content:center; justify-items:center; gap:3.4rem;
+  display:grid; place-items:center;
 }
-.boot.out{ animation:bootOut .55s var(--ease) forwards; }
-@keyframes bootOut{ to{ opacity:0; transform:scale(1.06); visibility:hidden; } }
+.boot.out{ animation:bootOut .6s var(--ease) forwards; }
+@keyframes bootOut{ to{ opacity:0; visibility:hidden; } }
 
-.boot-orb{ position:relative; width:17rem; height:17rem; display:grid; place-items:center; }
-.boot-mark{ width:17rem; height:17rem; overflow:visible; }
-.orb-ring{
-  fill:none; stroke:var(--green-bright); stroke-width:4;
-  stroke-dasharray:289; stroke-dashoffset:289;
-  animation:drawRing 1.1s var(--ease-out) .15s forwards;
-  filter:drop-shadow(0 0 1.2rem rgba(109,252,109,.75));
+.boot-video{
+  width:100%; height:100%;
+  object-fit:contain;
+  background:#000;
+  /* the poster is the last frame, so a skipped video lands where the
+     clip would have ended instead of cutting from an unrelated image */
+  background-size:contain; background-position:center; background-repeat:no-repeat;
 }
-.orb-x{
-  fill:none; stroke:var(--green-bright); stroke-width:5; stroke-linecap:round;
-  stroke-dasharray:52; stroke-dashoffset:52;
-  animation:drawX .5s var(--ease-out) .85s forwards;
-  filter:drop-shadow(0 0 1rem rgba(109,252,109,.8));
-}
-@keyframes drawRing{ to{ stroke-dashoffset:0; } }
-@keyframes drawX{ to{ stroke-dashoffset:0; } }
-.boot-pulse{
-  position:absolute; inset:0; border-radius:50%;
-  border:.2rem solid rgba(109,252,109,.5);
-  animation:bootPulse 1.9s var(--ease-out) 1.1s infinite;
-}
-@keyframes bootPulse{ from{transform:scale(.8); opacity:.7;} to{transform:scale(1.65); opacity:0;} }
 
-.boot-word{
-  font-size:3rem; letter-spacing:1.5rem; font-weight:600; text-indent:1.5rem;
-  color:#fff; opacity:0; animation:fadeUp .7s var(--ease-out) 1.25s forwards;
-}
-@keyframes fadeUp{ from{opacity:0; transform:translateY(1rem);} to{opacity:.92; transform:none;} }
+/* when the clip is skipped the poster alone carries the screen, held
+   just long enough to read as a boot rather than a flash of black */
+.boot.still .boot-video{ animation:bootStill .9s var(--ease-out); }
+@keyframes bootStill{ from{ opacity:0; transform:scale(1.015); } to{ opacity:1; transform:none; } }
 
 /* ───────── shared bits ───────── */
 .scanline{

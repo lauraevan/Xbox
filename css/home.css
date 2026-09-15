@@ -98,7 +98,7 @@
   background:rgba(255,255,255,.06);
   border:.2rem dashed var(--stroke-2);
 }
-.tile-add svg{ width:4rem; height:4rem; stroke:var(--text-2); fill:none; stroke-width:1.8; stroke-linecap:round; }
+.tile-add svg{ width:4rem; height:4rem; fill:var(--text-2); }
 
 /* ───────── spotlight card row ───────── */
 .cards{
@@ -130,7 +130,7 @@
 }
 .card-chip .mark{ width:1.5rem; height:1.5rem; }
 .card-illus{ position:absolute; inset:0; display:grid; place-items:center; }
-.card-illus svg{ width:8rem; height:8rem; fill:none; stroke:rgba(255,255,255,.62); stroke-width:1.4; stroke-linecap:round; stroke-linejoin:round; }
+.card-illus svg{ width:8rem; height:8rem; fill:rgba(255,255,255,.55); }
 
 /* gradient art used when a card has no photo */
 .grad-a{ background:linear-gradient(140deg,#0f3a52,#0b1c2b); }

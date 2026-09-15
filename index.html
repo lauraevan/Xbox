@@ -15,14 +15,12 @@
 
 <!-- ══════════════════ BOOT ══════════════════ -->
 <div id="boot" class="boot">
-  <div class="boot-orb">
-    <svg viewBox="0 0 120 120" class="boot-mark" aria-hidden="true">
-      <circle class="orb-ring" cx="60" cy="60" r="46"/>
-      <path class="orb-x" d="M42 42 L78 78 M78 42 L42 78"/>
-    </svg>
-    <div class="boot-pulse"></div>
-  </div>
-  <div class="boot-word">XBOX</div>
+  <video id="bootVideo" class="boot-video"
+         muted playsinline preload="auto" disablepictureinpicture
+         poster="assets/boot-poster.jpg">
+    <source src="assets/boot.webm" type="video/webm">
+    <source src="assets/boot.mp4" type="video/mp4">
+  </video>
 </div>
 
 <!-- ══════════════════ STAGE ══════════════════ -->
@@ -53,28 +51,24 @@
     </button>
 
     <nav class="sysnav" id="sysnav">
-      <button class="sysnav-btn" data-nav data-group="sysbar" data-view="home" title="Recent &amp; pins" aria-label="Recent and pins">
-        <svg viewBox="0 0 24 24"><rect x="3" y="5" width="3.6" height="14" rx="1.2"/><rect x="10.2" y="5" width="3.6" height="14" rx="1.2"/><rect x="17.4" y="5" width="3.6" height="14" rx="1.2"/></svg>
-      </button>
-      <button class="sysnav-btn" data-nav data-group="sysbar" data-view="library" title="My games &amp; apps" aria-label="My games and apps">
-        <svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="2.4" class="s"/><path d="M3.5 9.5h17M9.8 9.5V20.5" class="s"/></svg>
-      </button>
+      <button class="sysnav-btn" data-nav data-group="sysbar" data-view="home"
+              data-icon="column_triple" title="Recent &amp; pins" aria-label="Recent and pins"></button>
+      <button class="sysnav-btn" data-nav data-group="sysbar" data-view="library"
+              data-icon="library" title="My games &amp; apps" aria-label="My games and apps"></button>
       <button class="sysnav-btn" data-nav data-group="sysbar" data-view="pass" title="Game Pass" aria-label="Game Pass">
         <span class="gp-chip">GAME<br>PASS</span>
       </button>
-      <button class="sysnav-btn" data-nav data-group="sysbar" data-view="search" title="Search" aria-label="Search">
-        <svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5" class="s"/><path d="M15.4 15.4 L21 21" class="s"/></svg>
-      </button>
-      <button class="sysnav-btn" data-nav data-group="sysbar" data-view="settings" title="Settings" aria-label="Settings">
-        <svg viewBox="0 0 24 24"><path class="s" d="M19.4 13a7.6 7.6 0 0 0 0-2l2-1.5-2-3.4-2.3 1a7.6 7.6 0 0 0-1.7-1l-.3-2.5h-4l-.3 2.5a7.6 7.6 0 0 0-1.7 1l-2.3-1-2 3.4L4.6 11a7.6 7.6 0 0 0 0 2l-2 1.5 2 3.4 2.3-1a7.6 7.6 0 0 0 1.7 1l.3 2.5h4l.3-2.5a7.6 7.6 0 0 0 1.7-1l2.3 1 2-3.4z"/><circle class="s" cx="12" cy="12" r="2.9"/></svg>
+      <button class="sysnav-btn" data-nav data-group="sysbar" data-view="search"
+              data-icon="search" title="Search" aria-label="Search"></button>
+      <button class="sysnav-btn" data-nav data-group="sysbar" data-view="settings"
+              data-icon="settings" title="Settings" aria-label="Settings">
         <span class="badge-dot" id="settingsDot"></span>
       </button>
     </nav>
 
     <div class="sysstatus">
-      <button class="status-btn" id="micBtn" data-nav data-group="sysbar" data-act="mic" aria-label="Microphone">
-        <svg viewBox="0 0 24 24" id="micIcon"><rect x="9" y="3" width="6" height="11" rx="3" class="s"/><path class="s" d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3"/><path class="s mic-slash" d="M4 3 L20 21"/></svg>
-      </button>
+      <button class="status-btn" id="micBtn" data-nav data-group="sysbar" data-act="mic"
+              aria-label="Microphone"></button>
       <span class="battery" aria-label="Controller battery">
         <span class="battery-shell"><span class="battery-fill" id="batteryFill"></span></span>
         <span class="battery-cap"></span>
@@ -128,6 +122,7 @@
 <div class="modal" id="modal" hidden></div>
 <div class="scanline" id="scanline" hidden></div>
 
+<script src="js/icons.js"></script>
 <script src="js/catalog.js"></script>
 <script src="js/state.js"></script>
 <script src="js/audio.js"></script>

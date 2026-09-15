@@ -52,6 +52,27 @@ function setBackdrop(url, fallbackUrl){
   probe.src = url;
 }
 
+/* ═══════════ icons ═══════════ */
+/** Fill every [data-icon] element from the Fluent set. */
+function paintIcons(root = document){
+  root.querySelectorAll('[data-icon]').forEach(node => {
+    const name = node.dataset.icon;
+    if (!window.Icons?.has(name)) return;
+    if (node.dataset.iconPainted === name) return;
+    // keep any non-svg children (badge dots and the like)
+    node.querySelector('svg')?.remove();
+    node.insertAdjacentHTML('afterbegin', window.Icons.icon(name));
+    node.dataset.iconPainted = name;
+  });
+}
+
+function syncMicIcon(){
+  const btn = $('#micBtn');
+  if (!btn) return;
+  btn.dataset.icon = window.State.settings.micMuted ? 'mic_off' : 'mic';
+  paintIcons(btn.parentElement);
+}
+
 /* ═══════════ system bar ═══════════ */
 function syncProfile(){
   $('#avatarImg').src = window.State.avatar();
@@ -573,6 +594,7 @@ document.addEventListener('nav:activate', e => {
     const muted = !window.State.settings.micMuted;
     window.State.setSetting('micMuted', muted);
     document.body.dataset.mic = muted ? 'muted' : 'live';
+    syncMicIcon();
     toast(muted ? 'Microphone muted' : 'Microphone live', null, { duration: 2000 });
   }
 });
@@ -585,6 +607,87 @@ window.State.on(evt => {
   }
   if (evt.type === 'profile' || evt.type === 'recents') syncProfile();
 });
+
+/* ═══════════ boot video ═══════════
+   The clip is treated as optional decoration. It gets a short budget to
+   become playable; if the connection cannot deliver it in time, or it
+   stalls part-way, we drop to the poster still rather than sit on a
+   buffering screen. Total boot time is capped either way. */
+const BOOT = {
+  READY_BUDGET: 2500,   // time allowed to become playable
+  STALL_GRACE:  1200,   // time allowed to recover from a mid-play stall
+  HARD_CAP:    10000,   // absolute ceiling on the whole boot screen
+  STILL_HOLD:   1400,   // how long the poster shows when the clip is skipped
+  CATALOG_CAP:  9000    // never wait longer than this for the manifest
+};
+
+function playBootVideo(){
+  return new Promise(resolve => {
+    const node = $('#boot');
+    const video = $('#bootVideo');
+    if (!video) return resolve('missing');
+
+    const settings = window.State.settings;
+    const saveData = navigator.connection?.saveData === true;
+
+    const still = reason => {
+      node.classList.add('still');
+      video.removeAttribute('src');
+      setTimeout(() => resolve(reason), BOOT.STILL_HOLD);
+    };
+
+    // data saver, reduced motion, or an explicit opt-out never fetch the clip
+    if (settings.bootVideo === false || saveData || settings.motion === 'reduced'){
+      video.querySelectorAll('source').forEach(n => n.remove());
+      return still('skipped');
+    }
+
+    let settled = false;
+    const timers = [];
+    const stop = reason => {
+      if (settled) return;
+      settled = true;
+      timers.forEach(clearTimeout);
+      video.removeEventListener('ended', onEnded);
+      video.removeEventListener('error', onError);
+      video.removeEventListener('waiting', onWaiting);
+      video.removeEventListener('playing', onPlaying);
+      resolve(reason);
+    };
+    const bail = reason => {
+      if (settled) return;
+      settled = true;
+      timers.forEach(clearTimeout);
+      try { video.pause(); } catch {}
+      still(reason);
+    };
+
+    let stallTimer = null;
+    const onEnded   = () => stop('played');
+    const onError   = () => bail('error');
+    const onPlaying = () => { clearTimeout(stallTimer); };
+    const onWaiting = () => {
+      clearTimeout(stallTimer);
+      stallTimer = setTimeout(() => bail('stalled'), BOOT.STALL_GRACE);
+      timers.push(stallTimer);
+    };
+
+    video.addEventListener('ended', onEnded);
+    video.addEventListener('error', onError);
+    video.addEventListener('waiting', onWaiting);
+    video.addEventListener('playing', onPlaying);
+
+    // give it a budget to become playable, then give up on it
+    timers.push(setTimeout(() => {
+      if (video.readyState < 3) bail('slow');
+    }, BOOT.READY_BUDGET));
+
+    // whatever happens, the boot screen has a ceiling
+    timers.push(setTimeout(() => stop('cap'), BOOT.HARD_CAP));
+
+    video.play().catch(() => bail('blocked'));
+  });
+}
 
 /* ═══════════ boot ═══════════ */
 const startedAt = Date.now();
@@ -601,24 +704,25 @@ function applySettings(){
 
 async function boot(){
   applySettings();
+  paintIcons();
+  syncMicIcon();
   syncProfile();
   tickClock();
   tickBattery();
   setInterval(tickClock, 5000);
   setInterval(tickBattery, 30000);
 
-  window.Sound?.boot();
+  // the manifest loads while the boot clip plays, and is capped so a dead
+  // network cannot hold the boot screen open
+  const catalogLoad = Promise.race([
+    window.Catalog.load().then(() => null, err => err),
+    new Promise(r => setTimeout(() => r(new Error('manifest timed out')), BOOT.CATALOG_CAP))
+  ]);
 
-  const minimumBoot = new Promise(r => setTimeout(r, 2300));
-  let loadError = null;
-
-  try { await window.Catalog.load(); }
-  catch (err){ loadError = err; }
-
-  await minimumBoot;
+  const [, loadError] = await Promise.all([playBootVideo(), catalogLoad]);
 
   $('#boot').classList.add('out');
-  setTimeout(() => { $('#boot').hidden = true; }, 560);
+  setTimeout(() => { $('#boot').remove(); }, 620);
   $('#stage').hidden = false;
 
   if (loadError){
@@ -643,7 +747,7 @@ async function boot(){
 window.App = {
   setView, goBack, openDetail, closeDetail, launch, quitGame,
   toast, modal, closeModal, promptGamertag, confirmReset, powerOff, screenshot,
-  syncProfile, tickClock, updateLegend, setBackdrop,
+  syncProfile, tickClock, updateLegend, setBackdrop, paintIcons, syncMicIcon,
   isPlaying: () => !!playing,
   get view(){ return currentView; }
 };
