@@ -1,6 +1,7 @@
-/* Xbox-console-style Microsoft Store backed by the Stratus cloud catalogue.
-   The Store is controller-first: left navigation, large gallery shelves,
-   product pages, wishlist, free acquisition and owned-game launch. */
+/* Xbox-console Microsoft Store replica backed by the Stratus cloud catalogue.
+   The layout follows the real ten-foot Store: a narrow icon rail, a large
+   selected gallery item with adjacent cards, contextual details underneath,
+   horizontal discovery rows, full catalogue pages and a rich product page. */
 (() => {
 'use strict';
 
@@ -21,16 +22,22 @@ const FILTERS = [
   ['Indie', 'Indie']
 ];
 
+const CLOUD_ICON = `
+<svg viewBox="0 0 24 24" aria-hidden="true">
+  <path fill="currentColor" d="M7.4 18.5a4.9 4.9 0 0 1-.65-9.76A6.45 6.45 0 0 1 19 10.82a3.85 3.85 0 0 1-.7 7.68H7.4Z"/>
+</svg>`;
+
 let games = [];
 let mode = 'home';
 let filter = 'all';
 let query = '';
 let product = null;
 let lastRoot = null;
-let heroGame = null;
+let selectedHomeGame = null;
 
 const lower = value => String(value || '').toLowerCase();
 const profileId = () => String(window.State?.data?.profileId || 'p1');
+const icon = name => ICON?.[name] || ICON?.grid || '';
 
 function readWish(){
   try {
@@ -82,152 +89,197 @@ function shuffled(seed, source = games){
   return copy;
 }
 
-function storeCard(game, { wide=false } = {}){
-  const btn = el('button', `store-game${wide ? ' wide' : ''}`);
+function starsFor(game){
+  let n = 0;
+  for (const c of String(game.gameKey || game.name)) n = (n * 31 + c.charCodeAt(0)) >>> 0;
+  const rating = (4.2 + (n % 8) / 10).toFixed(1);
+  const reviews = ((n % 124) + 8) * 100;
+  return { rating, reviews:reviews >= 1000 ? `${Math.round(reviews / 100) / 10}K` : String(reviews) };
+}
+
+function cardImage(game, wide){ return wide ? (game.image || game.cover) : (game.cover || game.image); }
+
+function storeCard(game, { compact=false, wide=false } = {}){
+  const cls = compact ? 'store-game store-compact' : wide ? 'store-game store-wide' : 'store-game store-grid-card';
+  const btn = el('button', cls);
   btn.dataset.nav = '';
   btn.dataset.storeKey = game.gameKey;
-  btn.dataset.ringRadius = '.25rem';
-  btn.setAttribute('aria-label', game.name);
+  btn.dataset.ringRadius = '.35rem';
+  btn.setAttribute('aria-label', `${game.name}, ${Cloud.owns(game) ? 'owned' : 'free'}`);
 
   const art = el('span', 'store-cover');
   const img = document.createElement('img');
-  img.src = wide ? (game.image || game.cover) : (game.cover || game.image);
+  img.src = cardImage(game, wide);
   img.alt = '';
   img.loading = 'lazy';
   img.decoding = 'async';
   art.append(img);
 
-  const owned = Cloud.owns(game);
-  if (owned) art.append(el('span', 'store-owned-badge', 'OWNED'));
-  art.append(el('span', 'store-cloud-badge', `${ICON?.cloud || ''}<span>Cloud</span>`));
+  if (Cloud.owns(game)) art.append(el('span', 'store-owned-badge', 'OWNED'));
+  const cloud = el('span', 'store-cloud-mark', CLOUD_ICON);
+  cloud.title = 'Cloud playable';
+  art.append(cloud);
 
   const meta = el('span', 'store-game-meta');
   meta.append(
     el('span', 'store-game-title', escapeHtml(game.name)),
-    el('span', 'store-game-price', owned ? 'Owned' : 'Free'),
-    el('span', 'store-game-sub', escapeHtml(game.tags.slice(0, 2).join(' • ') || 'Cloud gaming'))
+    el('span', 'store-game-price', Cloud.owns(game) ? 'Owned' : 'Free')
   );
+  if (!compact) meta.append(el('span', 'store-game-sub', escapeHtml(game.tags.slice(0, 2).join(' • ') || 'Cloud gaming')));
   btn.append(art, meta);
   btn._navActivate = () => openProduct(game);
   return btn;
 }
 
-function paintHero(root, game){
-  if (!root || !game) return;
-  heroGame = game;
-  const hero = root.querySelector('.xstore-hero');
-  const art = root.querySelector('.xstore-hero-art');
-  const title = root.querySelector('.xstore-hero-title');
-  const desc = root.querySelector('.xstore-hero-desc');
-  const price = root.querySelector('.xstore-hero-price');
-  const meta = root.querySelector('.xstore-hero-meta');
-  const action = root.querySelector('.xstore-hero-action');
-  if (hero) hero.dataset.gameKey = game.gameKey;
-  if (art) art.style.backgroundImage = `url("${game.image || game.cover}")`;
-  if (title) title.textContent = game.name;
-  if (desc) desc.textContent = game.description || 'Play instantly from the cloud.';
-  if (price) price.textContent = Cloud.owns(game) ? 'YOU OWN THIS' : 'FREE';
-  if (meta) meta.textContent = `${game.tags.slice(0, 3).join(' • ') || 'Cloud gaming'}  •  Stratus Cloud`;
-  if (action) action.textContent = Cloud.owns(game) ? 'Play with cloud gaming' : 'View game';
+function leadCard(game){
+  const btn = el('button', 'store-game store-lead');
+  btn.dataset.nav = '';
+  btn.dataset.storeKey = game.gameKey;
+  btn.dataset.ringRadius = '.45rem';
+  btn.setAttribute('aria-label', game.name);
+  const art = el('span', 'store-lead-art');
+  const img = document.createElement('img');
+  img.src = game.image || game.cover;
+  img.alt = '';
+  img.decoding = 'async';
+  art.append(img);
+  if (Cloud.owns(game)) art.append(el('span', 'store-owned-badge', 'OWNED'));
+  btn.append(art);
+  btn._navActivate = () => openProduct(game);
+  return btn;
 }
 
-function shelf(title, subtitle, list, opts = {}){
+function buildRail(root){
+  const rail = el('aside', 'xstore-rail');
+  const profile = el('button', 'xstore-avatar');
+  profile.type = 'button';
+  profile.title = 'xboxtest';
+  profile.setAttribute('aria-label', 'Profile xboxtest');
+  profile.innerHTML = '<span></span>';
+  rail.append(profile);
+
+  const nav = el('nav', 'xstore-nav');
+  nav.setAttribute('aria-label', 'Microsoft Store');
+  const rows = [
+    { id:'search', icon:'search', label:'Search' },
+    { id:'home', icon:'store', label:'Store home', activeMode:'home' },
+    { id:'games', icon:'games', label:'Games' },
+    { id:'owned', icon:'library', label:'Owned games' },
+    { id:'wishlist', icon:'pin', label:'Wish list', split:true },
+    { id:'settings', icon:'gear', label:'Settings', external:true }
+  ];
+
+  rows.forEach(row => {
+    if (row.split) nav.append(el('div', 'xstore-nav-rule'));
+    const btn = el('button', 'xstore-nav-btn');
+    const active = !row.external && mode === (row.activeMode || row.id);
+    if (active) btn.classList.add('active');
+    btn.dataset.nav = '';
+    btn.dataset.storeMode = row.id;
+    btn.dataset.ringRadius = '.15rem';
+    btn.title = row.label;
+    btn.setAttribute('aria-label', row.label);
+    btn.innerHTML = `<span class="xstore-nav-icon">${icon(row.icon)}</span><span class="xstore-nav-label">${escapeHtml(row.label)}</span>`;
+    btn._navActivate = () => {
+      if (row.external){ window.App?.setView?.('settings'); return; }
+      switchMode(row.id, root);
+    };
+    nav.append(btn);
+  });
+  rail.append(nav);
+
+  const help = el('div', 'xstore-rail-foot', 'XBOX');
+  rail.append(help);
+  return rail;
+}
+
+function paintHomeSelection(root, game){
+  if (!root || !game) return;
+  selectedHomeGame = game;
+  const title = root.querySelector('.xstore-selected-title');
+  const rating = root.querySelector('.xstore-selected-rating');
+  const genre = root.querySelector('.xstore-selected-genre');
+  const price = root.querySelector('.xstore-selected-price');
+  const offer = root.querySelector('.xstore-selected-offer');
+  const { rating:stars, reviews } = starsFor(game);
+  if (title) title.textContent = game.name;
+  if (rating) rating.innerHTML = `<span class="xstore-stars">★★★★★</span><b>${stars}</b><span>${reviews}</span>`;
+  if (genre) genre.textContent = (game.tags[0] || 'GAME').toUpperCase();
+  if (price) price.textContent = Cloud.owns(game) ? 'Owned' : 'Free';
+  if (offer) offer.textContent = Cloud.owns(game) ? 'Ready to play with cloud gaming' : 'Get it free, then play from your library';
+}
+
+function buildHomeGallery(root, list){
+  const section = el('section', 'xstore-feature');
+  section.innerHTML = `
+    <div class="xstore-context">Based on your recent activity</div>
+    <div class="xstore-title-row">
+      <h1>Top games for you</h1>
+      <div class="xstore-hints"><span>◉ QUICK ACTIONS</span><span>ⓧ SEE ALL</span></div>
+    </div>`;
+
+  const gallery = el('div', 'xstore-gallery');
+  const first = list[0];
+  if (first) gallery.append(leadCard(first));
+  const small = el('div', 'xstore-gallery-small');
+  list.slice(1, 6).forEach(game => small.append(storeCard(game, { compact:true })));
+  gallery.append(small);
+  section.append(gallery);
+
+  const detail = el('div', 'xstore-selected');
+  detail.innerHTML = `
+    <div class="xstore-selected-title"></div>
+    <div class="xstore-selected-meta">
+      <span class="xstore-selected-rating"></span>
+      <span class="xstore-selected-genre"></span>
+    </div>
+    <div class="xstore-selected-buy"><strong class="xstore-selected-price"></strong><span class="xstore-selected-offer"></span></div>`;
+  section.append(detail);
+  root.querySelector('.xstore-content').append(section);
+  paintHomeSelection(root, first);
+}
+
+function shelf(title, list, { wide=false, subtitle='' } = {}){
   const section = el('section', 'xstore-shelf');
   const head = el('div', 'xstore-shelf-head');
   const copy = el('div');
   copy.append(el('h2', 'xstore-shelf-title', escapeHtml(title)));
   if (subtitle) copy.append(el('div', 'xstore-shelf-sub', escapeHtml(subtitle)));
   head.append(copy);
-  if (opts.count) head.append(el('div', 'xstore-shelf-count', `${list.length} games`));
   section.append(head);
-  const row = el('div', 'xstore-row');
-  list.forEach(game => row.append(storeCard(game, { wide:!!opts.wide })));
+  const row = el('div', `xstore-row${wide ? ' wide' : ''}`);
+  list.forEach(game => row.append(storeCard(game, { compact:!wide, wide })));
   section.append(row);
   return section;
 }
 
-function buildRail(root){
-  const rail = el('aside', 'xstore-rail');
-  rail.innerHTML = `
-    <div class="xstore-brand"><span class="xstore-brand-icon">${ICON.store}</span><span>Microsoft Store</span></div>
-    <nav class="xstore-nav" aria-label="Store navigation"></nav>
-    <div class="xstore-rail-foot">XBOX</div>`;
-  const nav = rail.querySelector('.xstore-nav');
-  const rows = [
-    ['home', 'Home', 'home'],
-    ['games', 'Games', 'games'],
-    ['search', 'Search', 'search'],
-    ['wishlist', 'Wish list', 'pin'],
-    ['owned', 'Owned games', 'library']
-  ];
-  rows.forEach(([id, label, icon]) => {
-    const btn = el('button', 'xstore-nav-btn' + (mode === id ? ' active' : ''));
-    btn.dataset.nav = '';
-    btn.dataset.storeMode = id;
-    btn.innerHTML = `<span class="xstore-nav-icon">${ICON[icon] || ICON.grid}</span><span>${escapeHtml(label)}</span>`;
-    btn._navActivate = () => switchMode(id, root);
-    nav.append(btn);
-  });
-  return rail;
-}
-
-function buildTop(root, label){
-  const top = el('header', 'xstore-top');
-  top.innerHTML = `
-    <div class="xstore-breadcrumb">Store &nbsp;/&nbsp; <strong>${escapeHtml(label)}</strong></div>
-    <div class="xstore-top-actions">
-      <span class="xstore-account">xboxtest</span>
-      <span class="xstore-cart">${ICON.store}<b>0</b></span>
-    </div>`;
-  return top;
-}
-
 function renderHome(root){
   const content = el('div', 'xstore-content');
-  content.append(buildTop(root, 'Home'));
+  root.querySelector('.xstore-main').append(content);
 
-  const hero = el('section', 'xstore-hero');
-  hero.innerHTML = `
-    <div class="xstore-hero-art"></div>
-    <div class="xstore-hero-shade"></div>
-    <div class="xstore-hero-copy">
-      <div class="xstore-hero-kicker">Featured game</div>
-      <h1 class="xstore-hero-title"></h1>
-      <div class="xstore-hero-meta"></div>
-      <p class="xstore-hero-desc"></p>
-      <div class="xstore-hero-price"></div>
-      <button class="xstore-hero-action" data-nav>View game</button>
-    </div>`;
-  const action = hero.querySelector('.xstore-hero-action');
-  action._navActivate = () => heroGame && (Cloud.owns(heroGame) ? Cloud.play(heroGame).catch(showCloudError) : openProduct(heroGame));
-  content.append(hero);
+  const featured = shuffled(37).slice(0, 6);
+  buildHomeGallery(root, featured);
 
-  const featured = shuffled(29).slice(0, 7);
-  const newGames = games.slice(0, 10);
+  const coming = games.slice(0, 7);
+  const newGames = shuffled(73).slice(0, 10);
   const actionGames = byTag('Action').slice(0, 10);
-  const adventure = byTag('Adventure').slice(0, 10);
   const owned = games.filter(g => Cloud.owns(g)).slice(0, 10);
 
-  if (featured.length) content.append(shelf('Featured', 'Great games to play right now', featured));
-  if (owned.length) content.append(shelf('From your library', 'Ready to stream', owned));
-  if (newGames.length) content.append(shelf('New games', 'Recently added to cloud gaming', newGames));
-  if (actionGames.length) content.append(shelf('Top free games', 'Included free in this project', actionGames));
-  if (adventure.length) content.append(shelf('Explore new worlds', 'Adventure games', adventure));
-
-  root.querySelector('.xstore-main').append(content);
-  paintHero(root, featured[0] || games[0]);
+  content.append(shelf('Games coming soon', coming, { wide:true }));
+  if (owned.length) content.append(shelf('From your library', owned, { subtitle:'Ready to play with cloud gaming' }));
+  content.append(shelf('New games', newGames));
+  content.append(shelf('Most played', actionGames));
 }
 
-function renderBrowse(root, label = 'Games'){
-  const content = el('div', 'xstore-content');
-  content.append(buildTop(root, label));
-
-  const heading = el('div', 'xstore-gallery-head');
-  heading.append(
-    el('h1', 'xstore-gallery-title', escapeHtml(label)),
-    el('div', 'xstore-gallery-count', `${matching().length.toLocaleString()} games`)
+function renderBrowse(root, label){
+  const content = el('div', 'xstore-content xstore-browse');
+  const head = el('div', 'xstore-page-head');
+  head.append(
+    el('div', 'xstore-page-kicker', 'MICROSOFT STORE'),
+    el('h1', 'xstore-page-title', escapeHtml(label)),
+    el('div', 'xstore-page-count', `${matching().length.toLocaleString()} games`)
   );
-  content.append(heading);
+  content.append(head);
 
   if (mode === 'games'){
     const filters = el('nav', 'xstore-filters');
@@ -242,41 +294,40 @@ function renderBrowse(root, label = 'Games'){
 
   if (mode === 'search'){
     const wrap = el('div', 'xstore-search-wrap');
-    const search = document.createElement('input');
-    search.type = 'search';
-    search.className = 'xstore-search';
-    search.placeholder = 'Search games, add-ons, and more';
-    search.value = query;
-    search.setAttribute('aria-label', 'Search Microsoft Store');
-    search.addEventListener('input', () => {
-      query = search.value;
-      const grid = content.querySelector('.xstore-grid');
-      const count = content.querySelector('.xstore-gallery-count');
-      const list = matching();
-      if (count) count.textContent = `${list.length.toLocaleString()} games`;
-      if (grid){
-        grid.innerHTML = '';
-        list.forEach(g => grid.append(storeCard(g)));
-        if (!list.length) grid.append(el('div', 'xstore-empty', 'No results found.'));
-        window.Nav?.repaint?.();
-      }
+    wrap.innerHTML = `<span class="xstore-search-icon">${icon('search')}</span>`;
+    const input = document.createElement('input');
+    input.type = 'search';
+    input.className = 'xstore-search';
+    input.placeholder = 'Search games, add-ons, and more';
+    input.value = query;
+    input.setAttribute('aria-label', 'Search Microsoft Store');
+    input.addEventListener('input', () => {
+      query = input.value;
+      renderBrowseGrid(content);
     });
-    wrap.append(`<span>${ICON.search}</span>`, search);
-    // append() treats strings literally; replace the first child with real icon HTML
-    wrap.innerHTML = `<span class="xstore-search-icon">${ICON.search}</span>`;
-    wrap.append(search);
+    wrap.append(input);
     content.append(wrap);
   }
 
-  const list = matching();
   const grid = el('div', 'xstore-grid');
+  content.append(grid);
+  root.querySelector('.xstore-main').append(content);
+  renderBrowseGrid(content);
+}
+
+function renderBrowseGrid(content){
+  const grid = content.querySelector('.xstore-grid');
+  const count = content.querySelector('.xstore-page-count');
+  if (!grid) return;
+  const list = matching();
+  if (count) count.textContent = `${list.length.toLocaleString()} games`;
+  grid.innerHTML = '';
   list.forEach(game => grid.append(storeCard(game)));
   if (!list.length){
     const msg = mode === 'wishlist' ? 'Your wish list is empty.' : mode === 'owned' ? 'You do not own any cloud games yet.' : 'No games found.';
     grid.append(el('div', 'xstore-empty', msg));
   }
-  content.append(grid);
-  root.querySelector('.xstore-main').append(content);
+  window.Nav?.repaint?.();
 }
 
 function modeLabel(){
@@ -284,7 +335,7 @@ function modeLabel(){
   if (mode === 'search') return 'Search';
   if (mode === 'wishlist') return 'Wish list';
   if (mode === 'owned') return 'Owned games';
-  return 'Home';
+  return 'Store';
 }
 
 function renderShell(root){
@@ -300,8 +351,9 @@ function renderShell(root){
   else renderBrowse(root, modeLabel());
   window.Nav?.repaint?.();
   requestAnimationFrame(() => {
-    const target = mode === 'home' ? '.xstore-hero-action' : '.store-game';
-    window.Nav?.focusIn?.(root, target);
+    const target = mode === 'home' ? '.store-lead' : mode === 'search' ? '.xstore-search' : '.store-game';
+    if (mode === 'search') root.querySelector('.xstore-search')?.focus?.();
+    else window.Nav?.focusIn?.(root, target);
   });
 }
 
@@ -329,13 +381,13 @@ function closeProduct(){
 function refreshProductOwnership(node, game){
   const owned = Cloud.owns(game);
   node.classList.toggle('owned', owned);
-  const status = node.querySelector('.xproduct-license');
-  if (status) status.textContent = owned ? 'You own this game' : 'Get this game for your account';
+  const ownership = node.querySelector('.xproduct-ownership');
   const price = node.querySelector('.xproduct-price');
-  if (price) price.textContent = owned ? 'Owned' : 'Free';
   const acquire = node.querySelector('[data-store-acquire]');
+  if (ownership) ownership.textContent = owned ? 'You own this' : 'Available to get';
+  if (price) price.textContent = owned ? 'Owned' : 'Free';
   if (acquire){
-    acquire.textContent = owned ? 'PLAY WITH CLOUD GAMING' : 'GET  •  FREE';
+    acquire.textContent = owned ? 'PLAY WITH CLOUD GAMING' : 'GET';
     acquire.classList.toggle('play', owned);
   }
 }
@@ -345,26 +397,28 @@ function openProduct(game){
   const root = lastRoot || document.getElementById('view-store');
   if (!root) return;
 
+  const { rating, reviews } = starsFor(game);
   const node = el('div', 'xproduct');
   node.innerHTML = `
     <div class="xproduct-art" style="background-image:url('${escapeHtml(game.image || game.cover)}')"></div>
     <div class="xproduct-scrim"></div>
+    <button class="xproduct-back" data-nav data-store-back aria-label="Back">${icon('back')}</button>
     <div class="xproduct-body">
       <div class="xproduct-cover-wrap"><img class="xproduct-cover" src="${escapeHtml(game.cover || game.image)}" alt=""></div>
       <div class="xproduct-copy">
         <div class="xproduct-type">XBOX CLOUD GAME</div>
         <h1 class="xproduct-title">${escapeHtml(game.name)}</h1>
-        <div class="xproduct-meta">${escapeHtml(game.tags.slice(0,4).join(' • ') || 'Cloud gaming')} &nbsp; • &nbsp; Stratus Cloud</div>
-        <div class="xproduct-cloud">☁ &nbsp; Cloud playable</div>
+        <div class="xproduct-publisher">Stratus Cloud • ${escapeHtml(game.tags[0] || 'Game')}</div>
+        <div class="xproduct-rating"><span>★★★★★</span><b>${rating}</b><small>${reviews} ratings</small></div>
+        <div class="xproduct-badges"><span>Cloud playable</span><span>Controller</span><span>Digital</span></div>
         <p class="xproduct-desc">${escapeHtml(game.description || 'Play instantly from the cloud.')}</p>
         <div class="xproduct-price"></div>
-        <div class="xproduct-license"></div>
+        <div class="xproduct-ownership"></div>
         <div class="xproduct-actions">
           <button class="xproduct-action primary" data-nav data-store-acquire></button>
           <button class="xproduct-action" data-nav data-store-wish>${wished(game) ? 'REMOVE FROM WISH LIST' : 'ADD TO WISH LIST'}</button>
-          <button class="xproduct-action icon-only" data-nav data-store-back aria-label="Back">${ICON.back}</button>
         </div>
-        <div class="xproduct-note">No download required. Stream this game from My games & apps after you get it.</div>
+        <div class="xproduct-cloud-row">${CLOUD_ICON}<span>No install required. After you get this game, it appears in My games & apps and can be streamed immediately.</span></div>
       </div>
     </div>`;
 
@@ -402,31 +456,30 @@ async function render(root){
   if (!root) return;
   lastRoot = root;
   root.classList.add('reference-store');
-  root.innerHTML = '<div class="xstore-loading">Microsoft Store<br><span>Loading…</span></div>';
+  root.innerHTML = '<div class="xstore-loading"><div>Microsoft Store</div><span>Loading…</span></div>';
   try {
     games = await Cloud.loadCatalogue();
     renderShell(root);
   } catch (err){
-    root.innerHTML = `<div class="xstore-loading error">Microsoft Store<br><span>Could not load Store: ${escapeHtml(err?.message || 'Unknown error')}</span></div>`;
+    root.innerHTML = `<div class="xstore-loading error"><div>Microsoft Store</div><span>Could not load Store: ${escapeHtml(err?.message || 'Unknown error')}</span></div>`;
   }
 }
 
 window.addEventListener('nav:focus', event => {
   const target = event.detail?.el;
   const card = target?.closest?.('#view-store .store-game');
-  if (!card) return;
+  if (!card || mode !== 'home') return;
   const game = games.find(item => item.gameKey === card.dataset.storeKey);
-  if (game && mode === 'home') paintHero(lastRoot, game);
+  if (game) paintHomeSelection(lastRoot, game);
 });
 
 window.addEventListener('nav:button', event => {
   if (event.detail?.button === 'b' && product){ closeProduct(); return; }
   if (event.detail?.button === 'x' && document.body.dataset.view === 'store' && !product){
-    switchMode('search');
+    switchMode('games');
   }
 });
 
-// Mouse and touch use the same activation callbacks as controller A.
 document.addEventListener('click', event => {
   const target = event.target.closest?.('#view-store [data-nav]');
   if (!target || typeof target._navActivate !== 'function') return;
