@@ -46,29 +46,45 @@ async function cloudGame(title){
   }
 }
 
-async function activateTitle(title){
-  const local = localGame(title);
-  if (local){
-    window.App?.openDetail?.(local);
-    return;
-  }
+async function openStoreProduct(game){
+  window.App?.setView?.('store');
+  let tries = 0;
+  const open = () => {
+    if (window.XboxStore?.openProduct){
+      window.XboxStore.openProduct(game);
+      return;
+    }
+    if (++tries < 15) setTimeout(open, 80);
+  };
+  setTimeout(open, 80);
+}
 
+async function activateTitle(title){
+  // Home should behave like Xbox: if the cloud title is owned, A launches it.
+  // If it is available but not owned yet, jump to its Store product page.
   const cloud = await cloudGame(title);
   if (cloud){
     if (window.StratusCloud?.owns?.(cloud)){
-      try { await window.StratusCloud.play(cloud); }
-      catch (err){ window.App?.toast?.('Cloud gaming', err?.message || 'Could not start game.'); }
+      try {
+        await window.StratusCloud.play(cloud);
+      } catch (err){
+        window.App?.toast?.('Cloud gaming', err?.message || 'Could not start game.');
+      }
       return;
     }
-
-    window.XboxStoreRoute?.show?.();
-    // Store render starts asynchronously; openProduct can mount as soon as the
-    // Store surface is visible because it already has the game object here.
-    setTimeout(() => window.XboxStore?.openProduct?.(cloud), 80);
+    await openStoreProduct(cloud);
     return;
   }
 
-  window.App?.setView?.('library');
+  // Fallback to the built-in browser catalogue when Stratus does not carry it.
+  const local = localGame(title);
+  if (local){
+    if (typeof window.App?.launch === 'function') window.App.launch(local);
+    else window.App?.openDetail?.(local);
+    return;
+  }
+
+  window.App?.toast?.('Game unavailable', `${title} is not currently available in the connected catalogue.`);
 }
 
 function ensureBadge(face, text){
@@ -163,6 +179,14 @@ new MutationObserver(() => {
     patchHome();
   });
 }).observe(HOME, { childList:true, subtree:true });
+
+// Touch/mouse activation mirrors controller A so the iPad path actually launches too.
+document.addEventListener('click', event => {
+  const tile = event.target.closest?.('#view-home .ref-tile[data-home-swap], #view-home [data-home-library-mosaic="1"]');
+  if (!tile || typeof tile._navActivate !== 'function') return;
+  event.preventDefault();
+  tile._navActivate(tile);
+});
 
 patchHome();
 })();
