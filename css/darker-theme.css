@@ -1,0 +1,48 @@
+/* Slightly darker Xbox theme pass.
+   Intentionally leaves buttons and focus treatments alone. */
+
+/* Home wallpaper stays visible, just pulled down so the UI reads on top of it. */
+body[data-view="home"] .backdrop-scrim{
+  background:linear-gradient(
+    180deg,
+    rgba(0,0,0,.20) 0%,
+    rgba(0,0,0,.11) 38%,
+    rgba(0,0,0,.14) 68%,
+    rgba(0,0,0,.25) 100%
+  )!important;
+}
+body[data-view="home"] .topbar-scrim{
+  background:linear-gradient(180deg,rgba(0,0,0,.28),rgba(0,0,0,.10) 72%,transparent)!important;
+}
+
+/* Secondary surfaces use a deeper neutral black, without touching controls. */
+.console-page-view,
+.console-shell,
+.console-main,
+.console-pass-main,
+.console-settings-main,
+.console-search-page{
+  background:#050505!important;
+}
+.console-side{
+  background:#090909!important;
+}
+
+/* Store remains consistent with the rest of the console shell. */
+body[data-view="store"] .xstore-shell,
+body[data-view="store"] .xstore-main,
+body[data-view="store"] .xstore-content{
+  background:#050505!important;
+}
+body[data-view="store"] .xstore-rail{
+  background:#090909!important;
+}
+
+/* The Guide/profile sidebar should feel like part of the darker system chrome. */
+.guide-scrim{
+  background:rgba(0,0,0,.38)!important;
+}
+.guide-panel{
+  background:rgba(27,29,31,.975)!important;
+  box-shadow:0 1.2rem 4.2rem rgba(0,0,0,.48)!important;
+}
