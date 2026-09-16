@@ -120,6 +120,39 @@
   box-shadow:inset .08rem 0 0 rgba(255,255,255,.035) !important;
 }
 
+/* Home profile: solid black capsule, black avatar, fixed test label. */
+body[data-view="home"] .profile{
+  background:#000 !important;
+  padding:.42rem 1.35rem .42rem .42rem !important;
+  gap:1rem !important;
+  box-shadow:0 .24rem 1rem rgba(0,0,0,.30) !important;
+}
+body[data-view="home"] .profile:hover,
+body[data-view="home"] .profile[data-focused]{
+  background:#000 !important;
+}
+body[data-view="home"] .profile .avatar{
+  background:#000 !important;
+  box-shadow:inset 0 0 0 .16rem rgba(255,255,255,.14) !important;
+}
+body[data-view="home"] .profile .avatar img{
+  display:none !important;
+}
+body[data-view="home"] .profile .gamertag{
+  font-size:0 !important;
+  color:#fff !important;
+}
+body[data-view="home"] .profile .gamertag::after{
+  content:"xboxtest";
+  font-size:1.58rem;
+  font-weight:600;
+  line-height:1.1;
+  color:#fff;
+}
+body[data-view="home"] .profile .profile-sub{
+  display:none !important;
+}
+
 @media (max-aspect-ratio:16/10){
   .ref-tile{
     width:17.4rem !important;
