@@ -1,7 +1,7 @@
 /* Stratus Cloud integration for the Xbox replica.
    Uses the deployed Render API and the upstream site key.
-   A host can override either value before this file loads by setting
-   window.STRATUS_BASE / window.STRATUS_API_KEY. */
+   Purchases are simulated as free digital licenses and are stored per profile,
+   matching the way an Xbox library follows the signed-in account. */
 (() => {
 'use strict';
 
@@ -11,6 +11,7 @@ const CATALOG_SOURCES = [
   'https://cdn.jsdelivr.net/gh/evanjeffrey1212-eng/stratus-api@main/cloud.json'
 ];
 const UPSTREAM_PUBLIC_KEY = 'stratus-api-synapsium';
+const OWNERSHIP_KEY = 'xbox.stratus.owned.v2';
 const key = () => window.STRATUS_API_KEY || UPSTREAM_PUBLIC_KEY;
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -18,6 +19,27 @@ let catalogue = null;
 let cataloguePromise = null;
 let active = null;
 let starting = false;
+
+function profileId(){
+  return String(window.State?.data?.profileId || 'p1');
+}
+
+function readLicenses(){
+  try {
+    const raw = JSON.parse(localStorage.getItem(OWNERSHIP_KEY) || '{}');
+    return raw && typeof raw === 'object' ? raw : {};
+  } catch { return {}; }
+}
+
+function writeLicenses(data){
+  try { localStorage.setItem(OWNERSHIP_KEY, JSON.stringify(data)); } catch {}
+}
+
+function licenseRows(){
+  const all = readLicenses();
+  const rows = all[profileId()];
+  return Array.isArray(rows) ? rows : [];
+}
 
 function normalizeGame(raw, index){
   const gameKey = String(raw?.game_key || '').trim();
@@ -31,7 +53,9 @@ function normalizeGame(raw, index){
     image: String(raw?.image || raw?.cover || ''),
     cover: String(raw?.cover || raw?.image || ''),
     tags: Array.isArray(raw?.tags) ? raw.tags.map(String).filter(Boolean) : [],
-    provider: 'Stratus Cloud'
+    provider: 'Stratus Cloud',
+    cloud: true,
+    price: 0
   };
 }
 
@@ -59,6 +83,33 @@ async function loadCatalogue(){
   })().finally(() => { cataloguePromise = null; });
 
   return cataloguePromise;
+}
+
+function owns(gameOrKey){
+  const gameKey = String(gameOrKey?.gameKey || gameOrKey || '');
+  return !!gameKey && licenseRows().some(row => String(row.gameKey) === gameKey);
+}
+
+function acquire(game){
+  if (!game?.gameKey) return false;
+  const all = readLicenses();
+  const id = profileId();
+  const rows = Array.isArray(all[id]) ? all[id] : [];
+  if (rows.some(row => String(row.gameKey) === String(game.gameKey))) return false;
+  rows.unshift({ gameKey:String(game.gameKey), acquiredAt:Date.now() });
+  all[id] = rows;
+  writeLicenses(all);
+  window.dispatchEvent(new CustomEvent('stratus:library-change', { detail:{ type:'acquired', game } }));
+  return true;
+}
+
+async function ownedGames(){
+  const list = await loadCatalogue();
+  const rows = licenseRows();
+  const order = new Map(rows.map((row, i) => [String(row.gameKey), i]));
+  return list
+    .filter(game => order.has(String(game.gameKey)))
+    .sort((a, b) => order.get(String(a.gameKey)) - order.get(String(b.gameKey)));
 }
 
 async function api(path, { method='GET', body, signal } = {}){
@@ -184,6 +235,7 @@ function showPlayer(game, uuid){
 
 async function play(game){
   if (!game?.gameKey || starting) return;
+  if (!owns(game)) throw new Error('This game is not in your library yet.');
   if (active) await quit();
   starting = true;
   const controller = new AbortController();
@@ -247,6 +299,9 @@ window.addEventListener('nav:button', event => {
 window.StratusCloud = {
   BASE,
   loadCatalogue,
+  ownedGames,
+  owns,
+  acquire,
   play,
   quit,
   get active(){ return active; },
