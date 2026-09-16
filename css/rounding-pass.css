@@ -87,6 +87,39 @@
   border-radius:.5rem !important;
 }
 
+/* Top five Xbox buttons: one connected, near-black control capsule. */
+.sysnav{
+  gap:0 !important;
+  padding:.34rem .42rem !important;
+  background:rgba(0,0,0,.90) !important;
+  border-radius:3.2rem !important;
+  box-shadow:0 .28rem 1.1rem rgba(0,0,0,.28) !important;
+  overflow:visible;
+}
+.sysnav-btn{
+  width:5.05rem !important;
+  height:5.05rem !important;
+  margin:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+}
+.sysnav-btn:first-child{
+  border-radius:2.7rem 0 0 2.7rem !important;
+}
+.sysnav-btn:last-child{
+  border-radius:0 2.7rem 2.7rem 0 !important;
+}
+.sysnav-btn:hover,
+.sysnav-btn.active,
+.sysnav-btn[data-focused]{
+  background:rgba(255,255,255,.075) !important;
+  transform:none !important;
+}
+.sysnav-btn + .sysnav-btn{
+  box-shadow:inset .08rem 0 0 rgba(255,255,255,.035) !important;
+}
+
 @media (max-aspect-ratio:16/10){
   .ref-tile{
     width:17.4rem !important;
