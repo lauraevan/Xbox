@@ -68,8 +68,8 @@ body[data-mic="muted"] #micBtn{ color:rgba(255,255,255,.85); }
 .battery-fill{ display:block; height:100%; background:var(--text); border-radius:.1rem;
   transition:width .4s var(--ease-standard); }
 .battery-cap{ width:.34rem; height:.85rem; background:var(--text); border-radius:0 .2rem .2rem 0; }
-.clock{ font-size:2.3rem; font-weight:400; font-variant-numeric:tabular-nums;
-  min-width:9.9rem; text-align:right; }
+.clock{ font-size:2.9rem; font-weight:400; font-variant-numeric:tabular-nums;
+  min-width:12rem; text-align:right; }
 
 /* ── profile, on its own line ── */
 .profile{
@@ -80,15 +80,15 @@ body[data-mic="muted"] #micBtn{ color:rgba(255,255,255,.85); }
 }
 .profile[data-focused]{ background:rgba(255,255,255,.1); }
 .avatar{
-  position:relative; width:5.2rem; height:5.2rem; border-radius:50%;
+  position:relative; width:4.6rem; height:4.6rem; border-radius:50%;
   overflow:hidden; flex:none;
   background:linear-gradient(140deg,#2b8a4a,#1c5f7a);
   box-shadow:0 0 0 .2rem rgba(255,255,255,.16), 0 .4rem 1.6rem rgba(0,0,0,.55);
 }
 .avatar img{ width:100%; height:100%; object-fit:cover; }
 .profile-text{ display:flex; flex-direction:column; gap:.2rem; text-align:left; }
-.gamertag{ font-size:1.9rem; font-weight:500; letter-spacing:.01rem; }
-.profile-sub{ font-size:1.4rem; color:rgba(255,255,255,.55); font-weight:400; }
+.gamertag{ font-size:1.8rem; font-weight:600; letter-spacing:.01rem; line-height:1.2; }
+.profile-sub{ font-size:1.4rem; color:rgba(255,255,255,.62); font-weight:400; line-height:1.2; }
 .tier{
   font-size:1.15rem; font-weight:700; letter-spacing:.08rem;
   padding:.18rem .55rem; border-radius:.25rem;
@@ -111,6 +111,8 @@ body[data-mic="muted"] #micBtn{ color:rgba(255,255,255,.85); }
   padding:0 var(--safe-x); height:2.6rem;
   font-size:1.5rem; color:var(--text-2); z-index:20; pointer-events:none;
 }
+/* home shows no button legend */
+body[data-view="home"] .legend{ display:none; }
 .legend-item{ display:flex; align-items:center; gap:.7rem; }
 .pad{
   width:2.4rem; height:2.4rem; border-radius:50%; display:grid; place-items:center;

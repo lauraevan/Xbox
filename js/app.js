@@ -93,8 +93,8 @@ function syncProfile(){
   $('#gamertagLabel').textContent = window.State.data.gamertag;
   // the console shows a second line under the gamertag; Gamerscore is the
   // honest thing to put there rather than inventing an address
-  $('#profileSub').textContent =
-    `${window.State.gamerscore.toLocaleString()} Gamerscore \u00b7 ${window.State.data.tier}`;
+  $('#profileSub').textContent = window.State.settings.profileLine
+    || `${window.State.gamerscore.toLocaleString()} Gamerscore \u00b7 ${window.State.data.tier}`;
 
   const score = $('#friendsCount');
   if (score) score.textContent = window.State.gamerscore.toLocaleString();
@@ -142,6 +142,7 @@ function setView(name, opts = {}){
   void node.offsetWidth;
   node.classList.add('entering');
 
+  document.body.dataset.view = name;
   syncNavHighlight();
   updateLegend();
   window.Nav.focusIn(node, name === 'home' ? '.tile' : null);
@@ -472,6 +473,23 @@ function promptGamertag(){
             toast('Gamertag updated', value.trim(), { icon: ICON.person });
             if (currentView === 'settings') setView('settings');
           }
+        } },
+      { label:'Cancel' }
+    ]
+  });
+}
+
+function promptProfileLine(){
+  modal({
+    title:'Second profile line',
+    text:'The line under your gamertag on Home. Leave it empty to show '
+       + 'Gamerscore and membership instead.',
+    input:{ value: window.State.settings.profileLine || '' },
+    actions:[
+      { label:'Save', onSelect: value => {
+          window.State.setSetting('profileLine', (value || '').trim());
+          syncProfile();
+          if (currentView === 'settings') setView('settings', { section:'profile' });
         } },
       { label:'Cancel' }
     ]
@@ -942,7 +960,7 @@ window.App = {
   toast, modal, closeModal, promptGamertag, confirmReset, powerOff, screenshot,
   syncProfile, tickClock, updateLegend, setBackdrop, paintIcons, syncMicIcon,
   applyNightMode, captureActions, promptNewProfile, manageProfiles, testRumble, rumble,
-  promptArtworkKey,
+  promptArtworkKey, promptProfileLine,
   isPlaying: () => !!playing,
   get view(){ return currentView; }
 };

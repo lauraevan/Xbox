@@ -91,11 +91,11 @@ svg .s{ fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; 
   position:fixed; z-index:60; pointer-events:none;
   /* content-box so the border lands outside the element it traces */
   box-sizing:content-box;
-  border:.4rem solid var(--green-bright);
+  border:.5rem solid #55e055;
   border-radius:var(--tile-r);
   box-shadow:
     0 0 0 .1rem rgba(0,0,0,.6),
-    0 0 1.6rem rgba(109,252,109,.4);
+    0 0 2rem rgba(85,224,85,.5);
   transition:top .16s var(--ease-decel), left .16s var(--ease-decel),
              width .16s var(--ease-decel), height .16s var(--ease-decel),
              border-radius .16s var(--ease-decel), opacity .12s linear;

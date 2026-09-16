@@ -147,9 +147,8 @@ function renderHome(root){
   }
 
   strip.append(
-    glyphTile('tile-people', 'Friends & clubs', ICON.party,
-      () => window.App.toast('Titles available',
-        `${window.Catalog.count().toLocaleString()} in your catalogue`, { icon: ICON.party })),
+    glyphTile('tile-people tile-wide', 'Friends & clubs', ICON.party,
+      () => window.App.setView('library')),
     glyphTile('tile-add', 'See all games', ICON.plus,
       () => window.App.setView('library'))
   );
@@ -575,6 +574,11 @@ function renderSettings(root, opts = {}){
     body.append(srow({
       name:'Avatar', desc:'Generate a new profile mark', value:'Shuffle',
       onActivate: () => { S.rerollAvatar(); window.App.syncProfile(); }
+    }));
+    body.append(srow({
+      name:'Second profile line', desc:'Shown under your gamertag on Home',
+      value: set.profileLine || 'Gamerscore',
+      onActivate: () => window.App.promptProfileLine()
     }));
     body.append(srow({ name:'Gamerscore', desc:'Earned across this console', value:String(S.gamerscore) }));
     body.append(srow({ name:'Games played', desc:'Distinct titles launched', value:String(S.playedCount()) }));

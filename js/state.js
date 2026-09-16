@@ -34,6 +34,7 @@ const DEFAULTS = {
     scanline:  false,
     clock24:   false,
     micMuted:  true,
+    profileLine: '',    // second line under the gamertag on Home
     heroText:  false,   // the console shows no copy over the backdrop
     tileBadges:true,    // tag badges (PORT / FLASH / EMU) ride on the tiles
 

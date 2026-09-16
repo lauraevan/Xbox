@@ -84,15 +84,16 @@
 /* the label is a bar that opens underneath the art on selection */
 .tile-label{
   display:block; height:0; overflow:hidden;
-  padding:0 .4rem; font-size:1.45rem; font-weight:400;
+  padding:0; font-size:1.5rem; font-weight:400;
   color:#fff; text-align:left;
+  background:rgba(10,12,14,.96);
   white-space:nowrap; text-overflow:ellipsis;
   opacity:0;
   transition:height var(--dur-mid) var(--ease-decel),
              opacity var(--dur) var(--ease-standard),
              padding var(--dur-mid) var(--ease-decel);
 }
-.tile[data-focused] .tile-label{ height:3.6rem; padding:1rem .4rem 0; opacity:1; }
+.tile[data-focused] .tile-label{ height:3.8rem; padding:1.1rem 1rem 0; opacity:1; }
 
 .tile-badge{
   position:absolute; bottom:.6rem; left:.6rem; z-index:4;
@@ -125,12 +126,13 @@
 /* ───────── spotlight card row ───────── */
 .cards{
   position:absolute; left:var(--safe-x); right:var(--safe-x); top:55rem;  /* y = 890 */
-  display:grid; grid-template-columns:.78fr 1fr 1fr 1fr; gap:2.2rem;
+  /* the store tile is near square; the promos take the remaining width */
+  display:grid; grid-template-columns:.46fr 1fr 1fr 1fr; gap:2.2rem;
 }
 .card{
-  /* the row starts at y=890, so it has 190px of canvas left; 160 keeps a
-     margin under it for the button legend */
-  position:relative; height:16rem; border-radius:var(--card-r); overflow:hidden;
+  /* the row starts at y=890 and runs close to the bottom edge, as on
+     the console - nothing sits under it */
+  position:relative; height:17.5rem; border-radius:var(--card-r); overflow:hidden;
   background:var(--panel-2); text-align:left;
   box-shadow:0 .8rem 2.4rem rgba(0,0,0,.4);
   transition:transform var(--dur-mid) var(--ease-decel),
@@ -166,12 +168,13 @@
 .card-scrim{ position:absolute; inset:0; z-index:2;
   background:linear-gradient(transparent 38%, rgba(0,0,0,.82)); }
 .card-label{
-  position:absolute; left:1.8rem; right:1.8rem; bottom:1.4rem; z-index:3;
-  font-size:1.9rem; font-weight:500; line-height:1.24;
+  position:absolute; left:2rem; right:2rem; bottom:1.6rem; z-index:3;
+  font-size:2.2rem; font-weight:600; line-height:1.22;
+  text-shadow:0 .2rem 1.2rem rgba(0,0,0,.75);
 }
 .card-label .sub{
-  display:block; margin-top:.2rem;
-  font-size:1.6rem; font-weight:400; color:rgba(255,255,255,.72);
+  display:block; margin-top:.3rem;
+  font-size:1.8rem; font-weight:400; color:rgba(255,255,255,.86);
 }
 
 /* the store entry is a flat colour plate rather than key art */
@@ -211,3 +214,7 @@
   display:grid; place-items:center;
 }
 .tile-add .tile-face svg{ width:4rem; height:4rem; fill:var(--text-2); }
+
+/* the row closes with a larger Friends tile, as the reference does */
+.tile-wide{ width:17rem; margin-top:3rem; }
+.tile-wide .tile-face{ width:17rem; height:17rem; }
