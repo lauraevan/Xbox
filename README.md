@@ -8,16 +8,22 @@ No build step, no dependencies. Open `index.html` and it runs.
 
 ## Play it now
 
-**[▶ Launch the dashboard](https://raw.githack.com/lauraevan/Xbox/claude/xbox-web-replica-v4s0jk/index.html)**
+**[▶ Launch the dashboard](https://rawcdn.githack.com/lauraevan/Xbox/claude/xbox-web-replica-v4s0jk/index.html)**
 
 ```
-https://raw.githack.com/lauraevan/Xbox/claude/xbox-web-replica-v4s0jk/index.html
+https://rawcdn.githack.com/lauraevan/Xbox/claude/xbox-web-replica-v4s0jk/index.html
 ```
 
-That serves the branch live, so it picks up new commits. Two alternatives:
+Use **rawcdn**, not **raw**. The `raw.githack.com` address is githack's
+development URL and is rate-limited; this page pulls eleven scripts, four
+stylesheets and a video, and once the host starts throttling those requests a
+script fails to arrive and the boot screen never clears. `rawcdn` is the cached
+production address and does not throttle. It pins to the commit, so re-copy the
+link after a push to pick up changes.
 
-- **CDN-cached** (faster, but caches for a while):
-  `https://rawcdn.githack.com/lauraevan/Xbox/claude/xbox-web-replica-v4s0jk/index.html`
+- **Live branch** (always current, but rate-limited — expect the boot screen to
+  stall on a cold load):
+  `https://raw.githack.com/lauraevan/Xbox/claude/xbox-web-replica-v4s0jk/index.html`
 - **Pinned to a commit**, if the branch URL ever gets confused by the slash in
   the branch name:
   `https://raw.githack.com/lauraevan/Xbox/1ce51c26916e63219e6a957ea6b634fb0e0a6f84/index.html`

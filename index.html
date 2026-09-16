@@ -47,6 +47,48 @@
   </video>
 </div>
 
+<script>
+/* Failsafe, deliberately inline and dependency-free so it runs even when a
+   later script fails to load. Without it, a throttled or blocked script
+   leaves the boot screen up forever with no explanation. */
+(function(){
+  var LIMIT = 13000;
+  setTimeout(function(){
+    var boot  = document.getElementById('boot');
+    var stage = document.getElementById('stage');
+    if (!boot || !stage || !stage.hidden) return;      // booted normally
+
+    var ok = window.App && window.Catalog && window.Catalog.count;
+    if (ok){                                            // scripts fine, just slow
+      boot.parentNode.removeChild(boot);
+      stage.hidden = false;
+      return;
+    }
+
+    // something never loaded: say so rather than sitting on the logo
+    var missing = ['Icons','Media','Features','Artwork','Catalog','State',
+                   'Sound','Nav','Views','Guide','App']
+      .filter(function(n){ return !window[n]; });
+
+    boot.innerHTML =
+      '<div style="max-width:78rem;padding:4rem;text-align:center;font:400 2rem/1.5 ' +
+      '\'Segoe UI\',system-ui,sans-serif;color:#fff">' +
+      '<div style="font-size:3rem;font-weight:600;margin-bottom:1.4rem">' +
+        'Could not finish starting</div>' +
+      '<div style="opacity:.75">Some files did not load. This is usually the host ' +
+        'rate-limiting, not the console itself.</div>' +
+      '<div style="opacity:.75;margin-top:1.2rem">Try the cached address: ' +
+        '<span style="color:#6dfc6d">rawcdn.githack.com</span> in place of ' +
+        '<span style="color:#6dfc6d">raw.githack.com</span>, or reload.</div>' +
+      '<div style="margin-top:2rem;font-size:1.5rem;opacity:.5">Missing: ' +
+        (missing.join(', ') || 'unknown') + '</div>' +
+      '</div>';
+    boot.style.display = 'grid';
+    boot.style.placeItems = 'center';
+  }, LIMIT);
+})();
+</script>
+
 <!-- ══════════════════ STAGE ══════════════════ -->
 <div id="stage" class="stage" hidden>
 
