@@ -218,3 +218,10 @@
 /* the row closes with a larger Friends tile, as the reference does */
 .tile-wide{ width:17rem; margin-top:3rem; }
 .tile-wide .tile-face{ width:17rem; height:17rem; }
+
+
+/* the console's art reads vivid; tiles and cards carry the same lift as
+   the wallpaper so the screen looks like one picture */
+.tile-face img.cover,
+.card-art img.cover,
+.card-mosaic img.cover{ filter:saturate(calc(var(--sat, 1.35) * .82)) contrast(1.03); }

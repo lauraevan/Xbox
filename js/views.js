@@ -677,6 +677,23 @@ function renderSettings(root, opts = {}){
       control: toggleControl(set.heroText === true),
       onActivate: () => { S.setSetting('heroText', !set.heroText); renderSettings(root); window.Nav.focusFirst(); }
     }));
+    body.append(srow({
+      name:'Home wallpaper',
+      desc: set.wallpaper ? 'A fixed image behind the dashboard'
+                          : 'Using cover art from the focused tile',
+      value: set.wallpaper ? 'Change' : 'Set image',
+      onActivate: () => window.App.promptWallpaper()
+    }));
+    body.append(choiceRow({
+      name:'Saturation', desc:'How vivid the artwork reads',
+      value:set.saturation,
+      options:[{value:1,label:'Neutral'},{value:1.2,label:'Rich'},
+               {value:1.35,label:'Vivid'},{value:1.6,label:'Maximum'}],
+      onPick: v => { S.setSetting('saturation', v);
+                     document.documentElement.style.setProperty('--sat', v);
+                     refresh(root); }
+    }));
+
     const art = window.Artwork;
     const stats = art.stats();
     body.append(srow({

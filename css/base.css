@@ -122,13 +122,13 @@ svg .s{ fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; 
   background-size:cover; background-position:center;
   opacity:0; transition:opacity .85s var(--ease-out), transform 12s linear;
   transform:scale(1.08);
-  filter:saturate(1.06) brightness(.95);
+  filter:saturate(var(--sat, 1.35)) brightness(.98) contrast(1.04);
 }
 /* proper 16:9 key art is shown close to as-shot; only the square covers
    need blurring to survive being cropped to a widescreen frame */
 .backdrop-layer.wide{
   inset:0; transform:none;
-  filter:saturate(1.04) brightness(.98);
+  filter:saturate(var(--sat, 1.35)) brightness(1) contrast(1.05);
 }
 .backdrop-layer.wide.on{ transform:scale(1.03); }
 .backdrop-layer.on{ opacity:1; transform:scale(1.12); }
@@ -244,7 +244,7 @@ body[data-bg="plain"] .backdrop-layer{ opacity:0 !important; }
 
 /* text scale multiplies the TV-derived root size, so every rem
    in the build follows it */
-:root{ --text-scale:1; }
+:root{ --text-scale:1; --sat:1.35; }
 :root{ font-size: calc(min(100vw / 192, 100vh / 108) * var(--text-scale)); }
 
 /* colour-vision filters wrap the whole stage */

@@ -42,7 +42,23 @@ function paintBackdrop(url, token, wide){
 }
 
 function setBackdrop(game){
-  if (window.State.settings.background === 'plain') return;
+  const set = window.State.settings;
+  if (set.background === 'plain') return;
+
+  // a wallpaper is fixed behind everything, as on the console: it does not
+  // follow the selection, so there is nothing to cross-fade
+  if (set.wallpaper){
+    const a = $('#bgA');
+    if (a.dataset.wallpaper !== set.wallpaper){
+      a.dataset.wallpaper = set.wallpaper;
+      a.style.backgroundImage = `url("${set.wallpaper}")`;
+      a.classList.add('on', 'wide');
+      $('#bgB').classList.remove('on');
+    }
+    return;
+  }
+  $('#bgA').removeAttribute('data-wallpaper');
+
   const token = ++bgToken;
   const file = typeof game === 'string' ? game : game?.coverFile;
   if (!file){
@@ -479,6 +495,31 @@ function promptGamertag(){
   });
 }
 
+function promptWallpaper(){
+  modal({
+    title:'Home wallpaper',
+    text:'Paste a direct image URL - ideally 1920x1080. It sits fixed behind '
+       + 'the dashboard the way the console does, instead of cropping a square '
+       + 'cover to fit. Leave it empty to go back to using cover art.',
+    input:{ value: window.State.settings.wallpaper || '' },
+    actions:[
+      { label:'Save', onSelect: value => {
+          const url = (value || '').trim();
+          window.State.setSetting('wallpaper', url);
+          $('#bgA').removeAttribute('data-wallpaper');
+          $('#bgA').classList.remove('on');
+          $('#bgB').classList.remove('on');
+          const game = currentFocusGame();
+          setBackdrop(url ? null : game);
+          if (url) setBackdrop(null);
+          toast(url ? 'Wallpaper set' : 'Wallpaper cleared');
+          if (currentView === 'settings') setView('settings', { section:'personalization' });
+        } },
+      { label:'Cancel' }
+    ]
+  });
+}
+
 function promptProfileLine(){
   modal({
     title:'Second profile line',
@@ -832,6 +873,7 @@ function applySettings(){
   document.documentElement.style.setProperty('--accent', s.accent);
   document.documentElement.style.setProperty('--text-scale', s.textScale || 1);
   document.documentElement.style.setProperty('--overscan', s.safeArea || 0);
+  document.documentElement.style.setProperty('--sat', s.saturation ?? 1.35);
   window.Sound?.setVolume(s.volume ?? 70);
   $('#scanline').hidden = !s.scanline;
   applyNightMode();
@@ -960,7 +1002,7 @@ window.App = {
   toast, modal, closeModal, promptGamertag, confirmReset, powerOff, screenshot,
   syncProfile, tickClock, updateLegend, setBackdrop, paintIcons, syncMicIcon,
   applyNightMode, captureActions, promptNewProfile, manageProfiles, testRumble, rumble,
-  promptArtworkKey, promptProfileLine,
+  promptArtworkKey, promptProfileLine, promptWallpaper,
   isPlaying: () => !!playing,
   get view(){ return currentView; }
 };

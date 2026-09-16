@@ -35,6 +35,8 @@ const DEFAULTS = {
     clock24:   false,
     micMuted:  true,
     profileLine: '',    // second line under the gamertag on Home
+    wallpaper:   '',    // image URL; empty falls back to cover art
+    saturation:  1.35,  // backdrop punch
     heroText:  false,   // the console shows no copy over the backdrop
     tileBadges:true,    // tag badges (PORT / FLASH / EMU) ride on the tiles
 
