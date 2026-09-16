@@ -14,7 +14,7 @@ function ensure(){
   if (!AC) return null;
   ctx = new AC();
   bus = ctx.createGain();
-  bus.gain.value = 0.22;
+  bus.gain.value = 0.22 * ((window.State?.settings.volume ?? 70) / 70);
   bus.connect(ctx.destination);
   return ctx;
 }
@@ -70,6 +70,9 @@ function noise({ dur = .3, gain = .5, from = 400, to = 2400, q = 3 }){
 }
 
 const Sound = {
+  /** 0-100, relative to the console's reference level. */
+  setVolume(v){ if (bus) bus.gain.value = 0.22 * (Math.max(0, Math.min(100, v)) / 70); },
+
   unlock(){
     const c = ensure();
     if (c && c.state === 'suspended') c.resume();

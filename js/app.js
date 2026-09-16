@@ -75,6 +75,7 @@ function syncProfile(){
 }
 
 function tickClock(){
+  if (window.State.settings.nightAuto) applyNightMode();
   const now = new Date();
   const use24 = window.State.settings.clock24;
   let h = now.getHours();
@@ -227,6 +228,32 @@ function closeDetail(){
 
 /* ═══════════ launching ═══════════ */
 function launch(game){
+  // family settings can withhold a whole category, or the day's time
+  if (window.State.isBlocked(game)){
+    window.Sound?.error();
+    modal({
+      title:'Blocked by family settings',
+      text:`${game.name} is in a category that has been turned off for this console. `
+         + 'Change it under Settings \u2192 Family settings.',
+      actions:[{ label:'Open family settings',
+                 onSelect: () => setView('settings', { section:'family' }) },
+               { label:'Back' }]
+    });
+    return;
+  }
+  if (window.Features.ScreenTime.exceeded()){
+    window.Sound?.error();
+    modal({
+      title:'Screen time is up',
+      text:`The daily limit of ${window.Features.ScreenTime.limit()} minutes has been reached. `
+         + 'Raise or clear the limit under Settings \u2192 Family settings.',
+      actions:[{ label:'Open family settings',
+                 onSelect: () => setView('settings', { section:'family' }) },
+               { label:'Back' }]
+    });
+    return;
+  }
+
   window.Sound?.launch();
   const splash = $('#launch');
   splash.hidden = false;
@@ -275,10 +302,20 @@ function startSession(game){
   window.State.markPlayed(game);
   syncProfile();
 
+  window.Features.QuickResume.push(game);
+
   clearInterval(playTimer);
   playTimer = setInterval(() => {
     window.State.addPlaytime(game.id, 5);
+    window.Features.ScreenTime.add(5);
     if (window.State.totalPlaySeconds() >= 1800) window.State.unlock('marathon');
+
+    const left = window.Features.ScreenTime.remaining();
+    if (left === 5) toast('5 minutes left', 'Daily screen time is nearly up', { icon: ICON.clock });
+    if (window.Features.ScreenTime.exceeded()){
+      quitGame();
+      toast('Screen time is up', 'The daily limit has been reached', { icon: ICON.clock });
+    }
   }, 5000);
 
   window.Nav.pushLayer(player);
@@ -460,14 +497,16 @@ async function screenshot(){
     canvas.getContext('2d').drawImage(video, 0, 0);
     track.stop();
 
-    canvas.toBlob(blob => {
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `capture-${Date.now()}.png`;
-      a.click();
-      setTimeout(() => URL.revokeObjectURL(url), 4000);
-      toast('Capture saved', 'Screenshot downloaded', { icon: ICON.capture });
+    canvas.toBlob(async blob => {
+      try {
+        await window.Features.Captures.save(blob, {
+          title: playing ? playing.game.name : 'Dashboard',
+          kind: playing ? 'game' : 'screenshot'
+        });
+        toast('Capture saved', 'Find it under Settings → Captures', { icon: ICON.capture });
+      } catch {
+        toast('Capture failed', 'This browser blocked local storage.', { icon: ICON.capture });
+      }
     }, 'image/png');
   } catch {
     toast('Capture cancelled', 'No screen was shared.', { icon: ICON.capture });
@@ -687,14 +726,42 @@ function playBootVideo(){
 /* ═══════════ boot ═══════════ */
 const startedAt = Date.now();
 
+/** True when the wall clock sits inside the night-mode window. */
+function withinNightWindow(){
+  const s = window.State.settings;
+  const [fh, fm] = String(s.nightFrom).split(':').map(Number);
+  const [th, tm] = String(s.nightTo).split(':').map(Number);
+  const now = new Date();
+  const mins = now.getHours() * 60 + now.getMinutes();
+  const from = fh * 60 + fm, to = th * 60 + tm;
+  return from <= to ? (mins >= from && mins < to)   // same-day window
+                    : (mins >= from || mins < to);  // wraps past midnight
+}
+
+function applyNightMode(){
+  const s = window.State.settings;
+  const on = s.nightMode || (s.nightAuto && withinNightWindow());
+  const veil = $('#nightVeil');
+  if (!veil) return;
+  veil.hidden = !on;
+  document.documentElement.style.setProperty('--night', on ? s.nightStrength : 0);
+}
+
 function applySettings(){
   const s = window.State.settings;
   document.body.dataset.theme = s.theme;
   document.body.dataset.bg = s.background;
   document.body.dataset.mic = s.micMuted ? 'muted' : 'live';
+  document.body.dataset.cvd = s.colorFilter || 'none';
+  document.body.dataset.contrast = s.highContrast ? 'high' : 'normal';
+  document.body.dataset.transparency = s.reduceTransparency ? 'reduced' : 'normal';
   document.documentElement.dataset.motion = s.motion;
   document.documentElement.style.setProperty('--accent', s.accent);
+  document.documentElement.style.setProperty('--text-scale', s.textScale || 1);
+  document.documentElement.style.setProperty('--overscan', s.safeArea || 0);
+  window.Sound?.setVolume(s.volume ?? 70);
   $('#scanline').hidden = !s.scanline;
+  applyNightMode();
 }
 
 async function boot(){
@@ -738,11 +805,88 @@ async function boot(){
   setTimeout(() => toast('Ready to play', `${count.toLocaleString()} titles in your catalogue`, { icon: ICON.store }), 1200);
 }
 
+/* ═══════════ captures, profiles, rumble ═══════════ */
+function captureActions(shot, onDone){
+  modal({
+    title: shot.title,
+    text: new Date(shot.at).toLocaleString(),
+    actions:[
+      { label:'Download', onSelect: () => {
+          const url = URL.createObjectURL(shot.blob);
+          const a = document.createElement('a');
+          a.href = url; a.download = `${shot.id}.png`; a.click();
+          setTimeout(() => URL.revokeObjectURL(url), 4000);
+        } },
+      { label:'Delete', onSelect: async () => {
+          await window.Features.Captures.remove(shot.id);
+          toast('Capture deleted'); onDone?.();
+        } },
+      { label:'Back' }
+    ]
+  });
+}
+
+function promptNewProfile(){
+  modal({
+    title:'Add a profile',
+    text:'Each profile keeps its own pins, recently played and Gamerscore.',
+    input:{ value:'' },
+    actions:[
+      { label:'Create', onSelect: name => {
+          if (!name || !name.trim()) return;
+          window.State.addProfile(name.trim());
+          toast('Profile created', name.trim(), { icon: ICON.person });
+          if (currentView === 'settings') setView('settings', { section:'profile' });
+        } },
+      { label:'Cancel' }
+    ]
+  });
+}
+
+function manageProfiles(){
+  const others = window.State.profiles().filter(p => !p.active);
+  if (!others.length) return;
+  modal({
+    title:'Remove a profile',
+    text:'Signed-in profiles cannot be removed. This deletes their progress on this console.',
+    actions:[
+      ...others.map(p => ({
+        label: `Remove ${p.gamertag}`,
+        onSelect: () => {
+          window.State.removeProfile(p.profileId);
+          toast('Profile removed', p.gamertag);
+          if (currentView === 'settings') setView('settings', { section:'profile' });
+        }
+      })),
+      { label:'Cancel' }
+    ]
+  });
+}
+
+function testRumble(){
+  const pad = (navigator.getGamepads?.() || []).find(Boolean);
+  const actuator = pad?.vibrationActuator;
+  if (!actuator?.playEffect){
+    toast('No rumble available', 'Connect a controller that reports an actuator.', { icon: ICON.pad });
+    return;
+  }
+  actuator.playEffect('dual-rumble', { duration:420, strongMagnitude:.7, weakMagnitude:.4 });
+  toast('Rumble sent', null, { duration: 1800, icon: ICON.pad });
+}
+
+function rumble(strong = .35, weak = .2, duration = 90){
+  if (!window.State.settings.vibration) return;
+  const pad = (navigator.getGamepads?.() || []).find(Boolean);
+  pad?.vibrationActuator?.playEffect?.('dual-rumble',
+    { duration, strongMagnitude: strong, weakMagnitude: weak });
+}
+
 /* ═══════════ public surface ═══════════ */
 window.App = {
   setView, goBack, openDetail, closeDetail, launch, quitGame,
   toast, modal, closeModal, promptGamertag, confirmReset, powerOff, screenshot,
   syncProfile, tickClock, updateLegend, setBackdrop, paintIcons, syncMicIcon,
+  applyNightMode, captureActions, promptNewProfile, manageProfiles, testRumble, rumble,
   isPlaying: () => !!playing,
   get view(){ return currentView; }
 };

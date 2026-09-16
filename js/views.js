@@ -475,10 +475,16 @@ function renderSearch(root){
 
 /* ═══════════════ SETTINGS ═══════════════ */
 const SETTINGS_SECTIONS = [
-  { id:'profile',         label:'Profile' },
+  { id:'profile',         label:'Profile & accounts' },
   { id:'personalization', label:'Personalization' },
+  { id:'accessibility',   label:'Accessibility' },
+  { id:'display',         label:'Display & sound' },
+  { id:'devices',         label:'Devices & controller' },
+  { id:'network',         label:'Network' },
+  { id:'captures',        label:'Captures' },
+  { id:'storage',         label:'Storage' },
+  { id:'family',          label:'Family settings' },
   { id:'achievements',    label:'Achievements' },
-  { id:'devices',         label:'Devices & connections' },
   { id:'system',          label:'System' }
 ];
 let settingsSection = 'profile';
@@ -501,6 +507,18 @@ function srow({ name, desc, value, control, onActivate }){
 function toggleControl(on){
   return el('div', 'toggle' + (on ? ' on' : ''));
 }
+
+/** A row that steps through a fixed list of options on each press. */
+function choiceRow({ name, desc, options, value, onPick }){
+  const current = options.findIndex(o => o.value === value);
+  const label = options[current]?.label ?? String(value);
+  return srow({
+    name, desc, value: label,
+    onActivate: () => onPick(options[(current + 1) % options.length].value)
+  });
+}
+
+const refresh = root => { renderSettings(root); window.Nav.focusFirst('.srow'); };
 
 function renderSettings(root, opts = {}){
   if (opts.section) settingsSection = opts.section;
@@ -534,6 +552,42 @@ function renderSettings(root, opts = {}){
       name:'Membership', desc:'Ultimate — every title in the catalogue',
       value:S.data.tier
     }));
+
+    body.append(el('div', 'section-label', 'Accounts on this console'));
+    S.profiles().forEach(pr => {
+      const row = srow({
+        name: pr.gamertag,
+        desc: pr.active ? 'Signed in' : `${(pr.gamerscore||0).toLocaleString()} Gamerscore`,
+        value: pr.active ? 'Active' : 'Switch',
+        onActivate: () => {
+          if (pr.active) return;
+          S.switchProfile(pr.profileId);
+          window.App.syncProfile();
+          window.App.toast('Signed in', pr.gamertag, { icon: ICON.person });
+          window.App.setView('home');
+        }
+      });
+      const badge = el('span', 'avatar');
+      badge.style.cssText = 'width:4rem;height:4rem;flex:none';
+      const img = el('img'); img.alt = '';
+      img.src = pr.active ? S.avatar() : avatarFor(pr.avatarSeed);
+      badge.append(img);
+      row.insertBefore(badge, row.firstChild);
+      body.append(row);
+    });
+
+    body.append(srow({
+      name:'Add a profile', desc:'Each keeps its own pins, recents and Gamerscore',
+      value:'Add',
+      onActivate: () => window.App.promptNewProfile()
+    }));
+    if (S.profiles().length > 1){
+      body.append(srow({
+        name:'Remove a profile', desc:'Signed-out profiles only',
+        value:'Manage',
+        onActivate: () => window.App.manageProfiles()
+      }));
+    }
   }
 
   if (settingsSection === 'personalization'){
@@ -660,8 +714,275 @@ function renderSettings(root, opts = {}){
     }));
     body.append(srow({ name:'Display', desc:'Rendering resolution follows the browser window',
       value:`${window.innerWidth}×${window.innerHeight}` }));
-    body.append(srow({ name:'Input map', desc:'D-pad or left stick moves, A selects, B backs out, Guide opens the overlay',
+    body.append(el('div', 'section-label', 'Button mapping'));
+    body.append(el('p', 'page-sub', 'Swap the face buttons if your controller is laid out differently.'));
+    body.append(choiceRow({
+      name:'Face buttons', desc:'How A and B are read',
+      value: set.buttonMap.a,
+      options:[{value:'a',label:'Standard (A selects)'},{value:'b',label:'Swapped (B selects)'}],
+      onPick: v => {
+        S.setSetting('buttonMap', v === 'b' ? { a:'b', b:'a', x:'x', y:'y' }
+                                            : { a:'a', b:'b', x:'x', y:'y' });
+        refresh(root);
+      }
+    }));
+    body.append(choiceRow({
+      name:'Stick sensitivity', desc:'How far the stick travels before it registers',
+      value:set.stickDeadzone,
+      options:[{value:35,label:'High'},{value:55,label:'Standard'},{value:75,label:'Low'}],
+      onPick: v => { S.setSetting('stickDeadzone', v); refresh(root); }
+    }));
+    body.append(srow({
+      name:'Vibration', desc:'Rumble on selection, where the pad supports it',
+      control: toggleControl(set.vibration),
+      onActivate: () => { S.setSetting('vibration', !set.vibration); refresh(root); }
+    }));
+    body.append(srow({
+      name:'Test vibration', desc:'Fires a short pulse on a connected pad',
+      value:'Test', onActivate: () => window.App.testRumble()
+    }));
+    body.append(srow({ name:'Input map',
+      desc:'D-pad or left stick moves, A selects, B backs out, Guide opens the overlay',
       value:'Standard' }));
+  }
+
+  if (settingsSection === 'accessibility'){
+    body.append(el('h2', 'page-title', 'Accessibility'));
+    body.append(el('p', 'page-sub',
+      'These apply across the whole console, including inside the guide.'));
+
+    body.append(choiceRow({
+      name:'Text size', desc:'Scales every element, not just the type',
+      value:set.textScale,
+      options:[{value:1,label:'Default'},{value:1.15,label:'Large'},
+               {value:1.3,label:'Larger'},{value:.85,label:'Small'}],
+      onPick: v => { S.setSetting('textScale', v);
+                     document.documentElement.style.setProperty('--text-scale', v);
+                     refresh(root); }
+    }));
+    body.append(choiceRow({
+      name:'Colour filter', desc:'Correction for colour vision deficiency',
+      value:set.colorFilter,
+      options:[{value:'none',label:'Off'},{value:'protanopia',label:'Protanopia'},
+               {value:'deuteranopia',label:'Deuteranopia'},{value:'tritanopia',label:'Tritanopia'},
+               {value:'mono',label:'Monochrome'}],
+      onPick: v => { S.setSetting('colorFilter', v);
+                     document.body.dataset.cvd = v; refresh(root); }
+    }));
+    body.append(srow({
+      name:'High contrast', desc:'Solid surfaces, hard edges, no background art',
+      control: toggleControl(set.highContrast),
+      onActivate: () => { S.setSetting('highContrast', !set.highContrast);
+                          document.body.dataset.contrast = set.highContrast ? 'high' : 'normal';
+                          refresh(root); }
+    }));
+    body.append(srow({
+      name:'Reduce transparency', desc:'Drops blur and translucency behind panels',
+      control: toggleControl(set.reduceTransparency),
+      onActivate: () => { S.setSetting('reduceTransparency', !set.reduceTransparency);
+                          document.body.dataset.transparency = set.reduceTransparency ? 'reduced' : 'normal';
+                          refresh(root); }
+    }));
+    body.append(srow({
+      name:'Reduce motion', desc:'Shortens every animation and skips the boot clip',
+      control: toggleControl(set.motion === 'reduced'),
+      onActivate: () => { const next = set.motion === 'reduced' ? 'full' : 'reduced';
+                          S.setSetting('motion', next);
+                          document.documentElement.dataset.motion = next; refresh(root); }
+    }));
+  }
+
+  if (settingsSection === 'display'){
+    body.append(el('h2', 'page-title', 'Display &amp; sound'));
+
+    body.append(srow({
+      name:'Night mode', desc:'Warms the picture to cut blue light',
+      control: toggleControl(set.nightMode),
+      onActivate: () => { S.setSetting('nightMode', !set.nightMode);
+                          window.App.applyNightMode(); refresh(root); }
+    }));
+    body.append(choiceRow({
+      name:'Night mode strength', desc:'How warm the veil goes',
+      value:set.nightStrength,
+      options:[{value:25,label:'Light'},{value:45,label:'Medium'},
+               {value:65,label:'Strong'},{value:85,label:'Maximum'}],
+      onPick: v => { S.setSetting('nightStrength', v); window.App.applyNightMode(); refresh(root); }
+    }));
+    body.append(srow({
+      name:'Night mode schedule', desc:`Automatic between ${set.nightFrom} and ${set.nightTo}`,
+      control: toggleControl(set.nightAuto),
+      onActivate: () => { S.setSetting('nightAuto', !set.nightAuto);
+                          window.App.applyNightMode(); refresh(root); }
+    }));
+    body.append(choiceRow({
+      name:'Safe area', desc:'Pull the picture in on a panel that overscans',
+      value:set.safeArea,
+      options:[{value:0,label:'Off'},{value:1,label:'1%'},{value:2,label:'2%'},{value:3,label:'3%'}],
+      onPick: v => { S.setSetting('safeArea', v);
+                     document.documentElement.style.setProperty('--overscan', v); refresh(root); }
+    }));
+    body.append(choiceRow({
+      name:'Volume', desc:'Level for navigation sounds',
+      value:set.volume,
+      options:[{value:0,label:'Muted'},{value:35,label:'Low'},
+               {value:70,label:'Medium'},{value:100,label:'High'}],
+      onPick: v => { S.setSetting('volume', v); window.Sound?.setVolume(v);
+                     window.Sound?.select(); refresh(root); }
+    }));
+    body.append(srow({
+      name:'Theme', desc:'Light or dark system chrome',
+      value:set.theme === 'dark' ? 'Dark' : 'Light',
+      onActivate: () => { const next = set.theme === 'dark' ? 'light' : 'dark';
+                          S.setSetting('theme', next); document.body.dataset.theme = next; refresh(root); }
+    }));
+  }
+
+  if (settingsSection === 'network'){
+    body.append(el('h2', 'page-title', 'Network'));
+    const info = window.Features.Network.info();
+    body.append(srow({ name:'Status', desc:'Browser connection state',
+      value: info.online ? 'Online' : 'Offline' }));
+    body.append(srow({ name:'Connection', desc:`Round trip ${info.rtt} · ${info.downlink}`,
+      value: info.type }));
+    body.append(srow({ name:'Data saver', desc:'Skips the boot clip and shrinks images',
+      value: info.saveData ? 'On' : 'Off' }));
+
+    body.append(el('div', 'section-label', 'Content mirrors'));
+    body.append(el('p', 'page-sub',
+      'Cover art and games are fetched from these in order. If art is missing, this says which are reachable.'));
+
+    const results = el('div', 'ach-list');
+    results.style.marginTop = '1.2rem';
+    body.append(results);
+
+    const run = srow({
+      name:'Test connection', desc:'Checks every mirror and the catalogue manifest',
+      value:'Start',
+      onActivate: async () => {
+        results.innerHTML = '';
+        const draw = list => {
+          results.innerHTML = '';
+          list.forEach(r => {
+            const row = el('div', `ach ${r.ok ? 'unlocked' : 'locked'}`);
+            row.append(el('div', 'ach-badge', r.ok ? ICON.play : ICON.info));
+            row.append(el('div', null,
+              `<div class="ach-name">${escapeHtml(r.name)}</div>
+               <div class="ach-desc">${r.ok ? 'Reachable' : 'No response'}</div>`));
+            row.append(el('div', 'ach-score', `${r.ms} ms`));
+            results.append(row);
+          });
+          window.Nav.repaint();
+        };
+        await window.Features.Network.test(draw);
+        const man = await window.Features.Network.manifest();
+        const row = el('div', `ach ${man.ok ? 'unlocked' : 'locked'}`);
+        row.append(el('div', 'ach-badge', ICON.store));
+        row.append(el('div', null,
+          `<div class="ach-name">Catalogue manifest</div>
+           <div class="ach-desc">${man.ok ? 'Loaded' : 'Failed'} · HTTP ${man.status}</div>`));
+        row.append(el('div', 'ach-score', `${man.ms} ms`));
+        results.append(row);
+        window.Nav.repaint();
+      }
+    });
+    body.insertBefore(run, results);
+  }
+
+  if (settingsSection === 'captures'){
+    body.append(el('h2', 'page-title', 'Captures'));
+    body.append(el('p', 'page-sub', 'Screenshots taken from the guide, stored on this device.'));
+
+    const gallery = el('div', 'grid');
+    gallery.style.marginTop = '1.6rem';
+    body.append(srow({
+      name:'Take a screenshot', desc:'Shares the tab, then saves the frame here',
+      value:'Capture', onActivate: () => window.App.screenshot()
+    }));
+    body.append(gallery);
+
+    window.Features.Captures.list().then(shots => {
+      if (!shots.length){
+        gallery.replaceWith(el('div', 'empty',
+          `${ICON.capture}<div>No captures yet.</div>`));
+        window.Nav.repaint();
+        return;
+      }
+      shots.forEach(shot => {
+        const item = el('button', 'grid-item');
+        item.dataset.nav = '';
+        item.setAttribute('aria-label', shot.title);
+        const img = el('img', 'cover loaded');
+        img.alt = ''; img.src = URL.createObjectURL(shot.blob);
+        item.append(img, el('span', 'tile-label', new Date(shot.at).toLocaleString()));
+        item._navActivate = () => window.App.captureActions(shot, () => refresh(root));
+        gallery.append(item);
+      });
+      window.Nav.repaint();
+    });
+  }
+
+  if (settingsSection === 'storage'){
+    body.append(el('h2', 'page-title', 'Storage'));
+    const list = el('div');
+    body.append(list);
+    window.Features.Storage.usage().then(u => {
+      const F = window.Features.Storage.format;
+      list.append(srow({ name:'Used on this device', desc:'Browser storage for this console',
+        value: F(u.usage) }));
+      list.append(srow({ name:'Available', desc:'Quota the browser grants',
+        value: F(u.quota) }));
+      list.append(srow({ name:'Profile data', desc:'Gamertag, pins, recents, achievements',
+        value: F(u.local) }));
+      list.append(srow({ name:'Captures', desc:'Screenshots in the gallery',
+        value: F(u.captures) }));
+      list.append(srow({ name:'Clear captures', desc:'Deletes every screenshot',
+        value:'Clear',
+        onActivate: () => window.App.modal({
+          title:'Delete all captures?', text:'This cannot be undone.',
+          actions:[{ label:'Delete', onSelect: async () => {
+                       await window.Features.Captures.clear();
+                       window.App.toast('Captures cleared'); refresh(root); } },
+                   { label:'Cancel' }]
+        })
+      }));
+      list.append(srow({ name:'Catalogue', desc:'Streamed on demand, nothing stored locally',
+        value:`${window.Catalog.count()} titles` }));
+      window.Nav.repaint();
+    });
+  }
+
+  if (settingsSection === 'family'){
+    body.append(el('h2', 'page-title', 'Family settings'));
+    body.append(el('p', 'page-sub', 'Limits apply to this console and everyone using it.'));
+
+    const used = window.Features.ScreenTime.minutes();
+    const limit = set.screenTimeLimit;
+    body.append(choiceRow({
+      name:'Daily screen time', desc: limit
+        ? `${used} of ${limit} minutes used today`
+        : `${used} minutes played today`,
+      value: limit,
+      options:[{value:0,label:'No limit'},{value:30,label:'30 min'},
+               {value:60,label:'1 hour'},{value:120,label:'2 hours'}],
+      onPick: v => { S.setSetting('screenTimeLimit', v); refresh(root); }
+    }));
+    body.append(srow({
+      name:'Reset today\u2019s timer', desc:'Sets the counter back to zero',
+      value:'Reset',
+      onActivate: () => { window.Features.ScreenTime.reset();
+                          window.App.toast('Screen time reset'); refresh(root); }
+    }));
+
+    body.append(el('div', 'section-label', 'Content restrictions'));
+    body.append(el('p', 'page-sub', 'Blocked categories are hidden everywhere and cannot be launched.'));
+    [['flash','Flash titles'],['emulator','Emulators'],['port','Console ports'],
+     ['fnf','Rhythm titles'],['tools','Apps & tools']].forEach(([tag, label]) => {
+      body.append(srow({
+        name: label, desc: set.blockedTags.includes(tag) ? 'Blocked' : 'Allowed',
+        control: toggleControl(!set.blockedTags.includes(tag)),
+        onActivate: () => { S.toggleBlockedTag(tag); refresh(root); }
+      }));
+    });
   }
 
   if (settingsSection === 'system'){
@@ -685,6 +1006,8 @@ function renderSettings(root, opts = {}){
   wrap.append(nav, body);
   root.append(wrap);
 }
+
+function avatarFor(seed){ return window.State.avatarFor(seed); }
 
 window.Views = {
   ICON, coverArt, tile, gridItem, escapeHtml, el,

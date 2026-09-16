@@ -96,6 +96,16 @@ function drawBody(){
     body.append(header(S.data.gamertag, `${S.gamerscore.toLocaleString()} Gamerscore · ${S.data.tier}`,
       { pic:true, status:true }));
 
+    const slots = window.Features.QuickResume.slots()
+      .map(sl => C.get(sl.id)).filter(Boolean);
+    if (slots.length){
+      body.append(el('div', 'guide-section', 'Quick resume'));
+      slots.forEach(g => body.append(row({
+        art:g.coverFile, name:g.name, meta:'Ready to resume', chevron:true,
+        onActivate: () => { close_(); window.App.launch(g); }
+      })));
+    }
+
     const recents = S.recentIds().map(id => C.get(id)).filter(Boolean).slice(0, 4);
     if (recents.length){
       body.append(el('div', 'guide-section', 'Recently played'));
@@ -118,6 +128,17 @@ function drawBody(){
       onActivate: () => { close_(); window.App.setView('search'); } }));
 
     body.append(el('div', 'guide-section', 'Account'));
+    S.profiles().filter(p => !p.active).forEach(p => body.append(row({
+      icon: ICON.person, name: `Switch to ${p.gamertag}`,
+      meta: `${(p.gamerscore || 0).toLocaleString()} Gamerscore`, chevron:true,
+      onActivate: () => {
+        S.switchProfile(p.profileId);
+        window.App.syncProfile();
+        drawRail(); drawBody();
+        window.App.toast('Signed in', p.gamertag, { icon: ICON.person });
+        window.App.setView('home');
+      }
+    })));
     body.append(row({ icon:ICON.person, name:'Change gamertag', meta:'Rename this profile', chevron:true,
       onActivate: () => { close_(); window.App.promptGamertag(); } }));
     body.append(row({ icon:ICON.gear, name:'Settings', meta:'Personalization, devices, system', chevron:true,

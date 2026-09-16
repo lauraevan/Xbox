@@ -224,18 +224,20 @@ function pollPads(){
     if (!pad) continue;
 
     // face + shoulder buttons: edge-triggered
+    const map = window.State?.settings.buttonMap || {};
     for (const [index, name] of Object.entries(PAD_BUTTONS)){
       const pressed = pad.buttons[index]?.pressed;
       const key = `${pad.index}:b${index}`;
       if (pressed && !held.get(key)){
         held.set(key, now);
-        if (name === 'a') activate(); else emitButton(name);
+        const mapped = map[name] || name;      // face buttons may be swapped
+        if (mapped === 'a') activate(); else emitButton(mapped);
       } else if (!pressed && held.get(key)) held.delete(key);
     }
 
     // d-pad + left stick: repeat while held
     const [sx, sy] = [pad.axes[0] || 0, pad.axes[1] || 0];
-    const DEAD = .55;
+    const DEAD = (window.State?.settings.stickDeadzone ?? 55) / 100;
     const dirs = new Set();
     for (const [index, name] of Object.entries(PAD_DIRS))
       if (pad.buttons[index]?.pressed) dirs.add(name);

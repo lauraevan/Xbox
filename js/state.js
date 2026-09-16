@@ -9,6 +9,8 @@
 const KEY = 'xbox.web.profile.v1';
 
 const DEFAULTS = {
+  /* ── the signed-in profile ── */
+  profileId:  'p1',
   gamertag:   'NewSasquatch',
   tier:       'ULTIMATE',
   avatarSeed: 1337,
@@ -17,19 +19,52 @@ const DEFAULTS = {
   recents:    [],          // { id, at, seconds }
   unlocked:   [],          // achievement ids
   installed:  [],          // game ids "installed" to the library
+
+  /* ── other profiles on this console, parked until switched to ── */
+  profiles:   [],          // [{ profileId, gamertag, tier, avatarSeed, ... }]
+
+  /* ── console-wide, shared by every profile ── */
   settings: {
     theme:     'dark',
     accent:    '#4ade4a',
     sounds:    true,
+    volume:    70,
     motion:    'full',
     background:'dynamic',
     scanline:  false,
     clock24:   false,
     micMuted:  true,
     heroText:  false,   // the console shows no copy over the backdrop
-    tileBadges:true     // tag badges (PORT / FLASH / EMU) ride on the tiles
+    tileBadges:true,    // tag badges (PORT / FLASH / EMU) ride on the tiles
+
+    /* accessibility */
+    textScale:      1,
+    highContrast:   false,
+    colorFilter:    'none',   // none | protanopia | deuteranopia | tritanopia | mono
+    reduceTransparency: false,
+
+    /* display */
+    nightMode:      false,
+    nightStrength:  45,
+    nightFrom:      '21:00',
+    nightTo:        '07:00',
+    nightAuto:      false,
+    safeArea:       0,        // extra inset for overscanning panels
+
+    /* controller */
+    buttonMap:      { a:'a', b:'b', x:'x', y:'y' },
+    stickDeadzone:  55,
+    vibration:      true,
+
+    /* family */
+    screenTimeLimit: 0,       // minutes per day, 0 = off
+    blockedTags:     []       // catalogue tags withheld from this console
   }
 };
+
+/** Fields that belong to a profile rather than to the console. */
+const PROFILE_KEYS = ['profileId','gamertag','tier','avatarSeed','gamerscore',
+                      'pins','recents','unlocked','installed'];
 
 /* ───────── achievements (original to this build) ───────── */
 const ACHIEVEMENTS = [
@@ -113,6 +148,7 @@ const State = {
   on(fn){ listeners.add(fn); return () => listeners.delete(fn); },
 
   avatar(){ return avatarDataUri(data.avatarSeed); },
+  avatarFor(seed){ return avatarDataUri(seed || 0); },
 
   setGamertag(name){
     data.gamertag = String(name).slice(0, 15) || 'Player';
@@ -201,12 +237,75 @@ const State = {
   },
   unlockedCount(){ return data.unlocked.length; },
 
+  /* ── profiles ── */
+  profiles(){
+    return [{ ...pick(data), active:true },
+            ...data.profiles.map(p => ({ ...p, active:false }))];
+  },
+
+  addProfile(name){
+    const profile = {
+      ...structuredClone(DEFAULTS),
+      profileId: 'p' + Date.now().toString(36),
+      gamertag: String(name || 'Player').slice(0, 15),
+      avatarSeed: Math.floor(Math.random() * 1e6),
+      gamerscore: 0
+    };
+    delete profile.profiles;
+    delete profile.settings;
+    data.profiles.push(pick(profile));
+    save(); emit({ type:'profiles' });
+    return profile.profileId;
+  },
+
+  switchProfile(id){
+    if (id === data.profileId) return false;
+    const target = data.profiles.find(p => p.profileId === id);
+    if (!target) return false;
+
+    // park the signed-in profile, then sign the target in
+    const parked = pick(data);
+    data.profiles = data.profiles.filter(p => p.profileId !== id);
+    data.profiles.push(parked);
+    Object.assign(data, pick(target));
+
+    save(); emit({ type:'profile' }); emit({ type:'profiles' });
+    return true;
+  },
+
+  removeProfile(id){
+    if (id === data.profileId) return false;
+    data.profiles = data.profiles.filter(p => p.profileId !== id);
+    save(); emit({ type:'profiles' });
+    return true;
+  },
+
+  /* ── family ── */
+  isBlocked(game){
+    const blocked = data.settings.blockedTags;
+    return !!blocked.length && game.special?.some(t => blocked.includes(t));
+  },
+
+  toggleBlockedTag(tag){
+    const list = data.settings.blockedTags;
+    const i = list.indexOf(tag);
+    if (i >= 0) list.splice(i, 1); else list.push(tag);
+    save(); emit({ type:'settings', key:'blockedTags' });
+  },
+
   reset(){
     data = structuredClone(DEFAULTS);
     try { localStorage.removeItem(KEY); } catch {}
     emit({ type:'reset' });
   }
 };
+
+/** Copy just the profile-owned fields out of a record. */
+function pick(src){
+  const out = {};
+  for (const k of PROFILE_KEYS) out[k] = structuredClone(src[k]);
+  return out;
+}
 
 window.State = State;
 })();

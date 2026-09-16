@@ -130,18 +130,26 @@ async function load(){
 const Catalog = {
   CDN, TAGS, state, load, seededShuffle,
 
-  all:      () => state.games,
-  get:      id => state.byId.get(String(id)) || null,
-  count:    () => state.games.length,
-  featured: () => state.featured,
+  /** Family settings withhold whole categories from the console. */
+  visible(list){
+    const blocked = window.State?.settings.blockedTags || [];
+    if (!blocked.length) return list;
+    return list.filter(g => !g.special.some(t => blocked.includes(t)));
+  },
 
-  byTag(tag){ return state.games.filter(g => g.special.includes(tag)); },
+  all(){ return Catalog.visible(state.games); },
+  get:      id => state.byId.get(String(id)) || null,
+  count(){ return Catalog.all().length; },
+  featured(){ return Catalog.visible(state.featured); },
+
+  byTag(tag){ return Catalog.visible(state.games.filter(g => g.special.includes(tag))); },
 
   /** Everything with no special tag — the "plain browser games" bulk. */
-  standard(){ return state.games.filter(g => !g.special.length); },
+  standard(){ return Catalog.visible(state.games.filter(g => !g.special.length)); },
 
   alphabetical(){
-    return state.games.slice().sort((a, b) => a.sortName.localeCompare(b.sortName));
+    return Catalog.visible(state.games).slice()
+      .sort((a, b) => a.sortName.localeCompare(b.sortName));
   },
 
   /** Fuzzy-ish search: title match first, then developer match. */
@@ -155,7 +163,7 @@ const Catalog = {
       else if (n.includes(q)) titles.push(g);
       else if (g.author.toLowerCase().includes(q)) authors.push(g);
     }
-    return titles.concat(authors).slice(0, 120);
+    return Catalog.visible(titles.concat(authors)).slice(0, 120);
   },
 
   /** Shelves for the Game Pass view, built from the manifest's own tags. */
