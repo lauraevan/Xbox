@@ -1,5 +1,6 @@
-/* Pixel-accuracy pass for the Xbox Home/Guide reference. Loaded after views.js
-   and guide.js but before app.js so App captures this Home renderer. */
+/* Xbox Home/Guide reference pass.
+   Home-critical artwork is deliberately pinned to direct, known image URLs so
+   the first screen never depends on a runtime search API. */
 (() => {
 'use strict';
 
@@ -7,21 +8,57 @@ const V = window.Views;
 if (!V) return;
 const { el, escapeHtml, ICON } = V;
 
-const SGDB = 'https://www.steamgriddb.com/api/v2';
-const CACHE_KEY = 'xbox.web.reference-art.v2';
-let cache = {};
-try { cache = JSON.parse(localStorage.getItem(CACHE_KEY) || '{}'); } catch {}
+const EDGE_LOGO = 'https://upload.wikimedia.org/wikipedia/commons/9/98/Microsoft_Edge_logo_%282019%29.svg';
 
-const saveCache = () => {
-  try { localStorage.setItem(CACHE_KEY, JSON.stringify(cache)); } catch {}
+/* Real artwork used by the reference screen. These are primary sources, not
+   placeholders. If one host fails we still retain the existing SGDB lookup as
+   a secondary fallback, but the dashboard does not wait for it. */
+const ART = {
+  'Forza Horizon 5': {
+    cover: 'https://xboxwire.thesourcemediaassets.com/sites/2/2021/11/ForzaHorizon5_KeyArt_Horiz_RGB_Final.jpg',
+    landscape: 'https://xboxwire.thesourcemediaassets.com/sites/2/2021/11/ForzaHorizon5_KeyArt_Horiz_RGB_Final.jpg',
+    hero: 'https://xboxwire.thesourcemediaassets.com/sites/2/2021/11/ForzaHorizon5_KeyArt_Horiz_RGB_Final.jpg'
+  },
+  'Subnautica 2': {
+    cover: 'https://static.actugaming.net/media/2024/10/subnautica-2-jaquette.jpg'
+  },
+  'Hollow Knight: Silksong': {
+    cover: 'https://hollowknight.wiki/w/Special:Redirect/file/SilksongPromo1.png'
+  },
+  'Microsoft Edge': { cover: EDGE_LOGO },
+  'Mortal Kombat 1': {
+    cover: 'https://images.pushsquare.com/7ce51d0661507/mortal-kombat-1-cover.cover_large.jpg'
+  },
+  'Roblox': {
+    cover: 'https://m.media-amazon.com/images/I/715MvilCPGL.jpg'
+  },
+  'Fortnite': {
+    cover: 'https://static.thcdn.com/productimg/1600/1600/11492349-4314494124984020.jpg'
+  },
+  'Minecraft Dungeons II': {
+    landscape: 'https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/key-art/homepage_discover_our_games_mc_dungeons_ii_key_art_864x864.jpg',
+    cover: 'https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/key-art/homepage_discover_our_games_mc_dungeons_ii_key_art_864x864.jpg'
+  },
+  'Onimusha: Way of the Sword': {
+    landscape: 'https://prcdn.freetls.fastly.net/release_image/13450/5749/13450-5749-b7598adbebf47b9e843dde5a75a2021d-1200x630.png?auto=webp&fit=bounds&format=jpeg&height=1260&width=2400',
+    cover: 'https://prcdn.freetls.fastly.net/release_image/13450/5749/13450-5749-b7598adbebf47b9e843dde5a75a2021d-1200x630.png?auto=webp&fit=bounds&format=jpeg&height=1260&width=2400'
+  },
+  'BlizzCon 2026': {
+    landscape: 'https://bnetcmsus-a.akamaihd.net/cms/gallery/92/92VP0JKRT60R1762190999272.png',
+    cover: 'https://bnetcmsus-a.akamaihd.net/cms/gallery/92/92VP0JKRT60R1762190999272.png'
+  }
 };
 
-const keyFor = (kind, name) => `${kind}:${String(name).toLowerCase()}`;
+const SGDB = 'https://www.steamgriddb.com/api/v2';
+const CACHE_KEY = 'xbox.web.reference-art.v3';
+let cache = {};
+try { cache = JSON.parse(localStorage.getItem(CACHE_KEY) || '{}'); } catch {}
+const saveCache = () => { try { localStorage.setItem(CACHE_KEY, JSON.stringify(cache)); } catch {} };
 
 async function sgdb(kind, name){
   const key = window.Artwork?.key;
   if (!key || !name) return null;
-  const ck = keyFor(kind, name);
+  const ck = `${kind}:${String(name).toLowerCase()}`;
   if (cache[ck]) return cache[ck];
   try {
     const headers = { Authorization: `Bearer ${key}` };
@@ -30,20 +67,16 @@ async function sgdb(kind, name){
     const found = (await search.json())?.data || [];
     if (!found.length) return null;
     const id = found[0].id;
-    let endpoint;
-    if (kind === 'hero') endpoint = `${SGDB}/heroes/game/${id}`;
-    else endpoint = `${SGDB}/grids/game/${id}`;
+    const endpoint = kind === 'hero'
+      ? `${SGDB}/heroes/game/${id}`
+      : `${SGDB}/grids/game/${id}`;
     const res = await fetch(endpoint, { headers });
     if (!res.ok) return null;
-    const art = (await res.json())?.data || [];
-    let pick = null;
-    if (kind === 'hero'){
-      pick = art.find(a => a.width / a.height > 2.2) || art[0];
-    } else if (kind === 'landscape'){
-      pick = art.find(a => a.width / a.height > 1.7) || art.find(a => a.width > a.height) || art[0];
-    } else {
-      pick = art.find(a => a.height / a.width > 1.25) || art[0];
-    }
+    const list = (await res.json())?.data || [];
+    let pick;
+    if (kind === 'hero') pick = list.find(a => a.width / a.height > 2.15) || list[0];
+    else if (kind === 'landscape') pick = list.find(a => a.width / a.height > 1.55) || list.find(a => a.width > a.height) || list[0];
+    else pick = list.find(a => a.height / a.width > 1.15) || list[0];
     if (!pick?.url) return null;
     cache[ck] = pick.url;
     saveCache();
@@ -51,17 +84,33 @@ async function sgdb(kind, name){
   } catch { return null; }
 }
 
-function loadArt(img, name, kind = 'cover', fallback = ''){
+function primaryArt(name, kind){
+  const row = ART[name];
+  if (!row) return '';
+  return row[kind] || row.cover || row.landscape || row.hero || '';
+}
+
+function loadArt(img, name, kind = 'cover', explicitFallback = ''){
   img.alt = '';
   img.decoding = 'async';
   img.loading = 'eager';
-  if (fallback) img.src = fallback;
-  sgdb(kind, name).then(url => {
-    if (!url) return;
-    const probe = new Image();
-    probe.onload = () => { img.src = url; img.classList.add('loaded'); };
-    probe.src = url;
-  });
+  const primary = primaryArt(name, kind) || explicitFallback;
+  if (primary){
+    img.src = primary;
+    img.classList.add('loaded');
+  }
+
+  /* Only ask SGDB if the pinned source fails or does not exist. This avoids
+     the black placeholder screen seen when the API is blocked by the host. */
+  let triedSecondary = false;
+  const secondary = async () => {
+    if (triedSecondary) return;
+    triedSecondary = true;
+    const url = await sgdb(kind, name);
+    if (url && url !== img.src){ img.src = url; img.classList.add('loaded'); }
+  };
+  img.addEventListener('error', secondary, { once:true });
+  if (!primary) secondary();
 }
 
 function realGame(name){
@@ -77,16 +126,14 @@ function activate(name){
   else window.App.setView('library');
 }
 
-const EDGE_LOGO = 'https://upload.wikimedia.org/wikipedia/commons/9/98/Microsoft_Edge_logo_%282019%29.svg';
-
 const ROW = [
-  { name:'Forza Horizon 5', hero:true },
-  { name:'Subnautica 2' },
-  { name:'Hollow Knight: Silksong' },
-  { name:'Microsoft Edge', fallback:EDGE_LOGO, className:'edge-tile' },
-  { name:'Mortal Kombat 1' },
+  { name:'Forza Horizon 5', hero:true, badge:'X|S' },
+  { name:'Subnautica 2', badge:'GAME PASS  X|S' },
+  { name:'Hollow Knight: Silksong', badge:'GAME PASS  X|S' },
+  { name:'Microsoft Edge', className:'edge-tile' },
+  { name:'Mortal Kombat 1', badge:'X|S' },
   { name:'Roblox' },
-  { name:'Fortnite' }
+  { name:'Fortnite', badge:'X|S' }
 ];
 
 function refTile(def){
@@ -94,16 +141,16 @@ function refTile(def){
   btn.dataset.nav = '';
   btn.dataset.refTitle = def.name;
   btn.setAttribute('aria-label', def.name);
+
   const face = el('span', 'tile-face');
   const art = el('span', 'ref-art');
   const img = el('img', 'cover loaded');
-  loadArt(img, def.name, 'cover', def.fallback || '');
+  loadArt(img, def.name, 'cover');
   art.append(img);
   face.append(art);
-  if (def.name !== 'Microsoft Edge'){
-    const badge = el('span', 'ref-platform', def.name === 'Forza Horizon 5' ? 'X|S' : '');
-    if (badge.textContent) face.append(badge);
-  }
+
+  if (def.badge) face.append(el('span', 'ref-platform', def.badge));
+
   btn.append(face, el('span', 'tile-label', escapeHtml(def.name)));
   btn._navActivate = () => activate(def.name);
   return btn;
@@ -120,46 +167,37 @@ function friendsTile(){
   return btn;
 }
 
-function refCard({ label, sub, artName, chip, cls, fallback }){
+function refCard({ label, sub, artName, chip, cls }){
   const btn = el('button', `card ref-card ${cls || ''}`);
   btn.dataset.nav = '';
   btn.setAttribute('aria-label', label);
 
   if (cls === 'card-store'){
-    const icon = el('div', 'ref-store-icon', ICON.store);
-    btn.append(icon);
+    btn.append(el('div', 'ref-store-icon', ICON.store));
   } else {
     const wrap = el('div', 'ref-card-art');
     const img = el('img', 'cover loaded');
-    loadArt(img, artName || label, 'landscape', fallback || '');
+    loadArt(img, artName || label, 'landscape');
     wrap.append(img);
     btn.append(wrap);
   }
+
   if (chip) btn.append(el('div', 'card-chip', escapeHtml(chip)));
-  const labelNode = el('div', 'card-label',
-    escapeHtml(label) + (sub ? `<span class="sub">${escapeHtml(sub)}</span>` : ''));
-  btn.append(labelNode);
+  btn.append(el('div', 'card-label',
+    escapeHtml(label) + (sub ? `<span class="sub">${escapeHtml(sub)}</span>` : '')));
   btn._navActivate = () => artName ? activate(artName) : window.App.setView('pass');
   return btn;
 }
 
 function setReferenceBackdrop(){
-  const token = String(Date.now());
-  document.body.dataset.referenceBackdrop = token;
-  Promise.all([
-    sgdb('landscape', 'Forza Horizon 5'),
-    sgdb('hero', 'Forza Horizon 5')
-  ]).then(([landscape, hero]) => {
-    if (document.body.dataset.referenceBackdrop !== token) return;
-    const url = landscape || hero;
-    if (!url) return;
-    const layer = document.getElementById('bgA');
-    const other = document.getElementById('bgB');
-    if (!layer) return;
-    layer.style.backgroundImage = `url("${url}")`;
-    layer.classList.add('on', 'wide', 'reference-wide');
-    other?.classList.remove('on');
-  });
+  const layer = document.getElementById('bgA');
+  const other = document.getElementById('bgB');
+  if (!layer) return;
+  const url = primaryArt('Forza Horizon 5', 'hero');
+  layer.style.backgroundImage = `url("${url}")`;
+  layer.style.backgroundPosition = 'center 42%';
+  layer.classList.add('on', 'wide', 'reference-wide');
+  other?.classList.remove('on');
 }
 
 function renderReferenceHome(root){
@@ -178,12 +216,19 @@ function renderReferenceHome(root){
     refCard({ label:'Browse the store', cls:'card-store' }),
     refCard({ label:'Minecraft Dungeons II', sub:'Add to Play Later', artName:'Minecraft Dungeons II', chip:'GAME PASS' }),
     refCard({ label:'Onimusha: Way of the Sword', sub:'Available now', artName:'Onimusha: Way of the Sword' }),
-    refCard({ label:'BlizzCon 2026', sub:'Watch the show', artName:'Overwatch 2' })
+    refCard({ label:'BlizzCon 2026', sub:'Watch the show', artName:'BlizzCon 2026' })
   );
   root.append(cards);
 
   [...strip.children, ...cards.children].forEach((n, i) => n.style.setProperty('--i', i));
   setReferenceBackdrop();
+
+  /* Always enter Home focused on the first tile, matching the reference.
+     This runs after App's own focus restore so an old lower-card focus does
+     not survive a reload. */
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    window.Nav?.focusIn?.(root, '.ref-hero');
+  }));
 }
 
 V.renderHome = renderReferenceHome;
@@ -214,7 +259,7 @@ const GUIDE_REFERENCE_ROWS = [
   { name:'Forza Horizon 5', art:'Forza Horizon 5' },
   { name:'Subnautica 2 (Game Preview)', art:'Subnautica 2' },
   { name:'Hollow Knight: Silksong', art:'Hollow Knight: Silksong' },
-  { name:'Microsoft Edge', art:'Microsoft Edge', fallback:EDGE_LOGO }
+  { name:'Microsoft Edge', art:'Microsoft Edge' }
 ];
 
 function tuneGuideBody(){
@@ -226,10 +271,7 @@ function tuneGuideBody(){
   if (firstName !== 'Home' || rows[0].dataset.referenceGuide === '1') return;
 
   rows.forEach((row, i) => {
-    if (i >= GUIDE_REFERENCE_ROWS.length){
-      row.style.display = 'none';
-      return;
-    }
+    if (i >= GUIDE_REFERENCE_ROWS.length){ row.style.display = 'none'; return; }
     const def = GUIDE_REFERENCE_ROWS[i];
     row.dataset.referenceGuide = '1';
     const name = row.querySelector('.grow-name');
@@ -243,7 +285,7 @@ function tuneGuideBody(){
         box.innerHTML = '';
         const img = el('img', 'cover loaded');
         img.style.cssText = 'width:100%;height:100%;object-fit:cover';
-        loadArt(img, def.art, 'cover', def.fallback || '');
+        loadArt(img, def.art, 'cover');
         box.append(img);
       }
     }
