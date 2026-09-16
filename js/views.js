@@ -144,30 +144,34 @@ function renderHome(root){
   const cards = el('div', 'cards');
   const mosaic = window.Catalog.seededShuffle(window.Catalog.all(), 13).slice(0, 4);
 
+  const promo = window.Catalog.seededShuffle(window.Catalog.featured(), 47);
   cards.append(
     makeCard({
-      label: 'Browse your games',
-      mosaic,
-      onActivate: () => window.App.setView('library')
+      label: 'Browse the store',
+      cls: 'card-store',
+      illus: ICON.store,
+      onActivate: () => window.App.setView('pass')
     }),
     makeCard({
-      label: 'Customize your Home',
-      grad: 'grad-a',
-      illus: ICON.brush,
-      onActivate: () => window.App.setView('settings', { section:'personalization' })
-    }),
-    makeCard({
-      label: feature[1]?.name || 'Game Pass',
-      art: feature[1]?.coverFile,
+      label: promo[0]?.name || 'Game Pass',
+      sub: 'Add to Play Later',
+      art: promo[0]?.coverFile,
       chip: 'GAME PASS',
       grad: 'grad-b',
-      onActivate: () => feature[1] ? window.App.openDetail(feature[1]) : window.App.setView('pass')
+      onActivate: () => promo[0] ? window.App.openDetail(promo[0]) : window.App.setView('pass')
     }),
     makeCard({
-      label: 'Play like a Pro',
-      grad: 'grad-e',
-      illus: ICON.pad,
-      onActivate: () => window.App.setView('settings', { section:'devices' })
+      label: promo[1]?.name || 'Recently added',
+      sub: 'Available now',
+      art: promo[1]?.coverFile,
+      grad: 'grad-d',
+      onActivate: () => promo[1] ? window.App.openDetail(promo[1]) : window.App.setView('pass')
+    }),
+    makeCard({
+      label: 'Browse your games',
+      sub: `${window.Catalog.count().toLocaleString()} titles`,
+      mosaic,
+      onActivate: () => window.App.setView('library')
     })
   );
   root.append(cards);
@@ -176,12 +180,13 @@ function renderHome(root){
   updateHero(headline);
 }
 
-function makeCard({ label, mosaic, art, artAlt, chip, grad, illus, onActivate }){
+function makeCard({ label, sub, mosaic, art, artAlt, chip, grad, illus, cls, onActivate }){
   const btn = el('button', 'card');
   btn.dataset.nav = '';
   btn.setAttribute('aria-label', label);
 
   if (grad) btn.classList.add(grad);
+  if (cls) btn.classList.add(cls);
 
   if (mosaic){
     const m = el('div', 'card-mosaic');
@@ -210,7 +215,8 @@ function makeCard({ label, mosaic, art, artAlt, chip, grad, illus, onActivate })
 
   btn.append(el('div', 'card-scrim'));
   if (chip) btn.append(el('div', 'card-chip', escapeHtml(chip)));
-  btn.append(el('div', 'card-label', escapeHtml(label)));
+  btn.append(el('div', 'card-label',
+    escapeHtml(label) + (sub ? `<span class="sub">${escapeHtml(sub)}</span>` : '')));
   btn._navActivate = onActivate;
   return btn;
 }

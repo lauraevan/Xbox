@@ -126,8 +126,9 @@
 .tile-add svg{ width:4rem; height:4rem; fill:var(--text-2); }
 
 /* ───────── spotlight card row ───────── */
+/* the store tile is roughly half the width of the promo cards beside it */
 .cards{
-  display:grid; grid-template-columns:repeat(4, 1fr); gap:3.2rem;
+  display:grid; grid-template-columns:.56fr 1fr 1fr 1fr; gap:3.2rem;
   padding:.4rem .4rem 0;
   margin:0 -.4rem;
 }
@@ -139,8 +140,19 @@
              box-shadow var(--dur-mid) var(--ease-standard);
 }
 .card[data-focused]{ transform:scale(1.035); box-shadow:0 1.4rem 3.6rem rgba(0,0,0,.6); z-index:2; }
+/* Promo cards are wide but the catalogue only has square art, so anchor it
+   to the right edge and let a left-to-right scrim carry the copy - the same
+   shape the console's own key art takes. */
 .card-art{ position:absolute; inset:0; }
-.card-art img{ width:100%; height:100%; object-fit:cover; }
+.card-art img{
+  width:100%; height:100%;
+  object-fit:cover; object-position:right center;
+}
+.card-art::after{
+  content:""; position:absolute; inset:0; z-index:2;
+  background:linear-gradient(95deg,
+    rgba(6,8,10,.94) 6%, rgba(6,8,10,.72) 38%, rgba(6,8,10,.18) 68%, transparent 100%);
+}
 .card-mosaic{ position:absolute; inset:0; display:grid; grid-template-columns:repeat(4,1fr); }
 .card-mosaic div{ background-size:cover; background-position:center; position:relative; }
 .card-mosaic .mosaic-cell{
@@ -150,9 +162,21 @@
 .card-scrim{ position:absolute; inset:0; z-index:2;
   background:linear-gradient(transparent 38%, rgba(0,0,0,.82)); }
 .card-label{
-  position:absolute; left:1.6rem; right:1.6rem; bottom:1.2rem; z-index:3;
-  font-size:2rem; font-weight:500;
+  position:absolute; left:1.8rem; right:1.8rem; bottom:1.4rem; z-index:3;
+  font-size:1.9rem; font-weight:500; line-height:1.24;
 }
+.card-label .sub{
+  display:block; margin-top:.2rem;
+  font-size:1.6rem; font-weight:400; color:rgba(255,255,255,.72);
+}
+
+/* the store entry is a flat colour plate rather than key art */
+.card-store{
+  background:linear-gradient(150deg,#6d49d6,#4a2ea8 60%,#3b2489);
+}
+.card-store .card-scrim{ background:none; }
+.card-store .card-illus{ place-items:start; padding:2rem 0 0 1.8rem; }
+.card-store .card-illus svg{ width:4.2rem; height:4.2rem; fill:rgba(255,255,255,.92); }
 .card-chip{
   position:absolute; top:1.2rem; left:1.2rem; z-index:3;
   display:flex; align-items:center; gap:.5rem;

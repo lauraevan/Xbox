@@ -61,47 +61,50 @@
   <!-- a dedicated scrim so the bar keeps its weight whatever art is behind -->
   <div class="topbar-scrim" aria-hidden="true"></div>
 
-  <!-- ─────────── system bar ─────────── -->
+  <!-- ─────────── system bar ───────────
+       Nav sits centred on the top line with status opposite it; the
+       profile block sits on its own line underneath, as on the console. -->
   <header class="sysbar" id="sysbar">
+    <div class="sysbar-top">
+      <nav class="sysnav" id="sysnav">
+        <button class="sysnav-btn" data-nav data-group="sysbar" data-view="home"
+                data-icon="column_triple" title="Recent &amp; pins" aria-label="Recent and pins"></button>
+        <button class="sysnav-btn" data-nav data-group="sysbar" data-view="library"
+                data-icon="library" title="My games &amp; apps" aria-label="My games and apps"></button>
+        <button class="sysnav-btn" data-nav data-group="sysbar" data-view="pass"
+                title="Game Pass" aria-label="Game Pass">
+          <span class="gp-chip">GAME<br>PASS</span>
+        </button>
+        <button class="sysnav-btn" data-nav data-group="sysbar" data-view="search"
+                data-icon="search" title="Search" aria-label="Search"></button>
+        <button class="sysnav-btn" data-nav data-group="sysbar" data-view="settings"
+                data-icon="settings" title="Settings" aria-label="Settings">
+          <span class="badge-dot" id="settingsDot"></span>
+        </button>
+      </nav>
+
+      <div class="sysstatus">
+        <button class="friends" data-nav data-group="sysbar" data-act="friends" aria-label="Friends online">
+          <span class="friends-icon" data-icon="people"></span>
+          <span class="friends-count" id="friendsCount">0</span>
+        </button>
+        <button class="status-btn" id="micBtn" data-nav data-group="sysbar" data-act="mic"
+                aria-label="Microphone"></button>
+        <span class="battery" aria-label="Controller battery">
+          <span class="battery-shell"><span class="battery-fill" id="batteryFill"></span></span>
+          <span class="battery-cap"></span>
+        </span>
+        <span class="clock" id="clock">--:--</span>
+      </div>
+    </div>
+
     <button class="profile" data-nav data-group="sysbar" data-act="profile">
       <span class="avatar"><img id="avatarImg" alt=""></span>
       <span class="profile-text">
-        <span class="profile-line">
-          <span class="gamertag" id="gamertagLabel">NewSasquatch</span>
-          <span class="tier" id="tierBadge">ULTIMATE</span>
-        </span>
-        <span class="profile-line profile-sub">
-          <svg class="g-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M15.4 8.3a4.6 4.6 0 1 0 1 5.2h-4.2" /></svg>
-          <span id="gamerscoreLabel">0</span>
-        </span>
+        <span class="gamertag" id="gamertagLabel">NewSasquatch</span>
+        <span class="profile-sub" id="profileSub">signed in</span>
       </span>
     </button>
-
-    <nav class="sysnav" id="sysnav">
-      <button class="sysnav-btn" data-nav data-group="sysbar" data-view="home"
-              data-icon="column_triple" title="Recent &amp; pins" aria-label="Recent and pins"></button>
-      <button class="sysnav-btn" data-nav data-group="sysbar" data-view="library"
-              data-icon="library" title="My games &amp; apps" aria-label="My games and apps"></button>
-      <button class="sysnav-btn" data-nav data-group="sysbar" data-view="pass" title="Game Pass" aria-label="Game Pass">
-        <span class="gp-chip">GAME<br>PASS</span>
-      </button>
-      <button class="sysnav-btn" data-nav data-group="sysbar" data-view="search"
-              data-icon="search" title="Search" aria-label="Search"></button>
-      <button class="sysnav-btn" data-nav data-group="sysbar" data-view="settings"
-              data-icon="settings" title="Settings" aria-label="Settings">
-        <span class="badge-dot" id="settingsDot"></span>
-      </button>
-    </nav>
-
-    <div class="sysstatus">
-      <button class="status-btn" id="micBtn" data-nav data-group="sysbar" data-act="mic"
-              aria-label="Microphone"></button>
-      <span class="battery" aria-label="Controller battery">
-        <span class="battery-shell"><span class="battery-fill" id="batteryFill"></span></span>
-        <span class="battery-cap"></span>
-      </span>
-      <span class="clock" id="clock">--:--</span>
-    </div>
   </header>
 
   <!-- ─────────── views ─────────── -->

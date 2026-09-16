@@ -70,8 +70,15 @@ function syncMicIcon(){
 function syncProfile(){
   $('#avatarImg').src = window.State.avatar();
   $('#gamertagLabel').textContent = window.State.data.gamertag;
-  $('#gamerscoreLabel').textContent = window.State.gamerscore.toLocaleString();
-  $('#tierBadge').textContent = window.State.data.tier;
+  // the console shows a second line under the gamertag; Gamerscore is the
+  // honest thing to put there rather than inventing an address
+  $('#profileSub').textContent =
+    `${window.State.gamerscore.toLocaleString()} Gamerscore \u00b7 ${window.State.data.tier}`;
+
+  // "friends online" is the size of this console's own catalogue rather than
+  // a social graph that does not exist here
+  const friends = $('#friendsCount');
+  if (friends) friends.textContent = (window.Catalog?.count?.() || 0).toLocaleString();
 }
 
 function tickClock(){
@@ -624,6 +631,10 @@ document.addEventListener('nav:activate', e => {
   const target = e.detail.el;
   if (target.dataset.view) setView(target.dataset.view);
   if (target.dataset.act === 'profile') window.Guide.open('profile');
+  if (target.dataset.act === 'friends'){
+    toast('Titles available', `${window.Catalog.count().toLocaleString()} in your catalogue`,
+          { icon: ICON.party });
+  }
   if (target.dataset.act === 'mic'){
     const muted = !window.State.settings.micMuted;
     window.State.setSetting('micMuted', muted);
