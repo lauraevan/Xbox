@@ -1,254 +1,356 @@
-/* Xbox console Microsoft Store surface.
-   Designed around the 10-foot/controller Store: persistent left navigation,
-   wide gallery hero, horizontal shelves and full-screen product details. */
+/* Xbox console Microsoft Store.
+   Geometry is based on the real Series X|S ten-foot Store: compact icon rail,
+   large selected gallery card, smaller cards beside it, details directly below,
+   then horizontal discovery rows. */
 .view-store{
   z-index:30;
   color:#fff;
-  background:#070707;
+  background:#151515;
   font-family:'Segoe UI',system-ui,sans-serif;
 }
 .xstore-shell{
   position:absolute;
   inset:0;
   display:grid;
-  grid-template-columns:25rem minmax(0,1fr);
-  background:#090909;
+  grid-template-columns:10.7rem minmax(0,1fr);
+  background:#151515;
 }
+
+/* ───────── narrow Xbox Store rail ───────── */
 .xstore-rail{
   position:relative;
-  z-index:3;
+  z-index:5;
   display:flex;
   flex-direction:column;
+  align-items:stretch;
   min-width:0;
-  padding:4.2rem 1.5rem 3rem;
+  padding:1.8rem 1.2rem 2rem;
+  background:#202020;
+  box-shadow:.25rem 0 1.4rem rgba(0,0,0,.18);
+}
+.xstore-avatar{
+  width:3.3rem;
+  height:3.3rem;
+  margin:0 auto 2rem;
+  padding:0;
+  border:0;
+  border-radius:50%;
   background:#111;
-  border-right:.1rem solid rgba(255,255,255,.08);
-}
-.xstore-brand{
-  display:flex;
-  align-items:center;
-  gap:1.2rem;
-  padding:0 1.35rem 3.5rem;
-  font-size:2rem;
-  font-weight:600;
-  letter-spacing:-.03rem;
-}
-.xstore-brand-icon{
-  width:3.5rem;
-  height:3.5rem;
   display:grid;
   place-items:center;
-  color:#fff;
 }
-.xstore-brand-icon svg{ width:2.9rem; height:2.9rem; }
-.xstore-nav{ display:flex; flex-direction:column; gap:.35rem; }
+.xstore-avatar span{
+  width:2.35rem;
+  height:2.35rem;
+  display:block;
+  border-radius:50%;
+  background:#000;
+  box-shadow:0 0 0 .12rem rgba(255,255,255,.08);
+}
+.xstore-nav{
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  gap:.38rem;
+}
 .xstore-nav-btn{
   position:relative;
-  min-height:5.7rem;
-  display:flex;
-  align-items:center;
-  gap:1.4rem;
-  padding:0 1.35rem;
+  width:100%;
+  height:5rem;
+  display:grid;
+  place-items:center;
+  padding:0;
   border:0;
-  border-radius:.35rem;
+  border-radius:.2rem;
   background:transparent;
-  color:#eee;
-  text-align:left;
-  font:500 1.65rem/1 'Segoe UI',system-ui,sans-serif;
+  color:#a9a9a9;
+  font:500 1.25rem/1 'Segoe UI',system-ui,sans-serif;
 }
 .xstore-nav-btn::before{
   content:'';
   position:absolute;
-  left:0;
-  width:.4rem;
+  left:-1.2rem;
+  top:50%;
+  width:.26rem;
   height:0;
-  border-radius:.25rem;
-  background:#9bf00b;
+  transform:translateY(-50%);
+  background:#fff;
   transition:height .12s ease;
 }
 .xstore-nav-btn.active{
-  background:#282828;
   color:#fff;
+  background:rgba(255,255,255,.025);
 }
-.xstore-nav-btn.active::before{ height:3.2rem; }
+.xstore-nav-btn.active::before{ height:3.35rem; }
 .xstore-nav-btn[data-focused]{
-  outline:.3rem solid #fff;
-  outline-offset:-.3rem;
-  background:#f2f2f2;
-  color:#111;
+  background:#f0f0f0;
+  color:#151515;
+  outline:.22rem solid #fff;
+  outline-offset:.1rem;
 }
-.xstore-nav-btn[data-focused]::before{ background:#107c10; height:3.2rem; }
-.xstore-nav-icon{ width:2.7rem; height:2.7rem; display:grid; place-items:center; flex:0 0 auto; }
-.xstore-nav-icon svg{ width:2.35rem; height:2.35rem; }
+.xstore-nav-btn[data-focused]::before{ background:#107c10; height:3.35rem; }
+.xstore-nav-icon{
+  width:2.45rem;
+  height:2.45rem;
+  display:grid;
+  place-items:center;
+}
+.xstore-nav-icon svg{ width:2.2rem; height:2.2rem; fill:currentColor; }
+.xstore-nav-label{
+  position:absolute;
+  left:calc(100% + 1.5rem);
+  top:50%;
+  transform:translateY(-50%) translateX(-.4rem);
+  min-width:max-content;
+  padding:.75rem 1rem;
+  border-radius:.25rem;
+  background:#050505;
+  color:#fff;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .1s ease,transform .1s ease;
+  box-shadow:0 .5rem 1.6rem rgba(0,0,0,.4);
+}
+.xstore-nav-btn[data-focused] .xstore-nav-label,
+.xstore-nav-btn:hover .xstore-nav-label{
+  opacity:1;
+  transform:translateY(-50%) translateX(0);
+}
+.xstore-nav-rule{
+  height:.1rem;
+  margin:1rem .7rem;
+  background:rgba(255,255,255,.25);
+}
 .xstore-rail-foot{
   margin-top:auto;
-  padding:0 1.35rem;
-  font-size:1.25rem;
+  text-align:center;
+  font-size:1rem;
   font-weight:700;
-  letter-spacing:.35rem;
-  color:rgba(255,255,255,.35);
+  letter-spacing:.22rem;
+  color:rgba(255,255,255,.28);
 }
+
+/* ───────── Store body ───────── */
 .xstore-main{
   position:relative;
   min-width:0;
   overflow:hidden;
-  background:#080808;
+  background:
+    radial-gradient(circle at 62% 24%,rgba(95,59,38,.18),transparent 32%),
+    #151515;
 }
 .xstore-content{
   position:absolute;
   inset:0;
   overflow:auto;
-  padding:3.8rem 4.6rem 7rem;
+  padding:3.45rem 2.1rem 7rem;
   scrollbar-width:none;
 }
 .xstore-content::-webkit-scrollbar{ display:none; }
-.xstore-top{
-  height:5.6rem;
+
+/* ───────── exact-style Store gallery ───────── */
+.xstore-feature{ margin-bottom:3.6rem; }
+.xstore-context{
+  margin:.15rem 0 1.2rem;
+  font-size:1.55rem;
+  color:rgba(255,255,255,.72);
+}
+.xstore-title-row{
   display:flex;
-  align-items:flex-start;
+  align-items:center;
   justify-content:space-between;
   gap:2rem;
-  margin-bottom:2.8rem;
+  margin-bottom:2rem;
 }
-.xstore-breadcrumb{
-  font-size:1.55rem;
-  color:rgba(255,255,255,.6);
-}
-.xstore-breadcrumb strong{ color:#fff; font-weight:600; }
-.xstore-top-actions{ display:flex; align-items:center; gap:2rem; }
-.xstore-account{
-  font-size:1.45rem;
-  font-weight:600;
-  color:rgba(255,255,255,.82);
-}
-.xstore-cart{ display:flex; align-items:center; gap:.45rem; color:rgba(255,255,255,.8); }
-.xstore-cart svg{ width:2.3rem; height:2.3rem; }
-.xstore-cart b{
-  min-width:1.8rem;
-  height:1.8rem;
-  display:grid;
-  place-items:center;
-  border-radius:50%;
-  background:#107c10;
-  font-size:1rem;
-}
-.xstore-hero{
-  position:relative;
-  height:42rem;
-  overflow:hidden;
-  border-radius:.45rem;
-  background:#181818;
-  margin-bottom:3.7rem;
-}
-.xstore-hero-art{
-  position:absolute;
-  inset:0;
-  background-size:cover;
-  background-position:center;
-  transform:scale(1.002);
-  transition:background-image .18s ease;
-}
-.xstore-hero-shade{
-  position:absolute;
-  inset:0;
-  background:linear-gradient(90deg,rgba(0,0,0,.92) 0%,rgba(0,0,0,.78) 27%,rgba(0,0,0,.22) 64%,rgba(0,0,0,.05) 100%);
-}
-.xstore-hero-copy{
-  position:absolute;
-  left:3.8rem;
-  top:3.6rem;
-  bottom:3.5rem;
-  width:48rem;
-  display:flex;
-  flex-direction:column;
-  justify-content:flex-end;
-}
-.xstore-hero-kicker{
-  color:#9bf00b;
-  text-transform:uppercase;
-  font-size:1.35rem;
-  font-weight:700;
-  letter-spacing:.09rem;
-  margin-bottom:.8rem;
-}
-.xstore-hero-title{
-  margin:0 0 1rem;
-  max-width:46rem;
-  font-size:4.4rem;
-  line-height:1;
-  font-weight:600;
-  letter-spacing:-.08rem;
-}
-.xstore-hero-meta{
-  font-size:1.35rem;
-  font-weight:600;
-  color:rgba(255,255,255,.7);
-  margin-bottom:1.3rem;
-}
-.xstore-hero-desc{
+.xstore-title-row h1{
   margin:0;
-  max-width:45rem;
-  font-size:1.5rem;
-  line-height:1.42;
-  color:rgba(255,255,255,.82);
-  display:-webkit-box;
-  -webkit-line-clamp:3;
-  -webkit-box-orient:vertical;
-  overflow:hidden;
+  font-size:3.55rem;
+  line-height:1;
+  font-weight:400;
+  letter-spacing:-.07rem;
 }
-.xstore-hero-price{
-  margin-top:1.55rem;
-  font-size:1.55rem;
+.xstore-hints{
+  display:flex;
+  align-items:center;
+  gap:2.4rem;
+  padding-right:2.3rem;
+  font-size:1.1rem;
+  font-weight:600;
+  letter-spacing:.035rem;
+  color:rgba(255,255,255,.78);
+}
+.xstore-gallery{
+  display:flex;
+  align-items:flex-start;
+  gap:1.2rem;
+  min-width:0;
+}
+.store-lead{
+  width:37.2rem;
+  flex:0 0 37.2rem;
+  padding:0;
+  border:0;
+  background:transparent;
+  color:#fff;
+}
+.store-lead-art{
+  position:relative;
+  display:block;
+  width:100%;
+  height:21.2rem;
+  overflow:hidden;
+  border-radius:.55rem;
+  background:#222;
+}
+.store-lead-art img{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+}
+.store-lead[data-focused] .store-lead-art{
+  outline:.3rem solid #fff;
+  outline-offset:.28rem;
+  box-shadow:0 .8rem 2.2rem rgba(0,0,0,.42);
+}
+.xstore-gallery-small{
+  display:grid;
+  grid-auto-flow:column;
+  grid-auto-columns:14rem;
+  gap:1.4rem;
+  overflow-x:auto;
+  overflow-y:visible;
+  padding:.28rem .3rem 1rem;
+  margin-top:-.28rem;
+  scrollbar-width:none;
+}
+.xstore-gallery-small::-webkit-scrollbar{ display:none; }
+.store-compact{
+  width:14rem;
+  min-width:14rem;
+  border:0;
+  padding:0;
+  background:#292727;
+  color:#fff;
+  text-align:left;
+  overflow:visible;
+}
+.store-compact .store-cover{
+  height:13.65rem;
+  aspect-ratio:auto;
+  border-radius:.38rem .38rem 0 0;
+}
+.store-compact .store-game-meta{
+  min-height:5.1rem;
+  padding:.9rem .85rem .7rem;
+  background:#302e2e;
+  border-radius:0 0 .28rem .28rem;
+}
+.store-compact .store-game-title{ display:none; }
+.store-compact .store-game-price{
+  margin:0;
+  color:#fff;
+  font-size:1.25rem;
+  font-weight:500;
+}
+.store-compact[data-focused] .store-cover,
+.store-grid-card[data-focused] .store-cover,
+.store-wide[data-focused] .store-cover{
+  outline:.3rem solid #fff;
+  outline-offset:.26rem;
+  box-shadow:0 .7rem 2rem rgba(0,0,0,.45);
+}
+.xstore-selected{
+  width:55rem;
+  min-height:11.2rem;
+  padding:.15rem 0 0;
+}
+.xstore-selected-title{
+  margin-top:1.7rem;
+  font-size:2.25rem;
+  line-height:1.1;
+  font-weight:400;
+}
+.xstore-selected-meta{
+  display:flex;
+  align-items:center;
+  gap:1.3rem;
+  margin-top:1rem;
+}
+.xstore-selected-rating{
+  display:flex;
+  align-items:center;
+  gap:.75rem;
+  min-height:2.2rem;
+  padding:0 .55rem;
+  border-radius:.2rem;
+  background:#3b3b3b;
+  font-size:1.1rem;
+}
+.xstore-selected-rating b{ font-weight:600; }
+.xstore-selected-rating span:last-child{ color:rgba(255,255,255,.72); }
+.xstore-stars{ letter-spacing:.05rem; font-size:1.15rem; }
+.xstore-selected-genre{
+  min-height:2.15rem;
+  display:flex;
+  align-items:center;
+  padding:0 1rem;
+  border-radius:1.4rem;
+  background:#5a5a5a;
+  color:#fff;
+  font-size:1.05rem;
   font-weight:700;
 }
-.xstore-hero-action{
-  align-self:flex-start;
-  min-width:18rem;
-  min-height:4.6rem;
-  margin-top:1.45rem;
-  border:0;
-  border-radius:.25rem;
-  padding:0 1.7rem;
-  background:#f2f2f2;
-  color:#111;
-  font:700 1.45rem/1 'Segoe UI',system-ui,sans-serif;
-  text-transform:uppercase;
+.xstore-selected-buy{
+  display:flex;
+  align-items:baseline;
+  gap:1.2rem;
+  margin-top:1.35rem;
 }
-.xstore-hero-action[data-focused]{
-  outline:.35rem solid #9bf00b;
-  outline-offset:.25rem;
+.xstore-selected-price{
+  color:#d4f20c;
+  font-size:1.7rem;
+  font-weight:700;
 }
-.xstore-shelf{ margin-bottom:4.2rem; }
+.xstore-selected-offer{
+  font-size:1.25rem;
+  font-weight:600;
+  color:rgba(255,255,255,.78);
+}
+
+/* ───────── secondary rows ───────── */
+.xstore-shelf{ margin:0 0 4.1rem; }
 .xstore-shelf-head{
+  min-height:3.4rem;
   display:flex;
   align-items:end;
   justify-content:space-between;
-  min-height:4.4rem;
-  margin-bottom:1.4rem;
+  margin-bottom:1.2rem;
 }
 .xstore-shelf-title{
   margin:0;
-  font-size:2.45rem;
+  font-size:1.9rem;
   line-height:1;
-  font-weight:600;
+  font-weight:500;
 }
-.xstore-shelf-sub,.xstore-shelf-count{
-  margin-top:.55rem;
-  color:rgba(255,255,255,.5);
-  font-size:1.25rem;
+.xstore-shelf-sub{
+  margin-top:.5rem;
+  font-size:1.15rem;
+  color:rgba(255,255,255,.52);
 }
 .xstore-row{
   display:grid;
   grid-auto-flow:column;
-  grid-auto-columns:18.5rem;
-  gap:1.25rem;
+  grid-auto-columns:14rem;
+  gap:1.35rem;
   overflow-x:auto;
-  overflow-y:hidden;
-  padding:.45rem .45rem 1.3rem;
-  margin:0 -.45rem;
+  overflow-y:visible;
+  padding:.3rem .3rem 1.4rem;
+  margin-left:-.3rem;
   scrollbar-width:none;
 }
 .xstore-row::-webkit-scrollbar{ display:none; }
+.xstore-row.wide{ grid-auto-columns:26rem; }
 .store-game{
   min-width:0;
   border:0;
@@ -262,10 +364,10 @@
   position:relative;
   display:block;
   width:100%;
-  aspect-ratio:3/4;
+  aspect-ratio:1/1;
   overflow:hidden;
-  border-radius:.38rem;
-  background:#1d1d1d;
+  border-radius:.4rem;
+  background:#252525;
 }
 .store-cover img{
   width:100%;
@@ -273,112 +375,125 @@
   display:block;
   object-fit:cover;
 }
-.store-cloud-badge{
+.store-wide .store-cover{ aspect-ratio:16/9; }
+.store-wide .store-game-meta{ padding-top:.72rem; }
+.store-cloud-mark{
   position:absolute;
-  left:.7rem;
-  bottom:.7rem;
-  height:2.4rem;
-  display:flex;
-  align-items:center;
-  gap:.45rem;
-  padding:0 .75rem;
-  border-radius:.25rem;
+  left:.65rem;
+  bottom:.65rem;
+  width:2.35rem;
+  height:2.35rem;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
   background:rgba(0,0,0,.78);
   color:#fff;
-  font-size:1rem;
-  font-weight:600;
 }
-.store-cloud-badge svg{ width:1.35rem; height:1.35rem; }
+.store-cloud-mark svg{ width:1.45rem; height:1.45rem; }
 .store-owned-badge{
   position:absolute;
-  top:.7rem;
-  right:.7rem;
-  padding:.45rem .65rem;
-  border-radius:.2rem;
+  top:.65rem;
+  right:.65rem;
+  padding:.4rem .62rem;
+  border-radius:.18rem;
   background:#107c10;
   color:#fff;
-  font-size:.95rem;
+  font-size:.9rem;
   font-weight:800;
-  letter-spacing:.04rem;
+  letter-spacing:.03rem;
 }
-.store-game-meta{ display:block; padding:.85rem .05rem 0; }
+.store-game-meta{ display:block; padding:.72rem .05rem 0; }
 .store-game-title{
   display:block;
   overflow:hidden;
   white-space:nowrap;
   text-overflow:ellipsis;
-  font-size:1.45rem;
-  font-weight:600;
+  font-size:1.35rem;
+  font-weight:500;
 }
 .store-game-price{
   display:block;
-  margin-top:.32rem;
-  font-size:1.3rem;
+  margin-top:.28rem;
+  font-size:1.2rem;
   font-weight:600;
-  color:#9bf00b;
+  color:#d4f20c;
 }
 .store-game-sub{
   display:block;
   overflow:hidden;
   white-space:nowrap;
   text-overflow:ellipsis;
-  margin-top:.2rem;
-  font-size:1.15rem;
+  margin-top:.18rem;
+  font-size:1.05rem;
+  color:rgba(255,255,255,.52);
+}
+
+/* ───────── games/search/wishlist/owned pages ───────── */
+.xstore-browse{ padding-top:4.2rem; padding-right:4.5rem; }
+.xstore-page-head{
+  position:relative;
+  margin:0 0 2.1rem;
+}
+.xstore-page-kicker{
+  margin-bottom:.75rem;
+  font-size:1.05rem;
+  font-weight:700;
+  letter-spacing:.11rem;
+  color:rgba(255,255,255,.48);
+}
+.xstore-page-title{
+  margin:0;
+  font-size:3.8rem;
+  line-height:1;
+  font-weight:400;
+  letter-spacing:-.06rem;
+}
+.xstore-page-count{
+  position:absolute;
+  right:0;
+  bottom:.3rem;
+  font-size:1.25rem;
   color:rgba(255,255,255,.5);
 }
-.store-game[data-focused] .store-cover{
-  outline:.35rem solid #fff;
-  outline-offset:.28rem;
-}
-.store-game[data-focused] .store-game-title{ color:#fff; }
-.xstore-gallery-head{
-  display:flex;
-  justify-content:space-between;
-  align-items:end;
-  margin:1rem 0 2rem;
-}
-.xstore-gallery-title{
-  margin:0;
-  font-size:4.1rem;
-  font-weight:600;
-  letter-spacing:-.07rem;
-}
-.xstore-gallery-count{ font-size:1.35rem; color:rgba(255,255,255,.55); }
 .xstore-filters{
   display:flex;
   gap:.75rem;
   overflow-x:auto;
-  margin-bottom:2.3rem;
-  padding:.3rem;
+  margin-bottom:2.2rem;
+  padding:.25rem;
   scrollbar-width:none;
 }
 .xstore-filters::-webkit-scrollbar{ display:none; }
 .xstore-filter{
   flex:0 0 auto;
-  min-height:4.1rem;
-  padding:0 1.6rem;
+  min-height:3.8rem;
+  padding:0 1.5rem;
   border:0;
-  border-radius:.25rem;
-  background:#242424;
+  border-radius:.18rem;
+  background:#303030;
   color:#fff;
-  font:600 1.35rem/1 'Segoe UI',system-ui,sans-serif;
+  font:600 1.22rem/1 'Segoe UI',system-ui,sans-serif;
 }
-.xstore-filter.active{ background:#107c10; }
-.xstore-filter[data-focused]{ outline:.3rem solid #fff; outline-offset:.22rem; }
+.xstore-filter.active{ background:#f1f1f1; color:#111; }
+.xstore-filter[data-focused]{ outline:.26rem solid #9bf00b; outline-offset:.2rem; }
 .xstore-search-wrap{
   position:relative;
-  max-width:82rem;
-  height:5.5rem;
-  margin:0 0 2.6rem;
+  max-width:75rem;
+  height:5.1rem;
+  margin:0 0 2.4rem;
   display:flex;
   align-items:center;
-  border:.2rem solid rgba(255,255,255,.3);
-  border-radius:.25rem;
-  background:#191919;
+  border:.16rem solid rgba(255,255,255,.32);
+  background:#252525;
 }
 .xstore-search-wrap:focus-within{ border-color:#fff; }
-.xstore-search-icon{ width:5.2rem; display:grid; place-items:center; color:rgba(255,255,255,.7); }
-.xstore-search-icon svg{ width:2.2rem; height:2.2rem; }
+.xstore-search-icon{
+  width:5rem;
+  display:grid;
+  place-items:center;
+  color:rgba(255,255,255,.72);
+}
+.xstore-search-icon svg{ width:2.15rem; height:2.15rem; }
 .xstore-search{
   flex:1;
   height:100%;
@@ -386,22 +501,23 @@
   outline:0;
   background:transparent;
   color:#fff;
-  font:500 1.75rem/1 'Segoe UI',system-ui,sans-serif;
+  font:400 1.65rem/1 'Segoe UI',system-ui,sans-serif;
 }
 .xstore-search::placeholder{ color:rgba(255,255,255,.38); }
 .xstore-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(17rem,1fr));
-  gap:2.6rem 1.45rem;
-  padding-bottom:6rem;
+  grid-template-columns:repeat(auto-fill,minmax(14.8rem,1fr));
+  gap:2.45rem 1.35rem;
+  padding:.25rem .25rem 6rem;
 }
+.store-grid-card .store-cover{ aspect-ratio:3/4; }
 .xstore-empty{
   grid-column:1/-1;
-  min-height:26rem;
+  min-height:25rem;
   display:grid;
   place-items:center;
-  color:rgba(255,255,255,.5);
-  font-size:1.7rem;
+  color:rgba(255,255,255,.55);
+  font-size:1.65rem;
 }
 .xstore-loading{
   position:absolute;
@@ -410,131 +526,288 @@
   place-items:center;
   align-content:center;
   gap:1rem;
-  background:#080808;
+  background:#151515;
   color:#fff;
   text-align:center;
-  font-size:3.1rem;
-  font-weight:600;
+  font-size:3rem;
+  font-weight:400;
 }
-.xstore-loading span{ margin-top:1rem; font-size:1.45rem; color:rgba(255,255,255,.5); font-weight:400; }
+.xstore-loading span{
+  margin-top:.75rem;
+  font-size:1.35rem;
+  color:rgba(255,255,255,.5);
+  font-weight:400;
+}
 .xstore-loading.error span{ color:#ffb4ab; }
 
-/* Product detail screen */
+/* ───────── product details ───────── */
 .xproduct{
   position:absolute;
   inset:0;
   z-index:100;
   overflow:hidden;
-  background:#070707;
+  background:#101010;
 }
 .xproduct-art{
   position:absolute;
-  inset:0;
+  inset:0 0 0 38%;
   background-size:cover;
   background-position:center;
-  opacity:.7;
+  opacity:.68;
 }
 .xproduct-scrim{
   position:absolute;
   inset:0;
-  background:linear-gradient(90deg,rgba(0,0,0,.98) 0%,rgba(0,0,0,.94) 36%,rgba(0,0,0,.58) 68%,rgba(0,0,0,.34) 100%);
+  background:
+    linear-gradient(90deg,#0a0a0a 0%,rgba(10,10,10,.98) 32%,rgba(10,10,10,.75) 56%,rgba(10,10,10,.32) 100%),
+    linear-gradient(0deg,rgba(0,0,0,.58),transparent 48%);
 }
+.xproduct-back{
+  position:absolute;
+  z-index:3;
+  left:2.4rem;
+  top:2.2rem;
+  width:4.5rem;
+  height:4.5rem;
+  display:grid;
+  place-items:center;
+  border:0;
+  border-radius:50%;
+  background:rgba(0,0,0,.55);
+  color:#fff;
+}
+.xproduct-back svg{ width:2.3rem; height:2.3rem; }
+.xproduct-back[data-focused]{ outline:.28rem solid #fff; outline-offset:.2rem; }
 .xproduct-body{
   position:relative;
-  z-index:1;
+  z-index:2;
   height:100%;
   display:flex;
   align-items:center;
-  gap:4rem;
-  padding:6rem 7rem 5rem;
+  gap:3.5rem;
+  padding:6.8rem 7rem 5.5rem;
 }
 .xproduct-cover-wrap{ flex:0 0 auto; }
 .xproduct-cover{
-  width:27rem;
+  width:24rem;
   aspect-ratio:3/4;
   display:block;
   object-fit:cover;
-  border-radius:.45rem;
-  box-shadow:0 2rem 5rem rgba(0,0,0,.45);
+  border-radius:.4rem;
+  box-shadow:0 2rem 5rem rgba(0,0,0,.5);
 }
-.xproduct-copy{ max-width:76rem; }
+.xproduct-copy{ max-width:70rem; }
 .xproduct-type{
-  margin-bottom:1rem;
+  margin-bottom:.9rem;
   color:#9bf00b;
-  font-size:1.25rem;
-  font-weight:700;
+  font-size:1.15rem;
+  font-weight:800;
   letter-spacing:.08rem;
 }
 .xproduct-title{
-  margin:0 0 1.2rem;
-  font-size:5.4rem;
-  line-height:.98;
-  font-weight:600;
-  letter-spacing:-.09rem;
+  margin:0 0 .8rem;
+  max-width:70rem;
+  font-size:4.75rem;
+  line-height:1;
+  font-weight:500;
+  letter-spacing:-.08rem;
 }
-.xproduct-meta{
-  margin-bottom:1.25rem;
-  font-size:1.35rem;
-  font-weight:600;
-  color:rgba(255,255,255,.63);
+.xproduct-publisher{
+  font-size:1.3rem;
+  color:rgba(255,255,255,.72);
 }
-.xproduct-cloud{
-  display:inline-flex;
+.xproduct-rating{
+  display:flex;
   align-items:center;
-  min-height:3rem;
-  padding:0 .9rem;
-  border-radius:.2rem;
-  background:rgba(255,255,255,.11);
-  font-size:1.2rem;
+  gap:.7rem;
+  margin-top:1rem;
+  font-size:1.15rem;
+}
+.xproduct-rating span{ letter-spacing:.04rem; }
+.xproduct-rating b{ font-weight:600; }
+.xproduct-rating small{ color:rgba(255,255,255,.55); font-size:1.05rem; }
+.xproduct-badges{
+  display:flex;
+  flex-wrap:wrap;
+  gap:.65rem;
+  margin:1.2rem 0 1.45rem;
+}
+.xproduct-badges span{
+  min-height:2.6rem;
+  display:flex;
+  align-items:center;
+  padding:0 .8rem;
+  border-radius:.18rem;
+  background:rgba(255,255,255,.12);
+  font-size:1.05rem;
   font-weight:600;
-  margin-bottom:1.5rem;
 }
 .xproduct-desc{
   margin:0;
-  max-width:69rem;
-  font-size:1.65rem;
+  max-width:66rem;
+  font-size:1.48rem;
   line-height:1.48;
   color:rgba(255,255,255,.84);
   display:-webkit-box;
-  -webkit-line-clamp:5;
+  -webkit-line-clamp:4;
   -webkit-box-orient:vertical;
   overflow:hidden;
 }
 .xproduct-price{
-  margin-top:2rem;
+  margin-top:1.7rem;
   font-size:2rem;
   font-weight:600;
 }
-.xproduct-license{
-  margin-top:.35rem;
-  font-size:1.25rem;
+.xproduct-ownership{
+  margin-top:.3rem;
+  font-size:1.15rem;
   color:rgba(255,255,255,.55);
 }
 .xproduct-actions{
   display:flex;
   flex-wrap:wrap;
   gap:.8rem;
-  margin-top:2.2rem;
+  margin-top:1.9rem;
 }
 .xproduct-action{
-  min-width:17rem;
-  min-height:4.8rem;
+  min-width:16.5rem;
+  min-height:4.65rem;
   border:0;
-  border-radius:.22rem;
-  padding:0 1.8rem;
-  background:#e7e7e7;
+  border-radius:.18rem;
+  padding:0 1.7rem;
+  background:#ededed;
   color:#111;
-  font:700 1.35rem/1 'Segoe UI',system-ui,sans-serif;
+  font:700 1.28rem/1 'Segoe UI',system-ui,sans-serif;
 }
 .xproduct-action.primary{ background:#107c10; color:#fff; }
-.xproduct-action.primary.play{ background:#9bf00b; color:#0b0b0b; }
-.xproduct-action.icon-only{ min-width:5rem; width:5rem; padding:0; }
-.xproduct-action.icon-only svg{ width:2.2rem; height:2.2rem; }
-.xproduct-action[data-focused]{ outline:.35rem solid #fff; outline-offset:.25rem; }
-.xproduct-note{
-  margin-top:1.6rem;
-  font-size:1.2rem;
+.xproduct-action.primary.play{ background:#107c10; color:#fff; }
+.xproduct-action[data-focused]{ outline:.3rem solid #fff; outline-offset:.25rem; }
+.xproduct-cloud-row{
+  display:flex;
+  align-items:center;
+  gap:.9rem;
+  max-width:62rem;
+  margin-top:1.45rem;
+  color:rgba(255,255,255,.64);
+  font-size:1.1rem;
+}
+.xproduct-cloud-row svg{ width:2rem; height:2rem; flex:0 0 auto; }
+
+/* ───────── owned cloud shelf in My games & apps ───────── */
+.cloud-library-section{
+  flex:none;
+  margin:0 var(--safe-x) 1.5rem;
+  padding:1.4rem 0 1.2rem;
+}
+.cloud-library-head{
+  display:flex;
+  align-items:end;
+  justify-content:space-between;
+  margin-bottom:1rem;
+}
+.cloud-library-head h2{
+  margin:0;
+  font-size:2rem;
+  font-weight:600;
+}
+.cloud-library-head p{
+  margin:.35rem 0 0;
+  font-size:1.15rem;
+  color:rgba(255,255,255,.55);
+}
+.cloud-library-head > span{
+  font-size:1.1rem;
   color:rgba(255,255,255,.5);
+}
+.cloud-library-row{
+  display:grid;
+  grid-auto-flow:column;
+  grid-auto-columns:13.5rem;
+  gap:1.2rem;
+  overflow-x:auto;
+  padding:.3rem .3rem 1rem;
+  margin-left:-.3rem;
+  scrollbar-width:none;
+}
+.cloud-library-row::-webkit-scrollbar{ display:none; }
+.cloud-library-game{
+  min-width:0;
+  border:0;
+  padding:0;
+  background:transparent;
+  color:#fff;
+  text-align:left;
+  font:inherit;
+}
+.cloud-library-cover{
+  position:relative;
+  display:block;
+  width:100%;
+  aspect-ratio:3/4;
+  overflow:hidden;
+  border-radius:.45rem;
+  background:#222;
+}
+.cloud-library-cover img{ width:100%; height:100%; display:block; object-fit:cover; }
+.cloud-library-game[data-focused] .cloud-library-cover{ outline:.3rem solid #fff; outline-offset:.25rem; }
+.cloud-library-badge{
+  position:absolute;
+  left:.6rem;
+  bottom:.6rem;
+  width:2.2rem;
+  height:2.2rem;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:rgba(0,0,0,.78);
+  color:#fff;
+  font-size:1.2rem;
+}
+.cloud-library-name{
+  display:block;
+  margin-top:.65rem;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  font-size:1.25rem;
+  font-weight:600;
+}
+.cloud-library-sub{
+  display:block;
+  margin-top:.2rem;
+  font-size:1.05rem;
+  color:rgba(255,255,255,.5);
+}
+
+/* ───────── cloud player hardening ───────── */
+.player.cloud-player{
+  position:fixed!important;
+  inset:0!important;
+  z-index:10000!important;
+  width:100vw!important;
+  height:100vh!important;
+  background:#000!important;
+}
+.player.cloud-player iframe{
+  position:absolute;
+  inset:0;
+  width:100%!important;
+  height:100%!important;
+  border:0!important;
+  background:#000!important;
+}
+.player.cloud-player .player-hint{
+  position:absolute;
+  left:50%;
+  bottom:2.4rem;
+  transform:translateX(-50%);
+  z-index:2;
+  padding:.75rem 1.15rem;
+  border-radius:.25rem;
+  background:rgba(0,0,0,.72);
+  color:rgba(255,255,255,.78);
+  font-size:1.15rem;
+  pointer-events:none;
 }
 
 body[data-view="store"] .backdrop,
@@ -546,11 +819,18 @@ body[data-view="store"] .legend{
 }
 
 @media (max-aspect-ratio:16/10){
-  .xstore-shell{ grid-template-columns:21rem minmax(0,1fr); }
+  .xstore-shell{ grid-template-columns:9.2rem minmax(0,1fr); }
   .xstore-rail{ padding-left:1rem; padding-right:1rem; }
-  .xstore-brand{ font-size:1.7rem; }
-  .xstore-content{ padding-left:3.4rem; padding-right:3.4rem; }
-  .xstore-hero{ height:38rem; }
-  .xstore-hero-copy{ width:43rem; }
-  .xstore-grid{ grid-template-columns:repeat(auto-fill,minmax(15.5rem,1fr)); }
+  .xstore-nav-btn::before{ left:-1rem; }
+  .xstore-content{ padding-left:1.7rem; padding-right:1.7rem; }
+  .store-lead{ width:32rem; flex-basis:32rem; }
+  .store-lead-art{ height:18rem; }
+  .xstore-gallery-small{ grid-auto-columns:12.6rem; }
+  .store-compact{ width:12.6rem; min-width:12.6rem; }
+  .store-compact .store-cover{ height:12.3rem; }
+  .xstore-title-row h1{ font-size:3.15rem; }
+  .xstore-hints{ padding-right:.6rem; gap:1.3rem; }
+  .xproduct-body{ padding-left:5rem; padding-right:4rem; gap:2.8rem; }
+  .xproduct-cover{ width:21rem; }
+  .xproduct-title{ font-size:4.1rem; }
 }
