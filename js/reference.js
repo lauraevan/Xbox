@@ -30,9 +30,9 @@ async function sgdb(kind, name){
     const found = (await search.json())?.data || [];
     if (!found.length) return null;
     const id = found[0].id;
-    const endpoint = kind === 'hero'
-      ? `${SGDB}/heroes/game/${id}`
-      : `${SGDB}/grids/game/${id}`;
+    let endpoint;
+    if (kind === 'hero') endpoint = `${SGDB}/heroes/game/${id}`;
+    else endpoint = `${SGDB}/grids/game/${id}`;
     const res = await fetch(endpoint, { headers });
     if (!res.ok) return null;
     const art = (await res.json())?.data || [];
@@ -136,8 +136,9 @@ function refCard({ label, sub, artName, chip, cls, fallback }){
     btn.append(wrap);
   }
   if (chip) btn.append(el('div', 'card-chip', escapeHtml(chip)));
-  btn.append(el('div', 'card-label',
-    escapeHtml(label) + (sub ? `<span class="sub">${escapeHtml(sub)}</span>` : '')));
+  const labelNode = el('div', 'card-label',
+    escapeHtml(label) + (sub ? `<span class="sub">${escapeHtml(sub)}</span>` : ''));
+  btn.append(labelNode);
   btn._navActivate = () => artName ? activate(artName) : window.App.setView('pass');
   return btn;
 }
@@ -205,6 +206,54 @@ const guideTabs = document.getElementById('guideTabs');
 if (guideTabs){
   new MutationObserver(tuneGuideTabs).observe(guideTabs, { childList:true });
   tuneGuideTabs();
+}
+
+const GUIDE_REFERENCE_ROWS = [
+  { name:'Home', glyph:true },
+  { name:'My games & apps', glyph:true },
+  { name:'Forza Horizon 5', art:'Forza Horizon 5' },
+  { name:'Subnautica 2 (Game Preview)', art:'Subnautica 2' },
+  { name:'Hollow Knight: Silksong', art:'Hollow Knight: Silksong' },
+  { name:'Microsoft Edge', art:'Microsoft Edge', fallback:EDGE_LOGO }
+];
+
+function tuneGuideBody(){
+  const body = document.getElementById('guideBody');
+  if (!body || body.querySelector('.guide-head')) return;
+  const rows = [...body.querySelectorAll('.grow')];
+  if (rows.length < 2) return;
+  const firstName = rows[0].querySelector('.grow-name')?.textContent;
+  if (firstName !== 'Home' || rows[0].dataset.referenceGuide === '1') return;
+
+  rows.forEach((row, i) => {
+    if (i >= GUIDE_REFERENCE_ROWS.length){
+      row.style.display = 'none';
+      return;
+    }
+    const def = GUIDE_REFERENCE_ROWS[i];
+    row.dataset.referenceGuide = '1';
+    const name = row.querySelector('.grow-name');
+    const meta = row.querySelector('.grow-meta');
+    if (name) name.textContent = def.name;
+    if (meta) meta.remove();
+    if (def.art){
+      const box = row.querySelector('.grow-icon');
+      if (box){
+        box.classList.remove('glyph');
+        box.innerHTML = '';
+        const img = el('img', 'cover loaded');
+        img.style.cssText = 'width:100%;height:100%;object-fit:cover';
+        loadArt(img, def.art, 'cover', def.fallback || '');
+        box.append(img);
+      }
+    }
+  });
+}
+
+const guideBody = document.getElementById('guideBody');
+if (guideBody){
+  new MutationObserver(tuneGuideBody).observe(guideBody, { childList:true, subtree:true });
+  tuneGuideBody();
 }
 
 })();
