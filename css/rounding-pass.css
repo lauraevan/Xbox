@@ -153,6 +153,104 @@ body[data-view="home"] .profile .profile-sub{
   display:none !important;
 }
 
+/* Light Microsoft Store correction pass.
+   Keep the console Store dense and TV-first instead of looking like a desktop web shop. */
+body[data-view="store"] .xstore-shell{
+  grid-template-columns:19rem minmax(0,1fr) !important;
+}
+body[data-view="store"] .xstore-rail{
+  padding:2.8rem 1rem 2.4rem !important;
+  background:#0b0b0b !important;
+  border-right:.1rem solid rgba(255,255,255,.055) !important;
+}
+body[data-view="store"] .xstore-brand{
+  gap:.85rem !important;
+  padding:0 1rem 2.35rem !important;
+  font-size:1.68rem !important;
+}
+body[data-view="store"] .xstore-brand-icon{
+  width:3rem !important;
+  height:3rem !important;
+}
+body[data-view="store"] .xstore-nav-btn{
+  min-height:5rem !important;
+  gap:1.05rem !important;
+  padding:0 1rem !important;
+  border-radius:.22rem !important;
+  font-size:1.46rem !important;
+}
+body[data-view="store"] .xstore-content{
+  padding:2.7rem 3.5rem 6rem !important;
+}
+body[data-view="store"] .xstore-top{
+  height:4.3rem !important;
+  margin-bottom:1.8rem !important;
+}
+body[data-view="store"] .xstore-hero{
+  height:37rem !important;
+  margin-bottom:3rem !important;
+  border-radius:.28rem !important;
+}
+body[data-view="store"] .xstore-hero-copy{
+  left:3.2rem !important;
+  top:2.8rem !important;
+  bottom:3rem !important;
+  width:44rem !important;
+}
+body[data-view="store"] .xstore-hero-title{
+  font-size:4rem !important;
+}
+body[data-view="store"] .xstore-row{
+  grid-auto-columns:17.2rem !important;
+  gap:1.05rem !important;
+}
+body[data-view="store"] .store-cover{
+  border-radius:.28rem !important;
+}
+body[data-view="store"] .store-game-meta{
+  padding-top:.7rem !important;
+}
+body[data-view="store"] .store-game-title{
+  font-size:1.38rem !important;
+}
+body[data-view="store"] .xstore-shelf{
+  margin-bottom:3.45rem !important;
+}
+body[data-view="store"] .xstore-shelf-title{
+  font-size:2.25rem !important;
+}
+body[data-view="store"] .xstore-gallery-title{
+  font-size:3.65rem !important;
+}
+body[data-view="store"] .xproduct-cover{
+  width:25rem !important;
+  border-radius:.32rem !important;
+}
+body[data-view="store"] .xproduct-title{
+  font-size:4.9rem !important;
+}
+body[data-view="store"] .xproduct-action{
+  border-radius:.18rem !important;
+}
+
+/* Cloud stream should take over the display like a real launched game. */
+.player.cloud-player{
+  background:#000 !important;
+}
+.player.cloud-player iframe{
+  position:absolute !important;
+  inset:0 !important;
+  width:100% !important;
+  height:100% !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:#000 !important;
+}
+.player.cloud-player .player-hint{
+  background:rgba(0,0,0,.78) !important;
+  border-radius:.35rem !important;
+}
+
 @media (max-aspect-ratio:16/10){
   .ref-tile{
     width:17.4rem !important;
@@ -172,5 +270,15 @@ body[data-view="home"] .profile .profile-sub{
   .ref-friends .tile-face{
     width:20.8rem !important;
     height:20.8rem !important;
+  }
+  body[data-view="store"] .xstore-shell{
+    grid-template-columns:17rem minmax(0,1fr) !important;
+  }
+  body[data-view="store"] .xstore-content{
+    padding-left:2.7rem !important;
+    padding-right:2.7rem !important;
+  }
+  body[data-view="store"] .xstore-row{
+    grid-auto-columns:16.3rem !important;
   }
 }
