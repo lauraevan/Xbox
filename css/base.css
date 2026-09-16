@@ -84,23 +84,28 @@ svg .s{ fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; 
    Console focus = scale + light + a bright ring. Never a browser outline. */
 [data-nav]{ outline:none !important; position:relative; }
 
+/* Selection is a thin white outline. The weight does the work: a hairline
+   of dark just outside keeps it readable over pale cover art, and the halo
+   is faint enough to read as light rather than as a second border. */
 .focus-ring{
   position:fixed; z-index:60; pointer-events:none;
-  /* content-box so the border lands outside the element it traces:
-     a 257px tile ends up with a 265px ring, as measured */
+  /* content-box so the border lands outside the element it traces */
   box-sizing:content-box;
-  border:.4rem solid var(--accent);
+  border:.2rem solid #fff;
   border-radius:var(--tile-r);
-  box-shadow:0 0 0 .1rem rgba(0,0,0,.55), 0 0 2.4rem rgba(109,252,109,.45),
-             inset 0 0 1.2rem rgba(109,252,109,.14);
-  transition:top .16s var(--ease), left .16s var(--ease),
-             width .16s var(--ease), height .16s var(--ease),
-             border-radius .16s var(--ease), opacity .16s linear;
+  box-shadow:
+    0 0 0 .1rem rgba(0,0,0,.6),
+    0 0 1.2rem rgba(255,255,255,.28);
+  transition:top .16s var(--ease-decel), left .16s var(--ease-decel),
+             width .16s var(--ease-decel), height .16s var(--ease-decel),
+             border-radius .16s var(--ease-decel), opacity .12s linear;
   opacity:0;
 }
 .focus-ring.on{ opacity:1; }
-.focus-ring.pop{ animation:ringPop .22s var(--ease); }
-@keyframes ringPop{ 50%{ box-shadow:0 0 0 .1rem rgba(0,0,0,.55), 0 0 4rem rgba(109,252,109,.8);} }
+.focus-ring.pop{ animation:ringPop .2s var(--ease-decel); }
+@keyframes ringPop{
+  50%{ box-shadow:0 0 0 .1rem rgba(0,0,0,.6), 0 0 2rem rgba(255,255,255,.5); }
+}
 
 /* ───────── stage ───────── */
 .stage{

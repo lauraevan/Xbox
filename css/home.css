@@ -67,8 +67,8 @@
 :root[data-motion="reduced"] .view.entering .tile,
 :root[data-motion="reduced"] .view.entering .card{ animation:none; }
 .tile[data-focused]{
-  transform:scale(1.06);
-  box-shadow:0 1.6rem 4rem rgba(0,0,0,.6);
+  transform:scale(1.04);
+  box-shadow:0 1.2rem 3.2rem rgba(0,0,0,.62);
   z-index:2;
 }
 /* the hero tile holds its measured size when focused; the ring carries
