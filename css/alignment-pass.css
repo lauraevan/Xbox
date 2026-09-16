@@ -1,0 +1,100 @@
+/* Alignment pass: keep the shared Xbox chrome and every secondary page on one grid. */
+
+:root{
+  --xbox-page-top:3.2rem;
+  --xbox-side-top:3.2rem;
+}
+
+/* The connected five-button capsule should read as one perfectly level control. */
+.sysnav{
+  display:flex!important;
+  align-items:center!important;
+}
+.sysnav-btn{
+  display:grid!important;
+  place-items:center!important;
+  padding:0!important;
+  line-height:1!important;
+  vertical-align:middle!important;
+}
+.sysnav-btn>svg{
+  position:static!important;
+  display:block!important;
+  width:2.42rem!important;
+  height:2.42rem!important;
+  margin:0!important;
+  transform:none!important;
+}
+.sysnav-btn .gp-chip{
+  box-sizing:border-box!important;
+  min-width:3.15rem!important;
+  height:3.05rem!important;
+  margin:0!important;
+  padding:.12rem .28rem!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  line-height:.88!important;
+  text-align:center!important;
+  transform:none!important;
+}
+
+/* Level the right-side status cluster too. */
+.sysstatus,
+.friends,
+.status-btn,
+.battery,
+.clock{
+  align-items:center!important;
+}
+.status-btn{
+  display:grid!important;
+  place-items:center!important;
+  padding:0!important;
+}
+.status-btn>svg{
+  display:block!important;
+  margin:0!important;
+}
+.clock{
+  display:flex!important;
+  line-height:1!important;
+}
+
+/* One vertical start line for Store, Library, Game Pass, Search and Settings. */
+.console-main,
+.console-pass-main,
+.console-settings-main,
+.console-search-page,
+.xstore-content{
+  padding-top:var(--xbox-page-top)!important;
+}
+.console-side,
+.xstore-rail{
+  padding-top:var(--xbox-side-top)!important;
+}
+.console-side-brand,
+.xstore-brand{
+  box-sizing:border-box!important;
+  min-height:6rem!important;
+  margin:0!important;
+  padding-top:0!important;
+  padding-bottom:2rem!important;
+  display:flex!important;
+  align-items:center!important;
+}
+.console-page-head,
+.xstore-top{
+  margin-top:0!important;
+}
+
+/* Keep the same grid on taller iPad/browser aspect ratios. */
+@media (max-aspect-ratio:16/10){
+  .console-main,
+  .console-pass-main,
+  .console-settings-main,
+  .console-search-page,
+  .xstore-content{
+    padding-top:var(--xbox-page-top)!important;
+  }
+}
