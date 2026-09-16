@@ -40,7 +40,7 @@ body[data-view="store"] .xstore-rail{ background:#090909!important; }
 .guide-panel{
   background:rgba(15,16,18,.992)!important;
   border:.1rem solid rgba(255,255,255,.05)!important;
-  border-radius:1.35rem!important;
+  border-radius:2rem!important;
   box-shadow:1.1rem 1.4rem 5rem rgba(0,0,0,.72)!important;
   backdrop-filter:none!important;
   overflow:hidden!important;
@@ -49,13 +49,13 @@ body[data-view="store"] .xstore-rail{ background:#090909!important; }
 .guide-tabs{
   min-height:6.3rem!important;
   padding:1.05rem 1.2rem .25rem!important;
-  gap:.18rem!important;
+  gap:.22rem!important;
   background:#090a0b!important;
   border-bottom:.1rem solid rgba(255,255,255,.06)!important;
 }
 .guide-tab{
   height:4.85rem!important;
-  border-radius:.72rem!important;
+  border-radius:1rem!important;
   color:rgba(255,255,255,.52)!important;
 }
 .guide-tab.active{ color:#fff!important; }
@@ -117,7 +117,7 @@ body[data-view="store"] .xstore-rail{ background:#090909!important; }
   gap:1.15rem!important;
   padding:.9rem 1.05rem!important;
   border:.28rem solid transparent!important;
-  border-radius:.72rem!important;
+  border-radius:1rem!important;
   background:transparent!important;
 }
 .grow:hover{ background:#191b1d!important; }
@@ -129,7 +129,7 @@ body[data-view="store"] .xstore-rail{ background:#090909!important; }
 .grow-icon{
   width:4rem!important;
   height:4rem!important;
-  border-radius:.62rem!important;
+  border-radius:.8rem!important;
   background:rgba(255,255,255,.025)!important;
 }
 .grow-icon.glyph{ background:transparent!important; }
@@ -164,7 +164,7 @@ body[data-view="store"] .xstore-rail{ background:#090909!important; }
 }
 .quick-btn{
   height:5.15rem!important;
-  border-radius:.72rem!important;
+  border-radius:1rem!important;
   background:#131517!important;
   border:.1rem solid rgba(255,255,255,.035)!important;
 }
@@ -180,7 +180,7 @@ body[data-view="store"] .xstore-rail{ background:#090909!important; }
 .guide-hint{
   width:max-content!important;
   padding:.46rem .72rem!important;
-  border-radius:.58rem!important;
+  border-radius:.85rem!important;
   background:rgba(7,8,9,.76)!important;
   color:rgba(255,255,255,.74)!important;
   box-shadow:0 .25rem 1rem rgba(0,0,0,.26)!important;
