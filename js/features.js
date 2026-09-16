@@ -202,5 +202,45 @@ const Storage = {
   }
 };
 
-window.Features = { Captures, Network, ScreenTime, QuickResume, Storage };
+/* ───────────────────────── wallpaper ─────────────────────────
+   A 1080p image is too big for localStorage, so the picked file lives in
+   IndexedDB alongside captures and is handed back as an object URL. */
+const WALL_STORE = 'wallpaper';
+
+const Wallpaper = {
+  async set(blob){
+    await tx('readwrite', store => store.put({ id: WALL_STORE, at: Date.now(), blob }));
+  },
+  async get(){
+    try {
+      const rec = await tx('readonly', store => store.get(WALL_STORE));
+      return rec?.blob || null;
+    } catch { return null; }
+  },
+  async clear(){ try { await tx('readwrite', store => store.delete(WALL_STORE)); } catch {} },
+
+  /** An object URL for the stored image, or null. */
+  async url(){
+    const blob = await Wallpaper.get();
+    return blob ? URL.createObjectURL(blob) : null;
+  },
+
+  /** Open a file picker and store what comes back. */
+  pick(){
+    return new Promise(resolve => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.addEventListener('change', async () => {
+        const file = input.files?.[0];
+        if (!file) return resolve(null);
+        try { await Wallpaper.set(file); resolve(await Wallpaper.url()); }
+        catch { resolve(null); }
+      }, { once: true });
+      input.click();
+    });
+  }
+};
+
+window.Features = { Captures, Network, ScreenTime, QuickResume, Storage, Wallpaper };
 })();

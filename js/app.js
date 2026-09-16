@@ -51,7 +51,8 @@ function setBackdrop(game){
     const a = $('#bgA');
     if (a.dataset.wallpaper !== set.wallpaper){
       a.dataset.wallpaper = set.wallpaper;
-      a.style.backgroundImage = `url("${set.wallpaper}")`;
+      const src = set.wallpaper === 'file' ? (wallpaperObjectURL || '') : set.wallpaper;
+      if (src) a.style.backgroundImage = `url("${src}")`;
       a.classList.add('on', 'wide');
       $('#bgB').classList.remove('on');
     }
@@ -495,14 +496,37 @@ function promptGamertag(){
   });
 }
 
+let wallpaperObjectURL = null;
+
+/** Bring a previously picked wallpaper back after a reload. */
+async function restoreWallpaper(){
+  if (window.State.settings.wallpaper !== 'file') return;
+  wallpaperObjectURL = await window.Features.Wallpaper.url();
+  $('#bgA').removeAttribute('data-wallpaper');
+  setBackdrop(null);
+}
+
+async function chooseWallpaperFile(){
+  const url = await window.Features.Wallpaper.pick();
+  if (!url){ toast('No image chosen'); return; }
+  wallpaperObjectURL = url;
+  window.State.setSetting('wallpaper', 'file');
+  $('#bgA').removeAttribute('data-wallpaper');
+  setBackdrop(null);
+  toast('Wallpaper set', 'Stored on this device');
+  if (currentView === 'settings') setView('settings', { section:'personalization' });
+}
+
 function promptWallpaper(){
   modal({
     title:'Home wallpaper',
-    text:'Paste a direct image URL - ideally 1920x1080. It sits fixed behind '
-       + 'the dashboard the way the console does, instead of cropping a square '
-       + 'cover to fit. Leave it empty to go back to using cover art.',
-    input:{ value: window.State.settings.wallpaper || '' },
+    text:'Pick an image from this device, or paste a direct URL. Ideally '
+       + '1920x1080. It sits fixed behind the dashboard the way the console '
+       + 'does, instead of cropping a square cover to fit.',
+    input:{ value: window.State.settings.wallpaper === 'file'
+              ? '' : (window.State.settings.wallpaper || '') },
     actions:[
+      { label:'Choose an image\u2026', onSelect: () => chooseWallpaperFile() },
       { label:'Save', onSelect: value => {
           const url = (value || '').trim();
           window.State.setSetting('wallpaper', url);
@@ -914,6 +938,7 @@ async function boot(){
   }
 
   setView('home');
+  restoreWallpaper();
   window.State.unlock('boot');
 
   const count = window.Catalog.count();
@@ -1002,7 +1027,7 @@ window.App = {
   toast, modal, closeModal, promptGamertag, confirmReset, powerOff, screenshot,
   syncProfile, tickClock, updateLegend, setBackdrop, paintIcons, syncMicIcon,
   applyNightMode, captureActions, promptNewProfile, manageProfiles, testRumble, rumble,
-  promptArtworkKey, promptProfileLine, promptWallpaper,
+  promptArtworkKey, promptProfileLine, promptWallpaper, chooseWallpaperFile,
   isPlaying: () => !!playing,
   get view(){ return currentView; }
 };

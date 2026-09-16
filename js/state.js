@@ -110,6 +110,20 @@ function save(){
   }, 120);
 }
 
+/** Write immediately, for cases where the page may be about to go away. */
+function flush(){
+  clearTimeout(saveTimer);
+  try { localStorage.setItem(KEY, JSON.stringify(data)); } catch {}
+}
+
+/* a debounced write is lost if the page is reloaded or closed inside the
+   window, which loses whatever the user just changed */
+addEventListener('pagehide', flush);
+addEventListener('beforeunload', flush);
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') flush();
+});
+
 const listeners = new Set();
 const emit = evt => listeners.forEach(fn => { try { fn(evt); } catch {} });
 
@@ -149,6 +163,9 @@ const State = {
   get gamerscore(){ return data.gamerscore; },
 
   on(fn){ listeners.add(fn); return () => listeners.delete(fn); },
+
+  /** Commit any pending write now. */
+  flush,
 
   avatar(){ return avatarDataUri(data.avatarSeed); },
   avatarFor(seed){ return avatarDataUri(seed || 0); },
