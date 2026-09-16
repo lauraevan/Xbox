@@ -1,10 +1,11 @@
 /* Stratus Cloud integration for the Xbox replica.
-   Uses the public upstream catalogue and the upstream public site key.
-   A host can override the key by setting window.STRATUS_API_KEY before load. */
+   Uses the deployed Render API and the upstream site key.
+   A host can override either value before this file loads by setting
+   window.STRATUS_BASE / window.STRATUS_API_KEY. */
 (() => {
 'use strict';
 
-const BASE = 'https://api.stratus.lol';
+const BASE = String(window.STRATUS_BASE || 'https://stratus-api-2.onrender.com').replace(/\/$/, '');
 const CATALOG_SOURCES = [
   'https://raw.githubusercontent.com/evanjeffrey1212-eng/stratus-api/main/cloud.json',
   'https://cdn.jsdelivr.net/gh/evanjeffrey1212-eng/stratus-api@main/cloud.json'
