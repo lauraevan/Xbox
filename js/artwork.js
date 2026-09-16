@@ -5,15 +5,18 @@
    always been a blurred crop. SteamGridDB carries proper widescreen
    key art for titles that also exist on Steam.
 
-   The API key is NEVER stored in this repository. It is pasted in
-   under Settings and kept in localStorage on the device that uses it,
-   because this repo is public and anything committed here is readable
-   by anyone. Note that a key used from a browser is visible to anyone
-   with devtools open on that page regardless — treat it as low-value
-   and revocable, not a secret.
+   A project key is committed below at the owner's instruction so the
+   art works with no setup. The repository is public, so treat that key
+   as disposable: anyone reading this file has it, and a key used from a
+   browser is visible in devtools regardless. Settings -> Personalization
+   overrides it per device, and that override is kept in localStorage
+   rather than written back here.
    ═══════════════════════════════════════════════════════════ */
 (() => {
 'use strict';
+
+/* Project default. Disposable by design — see the note above. */
+const DEFAULT_KEY = '4013cee64ddceaa6dfab638c7e90eb79';
 
 const KEY_STORE   = 'xbox.web.sgdb.key';
 const CACHE_STORE = 'xbox.web.sgdb.cache.v1';
@@ -40,8 +43,13 @@ function saveCache(){
 const inflight = new Map();
 
 const Artwork = {
+  /** A per-device override wins; otherwise the project key is used. */
   get key(){
-    try { return localStorage.getItem(KEY_STORE) || ''; } catch { return ''; }
+    try { return localStorage.getItem(KEY_STORE) || DEFAULT_KEY; }
+    catch { return DEFAULT_KEY; }
+  },
+  get usingDefault(){
+    try { return !localStorage.getItem(KEY_STORE); } catch { return true; }
   },
   setKey(value){
     try {

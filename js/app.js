@@ -480,12 +480,13 @@ function promptGamertag(){
 
 function promptArtworkKey(){
   modal({
-    title: window.Artwork.enabled ? 'SteamGridDB key' : 'Add a SteamGridDB key',
+    title: 'SteamGridDB key',
     text: 'Widescreen key art for titles that also exist on Steam. Most of this '
         + 'catalogue is browser and Flash originals, which SteamGridDB does not '
-        + 'carry, so expect only a fraction to match. The key is kept in this '
-        + 'browser and never written into the repository.',
-    input:{ value: window.Artwork.key },
+        + 'carry, so expect only a fraction to match. A project key ships with '
+        + 'the build; anything entered here overrides it on this device only. '
+        + 'Leave it empty to go back to the project key.',
+    input:{ value: window.Artwork.usingDefault ? '' : window.Artwork.key },
     actions:[
       { label:'Save', onSelect: value => {
           window.Artwork.setKey(value);

@@ -654,10 +654,10 @@ function renderSettings(root, opts = {}){
     const art = window.Artwork;
     const stats = art.stats();
     body.append(srow({
-      name:'Widescreen artwork', desc: art.enabled
-        ? `SteamGridDB key saved \u00b7 ${stats.found} of ${stats.looked} titles matched so far`
-        : 'Add a SteamGridDB key to use real 16:9 key art behind the dashboard',
-      value: art.enabled ? 'Connected' : 'Add key',
+      name:'Widescreen artwork',
+      desc: `${art.usingDefault ? 'Project key' : 'Your key'} \u00b7 `
+          + `${stats.found} of ${stats.looked} titles matched so far`,
+      value: art.usingDefault ? 'Use my own' : 'Connected',
       onActivate: () => window.App.promptArtworkKey()
     }));
     if (art.enabled){
