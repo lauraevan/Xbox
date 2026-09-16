@@ -1,0 +1,97 @@
+/* Owned Stratus games inside My games & apps. */
+.cloud-library-section{
+  margin:2.2rem 0 2.6rem;
+  padding:1.8rem 0 .4rem;
+  border-top:.1rem solid rgba(255,255,255,.09);
+  border-bottom:.1rem solid rgba(255,255,255,.09);
+}
+.cloud-library-head{
+  display:flex;
+  align-items:end;
+  justify-content:space-between;
+  gap:2rem;
+  margin-bottom:1.35rem;
+}
+.cloud-library-head h2{
+  margin:0;
+  font-size:2.2rem;
+  font-weight:600;
+}
+.cloud-library-head p{
+  margin:.45rem 0 0;
+  color:rgba(255,255,255,.52);
+  font-size:1.25rem;
+}
+.cloud-library-head>span{
+  color:rgba(255,255,255,.48);
+  font-size:1.25rem;
+}
+.cloud-library-row{
+  display:grid;
+  grid-auto-flow:column;
+  grid-auto-columns:15.8rem;
+  gap:1.25rem;
+  overflow-x:auto;
+  overflow-y:hidden;
+  padding:.4rem .4rem 1.6rem;
+  margin:0 -.4rem;
+  scrollbar-width:none;
+}
+.cloud-library-row::-webkit-scrollbar{ display:none; }
+.cloud-library-game{
+  border:0;
+  padding:0;
+  background:transparent;
+  color:#fff;
+  text-align:left;
+  font:inherit;
+}
+.cloud-library-cover{
+  position:relative;
+  display:block;
+  width:100%;
+  aspect-ratio:1/1;
+  overflow:hidden;
+  border-radius:.6rem;
+  background:#1b1b1b;
+}
+.cloud-library-cover img{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+}
+.cloud-library-badge{
+  position:absolute;
+  left:.7rem;
+  bottom:.7rem;
+  width:2.7rem;
+  height:2.7rem;
+  display:grid;
+  place-items:center;
+  border-radius:.35rem;
+  background:rgba(0,0,0,.8);
+  font-size:1.35rem;
+}
+.cloud-library-name{
+  display:block;
+  margin-top:.75rem;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  font-size:1.35rem;
+  font-weight:600;
+}
+.cloud-library-sub{
+  display:block;
+  margin-top:.25rem;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  color:rgba(255,255,255,.48);
+  font-size:1.05rem;
+}
+.cloud-library-game[data-focused] .cloud-library-cover{
+  outline:.38rem solid #52d64b;
+  outline-offset:.28rem;
+}
