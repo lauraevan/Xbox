@@ -1,0 +1,293 @@
+/* Xbox reference tuning pass.
+   This intentionally overrides only visual geometry/chrome. No neon,
+   no decorative gradient stacks, and no web-dashboard card treatment. */
+
+:root{
+  --safe-x: 9.2rem;
+  --bar-h: 34rem;
+  --tile-r: .2rem;
+  --card-r: .2rem;
+  --green-bright: #52d64b;
+  --accent: #52d64b;
+}
+
+.backdrop-glow{ display:none !important; }
+.backdrop-scrim{ background:rgba(0,0,0,.09) !important; }
+.topbar-scrim{
+  height:31rem;
+  background:linear-gradient(180deg, rgba(0,0,0,.34) 0%, rgba(0,0,0,.10) 70%, transparent 100%) !important;
+}
+.backdrop-layer,
+.backdrop-layer.wide,
+.backdrop-layer.reference-wide{
+  inset:0 !important;
+  transform:none !important;
+  background-size:cover !important;
+  background-position:center center !important;
+  filter:saturate(1.04) contrast(1.01) brightness(.98) !important;
+}
+.backdrop-layer.reference-wide.on{ transform:none !important; }
+
+.focus-ring{
+  border:.3rem solid #52d64b !important;
+  border-radius:.2rem !important;
+  box-shadow:0 0 0 .1rem rgba(0,0,0,.62) !important;
+}
+.focus-ring.pop{ animation:none !important; }
+
+.sysbar-top{
+  top:10.8rem;
+  left:var(--safe-x);
+  right:var(--safe-x);
+}
+.sysnav{ gap:1.25rem; transform:translateX(-3.2rem); }
+.sysnav-btn{
+  width:5.25rem;
+  height:5.25rem;
+  background:rgba(27,29,31,.66);
+  backdrop-filter:none;
+}
+.sysnav-btn:hover,
+.sysnav-btn.active,
+.sysnav-btn[data-focused]{ background:rgba(38,40,42,.78); transform:none; }
+.sysnav-btn svg{ width:2.55rem; height:2.55rem; }
+.badge-dot{
+  width:.95rem;
+  height:.95rem;
+  top:.15rem;
+  right:.2rem;
+  box-shadow:0 0 0 .18rem rgba(20,22,24,.95);
+}
+.sysstatus{ gap:1.8rem; }
+.friends-count{ font-size:1.85rem; font-weight:500; }
+.friends-icon svg{ width:2.05rem; height:2.05rem; }
+.status-btn{ width:3.1rem; height:3.1rem; }
+.status-btn svg{ width:2.2rem; height:2.2rem; }
+.battery-shell{ width:2.65rem; height:1.55rem; }
+.clock{
+  font-size:2.55rem;
+  font-weight:500;
+  min-width:10.8rem;
+  letter-spacing:.01rem;
+}
+.profile{
+  top:22.8rem;
+  left:calc(var(--safe-x) - .5rem);
+  gap:1.25rem;
+  padding:.45rem 1rem .45rem .45rem;
+}
+.avatar{
+  width:4.5rem;
+  height:4.5rem;
+  box-shadow:0 0 0 .12rem rgba(255,255,255,.18), 0 .25rem 1rem rgba(0,0,0,.35);
+}
+.gamertag{ font-size:1.65rem; font-weight:500; }
+.profile-sub{ font-size:1.25rem; color:rgba(255,255,255,.72); }
+
+.reference-home .hero{ display:none !important; }
+.ref-rail{ top:30rem; }
+.ref-strip{
+  gap:1.45rem;
+  padding-left:var(--safe-x);
+  padding-right:var(--safe-x);
+  overflow:visible;
+}
+.ref-tile{
+  width:13.8rem;
+  box-shadow:0 .35rem 1.2rem rgba(0,0,0,.34);
+}
+.ref-tile .tile-face{
+  width:13.8rem;
+  height:13.8rem;
+  border-radius:.15rem;
+  background:#17191b;
+}
+.ref-tile.tile-sm{ margin-top:6.1rem; }
+.ref-tile.ref-hero{ width:20rem; }
+.ref-tile.ref-hero .tile-face{ width:20rem; height:20rem; }
+.ref-art,
+.ref-art img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+}
+.ref-art img{ object-fit:cover; opacity:1; filter:none !important; }
+.ref-tile.edge-tile .tile-face{ background:#08a83e; }
+.ref-tile.edge-tile .ref-art{ display:grid; place-items:center; }
+.ref-tile.edge-tile img{
+  position:static;
+  width:52%;
+  height:52%;
+  object-fit:contain;
+}
+.ref-platform{
+  position:absolute;
+  left:.55rem;
+  bottom:.55rem;
+  z-index:4;
+  color:#fff;
+  font-size:1.05rem;
+  font-weight:700;
+  text-shadow:0 .1rem .3rem #000;
+}
+.ref-tile .tile-label{ background:rgba(7,8,9,.95); font-size:1.45rem; }
+.ref-tile[data-focused]{ transform:none !important; }
+.ref-tile[data-focused] .tile-label{
+  height:3.45rem;
+  padding:.9rem .8rem 0;
+}
+.ref-friends{ width:16.7rem; margin-top:3.15rem; }
+.ref-friends .tile-face{
+  width:16.7rem;
+  height:16.7rem;
+  border-radius:.15rem;
+  background:#1aa8a5;
+  display:grid;
+  place-items:center;
+}
+.ref-friends-icon{ display:grid; place-items:center; }
+.ref-friends-icon svg{ width:5.5rem; height:5.5rem; fill:#fff; }
+
+.ref-cards{
+  top:55rem;
+  grid-template-columns:24rem 1fr 1.06fr 1.16fr;
+  gap:1.8rem;
+}
+.ref-card{
+  height:19.4rem;
+  border-radius:.15rem;
+  box-shadow:0 .35rem 1.4rem rgba(0,0,0,.34);
+  background:#17191b;
+}
+.ref-card[data-focused]{ transform:none !important; }
+.ref-card-art,
+.ref-card-art img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+}
+.ref-card-art img{ object-fit:cover; opacity:1; filter:none !important; }
+.ref-card::after{
+  content:"";
+  position:absolute;
+  inset:52% 0 0;
+  background:linear-gradient(180deg, transparent, rgba(0,0,0,.68));
+  pointer-events:none;
+}
+.ref-card .card-label{
+  left:1.55rem;
+  right:1.3rem;
+  bottom:1.25rem;
+  font-size:1.95rem;
+  font-weight:400;
+  line-height:1.15;
+  text-shadow:0 .15rem .5rem rgba(0,0,0,.9);
+}
+.ref-card .card-label .sub{
+  margin-top:.2rem;
+  font-size:1.58rem;
+  font-weight:400;
+  color:#fff;
+}
+.ref-card .card-chip{
+  top:1rem;
+  left:1rem;
+  padding:.28rem .58rem;
+  border-radius:.12rem;
+  background:rgba(0,0,0,.78);
+  font-size:1.02rem;
+  letter-spacing:.03rem;
+}
+.ref-card.card-store{ background:#5a35c7 !important; }
+.ref-card.card-store::after{ display:none; }
+.ref-store-icon{
+  position:absolute;
+  top:2.2rem;
+  left:2rem;
+  display:grid;
+  place-items:center;
+}
+.ref-store-icon svg{ width:3.6rem; height:3.6rem; fill:#fff; }
+.ref-card.card-store .card-label{ bottom:1.55rem; font-size:1.65rem; }
+
+body[data-view="home"] .legend{ display:none !important; }
+
+.guide-scrim{
+  background:rgba(0,0,0,.24) !important;
+  backdrop-filter:none !important;
+}
+.guide-panel{
+  left:5.4rem;
+  top:4.8rem;
+  bottom:4.8rem;
+  width:45.5rem;
+  background:rgba(72,75,79,.95) !important;
+  backdrop-filter:none !important;
+  border:0 !important;
+  border-radius:.25rem !important;
+  box-shadow:0 1.1rem 3.6rem rgba(0,0,0,.34) !important;
+}
+.guide-tabs{ gap:.1rem; padding:1.2rem 1.45rem 0; }
+.guide-tab{
+  height:4.8rem;
+  border-radius:0;
+  color:rgba(255,255,255,.72);
+}
+.guide-tab svg{ width:2.35rem; height:2.35rem; }
+.guide-tab[data-focused]{ background:rgba(255,255,255,.08); }
+.guide-tab.active::after{
+  left:.85rem;
+  right:.85rem;
+  bottom:0;
+  height:.32rem;
+  border-radius:0;
+  background:#52d64b;
+}
+.guide-tab.reference-hidden-tab{ display:none !important; }
+.xbox-guide-mark{ width:2.75rem !important; height:2.75rem !important; }
+.guide-body{ padding:1rem 1.25rem 1.1rem; }
+.grow{
+  min-height:6.15rem;
+  gap:1.2rem;
+  padding:1rem 1.15rem;
+  border:.3rem solid transparent;
+  border-radius:.15rem;
+}
+.grow[data-focused]{
+  background:rgba(255,255,255,.14);
+  border-color:#52d64b;
+}
+.grow-icon{ width:4.05rem; height:4.05rem; border-radius:.1rem; }
+.grow-icon svg{ width:2.45rem; height:2.45rem; }
+.grow-name{ font-size:1.7rem; font-weight:400; }
+.grow-meta{ font-size:1.2rem; }
+.guide-divider{ margin:.7rem 1.1rem; background:rgba(255,255,255,.22); }
+.guide-quick{ padding:1rem 1.35rem 1.35rem; gap:.8rem; }
+.quick-btn{
+  height:5.4rem;
+  border-radius:.12rem !important;
+  background:rgba(24,26,28,.38) !important;
+}
+.quick-btn[data-focused]{ background:rgba(255,255,255,.12) !important; }
+.guide-hints{ left:53.5rem !important; top:15.8rem !important; }
+.guide-hint{
+  font-size:1.55rem !important;
+  gap:.9rem !important;
+  margin-bottom:.55rem !important;
+}
+.guide-hint .glyph svg{ width:1.85rem !important; height:1.85rem !important; }
+
+.cover-plate{ background:#202326 !important; }
+.cover-plate::after{ display:none !important; }
+.cover-initials{ color:rgba(255,255,255,.52) !important; text-shadow:none !important; }
+
+@media (max-aspect-ratio: 16/10){
+  .ref-strip{ gap:1.2rem; }
+  .ref-tile{ width:13.2rem; }
+  .ref-tile .tile-face{ width:13.2rem; height:13.2rem; }
+  .ref-tile.ref-hero{ width:19rem; }
+  .ref-tile.ref-hero .tile-face{ width:19rem; height:19rem; }
+  .ref-cards{ grid-template-columns:23rem 1fr 1fr 1.08fr; gap:1.4rem; }
+}
