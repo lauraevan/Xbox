@@ -1,0 +1,164 @@
+/* Full-screen Xbox secondary surfaces: My games & apps, Game Pass, Search and Settings. */
+.console-page-view{ background:#0b0b0b!important; color:#fff; font-family:'Segoe UI',system-ui,sans-serif; }
+.console-shell{ position:absolute; inset:0; display:grid; grid-template-columns:24rem minmax(0,1fr); background:#090909; overflow:hidden; }
+.console-side{ display:flex; flex-direction:column; min-width:0; padding:4.2rem 1.5rem 3rem; background:#101010; border-right:.1rem solid rgba(255,255,255,.075); }
+.console-side-brand{ min-height:7rem; display:flex; align-items:center; padding:0 1.3rem 2rem; font-size:2rem; line-height:1.05; font-weight:650; letter-spacing:-.03rem; }
+.console-gamepass-word{ font-size:1.7rem; font-weight:900; letter-spacing:.08rem; }
+.console-side-list{ display:flex; flex-direction:column; gap:.28rem; }
+.console-side-item{ position:relative; min-height:5.4rem; display:flex; align-items:center; gap:1.25rem; width:100%; padding:0 1.25rem; border:0; border-radius:.35rem; background:transparent; color:#e6e6e6; text-align:left; font:500 1.58rem/1 'Segoe UI',system-ui,sans-serif; }
+.console-side-item::before{ content:''; position:absolute; left:0; top:1.15rem; bottom:1.15rem; width:.38rem; border-radius:.3rem; background:transparent; }
+.console-side-item.active{ background:#272727; color:#fff; }
+.console-side-item.active::before{ background:#9bf00b; }
+.console-side-item[data-focused]{ background:#f4f4f4; color:#111; outline:.28rem solid #fff; outline-offset:-.28rem; }
+.console-side-item[data-focused]::before{ background:#107c10; }
+.console-side-icon{ width:2.6rem; height:2.6rem; display:grid; place-items:center; flex:none; }
+.console-side-icon svg{ width:2.3rem; height:2.3rem; }
+.console-main{ min-width:0; height:100%; overflow:auto; padding:3.7rem 4.4rem 7rem; scrollbar-width:none; }
+.console-main::-webkit-scrollbar{ display:none; }
+.console-page-head{ min-height:8.5rem; display:flex; align-items:flex-start; justify-content:space-between; gap:2rem; margin-bottom:1.8rem; }
+.console-page-kicker{ margin-bottom:.5rem; font-size:1.05rem; font-weight:800; letter-spacing:.24rem; color:#9bf00b; }
+.console-page-head h1{ margin:0; font-size:3.7rem; line-height:1; font-weight:600; letter-spacing:-.07rem; }
+.console-page-head p{ margin:.65rem 0 0; color:rgba(255,255,255,.52); font-size:1.35rem; }
+.console-head-actions{ display:flex; align-items:center; gap:1.6rem; padding-top:.4rem; color:rgba(255,255,255,.72); font-size:1.35rem; }
+.console-head-profile{ font-weight:600; }
+.console-library-toolbar{ display:flex; justify-content:flex-end; gap:.8rem; margin:-.8rem 0 1.5rem; }
+.console-tool-btn{ min-height:4.2rem; display:flex; align-items:center; gap:.8rem; padding:0 1.25rem; border:0; border-radius:.32rem; background:#242424; color:#fff; font:600 1.25rem/1 'Segoe UI',system-ui,sans-serif; }
+.console-tool-btn svg{ width:1.8rem; height:1.8rem; }
+.console-tool-btn[data-focused]{ background:#f3f3f3; color:#111; outline:.28rem solid #fff; outline-offset:.2rem; }
+.console-grid-head,.console-search-status,.console-shelf-head{ display:flex; align-items:end; justify-content:space-between; gap:2rem; margin:1.2rem 0 1.2rem; }
+.console-grid-head h2,.console-search-status h2,.console-shelf-head h2,.console-section-title{ margin:0; font-size:2.25rem; font-weight:600; letter-spacing:-.04rem; }
+.console-grid-head span,.console-search-status span,.console-shelf-head span{ color:rgba(255,255,255,.48); font-size:1.2rem; }
+.console-shelf-head p{ margin:.35rem 0 0; color:rgba(255,255,255,.46); font-size:1.2rem; }
+.console-poster-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(15.4rem,1fr)); gap:2.5rem 1.25rem; padding:.4rem .35rem 5rem; }
+.console-poster{ min-width:0; border:0; padding:0; background:transparent; color:#fff; text-align:left; font:inherit; }
+.console-poster-art{ position:relative; display:block; width:100%; aspect-ratio:3/4; overflow:hidden; border-radius:.48rem; background:#1d1d1d; box-shadow:0 .7rem 1.8rem rgba(0,0,0,.28); }
+.console-poster-art>.tile-art,.console-poster-art>.tile-art img,.console-poster-art>img{ width:100%; height:100%; display:block; }
+.console-poster-art>.tile-art img,.console-poster-art>img{ object-fit:cover; }
+.console-poster-name{ display:block; margin-top:.82rem; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; font-size:1.34rem; font-weight:600; }
+.console-poster-meta{ display:block; margin-top:.2rem; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; font-size:1.08rem; color:rgba(255,255,255,.48); }
+.console-poster[data-focused] .console-poster-art{ outline:.36rem solid #fff; outline-offset:.27rem; }
+.console-poster[data-focused]{ transform:translateY(-.15rem); }
+.console-tag{ position:absolute; top:.65rem; right:.65rem; padding:.35rem .55rem; border-radius:.22rem; background:#107c10; color:#fff; font-size:.92rem; font-weight:800; }
+.console-cloud-pill{ position:absolute; left:.65rem; bottom:.65rem; height:2.35rem; display:flex; align-items:center; gap:.4rem; padding:0 .7rem; border-radius:.25rem; background:rgba(0,0,0,.82); color:#fff; font-size:.9rem; font-weight:700; }
+.console-cloud-pill svg{ width:1.2rem; height:1.2rem; }
+.console-horizontal-row{ display:grid; grid-auto-flow:column; grid-auto-columns:16rem; gap:1.2rem; overflow-x:auto; overflow-y:hidden; padding:.5rem .4rem 1.5rem; margin:0 -.4rem; scrollbar-width:none; }
+.console-horizontal-row::-webkit-scrollbar{ display:none; }
+.console-history-group,.console-pass-shelf,.console-cloud-library{ margin:2rem 0 3.2rem; }
+.console-cloud-library{ padding:1.5rem 0 1rem; border-top:.1rem solid rgba(255,255,255,.08); border-bottom:.1rem solid rgba(255,255,255,.08); }
+.console-empty{ min-height:28rem; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; color:rgba(255,255,255,.55); }
+.console-empty svg{ width:5rem; height:5rem; margin-bottom:1.2rem; opacity:.45; }
+.console-empty h2{ margin:0 0 .5rem; color:#fff; font-size:2.3rem; }
+.console-empty p{ margin:0; font-size:1.3rem; }
+.console-manage-grid,.console-perks-grid{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1.3rem; padding-top:1rem; }
+.console-manage-card,.console-perk-card{ min-height:15rem; display:grid; grid-template-columns:5rem 1fr; grid-template-rows:auto auto; align-content:center; column-gap:1.5rem; padding:2rem; border:0; border-radius:.5rem; background:#191919; color:#fff; text-align:left; }
+.console-manage-card>span,.console-perk-card>span{ grid-row:1/3; align-self:center; width:4.3rem; height:4.3rem; display:grid; place-items:center; border-radius:.5rem; background:#107c10; }
+.console-manage-card svg,.console-perk-card svg{ width:2.5rem; height:2.5rem; }
+.console-manage-card strong,.console-perk-card strong{ font-size:1.65rem; }
+.console-manage-card small,.console-perk-card small{ margin-top:.45rem; color:rgba(255,255,255,.52); font-size:1.18rem; }
+.console-manage-card[data-focused],.console-perk-card[data-focused]{ outline:.35rem solid #fff; outline-offset:.25rem; background:#252525; }
+
+/* Game Pass */
+.console-pass-main{ padding-top:3rem; }
+.console-top-tabs{ display:flex; gap:.5rem; margin:-.8rem 0 1.6rem; }
+.console-top-tab{ min-height:3.8rem; padding:0 1.2rem; border:0; border-radius:.3rem; background:transparent; color:rgba(255,255,255,.68); font:600 1.25rem/1 'Segoe UI',system-ui,sans-serif; }
+.console-top-tab.active{ color:#fff; background:#232323; }
+.console-top-tab[data-focused]{ background:#f2f2f2; color:#111; outline:.28rem solid #fff; outline-offset:.18rem; }
+.console-pass-hero{ position:relative; width:100%; height:37rem; display:block; overflow:hidden; border:0; border-radius:.55rem; margin-bottom:3rem; background:#171717; color:#fff; text-align:left; }
+.console-pass-hero-art,.console-pass-hero-shade{ position:absolute; inset:0; }
+.console-pass-hero-art img{ width:100%; height:100%; object-fit:cover; }
+.console-pass-hero-shade{ background:linear-gradient(90deg,rgba(0,0,0,.94) 0%,rgba(0,0,0,.76) 30%,rgba(0,0,0,.18) 68%,rgba(0,0,0,.04)); }
+.console-pass-hero-copy{ position:absolute; z-index:2; left:3.5rem; top:3.2rem; bottom:3.2rem; width:46rem; display:flex; flex-direction:column; justify-content:flex-end; }
+.console-pass-logo{ align-self:flex-start; margin-bottom:1.5rem; padding:.45rem .7rem; background:#107c10; font-size:1rem; font-weight:900; letter-spacing:.07rem; }
+.console-pass-kicker{ color:#9bf00b; font-size:1.25rem; font-weight:800; letter-spacing:.08rem; }
+.console-pass-hero h1{ margin:.55rem 0 .8rem; font-size:4.2rem; line-height:.98; font-weight:650; letter-spacing:-.08rem; }
+.console-pass-hero p{ margin:0; font-size:1.35rem; color:rgba(255,255,255,.7); }
+.console-pass-play{ align-self:flex-start; display:flex; align-items:center; gap:.7rem; min-height:4.3rem; margin-top:1.4rem; padding:0 1.4rem; border-radius:.25rem; background:#f4f4f4; color:#111; font-size:1.25rem; font-weight:800; }
+.console-pass-play svg{ width:1.6rem; height:1.6rem; }
+.console-pass-hero[data-focused]{ outline:.4rem solid #9bf00b; outline-offset:.28rem; }
+.console-pass-shelf{ margin-bottom:3.4rem; }
+.console-pass-grid{ padding-top:0; }
+.console-perk-card{ grid-template-columns:5rem 1fr auto; min-height:13rem; }
+.console-perk-card b{ align-self:center; color:#9bf00b; font-size:1rem; letter-spacing:.08rem; }
+
+/* Search */
+.console-search-page{ position:absolute; inset:0; overflow:auto; padding:3.7rem 4.4rem 6rem; background:#090909; scrollbar-width:none; }
+.console-search-page::-webkit-scrollbar{ display:none; }
+.console-search-body{ display:grid; grid-template-columns:minmax(42rem,52rem) minmax(0,1fr); gap:4rem; }
+.console-search-entry{ min-width:0; }
+.console-search-field{ height:5.8rem; display:flex; align-items:center; gap:1.1rem; padding:0 1.4rem; border:.2rem solid rgba(255,255,255,.3); border-radius:.4rem; background:#181818; }
+.console-search-field:focus-within{ border-color:#fff; box-shadow:0 0 0 .18rem #107c10; }
+.console-search-field svg{ width:2.3rem; height:2.3rem; color:rgba(255,255,255,.68); }
+.console-search-field input{ flex:1; min-width:0; height:100%; border:0; outline:0; background:transparent; color:#fff; font:500 2.15rem/1 'Segoe UI',system-ui,sans-serif; }
+.console-search-field input::placeholder{ color:rgba(255,255,255,.34); }
+.console-search-chips{ display:flex; gap:.65rem; flex-wrap:wrap; margin:1.2rem 0 2rem; }
+.console-chip{ min-height:3.7rem; padding:0 1.15rem; border:0; border-radius:2rem; background:#252525; color:#fff; font:600 1.15rem/1 'Segoe UI',system-ui,sans-serif; }
+.console-chip[data-focused]{ background:#f2f2f2; color:#111; outline:.25rem solid #fff; outline-offset:.17rem; }
+.console-keyboard{ display:flex; flex-direction:column; gap:.65rem; }
+.console-key-row{ display:grid; grid-template-columns:repeat(10,1fr); gap:.65rem; }
+.console-key-row:nth-child(3){ grid-template-columns:repeat(9,1fr); }
+.console-key-row:nth-child(4){ grid-template-columns:repeat(7,1fr); }
+.console-key{ min-height:4.9rem; border:0; border-radius:.35rem; background:#222; color:#fff; font:600 1.4rem/1 'Segoe UI',system-ui,sans-serif; }
+.console-key.wide{ grid-column:span 6; }
+.console-key[data-focused]{ background:#f3f3f3; color:#111; outline:.28rem solid #107c10; outline-offset:.15rem; }
+.console-search-results{ min-width:0; }
+.console-search-grid{ grid-template-columns:repeat(auto-fill,minmax(13.4rem,1fr)); max-height:68rem; overflow:auto; padding-top:.2rem; scrollbar-width:none; }
+.console-search-grid::-webkit-scrollbar{ display:none; }
+.console-search-grid .console-poster-name{ font-size:1.2rem; }
+
+/* Settings */
+.console-settings-main{ background:#0b0b0b; }
+.console-settings-panel{ max-width:112rem; display:flex; flex-direction:column; gap:.65rem; padding-top:.6rem; }
+.console-settings-row{ width:100%; min-height:7.2rem; display:flex; align-items:center; gap:2rem; padding:1.25rem 1.5rem; border:0; border-radius:.38rem; background:#181818; color:#fff; text-align:left; }
+.console-settings-row[data-focused]{ background:#f2f2f2; color:#111; outline:.32rem solid #107c10; outline-offset:.18rem; }
+.console-settings-copy{ flex:1; min-width:0; display:flex; flex-direction:column; }
+.console-settings-copy strong{ font-size:1.58rem; font-weight:600; }
+.console-settings-copy small{ margin-top:.32rem; font-size:1.15rem; color:rgba(255,255,255,.48); }
+.console-settings-row[data-focused] .console-settings-copy small{ color:rgba(0,0,0,.58); }
+.console-settings-value{ flex:none; max-width:32rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:rgba(255,255,255,.7); font-size:1.3rem; font-weight:600; }
+.console-settings-row[data-focused] .console-settings-value{ color:#111; }
+.console-toggle{ position:relative; width:4.9rem; height:2.7rem; display:block; border-radius:2rem; background:#555; }
+.console-toggle span{ position:absolute; width:2.05rem; height:2.05rem; left:.34rem; top:.32rem; border-radius:50%; background:#fff; transition:transform .15s ease; }
+.console-toggle.on{ background:#107c10; }
+.console-toggle.on span{ transform:translateX(2.15rem); }
+
+/* Existing detail page receives the same Xbox 10-foot geometry. */
+.detail{ background:#070707!important; }
+.detail-inner{ max-width:152rem!important; padding:6rem 8rem!important; gap:4.5rem!important; }
+.detail-cover{ width:26rem!important; border-radius:.55rem!important; overflow:hidden; }
+.detail-title{ font-size:5.2rem!important; letter-spacing:-.08rem!important; }
+.detail-kicker{ color:#9bf00b!important; font-weight:700!important; }
+.detail-actions .btn{ min-height:4.7rem!important; border-radius:.26rem!important; font-weight:700!important; }
+.detail-actions .btn.primary{ background:#107c10!important; color:#fff!important; }
+.detail-actions .btn[data-focused]{ outline:.34rem solid #fff!important; outline-offset:.22rem!important; }
+
+body[data-view="library"] .backdrop,body[data-view="library"] .topbar-scrim,
+body[data-view="pass"] .backdrop,body[data-view="pass"] .topbar-scrim,
+body[data-view="search"] .backdrop,body[data-view="search"] .topbar-scrim,
+body[data-view="settings"] .backdrop,body[data-view="settings"] .topbar-scrim{ opacity:0!important; }
+body[data-view="library"] .sysbar,body[data-view="pass"] .sysbar,body[data-view="search"] .sysbar,body[data-view="settings"] .sysbar{ opacity:0!important; pointer-events:none!important; }
+body[data-view="library"] .legend,body[data-view="pass"] .legend,body[data-view="search"] .legend,body[data-view="settings"] .legend{ display:none!important; }
+
+@media (max-aspect-ratio:16/10){
+  .console-shell{ grid-template-columns:20.5rem minmax(0,1fr); }
+  .console-side{ padding-left:1rem; padding-right:1rem; }
+  .console-main,.console-search-page{ padding-left:3rem; padding-right:3rem; }
+  .console-poster-grid{ grid-template-columns:repeat(auto-fill,minmax(14rem,1fr)); }
+  .console-search-body{ grid-template-columns:43rem minmax(0,1fr); gap:2.8rem; }
+  .console-pass-hero{ height:34rem; }
+  .console-pass-hero-copy{ width:40rem; }
+  .console-pass-hero h1{ font-size:3.7rem; }
+}
+
+@media (max-width:900px){
+  .console-shell{ grid-template-columns:8.5rem minmax(0,1fr); }
+  .console-side-brand{ font-size:0; justify-content:center; padding-left:0; padding-right:0; }
+  .console-side-brand::after{ content:'X'; font-size:2.2rem; font-weight:900; color:#9bf00b; }
+  .console-side-item{ justify-content:center; padding:0; }
+  .console-side-item>span:last-child{ display:none; }
+  .console-main,.console-search-page{ padding:2.4rem 2.2rem 5rem; }
+  .console-page-head h1{ font-size:3rem; }
+  .console-search-body{ grid-template-columns:1fr; }
+  .console-search-entry{ max-width:none; }
+  .console-search-results{ min-height:45rem; }
+  .console-manage-grid,.console-perks-grid{ grid-template-columns:1fr; }
+}
