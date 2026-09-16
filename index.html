@@ -10,10 +10,10 @@
 <link rel="stylesheet" href="css/chrome.css">
 <link rel="stylesheet" href="css/home.css">
 <link rel="stylesheet" href="css/pages.css">
+<link rel="stylesheet" href="css/reference.css">
 </head>
 <body data-theme="dark">
 
-<!-- colour-blindness correction matrices, applied to the whole stage -->
 <svg class="filter-defs" aria-hidden="true" focusable="false">
   <defs>
     <filter id="cvd-protanopia" color-interpolation-filters="linearRGB">
@@ -37,7 +37,6 @@
   </defs>
 </svg>
 
-<!-- ══════════════════ BOOT ══════════════════ -->
 <div id="boot" class="boot">
   <video id="bootVideo" class="boot-video"
          muted playsinline preload="auto" disablepictureinpicture
@@ -48,24 +47,20 @@
 </div>
 
 <script>
-/* Failsafe, deliberately inline and dependency-free so it runs even when a
-   later script fails to load. Without it, a throttled or blocked script
-   leaves the boot screen up forever with no explanation. */
 (function(){
   var LIMIT = 13000;
   setTimeout(function(){
     var boot  = document.getElementById('boot');
     var stage = document.getElementById('stage');
-    if (!boot || !stage || !stage.hidden) return;      // booted normally
+    if (!boot || !stage || !stage.hidden) return;
 
     var ok = window.App && window.Catalog && window.Catalog.count;
-    if (ok){                                            // scripts fine, just slow
+    if (ok){
       boot.parentNode.removeChild(boot);
       stage.hidden = false;
       return;
     }
 
-    // something never loaded: say so rather than sitting on the logo
     var missing = ['Icons','Media','Features','Artwork','Catalog','State',
                    'Sound','Nav','Views','Guide','App']
       .filter(function(n){ return !window[n]; });
@@ -89,10 +84,7 @@
 })();
 </script>
 
-<!-- ══════════════════ STAGE ══════════════════ -->
 <div id="stage" class="stage" hidden>
-
-  <!-- dynamic background -->
   <div class="backdrop">
     <div class="backdrop-layer" id="bgA"></div>
     <div class="backdrop-layer" id="bgB"></div>
@@ -100,12 +92,8 @@
     <div class="backdrop-glow"></div>
   </div>
 
-  <!-- a dedicated scrim so the bar keeps its weight whatever art is behind -->
   <div class="topbar-scrim" aria-hidden="true"></div>
 
-  <!-- ─────────── system bar ───────────
-       Nav sits centred on the top line with status opposite it; the
-       profile block sits on its own line underneath, as on the console. -->
   <header class="sysbar" id="sysbar">
     <div class="sysbar-top">
       <nav class="sysnav" id="sysnav">
@@ -149,7 +137,6 @@
     </button>
   </header>
 
-  <!-- ─────────── views ─────────── -->
   <main class="views" id="views">
     <section class="view view-home" id="view-home"></section>
     <section class="view view-library" id="view-library" hidden></section>
@@ -158,14 +145,11 @@
     <section class="view view-settings" id="view-settings" hidden></section>
   </main>
 
-  <!-- ─────────── button legend ─────────── -->
   <footer class="legend" id="legend"></footer>
 </div>
 
-<!-- ══════════════════ GAME DETAIL ══════════════════ -->
 <div class="detail" id="detail" hidden></div>
 
-<!-- ══════════════════ LAUNCH / PLAY ══════════════════ -->
 <div class="launch" id="launch" hidden>
   <div class="launch-art" id="launchArt"></div>
   <div class="launch-center">
@@ -180,7 +164,6 @@
   <div class="player-hint" id="playerHint">Press <kbd>Esc</kbd> for the guide</div>
 </div>
 
-<!-- ══════════════════ GUIDE ══════════════════ -->
 <aside class="guide" id="guide" hidden>
   <div class="guide-scrim" data-guide-close></div>
   <div class="guide-panel">
@@ -191,7 +174,6 @@
   <div class="guide-hints" id="guideHints"></div>
 </aside>
 
-<!-- ══════════════════ OVERLAYS ══════════════════ -->
 <div class="toasts" id="toasts"></div>
 <div class="modal" id="modal" hidden></div>
 <div class="scanline" id="scanline" hidden></div>
@@ -207,6 +189,7 @@
 <script src="js/nav.js"></script>
 <script src="js/views.js"></script>
 <script src="js/guide.js"></script>
+<script src="js/reference.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>
