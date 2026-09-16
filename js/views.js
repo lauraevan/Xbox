@@ -137,13 +137,18 @@ function renderHome(root){
   const headline = recents[0] || pinned[0] || feature[0] || window.Catalog.all()[0];
   if (headline) strip.append(tile(headline, 'hero'));
 
+  /* The console shows a short row, not a scrolling shelf: the selected
+     title, six beside it, then the Friends and browse tiles - nine in all. */
+  const ROW_TILES = 6;
   const seen = new Set(headline ? [headline.id] : []);
-  const queue = [...pinned, ...recents, ...feature, ...window.Catalog.seededShuffle(window.Catalog.standard(), 91)];
+  const queue = [...pinned, ...recents, ...feature,
+                 ...window.Catalog.seededShuffle(window.Catalog.standard(), 91)];
+  let placed = 0;
   for (const g of queue){
     if (seen.has(g.id)) continue;
     seen.add(g.id);
     strip.append(tile(g, 'sm'));
-    if (seen.size > 24) break;
+    if (++placed >= ROW_TILES) break;
   }
 
   strip.append(
