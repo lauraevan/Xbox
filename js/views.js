@@ -74,15 +74,30 @@ function tile(game, kind = 'sm'){
   btn.dataset.nav = '';
   btn.dataset.gameId = game.id;
   btn.setAttribute('aria-label', game.name);
-  btn.append(coverArt(game, { priority: kind === 'hero' }));
 
+  // the art lives in a fixed square; the label is a bar beneath it that
+  // only opens on selection, so the row keeps a common top edge
+  const face = el('span', 'tile-face');
+  face.append(coverArt(game, { priority: kind === 'hero' }));
   if (game.tag && window.State.settings.tileBadges)
-    btn.append(el('span', `tile-badge ${game.tag.cls}`, game.tag.badge));
+    face.append(el('span', `tile-badge ${game.tag.cls}`, game.tag.badge));
   if (window.State.isPinned(game.id))
-    btn.append(el('span', 'tile-pin', ICON.pin.replace('class="s"', '')));
+    face.append(el('span', 'tile-pin', ICON.pin));
 
-  btn.append(el('span', 'tile-label', escapeHtml(game.name)));
+  btn.append(face, el('span', 'tile-label', escapeHtml(game.name)));
   btn._navActivate = () => window.App.openDetail(game);
+  return btn;
+}
+
+/** A plain tile that carries a glyph rather than cover art. */
+function glyphTile(cls, label, glyph, onActivate){
+  const btn = el('button', `tile ${cls}`);
+  btn.dataset.nav = '';
+  btn.setAttribute('aria-label', label);
+  const face = el('span', 'tile-face');
+  face.innerHTML = glyph;
+  btn.append(face, el('span', 'tile-label', escapeHtml(label)));
+  btn._navActivate = onActivate;
   return btn;
 }
 
@@ -131,11 +146,13 @@ function renderHome(root){
     if (seen.size > 24) break;
   }
 
-  const add = el('button', 'tile tile-sm tile-add', ICON.plus);
-  add.dataset.nav = '';
-  add.setAttribute('aria-label', 'See all games');
-  add._navActivate = () => window.App.setView('library');
-  strip.append(add);
+  strip.append(
+    glyphTile('tile-people', 'Friends & clubs', ICON.party,
+      () => window.App.toast('Titles available',
+        `${window.Catalog.count().toLocaleString()} in your catalogue`, { icon: ICON.party })),
+    glyphTile('tile-add', 'See all games', ICON.plus,
+      () => window.App.setView('library'))
+  );
 
   rail.append(strip);
   root.append(rail);

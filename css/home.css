@@ -36,7 +36,9 @@
 .rail-count{ font-size:1.5rem; color:var(--text-3); }
 
 .rail-strip{
-  display:flex; align-items:flex-end; gap:2.9rem;   /* measured tile gap */
+  /* tiles hang from a common top edge: the selected one grows a label bar
+     downwards, exactly as it does on the console */
+  display:flex; align-items:flex-start; gap:2.9rem;
   overflow-x:auto; overflow-y:visible;
   padding:1.6rem .4rem 1.6rem;
   margin:-1.6rem -.4rem;
@@ -77,28 +79,28 @@
 .tile-art{ position:absolute; inset:0; }
 .tile-art img{ width:100%; height:100%; object-fit:cover; }
 
-.tile-hero{ width:25.7rem; height:25.7rem; }
-.tile-hero .tile-label{
-  position:absolute; left:0; right:0; bottom:0; z-index:3;
-  padding:1.6rem 1.4rem 1.2rem;
-  font-size:2rem; font-weight:500;
-  background:linear-gradient(transparent, rgba(0,0,0,.86) 46%);
-  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+/* every tile is the same square; the art box never changes size */
+.tile{ width:15.5rem; }
+.tile-art{ position:absolute; inset:0 0 auto 0; height:15.5rem; }
+.tile-face{ display:block; width:15.5rem; height:15.5rem; position:relative;
+  border-radius:var(--tile-r); overflow:hidden; background:var(--panel-2); }
+
+/* the label is a bar that opens underneath the art on selection */
+.tile-label{
+  display:block; height:0; overflow:hidden;
+  padding:0 .4rem; font-size:1.45rem; font-weight:400;
+  color:#fff; text-align:left;
+  white-space:nowrap; text-overflow:ellipsis;
+  opacity:0;
+  transition:height var(--dur-mid) var(--ease-decel),
+             opacity var(--dur) var(--ease-standard),
+             padding var(--dur-mid) var(--ease-decel);
 }
-/* the reference lifts the small tiles 4px off the hero's baseline:
-   hero bottom lands on y=793, the small row on y=789 */
-.tile-sm{ width:15.5rem; height:15.5rem; margin-bottom:.4rem; }
-.tile-sm .tile-label{
-  position:absolute; left:0; right:0; bottom:0; z-index:3; padding:2.6rem .9rem .7rem;
-  font-size:1.35rem; font-weight:500; opacity:0;
-  background:linear-gradient(transparent, rgba(0,0,0,.88));
-  transition:opacity var(--dur) var(--ease);
-  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-}
-.tile-sm[data-focused] .tile-label{ opacity:1; }
+.tile[data-focused] .tile-label{ height:3.4rem; padding:.9rem .4rem 0; opacity:1; }
+.tile-sm, .tile-hero{ width:15.5rem; }
 
 .tile-badge{
-  position:absolute; top:.6rem; left:.6rem; z-index:4;
+  position:absolute; bottom:.6rem; left:.6rem; z-index:4;
   font-size:1rem; font-weight:700; letter-spacing:.07rem; line-height:1;
   padding:.3rem .45rem; border-radius:.25rem;
   background:rgba(0,0,0,.66); color:#fff; text-transform:uppercase;
@@ -111,7 +113,7 @@
 .tile-badge.flash{ background:#b5451b; }
 .tile-badge.emu{ background:#4b2fa8; }
 .tile-pin{
-  position:absolute; top:.7rem; right:.7rem; z-index:4;
+  position:absolute; top:.6rem; right:.6rem; z-index:4;
   width:2rem; height:2rem; border-radius:50%;
   background:rgba(0,0,0,.6); display:grid; place-items:center;
 }
@@ -203,3 +205,17 @@
 .grad-c{ background:linear-gradient(140deg,#2a1d4e,#120c22); }
 .grad-d{ background:linear-gradient(140deg,#4a2318,#1b0d08); }
 .grad-e{ background:linear-gradient(140deg,#1c1c1c,#050505); }
+
+
+/* the row ends with a people tile, as on the console */
+.tile-people .tile-face{
+  background:linear-gradient(150deg,#2fbf71,#1f9bd0);
+  display:grid; place-items:center;
+}
+.tile-people .tile-face svg{ width:5.4rem; height:5.4rem; fill:rgba(255,255,255,.95); }
+.tile-add .tile-face{
+  background:rgba(255,255,255,.06);
+  border:.2rem dashed var(--stroke-2);
+  display:grid; place-items:center;
+}
+.tile-add .tile-face svg{ width:4rem; height:4rem; fill:var(--text-2); }
