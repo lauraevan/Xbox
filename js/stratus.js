@@ -1,7 +1,8 @@
 /* Stratus Cloud integration for the Xbox replica.
-   Uses the deployed Render API and the upstream site key.
-   Purchases are simulated as free digital licenses and are stored per profile,
-   matching the way an Xbox library follows the signed-in account. */
+   Uses the deployed Render API and the public Stratus site key.
+   Static hosts such as raw.githack cannot call the Render API directly because
+   the API does not currently emit browser CORS headers, so API requests are
+   routed through a CORS proxy while the actual WebRTC embed stays direct. */
 (() => {
 'use strict';
 
@@ -12,13 +13,16 @@ const CATALOG_SOURCES = [
 ];
 const UPSTREAM_PUBLIC_KEY = 'stratus-api-synapsium';
 const OWNERSHIP_KEY = 'xbox.stratus.owned.v2';
+const DEFAULT_CORS_PROXY = 'https://corsproxy.io/?url=';
 const key = () => window.STRATUS_API_KEY || UPSTREAM_PUBLIC_KEY;
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 let catalogue = null;
 let cataloguePromise = null;
 let active = null;
+let pending = null;
 let starting = false;
+let warmed = false;
 
 function profileId(){
   return String(window.State?.data?.profileId || 'p1');
@@ -59,7 +63,16 @@ function normalizeGame(raw, index){
   };
 }
 
+function warm(){
+  if (warmed) return;
+  warmed = true;
+  // A no-cors request is enough to wake a sleeping Render instance. We do not
+  // need to read the response here.
+  try { fetch(`${BASE}/`, { mode:'no-cors', cache:'no-store' }).catch(() => {}); } catch {}
+}
+
 async function loadCatalogue(){
+  warm();
   if (catalogue) return catalogue;
   if (cataloguePromise) return cataloguePromise;
 
@@ -71,9 +84,7 @@ async function loadCatalogue(){
         if (!res.ok) throw new Error(`catalogue ${res.status}`);
         const data = await res.json();
         if (!Array.isArray(data)) throw new Error('catalogue response was not an array');
-        catalogue = data
-          .map(normalizeGame)
-          .filter(game => game.gameKey && game.name);
+        catalogue = data.map(normalizeGame).filter(game => game.gameKey && game.name);
         return catalogue;
       } catch (err){
         lastError = err;
@@ -112,22 +123,68 @@ async function ownedGames(){
     .sort((a, b) => order.get(String(a.gameKey)) - order.get(String(b.gameKey)));
 }
 
+function cacheBust(url){
+  const u = new URL(url);
+  u.searchParams.set('_xbox', `${Date.now().toString(36)}${Math.random().toString(36).slice(2,8)}`);
+  return u.toString();
+}
+
+function transportUrl(target){
+  const apiOrigin = new URL(BASE).origin;
+  const sameOrigin = location.origin === apiOrigin;
+  if (sameOrigin || window.STRATUS_DIRECT === true) return target;
+
+  if (typeof window.STRATUS_CORS_PROXY === 'function'){
+    return window.STRATUS_CORS_PROXY(target);
+  }
+
+  const prefix = String(window.STRATUS_CORS_PROXY || DEFAULT_CORS_PROXY);
+  if (prefix.includes('{url}')) return prefix.replace('{url}', encodeURIComponent(target));
+  return prefix + encodeURIComponent(target);
+}
+
 async function api(path, { method='GET', body, signal } = {}){
-  let url = BASE + path;
-  const options = { method, signal, headers:{} };
+  warm();
+  const target = new URL(BASE + path);
+  target.searchParams.set('_xbox', `${Date.now().toString(36)}${Math.random().toString(36).slice(2,7)}`);
+
+  const options = {
+    method,
+    signal,
+    cache:'no-store',
+    headers:{
+      'Accept':'application/json, application/x-ndjson, text/plain, */*',
+      'x-api-key':key()
+    }
+  };
 
   if (method === 'GET'){
-    const sep = url.includes('?') ? '&' : '?';
-    url += `${sep}api_key=${encodeURIComponent(key())}`;
+    // The API supports query auth too. Keeping it here makes the request work
+    // even through proxies that do not forward custom request headers.
+    target.searchParams.set('api_key', key());
   } else {
     options.headers['Content-Type'] = 'application/json';
     options.body = JSON.stringify({ ...(body || {}), api_key:key() });
   }
 
-  const res = await fetch(url, options);
+  const url = transportUrl(target.toString());
+  let res;
+  try {
+    res = await fetch(url, options);
+  } catch (err){
+    const hint = location.origin !== new URL(BASE).origin
+      ? 'The browser could not reach the Stratus API transport.'
+      : 'The Stratus API could not be reached.';
+    throw new Error(`${hint} ${err?.message || ''}`.trim());
+  }
+
   if (!res.ok){
     let message = `Stratus returned ${res.status}`;
-    try { message = (await res.json())?.error || message; } catch {}
+    try {
+      const text = await res.text();
+      try { message = JSON.parse(text)?.error || text || message; }
+      catch { if (text) message = text.slice(0, 220); }
+    } catch {}
     throw new Error(message);
   }
   return res;
@@ -135,18 +192,18 @@ async function api(path, { method='GET', body, signal } = {}){
 
 function statusText(event){
   switch (event?.status){
-    case 'creating_account': return 'Preparing cloud session…';
-    case 'account_ready': return 'Cloud account ready…';
-    case 'requesting_game': return 'Requesting a game server…';
-    case 'queue': return `Waiting for a server${Number.isFinite(event.queue_pos) ? ` • #${event.queue_pos}` : '…'}`;
-    case 'finished_queue': return 'Server ready…';
-    default: return 'Starting game…';
+    case 'creating_account': return 'Preparing your cloud console…';
+    case 'account_ready': return 'Cloud console ready…';
+    case 'requesting_game': return 'Starting the game…';
+    case 'queue': return `Waiting for a cloud console${Number.isFinite(event.queue_pos) ? ` • ${event.queue_pos} ahead` : '…'}`;
+    case 'finished_queue': return 'Cloud console ready…';
+    default: return 'Starting cloud game…';
   }
 }
 
 async function pollQueue(uuid, onStatus, signal){
   while (!signal?.aborted){
-    await wait(3600);
+    await wait(3400);
     const res = await api(`/cloud/v1/getQueue?uuid=${encodeURIComponent(uuid)}`, { signal });
     const event = await res.json();
     onStatus?.(event);
@@ -156,6 +213,15 @@ async function pollQueue(uuid, onStatus, signal){
   throw new DOMException('Aborted', 'AbortError');
 }
 
+function handleSessionEvent(event, onStatus){
+  if (!event || typeof event !== 'object') return null;
+  onStatus?.(event);
+  if (event.status === 'error') throw new Error(event.error || 'Cloud session failed');
+  if (event.status === 'finished_queue' && event.uuid) return { done:true, uuid:event.uuid };
+  if (event.status === 'queue' && event.uuid) return { queue:true, uuid:event.uuid };
+  return null;
+}
+
 async function createSession(gameKey, onStatus, signal){
   const res = await api('/cloud/v1/createSession', {
     method:'POST',
@@ -163,36 +229,57 @@ async function createSession(gameKey, onStatus, signal){
     signal
   });
 
-  if (!res.body) throw new Error('Streaming responses are unavailable in this browser');
+  // Read NDJSON incrementally where possible. Some CORS proxies buffer the
+  // response, so this also correctly handles a complete response delivered at once.
+  if (!res.body?.getReader){
+    const text = await res.text();
+    for (const line of text.split(/\r?\n/)){
+      if (!line.trim()) continue;
+      let event; try { event = JSON.parse(line); } catch { continue; }
+      const result = handleSessionEvent(event, onStatus);
+      if (result?.done) return result.uuid;
+      if (result?.queue) return pollQueue(result.uuid, onStatus, signal);
+    }
+    throw new Error('Stratus session ended before a server became ready');
+  }
+
   const reader = res.body.getReader();
   const decoder = new TextDecoder();
   let buffer = '';
+
+  const consume = async line => {
+    if (!line.trim()) return null;
+    let event; try { event = JSON.parse(line); } catch { return null; }
+    const result = handleSessionEvent(event, onStatus);
+    if (result?.done){
+      try { await reader.cancel(); } catch {}
+      return result.uuid;
+    }
+    if (result?.queue){
+      try { await reader.cancel(); } catch {}
+      return pollQueue(result.uuid, onStatus, signal);
+    }
+    return null;
+  };
 
   while (!signal?.aborted){
     const { value, done } = await reader.read();
     buffer += decoder.decode(value || new Uint8Array(), { stream:!done });
     const lines = buffer.split(/\r?\n/);
     buffer = lines.pop() || '';
-
     for (const line of lines){
-      if (!line.trim()) continue;
-      let event;
-      try { event = JSON.parse(line); } catch { continue; }
-      onStatus?.(event);
-
-      if (event.status === 'error') throw new Error(event.error || 'Cloud session failed');
-      if (event.status === 'finished_queue'){
-        try { await reader.cancel(); } catch {}
-        return event.uuid;
-      }
-      if (event.status === 'queue' && event.uuid){
-        try { await reader.cancel(); } catch {}
-        return pollQueue(event.uuid, onStatus, signal);
-      }
+      const result = await consume(line);
+      if (result) return result;
     }
-
-    if (done) break;
+    if (done){
+      if (buffer.trim()){
+        const result = await consume(buffer);
+        if (result) return result;
+      }
+      break;
+    }
   }
+  if (signal?.aborted) throw new DOMException('Aborted', 'AbortError');
   throw new Error('Stratus session ended before a server became ready');
 }
 
@@ -202,7 +289,11 @@ async function startGame(uuid, signal){
     body:{ uuid },
     signal
   });
-  return res.json();
+  const data = await res.json();
+  if (!data?.signaling_ws || !Array.isArray(data?.ice_servers)){
+    throw new Error('Stratus returned incomplete WebRTC credentials');
+  }
+  return data;
 }
 
 function launchSurface(game){
@@ -212,7 +303,7 @@ function launchSurface(game){
   const sub = splash?.querySelector('.launch-sub');
   if (art) art.style.backgroundImage = game.image ? `url("${game.image}")` : '';
   if (title) title.textContent = game.name;
-  if (sub) sub.textContent = 'Connecting to Stratus Cloud…';
+  if (sub) sub.textContent = 'Connecting to Xbox Cloud Gaming…';
   if (splash) splash.hidden = false;
   window.Nav?.hideRing?.();
   return { splash, sub };
@@ -224,39 +315,55 @@ function showPlayer(game, uuid){
   const hint = document.getElementById('playerHint');
   if (!player || !frame) throw new Error('Player surface is missing');
 
-  frame.src = `${BASE}/cloud/v1/embed?id=${encodeURIComponent(uuid)}`;
+  frame.src = `${BASE}/cloud/v1/embed?id=${encodeURIComponent(uuid)}&_=${Date.now()}`;
+  frame.setAttribute('allow', 'autoplay; fullscreen; gamepad; pointer-lock');
   player.hidden = false;
+  player.classList.add('cloud-player');
+  hint.textContent = 'Press Esc or B to return to Xbox';
   hint?.classList.remove('hide');
-  setTimeout(() => hint?.classList.add('hide'), 4200);
+  setTimeout(() => hint?.classList.add('hide'), 5000);
   window.Nav?.pushLayer?.(player);
   window.Nav?.hideRing?.();
-  window.Guide?.notify?.({ title:'Cloud game started', text:game.name, icon:window.Views?.ICON?.play || '' });
+  setTimeout(() => frame.focus?.(), 60);
+  window.Guide?.notify?.({ title:'Cloud game started', text:game.name, icon:'' });
 }
 
 async function play(game){
   if (!game?.gameKey || starting) return;
   if (!owns(game)) throw new Error('This game is not in your library yet.');
   if (active) await quit();
+
   starting = true;
   const controller = new AbortController();
+  pending = { game, controller, uuid:null };
   const { splash, sub } = launchSurface(game);
 
   try {
     const uuid = await createSession(game.gameKey, event => {
       if (sub) sub.textContent = statusText(event);
+      if (event?.uuid && pending) pending.uuid = event.uuid;
     }, controller.signal);
     if (!uuid) throw new Error('Stratus did not return a session ID');
+    if (pending) pending.uuid = uuid;
 
-    if (sub) sub.textContent = 'Opening stream…';
+    if (sub) sub.textContent = 'Opening cloud stream…';
     const session = await startGame(uuid, controller.signal);
     active = { uuid, game, controller, session, pingTimer:null };
-    active.pingTimer = setInterval(() => {
-      api('/cloud/v1/pingSession', { method:'POST', body:{ uuid } }).catch(() => {});
-    }, 20_000);
+    pending = null;
+
+    const ping = () => api('/cloud/v1/pingSession', { method:'POST', body:{ uuid } }).catch(err => {
+      console.warn('[Stratus] ping failed', err);
+    });
+    active.pingTimer = setInterval(ping, 15_000);
 
     if (splash) splash.hidden = true;
     showPlayer(game, uuid);
   } catch (err){
+    const pendingUuid = pending?.uuid;
+    pending = null;
+    if (pendingUuid){
+      api('/cloud/v1/quitSession', { method:'POST', body:{ uuid:pendingUuid } }).catch(() => {});
+    }
     if (sub) sub.textContent = err?.name === 'AbortError'
       ? 'Cloud session cancelled.'
       : `Could not start cloud game: ${err?.message || 'Unknown error'}`;
@@ -265,14 +372,26 @@ async function play(game){
       if (splash) splash.hidden = true;
       window.Nav?.setRingVisible?.(true);
       window.Nav?.repaint?.();
-    }, 3500);
+    }, 4200);
   } finally {
     starting = false;
   }
 }
 
 async function quit(){
-  if (starting && !active) return;
+  if (pending && !active){
+    const p = pending;
+    pending = null;
+    try { p.controller?.abort?.(); } catch {}
+    if (p.uuid) api('/cloud/v1/quitSession', { method:'POST', body:{ uuid:p.uuid } }).catch(() => {});
+    const splash = document.getElementById('launch');
+    if (splash) splash.hidden = true;
+    starting = false;
+    window.Nav?.setRingVisible?.(true);
+    window.Nav?.restore?.();
+    return;
+  }
+
   const session = active;
   active = null;
   if (!session) return;
@@ -284,17 +403,39 @@ async function quit(){
   const frame = document.getElementById('playerFrame');
   const player = document.getElementById('player');
   if (frame) frame.src = 'about:blank';
-  if (player) player.hidden = true;
-  window.Nav?.popLayer?.();
+  if (player){ player.hidden = true; player.classList.remove('cloud-player'); }
+  try { window.Nav?.popLayer?.(); } catch {}
   window.Nav?.setRingVisible?.(true);
   window.Nav?.restore?.();
   window.Sound?.back?.();
 }
 
 window.addEventListener('nav:button', event => {
-  if (!active) return;
+  if (!active && !pending) return;
   if (event.detail?.button === 'b') quit();
 });
+
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && (active || pending)){
+    event.preventDefault();
+    quit();
+  }
+});
+
+addEventListener('pagehide', () => {
+  const uuid = active?.uuid || pending?.uuid;
+  if (!uuid) return;
+  // Best-effort teardown. sendBeacon cannot set the API header, so include the
+  // public key in the JSON body, which the Stratus auth middleware accepts.
+  try {
+    navigator.sendBeacon?.(
+      transportUrl(cacheBust(`${BASE}/cloud/v1/quitSession`)),
+      new Blob([JSON.stringify({ uuid, api_key:key() })], { type:'application/json' })
+    );
+  } catch {}
+});
+
+warm();
 
 window.StratusCloud = {
   BASE,
@@ -304,6 +445,7 @@ window.StratusCloud = {
   acquire,
   play,
   quit,
+  warm,
   get active(){ return active; },
   get starting(){ return starting; }
 };
