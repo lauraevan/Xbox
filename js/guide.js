@@ -38,9 +38,10 @@ function row({ icon, art, name, meta, right, chevron, onActivate }){
   btn.dataset.nav = '';
   const box = el('div', 'grow-icon');
   if (art){
-    const img = el('img');
-    img.alt = ''; img.loading = 'lazy'; img.src = art;
+    const img = el('img', 'cover');
+    img.alt = '';
     img.style.cssText = 'width:100%;height:100%;object-fit:cover';
+    window.Media.loadCover(art, img, { onFail: () => img.remove() });
     box.append(img);
   } else box.innerHTML = icon || ICON.play;
   btn.append(box);
@@ -99,7 +100,7 @@ function drawBody(){
     if (recents.length){
       body.append(el('div', 'guide-section', 'Recently played'));
       recents.forEach(g => body.append(row({
-        art:g.cover, name:g.name, meta:g.author, chevron:true,
+        art:g.coverFile, name:g.name, meta:g.author, chevron:true,
         onActivate: () => { close_(); window.App.openDetail(g); }
       })));
     }

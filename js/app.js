@@ -25,31 +25,24 @@ let historyStack = [];
 
 /* ═══════════ backdrop ═══════════ */
 let bgToken = 0;
-function setBackdrop(url, fallbackUrl){
+let bgCancel = null;
+function setBackdrop(file){
   if (window.State.settings.background === 'plain') return;
   const token = ++bgToken;
   const a = $('#bgA'), b = $('#bgB');
   const next = bgFlip ? a : b;
   const prev = bgFlip ? b : a;
-  if (!url){ a.classList.remove('on'); b.classList.remove('on'); return; }
+  if (!file){ a.classList.remove('on'); b.classList.remove('on'); return; }
 
-  const show = src => {
+  // drop any in-flight backdrop so fast scrolling does not queue them up
+  bgCancel?.();
+  bgCancel = window.Media.resolveCover(file, url => {
     if (token !== bgToken) return;
-    next.style.backgroundImage = `url("${src}")`;
+    next.style.backgroundImage = `url("${url}")`;
     next.classList.add('on');
     prev.classList.remove('on');
     bgFlip = !bgFlip;
-  };
-
-  const probe = new Image();
-  probe.onload = () => show(url);
-  probe.onerror = () => {
-    if (!fallbackUrl || fallbackUrl === url) return;
-    const retry = new Image();
-    retry.onload = () => show(fallbackUrl);
-    retry.src = fallbackUrl;
-  };
-  probe.src = url;
+  });
 }
 
 /* ═══════════ icons ═══════════ */
@@ -144,7 +137,7 @@ function openDetail(game){
   node.innerHTML = '';
 
   const bg = el('div', 'detail-bg');
-  bg.style.backgroundImage = `url("${game.cover}")`;
+  window.Media.resolveCover(game.coverFile, url => { bg.style.backgroundImage = `url("${url}")`; });
   node.append(bg, el('div', 'detail-scrim'));
 
   const inner = el('div', 'detail-inner');
@@ -217,7 +210,7 @@ function openDetail(game){
 
   window.Nav.pushLayer(node);
   window.Nav.focusFirst('.btn.primary');
-  setBackdrop(game.cover, game.coverAlt);
+  setBackdrop(game.coverFile);
   updateLegend();
 }
 
@@ -237,7 +230,9 @@ function launch(game){
   window.Sound?.launch();
   const splash = $('#launch');
   splash.hidden = false;
-  $('#launchArt').style.backgroundImage = `url("${game.cover}")`;
+  $('#launchArt').style.backgroundImage = '';
+  window.Media.resolveCover(game.coverFile,
+    url => { $('#launchArt').style.backgroundImage = `url("${url}")`; });
   $('#launchTitle').textContent = game.name;
 
   if (detailGame) { $('#detail').hidden = true; }
@@ -515,7 +510,7 @@ function currentFocusGame(){
 window.addEventListener('nav:focus', () => {
   const game = currentFocusGame();
   if (game){
-    setBackdrop(game.cover, game.coverAlt);
+    setBackdrop(game.coverFile);
     if (currentView === 'home' && !detailGame) window.Views.updateHero(game);
   }
 });

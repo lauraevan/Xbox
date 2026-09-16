@@ -182,13 +182,33 @@ body[data-bg="plain"] .backdrop-layer{ opacity:0 !important; }
 @keyframes spin{ to{ transform:rotate(360deg); } }
 
 .cover{
-  width:100%; height:100%; object-fit:cover; background:var(--panel-2);
-  opacity:0; transition:opacity .34s var(--ease);
+  position:relative; z-index:1;   /* above .cover-plate, below every overlay */
+  width:100%; height:100%; object-fit:cover;
+  opacity:0; transition:opacity var(--dur-slow) var(--ease-decel);
 }
 .cover.loaded{ opacity:1; }
-.cover-fallback{
-  position:absolute; inset:0; display:grid; place-items:center;
-  font-size:2.6rem; font-weight:700; color:rgba(255,255,255,.28);
-  background:linear-gradient(145deg,#232a31,#12161a);
-  letter-spacing:.1rem;
+
+/* Shown until the artwork lands, and left in place if it never does.
+   The hue comes from the title, so a given game always gets the same
+   plate and the grid reads as designed rather than broken. */
+.cover-plate{
+  position:absolute; inset:0; z-index:0; display:grid; place-items:center;
+  background:
+    radial-gradient(120% 100% at 30% 0%,
+      hsl(var(--h) 42% 30%) 0%,
+      hsl(var(--h) 38% 18%) 55%,
+      hsl(var(--h) 34% 11%) 100%);
 }
+.cover-plate::after{
+  content:""; position:absolute; inset:0;
+  background:linear-gradient(140deg, rgba(255,255,255,.07), transparent 46%);
+}
+.cover-initials{
+  position:relative;
+  font-size:3.6rem; font-weight:600; letter-spacing:.15rem;
+  color:hsl(var(--h) 60% 86%); opacity:.55;
+  text-shadow:0 .2rem 1.2rem rgba(0,0,0,.45);
+}
+.tile-sm .cover-initials,
+.grid-item .cover-initials{ font-size:2.8rem; }
+.detail-cover .cover-initials{ font-size:7rem; }

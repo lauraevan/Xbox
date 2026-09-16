@@ -38,7 +38,7 @@
 }
 .grid-item[data-focused]{ transform:scale(1.07); box-shadow:0 1.2rem 3rem rgba(0,0,0,.6); z-index:2; }
 .grid-item .tile-label{
-  position:absolute; left:0; right:0; bottom:0; padding:2.4rem .8rem .7rem;
+  position:absolute; left:0; right:0; bottom:0; z-index:3; padding:2.4rem .8rem .7rem;
   font-size:1.35rem; background:linear-gradient(transparent, rgba(0,0,0,.9));
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis; opacity:0;
   transition:opacity var(--dur);
@@ -68,9 +68,9 @@
 .gp-hero[data-focused]{ transform:scale(1.012); }
 .gp-hero-art{ position:absolute; inset:0; }
 .gp-hero-art img{ width:100%; height:100%; object-fit:cover; filter:saturate(1.08); }
-.gp-hero-scrim{ position:absolute; inset:0;
+.gp-hero-scrim{ position:absolute; inset:0; z-index:2;
   background:linear-gradient(95deg, rgba(6,8,10,.94) 12%, rgba(6,8,10,.55) 46%, transparent 78%); }
-.gp-hero-copy{ position:absolute; left:3.4rem; top:50%; transform:translateY(-50%); max-width:46rem; }
+.gp-hero-copy{ position:absolute; z-index:3; left:3.4rem; top:50%; transform:translateY(-50%); max-width:46rem; }
 .gp-hero-kicker{ font-size:1.3rem; font-weight:800; letter-spacing:.2rem; color:var(--green-bright); text-transform:uppercase; }
 .gp-hero-title{ font-size:4rem; font-weight:600; margin:.8rem 0 1rem; line-height:1.06; }
 .gp-hero-meta{ font-size:1.6rem; color:var(--text-2); }

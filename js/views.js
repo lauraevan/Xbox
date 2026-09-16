@@ -28,27 +28,40 @@ const ICON = new Proxy({
   get: (map, key) => (key in map ? window.Icons.icon(map[key]) : '')
 });
 
-/* ───────── cover art with graceful degradation ───────── */
-function coverArt(game, sizes){
+/* ───────── cover art with graceful degradation ─────────
+   Loading goes through js/media.js, which walks a chain of mirrors on a
+   bounded queue and retries. Until it lands (or if it never does) the
+   tile shows a deterministic coloured plate rather than a grey hole. */
+function coverArt(game){
   const wrap = el('span', 'tile-art');
-  const fallback = el('span', 'cover-fallback', escapeHtml(game.name.slice(0, 2).toUpperCase()));
+
+  const hue = window.Media.placeholderHue(game.id + game.name);
+  const plate = el('span', 'cover-plate');
+  plate.style.setProperty('--h', hue);
+  plate.append(el('span', 'cover-initials', escapeHtml(initials(game.name))));
+
   const img = el('img', 'cover');
   img.alt = '';
-  img.loading = 'lazy';
   img.decoding = 'async';
-  if (sizes) img.sizes = sizes;
 
-  let triedMirror = false;
-  img.addEventListener('load', () => { img.classList.add('loaded'); fallback.remove(); });
-  img.addEventListener('error', () => {
-    if (!triedMirror && game.coverAlt && game.coverAlt !== game.cover){
-      triedMirror = true; img.src = game.coverAlt;
-    } else img.remove();
+  wrap.append(plate, img);
+
+  const cancel = window.Media.loadCover(game.coverFile, img, {
+    onFail: () => { img.remove(); wrap.classList.add('art-missing'); }
   });
-  img.src = game.cover;
-
-  wrap.append(fallback, img);
+  wrap._cancelCover = cancel;
   return wrap;
+}
+
+/** One or two letters, skipping articles and punctuation. */
+function initials(name){
+  const words = String(name)
+    .replace(/[^\p{L}\p{N} ]/gu, ' ')
+    .split(/\s+/)
+    .filter(w => w && !/^(the|a|an|of|and)$/i.test(w));
+  if (!words.length) return '?';
+  if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
+  return (words[0][0] + words[1][0]).toUpperCase();
 }
 
 const escapeHtml = s => String(s).replace(/[&<>"']/g, c =>
@@ -145,8 +158,7 @@ function renderHome(root){
     }),
     makeCard({
       label: feature[1]?.name || 'Game Pass',
-      art: feature[1]?.cover,
-      artAlt: feature[1]?.coverAlt,
+      art: feature[1]?.coverFile,
       chip: 'GAME PASS',
       grad: 'grad-b',
       onActivate: () => feature[1] ? window.App.openDetail(feature[1]) : window.App.setView('pass')
@@ -175,24 +187,21 @@ function makeCard({ label, mosaic, art, artAlt, chip, grad, illus, onActivate })
     const m = el('div', 'card-mosaic');
     mosaic.forEach(g => {
       const cell = el('div');
-      const img = el('img');
-      img.alt = ''; img.loading = 'lazy';
+      cell.style.setProperty('--h', window.Media.placeholderHue(g.id + g.name));
+      cell.classList.add('mosaic-cell');
+      const img = el('img', 'cover');
+      img.alt = '';
       img.style.cssText = 'width:100%;height:100%;object-fit:cover';
-      img.addEventListener('error', () => {
-        if (g.coverAlt && img.src !== g.coverAlt) img.src = g.coverAlt;
-        else img.remove();
-      });
-      img.src = g.cover;
+      window.Media.loadCover(g.coverFile, img, { onFail: () => img.remove() });
       cell.append(img);
       m.append(cell);
     });
     btn.append(m);
   } else if (art){
     const wrap = el('div', 'card-art');
-    const img = el('img');
-    img.alt = ''; img.loading = 'lazy';
-    img.addEventListener('error', () => { if (artAlt && img.src !== artAlt) img.src = artAlt; else wrap.remove(); });
-    img.src = art;
+    const img = el('img', 'cover');
+    img.alt = '';
+    window.Media.loadCover(art, img, { onFail: () => wrap.remove() });
     wrap.append(img);
     btn.append(wrap);
   } else if (illus){
@@ -330,9 +339,9 @@ function renderPass(root){
   heroBtn.dataset.nav = '';
   heroBtn.dataset.ringRadius = '0.6rem';
   const art = el('div', 'gp-hero-art');
-  const img = el('img');
-  img.alt = ''; img.src = spotlight.cover;
-  img.addEventListener('error', () => { if (img.src !== spotlight.coverAlt) img.src = spotlight.coverAlt; });
+  const img = el('img', 'cover');
+  img.alt = '';
+  window.Media.loadCover(spotlight.coverFile, img, { onFail: () => art.remove() });
   art.append(img);
   heroBtn.append(art, el('div', 'gp-hero-scrim'));
   heroBtn.append(el('div', 'gp-hero-copy',

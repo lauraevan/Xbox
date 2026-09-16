@@ -79,7 +79,7 @@
 
 .tile-hero{ width:25.7rem; height:25.7rem; }
 .tile-hero .tile-label{
-  position:absolute; left:0; right:0; bottom:0;
+  position:absolute; left:0; right:0; bottom:0; z-index:3;
   padding:1.6rem 1.4rem 1.2rem;
   font-size:2rem; font-weight:500;
   background:linear-gradient(transparent, rgba(0,0,0,.86) 46%);
@@ -89,7 +89,7 @@
    hero bottom lands on y=793, the small row on y=789 */
 .tile-sm{ width:15.5rem; height:15.5rem; margin-bottom:.4rem; }
 .tile-sm .tile-label{
-  position:absolute; left:0; right:0; bottom:0; padding:2.6rem .9rem .7rem;
+  position:absolute; left:0; right:0; bottom:0; z-index:3; padding:2.6rem .9rem .7rem;
   font-size:1.35rem; font-weight:500; opacity:0;
   background:linear-gradient(transparent, rgba(0,0,0,.88));
   transition:opacity var(--dur) var(--ease);
@@ -98,7 +98,7 @@
 .tile-sm[data-focused] .tile-label{ opacity:1; }
 
 .tile-badge{
-  position:absolute; top:.6rem; left:.6rem; z-index:2;
+  position:absolute; top:.6rem; left:.6rem; z-index:4;
   font-size:1rem; font-weight:700; letter-spacing:.07rem; line-height:1;
   padding:.3rem .45rem; border-radius:.25rem;
   background:rgba(0,0,0,.66); color:#fff; text-transform:uppercase;
@@ -111,7 +111,7 @@
 .tile-badge.flash{ background:#b5451b; }
 .tile-badge.emu{ background:#4b2fa8; }
 .tile-pin{
-  position:absolute; top:.7rem; right:.7rem; z-index:2;
+  position:absolute; top:.7rem; right:.7rem; z-index:4;
   width:2rem; height:2rem; border-radius:50%;
   background:rgba(0,0,0,.6); display:grid; place-items:center;
 }
@@ -142,14 +142,19 @@
 .card-art{ position:absolute; inset:0; }
 .card-art img{ width:100%; height:100%; object-fit:cover; }
 .card-mosaic{ position:absolute; inset:0; display:grid; grid-template-columns:repeat(4,1fr); }
-.card-mosaic div{ background-size:cover; background-position:center; }
-.card-scrim{ position:absolute; inset:0; background:linear-gradient(transparent 38%, rgba(0,0,0,.82)); }
+.card-mosaic div{ background-size:cover; background-position:center; position:relative; }
+.card-mosaic .mosaic-cell{
+  background:radial-gradient(120% 100% at 30% 0%,
+    hsl(var(--h) 40% 26%), hsl(var(--h) 34% 12%));
+}
+.card-scrim{ position:absolute; inset:0; z-index:2;
+  background:linear-gradient(transparent 38%, rgba(0,0,0,.82)); }
 .card-label{
-  position:absolute; left:1.6rem; right:1.6rem; bottom:1.2rem;
+  position:absolute; left:1.6rem; right:1.6rem; bottom:1.2rem; z-index:3;
   font-size:2rem; font-weight:500;
 }
 .card-chip{
-  position:absolute; top:1.2rem; left:1.2rem;
+  position:absolute; top:1.2rem; left:1.2rem; z-index:3;
   display:flex; align-items:center; gap:.5rem;
   background:rgba(0,0,0,.6); border-radius:.3rem; padding:.35rem .7rem;
   font-size:1.15rem; font-weight:800; letter-spacing:.05rem;

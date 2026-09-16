@@ -73,6 +73,8 @@ function normalise(raw, index){
     authorLink:raw.authorLink || null,
     cover:     coverUrls[0] || '',
     coverAlt:  coverUrls[1] || '',
+    // just the leaf ("173.png"), which js/media.js walks across mirrors
+    coverFile: String(raw.cover || '').split('/').pop() || '',
     play:      playUrls[0] || '',
     playAlt:   playUrls[1] || '',
     external,
