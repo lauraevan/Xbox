@@ -117,147 +117,144 @@ body[data-mic="muted"] #micBtn{ color:rgba(255,255,255,.85); }
 .pad.menu,.pad.view{ background:rgba(255,255,255,.7); font-size:1.1rem; }
 
 /* ───────── guide ─────────
-   The rail keeps its icon width at all times. The focused tab names
-   itself with a floating chip beside it rather than expanding over the
-   body, so what you are navigating towards stays readable. */
+   Tabs run horizontally across the top of the panel, the list fills the
+   middle, and a strip of quick actions closes it off at the bottom.
+   Contextual button hints sit outside the panel to its right. */
 .guide{ position:fixed; inset:0; z-index:100; }
 .guide-scrim{
-  position:absolute; inset:0; background:rgba(0,0,0,.72);
+  position:absolute; inset:0; background:rgba(0,0,0,.7);
   backdrop-filter:blur(1.4rem) saturate(.65);
   animation:fade .25s var(--ease-decel);
 }
 @keyframes fade{ from{opacity:0;} to{opacity:1;} }
 
 .guide-panel{
-  position:absolute; inset:0 auto 0 0; width:56rem;
-  display:grid; grid-template-columns:8.8rem 1fr;
-  background:#070909;
-  border-right:.1rem solid rgba(255,255,255,.06);
-  box-shadow:2.4rem 0 8rem rgba(0,0,0,.85);
+  position:absolute; left:3.4rem; top:3.4rem; bottom:3.4rem; width:46rem;
+  display:grid; grid-template-rows:auto 1fr auto;
+  background:#0a0c0e;
+  border:.1rem solid rgba(255,255,255,.07);
+  border-radius:.8rem;
+  box-shadow:0 2.4rem 8rem rgba(0,0,0,.85);
+  overflow:hidden;
   animation:guideIn var(--dur-mid) var(--ease-decel);
 }
 body[data-theme="light"] .guide-panel{ background:#f4f5f7; }
-@keyframes guideIn{ from{ transform:translateX(-4rem); opacity:0; } to{ transform:none; opacity:1; } }
+@keyframes guideIn{ from{ transform:translateX(-3rem); opacity:0; } to{ transform:none; opacity:1; } }
 .guide.out .guide-panel{ animation:guideOut var(--dur) var(--ease-accel) forwards; }
 .guide.out .guide-scrim{ animation:fade var(--dur) var(--ease-accel) reverse forwards; }
-@keyframes guideOut{ to{ transform:translateX(-4rem); opacity:0; } }
+@keyframes guideOut{ to{ transform:translateX(-3rem); opacity:0; } }
 
-.guide-rail{ position:relative; }
-.rail-inner{
-  position:absolute; inset:0 auto 0 0; width:8.8rem; z-index:3;
-  display:flex; flex-direction:column; align-items:stretch; gap:.3rem;
-  padding:1.8rem 0;
-  background:#030404;
-  border-right:.1rem solid rgba(255,255,255,.05);
-  overflow:visible;
+/* ── tab strip ── */
+.guide-tabs{
+  display:flex; align-items:center; gap:.4rem;
+  padding:1.4rem 1.6rem 0;
 }
-body[data-theme="light"] .rail-inner{ background:#e4e6ea; }
-
 .guide-tab{
-  position:relative; height:6rem; flex:none;
+  position:relative; flex:1; height:5rem; border-radius:.5rem;
   display:grid; place-items:center;
-  color:rgba(255,255,255,.34);
+  color:rgba(255,255,255,.42);
   transition:color var(--dur) var(--ease-standard),
              background var(--dur) var(--ease-standard);
 }
-body[data-theme="light"] .guide-tab{ color:rgba(0,0,0,.4); }
-.guide-tab svg{ width:2.8rem; height:2.8rem; fill:currentColor; }
+.guide-tab svg{ width:2.5rem; height:2.5rem; fill:currentColor; }
 .guide-tab.active{ color:#fff; }
-body[data-theme="light"] .guide-tab.active{ color:#000; }
-.guide-tab[data-focused]{ color:#fff; background:rgba(255,255,255,.09); }
-.guide-tab.active::before{
-  content:""; position:absolute; left:0; top:1.2rem; bottom:1.2rem;
-  width:.35rem; border-radius:0 .2rem .2rem 0; background:var(--accent);
+.guide-tab[data-focused]{ color:#fff; background:rgba(255,255,255,.1); }
+.guide-tab.active::after{
+  content:""; position:absolute; left:1rem; right:1rem; bottom:-.2rem;
+  height:.3rem; border-radius:.2rem; background:var(--accent);
 }
-
-/* the name rides alongside the rail instead of pushing through it */
-.tab-label{
-  position:absolute; left:calc(100% + 1.2rem); top:50%;
-  transform:translate(-.6rem, -50%) scale(.96);
-  transform-origin:left center;
-  white-space:nowrap; pointer-events:none;
-  font-size:1.6rem; font-weight:500; color:#fff;
-  background:rgba(10,12,14,.98);
-  border:.1rem solid rgba(255,255,255,.14);
-  border-radius:.4rem; padding:.7rem 1.2rem;
-  box-shadow:0 .8rem 2.4rem rgba(0,0,0,.7);
-  opacity:0; visibility:hidden;
-  transition:opacity var(--dur) var(--ease-decel),
-             transform var(--dur) var(--ease-decel),
-             visibility var(--dur);
-  z-index:6;
-}
-.guide-tab[data-focused] .tab-label{
-  opacity:1; visibility:visible; transform:translate(0, -50%) scale(1);
-}
-
 .guide-avatar{
-  width:4.4rem; height:4.4rem; border-radius:50%; overflow:hidden;
-  box-shadow:0 0 0 .2rem rgba(255,255,255,.16);
+  width:3.6rem; height:3.6rem; border-radius:50%; overflow:hidden;
+  box-shadow:0 0 0 .2rem rgba(255,255,255,.18);
 }
 .guide-avatar img{ width:100%; height:100%; object-fit:cover; }
-.rail-spacer{ flex:1; }
-
-/* ───────── guide body ───────── */
-.guide-body{
-  padding:2.8rem 2.6rem 3rem; overflow-y:auto;
-  background:#070909;
-  transition:opacity var(--dur) var(--ease-standard);
+.tab-badge{
+  position:absolute; top:.5rem; right:1rem;
+  min-width:1.6rem; height:1.6rem; padding:0 .4rem; border-radius:1rem;
+  background:var(--green); color:#fff;
+  font-size:1.05rem; font-weight:700; line-height:1.6rem; text-align:center;
 }
-/* while a rail tab holds focus its label floats over the body; receding the
-   body a little keeps that chip legible without hiding what you are aiming at */
-.guide-panel:has(.guide-tab[data-focused]) .guide-body{ opacity:.55; }
-body[data-theme="light"] .guide-body{ background:#f4f5f7; }
 
-.guide-head{ display:flex; align-items:center; gap:1.8rem; margin-bottom:2.4rem; }
+/* ── body ── */
+.guide-body{ padding:1.8rem 1.6rem; overflow-y:auto; }
+.guide-head{ display:flex; align-items:center; gap:1.5rem; margin:0 0 1.6rem; padding:0 .4rem; }
 .guide-head-pic{
-  width:7.6rem; height:7.6rem; border-radius:50%; overflow:hidden; flex:none;
-  box-shadow:0 0 0 .25rem rgba(255,255,255,.14), 0 .6rem 2rem rgba(0,0,0,.6);
+  width:6rem; height:6rem; border-radius:50%; overflow:hidden; flex:none;
+  box-shadow:0 0 0 .22rem rgba(255,255,255,.14);
 }
 .guide-head-pic img{ width:100%; height:100%; object-fit:cover; }
-.guide-title{ font-size:2.8rem; font-weight:600; margin:0; line-height:1.15; }
-.guide-sub{ font-size:1.5rem; color:var(--text-3); margin:.3rem 0 0; }
+.guide-title{ font-size:2.3rem; font-weight:600; margin:0; line-height:1.15; }
+.guide-sub{ font-size:1.4rem; color:var(--text-3); margin:.2rem 0 0; }
 .status-pill{
-  display:inline-flex; align-items:center; gap:.7rem; margin-top:.7rem;
-  font-size:1.4rem; color:var(--text-2);
-  background:rgba(255,255,255,.07); border-radius:2rem; padding:.35rem 1rem;
+  display:inline-flex; align-items:center; gap:.6rem; margin-top:.5rem;
+  font-size:1.3rem; color:var(--text-2);
+  background:rgba(255,255,255,.07); border-radius:2rem; padding:.3rem .9rem;
 }
-.status-dot{ width:.85rem; height:.85rem; border-radius:50%; background:var(--green-bright); }
+.status-dot{ width:.8rem; height:.8rem; border-radius:50%; background:var(--green-bright); }
 
 .guide-section{
-  font-size:1.3rem; font-weight:700; letter-spacing:.16rem; color:rgba(255,255,255,.38);
-  text-transform:uppercase; margin:2.6rem 0 .9rem; padding-left:.3rem;
+  font-size:1.25rem; font-weight:700; letter-spacing:.16rem;
+  color:rgba(255,255,255,.36); text-transform:uppercase;
+  margin:1.8rem 0 .6rem; padding-left:.6rem;
 }
-body[data-theme="light"] .guide-section{ color:rgba(0,0,0,.45); }
-.guide-section:first-child{ margin-top:0; }
+.guide-section:first-child{ margin-top:.4rem; }
 
 .grow{
-  display:flex; align-items:center; gap:1.5rem; width:100%;
-  padding:1.15rem 1.3rem; border-radius:.5rem; text-align:left;
-  border:.1rem solid transparent;
+  display:flex; align-items:center; gap:1.4rem; width:100%;
+  padding:1rem 1.1rem; border-radius:.5rem; text-align:left;
+  border:.15rem solid transparent;
   transition:background var(--dur) var(--ease-standard),
              border-color var(--dur) var(--ease-standard);
 }
-.grow[data-focused]{
-  background:rgba(255,255,255,.11);
-  border-color:rgba(255,255,255,.14);
-}
+.grow[data-focused]{ background:rgba(255,255,255,.08); border-color:var(--accent); }
 .grow-icon{
-  width:4.4rem; height:4.4rem; border-radius:.45rem; flex:none; overflow:hidden;
+  width:4.6rem; height:4.6rem; border-radius:.4rem; flex:none; overflow:hidden;
   background:rgba(255,255,255,.05); display:grid; place-items:center; position:relative;
 }
-.grow-icon svg{ width:2.3rem; height:2.3rem; fill:rgba(255,255,255,.62); }
+.grow-icon svg{ width:2.3rem; height:2.3rem; fill:rgba(255,255,255,.72); }
 .grow-text{ flex:1; min-width:0; }
-.grow-name{ font-size:1.75rem; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.grow-meta{ font-size:1.35rem; color:var(--text-3); margin-top:.1rem;
+.grow-name{ font-size:1.7rem; font-weight:400; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.grow-meta{ font-size:1.3rem; color:var(--text-3); margin-top:.1rem;
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.grow-right{ font-size:1.45rem; color:var(--text-3); flex:none; }
+.grow-right{ font-size:1.4rem; color:var(--text-3); flex:none; }
 .grow-chev{ flex:none; display:grid; place-items:center; }
-.grow-chev svg{ width:1.7rem; height:1.7rem; fill:rgba(255,255,255,.32); }
+.grow-chev svg{ width:1.6rem; height:1.6rem; fill:rgba(255,255,255,.3); }
 
-.guide-tile-row{ display:grid; grid-template-columns:repeat(4,1fr); gap:.9rem; }
+/* ── quick action strip ── */
+.guide-quick{
+  display:flex; align-items:center; gap:.8rem;
+  padding:1.2rem 1.6rem 1.6rem;
+  border-top:.1rem solid rgba(255,255,255,.06);
+}
+.quick-btn{
+  flex:1; height:4.6rem; border-radius:.5rem;
+  display:grid; place-items:center;
+  background:rgba(255,255,255,.06);
+  color:rgba(255,255,255,.8);
+  transition:background var(--dur) var(--ease-standard), color var(--dur) var(--ease-standard);
+}
+.quick-btn svg{ width:2.3rem; height:2.3rem; fill:currentColor; }
+.quick-btn[data-focused]{ background:var(--accent); color:#06210a; }
+.quick-btn .gp-chip{ font-size:.95rem; border-width:.15rem; padding:.25rem .3rem; }
+
+/* ── contextual hints beside the panel ── */
+.guide-hints{
+  position:absolute; left:52rem; top:5rem;
+  display:flex; flex-direction:column; gap:1.2rem;
+  font-size:1.6rem; color:rgba(255,255,255,.82);
+  animation:fade var(--dur-slow) var(--ease-decel);
+}
+.guide-hint{ display:flex; align-items:center; gap:1.1rem; }
+.guide-hint .glyph{
+  width:2.6rem; height:2.6rem; border-radius:50%; flex:none;
+  display:grid; place-items:center;
+  background:rgba(255,255,255,.16);
+}
+.guide-hint .glyph svg{ width:1.6rem; height:1.6rem; fill:#fff; }
+
+.guide-tile-row{ display:grid; grid-template-columns:repeat(4,1fr); gap:.8rem; }
 .guide-tile{
-  aspect-ratio:1; border-radius:.45rem; overflow:hidden; position:relative;
+  aspect-ratio:1; border-radius:.4rem; overflow:hidden; position:relative;
   background:var(--panel-2); transition:transform var(--dur) var(--ease-decel);
 }
 .guide-tile[data-focused]{ transform:scale(1.07); }

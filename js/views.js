@@ -32,7 +32,7 @@ const ICON = new Proxy({
    Loading goes through js/media.js, which walks a chain of mirrors on a
    bounded queue and retries. Until it lands (or if it never does) the
    tile shows a deterministic coloured plate rather than a grey hole. */
-function coverArt(game){
+function coverArt(game, opts = {}){
   const wrap = el('span', 'tile-art');
 
   const hue = window.Media.placeholderHue(game.id + game.name);
@@ -47,6 +47,7 @@ function coverArt(game){
   wrap.append(plate, img);
 
   const cancel = window.Media.loadCover(game.coverFile, img, {
+    priority: opts.priority,
     onFail: () => { img.remove(); wrap.classList.add('art-missing'); }
   });
   wrap._cancelCover = cancel;
@@ -73,7 +74,7 @@ function tile(game, kind = 'sm'){
   btn.dataset.nav = '';
   btn.dataset.gameId = game.id;
   btn.setAttribute('aria-label', game.name);
-  btn.append(coverArt(game));
+  btn.append(coverArt(game, { priority: kind === 'hero' }));
 
   if (game.tag && window.State.settings.tileBadges)
     btn.append(el('span', `tile-badge ${game.tag.cls}`, game.tag.badge));
@@ -90,7 +91,7 @@ function gridItem(game){
   btn.dataset.nav = '';
   btn.dataset.gameId = game.id;
   btn.setAttribute('aria-label', game.name);
-  btn.append(coverArt(game));
+  btn.append(coverArt(game, { priority: kind === 'hero' }));
   if (game.tag && window.State.settings.tileBadges)
     btn.append(el('span', `tile-badge ${game.tag.cls}`, game.tag.badge));
   btn.append(el('span', 'tile-label', escapeHtml(game.name)));
@@ -197,17 +198,23 @@ function makeCard({ label, sub, mosaic, art, artAlt, chip, grad, illus, cls, onA
       const img = el('img', 'cover');
       img.alt = '';
       img.style.cssText = 'width:100%;height:100%;object-fit:cover';
-      window.Media.loadCover(g.coverFile, img, { onFail: () => img.remove() });
+      window.Media.loadCover(g.coverFile, img, { priority:true, onFail: () => img.remove() });
       cell.append(img);
       m.append(cell);
     });
     btn.append(m);
   } else if (art){
     const wrap = el('div', 'card-art');
-    const img = el('img', 'cover');
-    img.alt = '';
-    window.Media.loadCover(art, img, { onFail: () => wrap.remove() });
-    wrap.append(img);
+    // one blurred layer to fill the card, one sharp layer anchored right
+    const fill  = el('img', 'cover fill');
+    const sharp = el('img', 'cover sharp');
+    fill.alt = sharp.alt = '';
+    window.Media.resolveCover(art, url => {
+      fill.src = sharp.src = url;
+      fill.classList.add('loaded');
+      sharp.classList.add('loaded');
+    }, () => wrap.remove());
+    wrap.append(fill, sharp);
     btn.append(wrap);
   } else if (illus){
     btn.append(el('div', 'card-illus', illus));

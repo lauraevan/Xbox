@@ -29,7 +29,9 @@ let open = false;
 let notifications = [];
 
 const guide = $('#guide');
-const rail  = $('#guideRail');
+const tabs  = $('#guideTabs');
+const quick = $('#guideQuick');
+const hints = $('#guideHints');
 const body  = $('#guideBody');
 
 /* ───────── rows ───────── */
@@ -258,21 +260,19 @@ function drawBody(){
   window.Nav.restore();
 }
 
-/* ───────── rail ───────── */
+/* ───────── tab strip ───────── */
 function drawRail(){
-  rail.innerHTML = '';
-  const inner = el('div', 'rail-inner');
-  TABS.filter(t => !t.bottom).forEach(t => inner.append(tabButton(t)));
-  inner.append(el('div', 'rail-spacer'));
-  TABS.filter(t => t.bottom).forEach(t => inner.append(tabButton(t)));
-  rail.append(inner);
+  tabs.innerHTML = '';
+  TABS.forEach(t => tabs.append(tabButton(t)));
+  drawQuick();
+  drawHints();
 }
 
 function tabButton(tab){
   const btn = el('button', 'guide-tab' + (tab.id === activeTab ? ' active' : ''));
   btn.dataset.nav = '';
   btn.dataset.guideTab = tab.id;
-  btn.dataset.ringRadius = '0';
+  btn.dataset.ringRadius = '.5rem';
   btn.title = tab.label;
   btn.setAttribute('aria-label', tab.label);
 
@@ -284,9 +284,47 @@ function tabButton(tab){
     btn.append(a);
   } else btn.insertAdjacentHTML('afterbegin', tab.icon);
 
-  btn.append(el('span', 'tab-label', escapeHtml(tab.label)));
+  if (tab.id === 'notifications' && notifications.length)
+    btn.append(el('span', 'tab-badge', String(Math.min(notifications.length, 99))));
+
   btn._navActivate = () => selectTab(tab.id);
   return btn;
+}
+
+/* ───────── quick actions along the bottom ───────── */
+const QUICK = [
+  { label:'Game Pass', chip:true,        run: () => { close_(); window.App.setView('pass'); } },
+  { label:'Store',     icon:ICON.store,  run: () => { close_(); window.App.setView('pass'); } },
+  { label:'My games',  icon:ICON.grid,   run: () => { close_(); window.App.setView('library'); } },
+  { label:'Search',    icon:ICON.search, run: () => { close_(); window.App.setView('search'); } },
+  { label:'Settings',  icon:ICON.gear,   run: () => { close_(); window.App.setView('settings'); } }
+];
+
+function drawQuick(){
+  quick.innerHTML = '';
+  QUICK.forEach(q => {
+    const btn = el('button', 'quick-btn');
+    btn.dataset.nav = '';
+    btn.dataset.ringRadius = '.5rem';
+    btn.title = q.label;
+    btn.setAttribute('aria-label', q.label);
+    btn.innerHTML = q.chip ? '<span class="gp-chip">GAME<br>PASS</span>' : q.icon;
+    btn._navActivate = q.run;
+    quick.append(btn);
+  });
+}
+
+/* ───────── contextual hints beside the panel ───────── */
+function drawHints(){
+  if (!hints) return;
+  const rows = [
+    [ICON.power,   'Hold for power options'],
+    [ICON.capture, 'Share last capture'],
+    [ICON.apps,    'More options']
+  ];
+  hints.innerHTML = rows.map(([glyph, text]) =>
+    `<div class="guide-hint"><span class="glyph">${glyph}</span><span>${escapeHtml(text)}</span></div>`
+  ).join('');
 }
 
 function selectTab(id){
@@ -303,7 +341,7 @@ function cycleTab(delta){
 }
 
 /* the rail flies out whenever focus is sitting on one of its tabs */
-/* the focused tab names itself through CSS alone now; nothing to toggle */
+
 
 /* ───────── open / close ───────── */
 function open_(tab){

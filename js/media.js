@@ -80,9 +80,10 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
  * the <img>. Two passes over the chain, with a short backoff between, so
  * a transient throttle does not leave a permanent hole in the grid.
  */
-function enqueue(file, { onURL, onFail, passes = 2 }){
+function enqueue(file, { onURL, onFail, passes = 2, priority = false }){
   const job = {
     cancelled: false,
+    priority,
     async run(){
       for (let pass = 0; pass < passes; pass++){
         for (const { build, i } of order()){
@@ -102,21 +103,23 @@ function enqueue(file, { onURL, onFail, passes = 2 }){
       if (!job.cancelled) onFail?.();
     }
   };
-  queue.push(job);
+  // large, prominent art (promo cards, backdrops) jumps the queue, otherwise
+  // it starves behind two dozen small tiles and the card shows bare colour
+  if (priority) queue.unshift(job); else queue.push(job);
   pump();
   return () => { job.cancelled = true; };
 }
 
-function loadCover(file, img, { onFail } = {}){
+function loadCover(file, img, { onFail, priority } = {}){
   return enqueue(file, {
     onURL: url => { img.src = url; img.classList.add('loaded'); },
-    onFail
+    onFail, priority
   });
 }
 
 /** Same chain, but hands back the URL for backgrounds and mosaics. */
-function resolveCover(file, onURL, onFail){
-  return enqueue(file, { onURL, onFail, passes: 1 });
+function resolveCover(file, onURL, onFail, opts = {}){
+  return enqueue(file, { onURL, onFail, passes: 2, priority: opts.priority !== false });
 }
 
 /** Deterministic hue so a placeholder is stable for a given title. */

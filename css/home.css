@@ -140,18 +140,28 @@
              box-shadow var(--dur-mid) var(--ease-standard);
 }
 .card[data-focused]{ transform:scale(1.035); box-shadow:0 1.4rem 3.6rem rgba(0,0,0,.6); z-index:2; }
-/* Promo cards are wide but the catalogue only has square art, so anchor it
-   to the right edge and let a left-to-right scrim carry the copy - the same
-   shape the console's own key art takes. */
-.card-art{ position:absolute; inset:0; }
-.card-art img{
-  width:100%; height:100%;
-  object-fit:cover; object-position:right center;
+/* Promo cards are wide, the catalogue ships square art. Rather than pad the
+   gap with a gradient, the same artwork fills the card twice: blurred and
+   over-scaled underneath, sharp and anchored right on top. The card is then
+   entirely real art. */
+.card-art{ position:absolute; inset:0; overflow:hidden; }
+.card-art .fill{
+  position:absolute; inset:-12%;
+  width:124%; height:124%;
+  object-fit:cover;
+  filter:blur(2.4rem) saturate(1.3) brightness(.62);
+  transform:scale(1.06);
+}
+.card-art .sharp{
+  position:absolute; right:0; top:0; height:100%; width:auto;
+  max-width:none; object-fit:cover;
+  -webkit-mask-image:linear-gradient(90deg, transparent 0%, #000 34%);
+          mask-image:linear-gradient(90deg, transparent 0%, #000 34%);
 }
 .card-art::after{
   content:""; position:absolute; inset:0; z-index:2;
   background:linear-gradient(95deg,
-    rgba(6,8,10,.94) 6%, rgba(6,8,10,.72) 38%, rgba(6,8,10,.18) 68%, transparent 100%);
+    rgba(4,6,8,.92) 4%, rgba(4,6,8,.64) 34%, rgba(4,6,8,.12) 66%, transparent 92%);
 }
 .card-mosaic{ position:absolute; inset:0; display:grid; grid-template-columns:repeat(4,1fr); }
 .card-mosaic div{ background-size:cover; background-position:center; position:relative; }
