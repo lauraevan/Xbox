@@ -96,10 +96,8 @@ function syncProfile(){
   $('#profileSub').textContent =
     `${window.State.gamerscore.toLocaleString()} Gamerscore \u00b7 ${window.State.data.tier}`;
 
-  // "friends online" is the size of this console's own catalogue rather than
-  // a social graph that does not exist here
-  const friends = $('#friendsCount');
-  if (friends) friends.textContent = (window.Catalog?.count?.() || 0).toLocaleString();
+  const score = $('#friendsCount');
+  if (score) score.textContent = window.State.gamerscore.toLocaleString();
 }
 
 function tickClock(){
@@ -110,10 +108,12 @@ function tickClock(){
   const m = String(now.getMinutes()).padStart(2, '0');
   let suffix = '';
   if (!use24){
-    suffix = h >= 12 ? ' pm' : ' am';
-    h = h % 12 || 12;
+    suffix = h >= 12 ? ' PM' : ' AM';
+    h = h % 12 || 12;                      // no leading zero on a 12-hour clock
+    $('#clock').textContent = `${h}:${m}${suffix}`;
+    return;
   }
-  $('#clock').textContent = `${String(h).padStart(2, '0')}:${m}${suffix}`;
+  $('#clock').textContent = `${String(h).padStart(2, '0')}:${m}`;
 }
 
 function tickBattery(){
@@ -677,8 +677,7 @@ document.addEventListener('nav:activate', e => {
   if (target.dataset.view) setView(target.dataset.view);
   if (target.dataset.act === 'profile') window.Guide.open('profile');
   if (target.dataset.act === 'friends'){
-    toast('Titles available', `${window.Catalog.count().toLocaleString()} in your catalogue`,
-          { icon: ICON.party });
+    window.Guide.open('achievements');
   }
   if (target.dataset.act === 'mic'){
     const muted = !window.State.settings.micMuted;

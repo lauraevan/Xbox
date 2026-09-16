@@ -38,12 +38,12 @@ const body  = $('#guideBody');
 function row({ icon, art, name, meta, right, chevron, onActivate }){
   const btn = el('button', 'grow');
   btn.dataset.nav = '';
-  const box = el('div', 'grow-icon');
+  const box = el('div', 'grow-icon' + (art ? '' : ' glyph'));
   if (art){
     const img = el('img', 'cover');
     img.alt = '';
     img.style.cssText = 'width:100%;height:100%;object-fit:cover';
-    window.Media.loadCover(art, img, { onFail: () => img.remove() });
+    window.Media.loadCover(art, img, { priority:true, onFail: () => img.remove() });
     box.append(img);
   } else box.innerHTML = icon || ICON.play;
   btn.append(box);
@@ -95,56 +95,28 @@ function drawBody(){
   const S = window.State, C = window.Catalog;
 
   if (activeTab === 'profile'){
-    body.append(header(S.data.gamertag, `${S.gamerscore.toLocaleString()} Gamerscore · ${S.data.tier}`,
-      { pic:true, status:true }));
+    // Home, then My games & apps, a divider, then recent titles by cover.
+    body.append(row({
+      icon: ICON.home, name:'Home',
+      onActivate: () => { close_(); window.App.setView('home'); }
+    }));
+    body.append(row({
+      icon: ICON.grid, name:'My games & apps',
+      onActivate: () => { close_(); window.App.setView('library'); }
+    }));
 
-    const slots = window.Features.QuickResume.slots()
-      .map(sl => C.get(sl.id)).filter(Boolean);
-    if (slots.length){
-      body.append(el('div', 'guide-section', 'Quick resume'));
-      slots.forEach(g => body.append(row({
-        art:g.coverFile, name:g.name, meta:'Ready to resume', chevron:true,
-        onActivate: () => { close_(); window.App.launch(g); }
-      })));
-    }
+    const recent = S.recentIds().map(id => C.get(id)).filter(Boolean).slice(0, 6);
+    const shelf = recent.length
+      ? recent
+      : C.featured().slice(0, 6);
 
-    const recents = S.recentIds().map(id => C.get(id)).filter(Boolean).slice(0, 4);
-    if (recents.length){
-      body.append(el('div', 'guide-section', 'Recently played'));
-      recents.forEach(g => body.append(row({
-        art:g.coverFile, name:g.name, meta:g.author, chevron:true,
+    if (shelf.length){
+      body.append(el('div', 'guide-divider'));
+      shelf.forEach(g => body.append(row({
+        art: g.coverFile, name: g.name,
         onActivate: () => { close_(); window.App.openDetail(g); }
       })));
     }
-
-    body.append(el('div', 'guide-section', 'My Xbox'));
-    body.append(row({ icon:ICON.trophy, name:'Achievements',
-      meta:`${S.unlockedCount()} of ${S.ACHIEVEMENTS.length} unlocked`, chevron:true,
-      onActivate: () => { activeTab = 'achievements'; drawRail(); drawBody();
-                          window.Nav.focusFirst('.guide-tab.active'); } }));
-    body.append(row({ icon:ICON.grid, name:'My games & apps', meta:`${C.count()} titles`, chevron:true,
-      onActivate: () => { close_(); window.App.setView('library'); } }));
-    body.append(row({ icon:ICON.store, name:'Game Pass', meta:'Browse the catalogue', chevron:true,
-      onActivate: () => { close_(); window.App.setView('pass'); } }));
-    body.append(row({ icon:ICON.search, name:'Search', meta:'Find a game by name', chevron:true,
-      onActivate: () => { close_(); window.App.setView('search'); } }));
-
-    body.append(el('div', 'guide-section', 'Account'));
-    S.profiles().filter(p => !p.active).forEach(p => body.append(row({
-      icon: ICON.person, name: `Switch to ${p.gamertag}`,
-      meta: `${(p.gamerscore || 0).toLocaleString()} Gamerscore`, chevron:true,
-      onActivate: () => {
-        S.switchProfile(p.profileId);
-        window.App.syncProfile();
-        drawRail(); drawBody();
-        window.App.toast('Signed in', p.gamertag, { icon: ICON.person });
-        window.App.setView('home');
-      }
-    })));
-    body.append(row({ icon:ICON.person, name:'Change gamertag', meta:'Rename this profile', chevron:true,
-      onActivate: () => { close_(); window.App.promptGamertag(); } }));
-    body.append(row({ icon:ICON.gear, name:'Settings', meta:'Personalization, devices, system', chevron:true,
-      onActivate: () => { close_(); window.App.setView('settings'); } }));
   }
 
   if (activeTab === 'home'){

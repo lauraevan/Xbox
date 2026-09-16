@@ -2,12 +2,7 @@
    HOME — hero, recent rail, pinned tiles, spotlight cards
    ═══════════════════════════════════════════════════════════ */
 
-.view-home{
-  display:flex; flex-direction:column; justify-content:flex-end;
-  /* cards sit 34px off the bottom edge in the reference */
-  padding:0 var(--safe-x) 3.4rem;
-  overflow:hidden;
-}
+.view-home{ position:absolute; inset:0; overflow:hidden; }
 
 /* hero copy that sits over the artwork */
 .hero{
@@ -27,8 +22,9 @@
 .hero-meta .dot{ width:.5rem; height:.5rem; border-radius:50%; background:var(--text-3); }
 
 /* ───────── rails ───────── */
-.rail{ margin-bottom:2.4rem; }   /* +4px card padding = 28px to the card row,
-                                    putting the hero bottom on y=793 */
+/* the selected game begins at y=640 on a 1920x1080 canvas; the view starts
+   at --bar-h, so these offsets are measured from there */
+.rail{ position:absolute; left:0; right:0; top:30rem; }
 .rail-head{
   display:flex; align-items:baseline; gap:1.4rem; margin:0 0 1.2rem;
 }
@@ -38,18 +34,16 @@
 .rail-strip{
   /* tiles hang from a common top edge: the selected one grows a label bar
      downwards, exactly as it does on the console */
-  display:flex; align-items:flex-start; gap:2.9rem;
+  display:flex; align-items:flex-start; gap:1.6rem;
   overflow-x:auto; overflow-y:visible;
-  padding:1.6rem .4rem 1.6rem;
-  margin:-1.6rem -.4rem;
+  padding:0 var(--safe-x) 4rem;
   scroll-behavior:smooth;
   scrollbar-width:none;
 }
 
 /* the big "jump back in" tile */
 .tile{
-  position:relative; flex:none; border-radius:var(--tile-r); overflow:hidden;
-  background:var(--panel-2);
+  position:relative; flex:none;
   box-shadow:0 .8rem 2.4rem rgba(0,0,0,.45);
   transition:transform var(--dur-mid) var(--ease-decel),
              box-shadow var(--dur-mid) var(--ease-standard);
@@ -79,11 +73,13 @@
 .tile-art{ position:absolute; inset:0; }
 .tile-art img{ width:100%; height:100%; object-fit:cover; }
 
-/* every tile is the same square; the art box never changes size */
-.tile{ width:15.5rem; }
-.tile-art{ position:absolute; inset:0 0 auto 0; height:15.5rem; }
-.tile-face{ display:block; width:15.5rem; height:15.5rem; position:relative;
+/* the art box is fixed; only the selected entry is larger */
+.tile{ width:14rem; }
+.tile-face{ display:block; width:14rem; height:14rem; position:relative;
   border-radius:var(--tile-r); overflow:hidden; background:var(--panel-2); }
+.tile-hero{ width:20rem; }
+.tile-hero .tile-face{ width:20rem; height:20rem; }
+.tile-sm{ margin-top:6rem; }        /* hang so every cover shares a bottom edge */
 
 /* the label is a bar that opens underneath the art on selection */
 .tile-label{
@@ -96,8 +92,7 @@
              opacity var(--dur) var(--ease-standard),
              padding var(--dur-mid) var(--ease-decel);
 }
-.tile[data-focused] .tile-label{ height:3.4rem; padding:.9rem .4rem 0; opacity:1; }
-.tile-sm, .tile-hero{ width:15.5rem; }
+.tile[data-focused] .tile-label{ height:3.6rem; padding:1rem .4rem 0; opacity:1; }
 
 .tile-badge{
   position:absolute; bottom:.6rem; left:.6rem; z-index:4;
@@ -128,14 +123,14 @@
 .tile-add svg{ width:4rem; height:4rem; fill:var(--text-2); }
 
 /* ───────── spotlight card row ───────── */
-/* the store tile is roughly half the width of the promo cards beside it */
 .cards{
-  display:grid; grid-template-columns:.56fr 1fr 1fr 1fr; gap:3.2rem;
-  padding:.4rem .4rem 0;
-  margin:0 -.4rem;
+  position:absolute; left:var(--safe-x); right:var(--safe-x); top:55rem;  /* y = 890 */
+  display:grid; grid-template-columns:.78fr 1fr 1fr 1fr; gap:2.2rem;
 }
 .card{
-  position:relative; height:22.5rem; border-radius:var(--card-r); overflow:hidden;
+  /* the row starts at y=890, so it has 190px of canvas left; 160 keeps a
+     margin under it for the button legend */
+  position:relative; height:16rem; border-radius:var(--card-r); overflow:hidden;
   background:var(--panel-2); text-align:left;
   box-shadow:0 .8rem 2.4rem rgba(0,0,0,.4);
   transition:transform var(--dur-mid) var(--ease-decel),
@@ -155,15 +150,12 @@
   transform:scale(1.06);
 }
 .card-art .sharp{
-  position:absolute; right:0; top:0; height:100%; width:auto;
-  max-width:none; object-fit:cover;
-  -webkit-mask-image:linear-gradient(90deg, transparent 0%, #000 34%);
-          mask-image:linear-gradient(90deg, transparent 0%, #000 34%);
+  position:absolute; inset:0;
+  width:100%; height:100%; object-fit:cover; object-position:center;
 }
 .card-art::after{
   content:""; position:absolute; inset:0; z-index:2;
-  background:linear-gradient(95deg,
-    rgba(4,6,8,.92) 4%, rgba(4,6,8,.64) 34%, rgba(4,6,8,.12) 66%, transparent 92%);
+  background:linear-gradient(180deg, transparent 40%, rgba(3,5,7,.88) 100%);
 }
 .card-mosaic{ position:absolute; inset:0; display:grid; grid-template-columns:repeat(4,1fr); }
 .card-mosaic div{ background-size:cover; background-position:center; position:relative; }

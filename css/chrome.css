@@ -5,17 +5,20 @@
 /* ───────── system bar ─────────
    Nav centred on the top line, status opposite it, profile on its own
    line underneath. */
-.sysbar{
-  position:relative; z-index:20;
-  display:flex; flex-direction:column; gap:2.2rem;
-  padding:2.2rem var(--safe-x) 0;
-}
+/* Positions read straight off the reference frames at 1920x1080:
+   the nav band sits at y=120, the profile block at y=240. */
+.sysbar{ position:relative; z-index:20; height:var(--bar-h); }
 
 .sysbar-top{
+  position:absolute; left:var(--safe-x); right:var(--safe-x); top:12rem;
   display:grid; grid-template-columns:1fr auto 1fr; align-items:center;
 }
 
-.sysnav{ display:flex; align-items:center; gap:1.6rem; grid-column:2; }
+/* the cluster sits a touch left of true centre, as on the console */
+.sysnav{
+  display:flex; align-items:center; gap:1.4rem;
+  grid-column:2; transform:translateX(-4rem);
+}
 .sysnav-btn{
   position:relative; width:5.6rem; height:5.6rem; border-radius:50%;
   display:grid; place-items:center;
@@ -44,13 +47,13 @@
 /* ── right-hand status ── */
 .sysstatus{
   grid-column:3; justify-self:end;
-  display:flex; align-items:center; gap:2.4rem; color:#fff;
+  display:flex; align-items:center; gap:2.2rem; color:#fff;
 }
 .friends{ display:flex; align-items:center; gap:.9rem; padding:.4rem .8rem; border-radius:.6rem; }
 .friends[data-focused]{ background:rgba(255,255,255,.12); }
 .friends-icon{ display:grid; place-items:center; }
-.friends-icon svg{ width:2.6rem; height:2.6rem; fill:currentColor; }
-.friends-count{ font-size:2.1rem; font-weight:500; font-variant-numeric:tabular-nums; }
+.friends-icon svg{ width:2.3rem; height:2.3rem; fill:currentColor; }
+.friends-count{ font-size:2rem; font-weight:500; font-variant-numeric:tabular-nums; }
 
 .status-btn{ display:grid; place-items:center; width:4rem; height:4rem; border-radius:50%; }
 .status-btn[data-focused]{ background:rgba(255,255,255,.12); }
@@ -70,7 +73,8 @@ body[data-mic="muted"] #micBtn{ color:rgba(255,255,255,.85); }
 
 /* ── profile, on its own line ── */
 .profile{
-  display:flex; align-items:center; gap:1.6rem; align-self:flex-start;
+  position:absolute; left:calc(var(--safe-x) - .6rem); top:24rem;
+  display:flex; align-items:center; gap:1.6rem;
   padding:.6rem 1.4rem .6rem .6rem; border-radius:4rem;
   transition:background var(--dur) var(--ease-standard);
 }
@@ -102,9 +106,9 @@ body[data-mic="muted"] #micBtn{ color:rgba(255,255,255,.85); }
 /* the legend overlays the bottom edge rather than taking a grid row,
    so the card row can sit at its measured offset */
 .legend{
-  position:absolute; left:0; right:0; bottom:.4rem;
+  position:absolute; left:0; right:0; bottom:.2rem;
   display:flex; justify-content:flex-end; align-items:center; gap:2.6rem;
-  padding:0 var(--safe-x); height:3rem;
+  padding:0 var(--safe-x); height:2.6rem;
   font-size:1.5rem; color:var(--text-2); z-index:20; pointer-events:none;
 }
 .legend-item{ display:flex; align-items:center; gap:.7rem; }
@@ -122,8 +126,7 @@ body[data-mic="muted"] #micBtn{ color:rgba(255,255,255,.85); }
    Contextual button hints sit outside the panel to its right. */
 .guide{ position:fixed; inset:0; z-index:100; }
 .guide-scrim{
-  position:absolute; inset:0; background:rgba(0,0,0,.7);
-  backdrop-filter:blur(1.4rem) saturate(.65);
+  position:absolute; inset:0; background:rgba(0,0,0,.34);
   animation:fade .25s var(--ease-decel);
 }
 @keyframes fade{ from{opacity:0;} to{opacity:1;} }
@@ -131,14 +134,15 @@ body[data-mic="muted"] #micBtn{ color:rgba(255,255,255,.85); }
 .guide-panel{
   position:absolute; left:3.4rem; top:3.4rem; bottom:3.4rem; width:46rem;
   display:grid; grid-template-rows:auto 1fr auto;
-  background:#0a0c0e;
-  border:.1rem solid rgba(255,255,255,.07);
+  background:rgba(58,62,66,.92);
+  backdrop-filter:blur(.6rem) saturate(1.05);
+  border:.1rem solid rgba(255,255,255,.12);
   border-radius:.8rem;
-  box-shadow:0 2.4rem 8rem rgba(0,0,0,.85);
+  box-shadow:0 2.4rem 8rem rgba(0,0,0,.6);
   overflow:hidden;
   animation:guideIn var(--dur-mid) var(--ease-decel);
 }
-body[data-theme="light"] .guide-panel{ background:#f4f5f7; }
+body[data-theme="light"] .guide-panel{ background:rgba(240,241,243,.94); }
 @keyframes guideIn{ from{ transform:translateX(-3rem); opacity:0; } to{ transform:none; opacity:1; } }
 .guide.out .guide-panel{ animation:guideOut var(--dur) var(--ease-accel) forwards; }
 .guide.out .guide-scrim{ animation:fade var(--dur) var(--ease-accel) reverse forwards; }
@@ -176,7 +180,7 @@ body[data-theme="light"] .guide-panel{ background:#f4f5f7; }
 }
 
 /* ── body ── */
-.guide-body{ padding:1.8rem 1.6rem; overflow-y:auto; }
+.guide-body{ padding:1.4rem 1.4rem; overflow-y:auto; }
 .guide-head{ display:flex; align-items:center; gap:1.5rem; margin:0 0 1.6rem; padding:0 .4rem; }
 .guide-head-pic{
   width:6rem; height:6rem; border-radius:50%; overflow:hidden; flex:none;
@@ -200,57 +204,38 @@ body[data-theme="light"] .guide-panel{ background:#f4f5f7; }
 .guide-section:first-child{ margin-top:.4rem; }
 
 .grow{
-  display:flex; align-items:center; gap:1.4rem; width:100%;
-  padding:1rem 1.1rem; border-radius:.5rem; text-align:left;
-  border:.15rem solid transparent;
+  display:flex; align-items:center; gap:1.6rem; width:100%;
+  padding:1.9rem 1.6rem; border-radius:.4rem; text-align:left;
+  border:.3rem solid transparent;
   transition:background var(--dur) var(--ease-standard),
              border-color var(--dur) var(--ease-standard);
 }
-.grow[data-focused]{ background:rgba(255,255,255,.08); border-color:var(--accent); }
+.grow[data-focused]{
+  background:rgba(255,255,255,.1);
+  border-color:var(--green-bright);
+}
+/* a cover thumbnail, or a bare glyph - no rounded-square card around it */
 .grow-icon{
-  width:4.6rem; height:4.6rem; border-radius:.4rem; flex:none; overflow:hidden;
-  background:rgba(255,255,255,.05); display:grid; place-items:center; position:relative;
+  width:4.4rem; height:4.4rem; flex:none; overflow:hidden;
+  display:grid; place-items:center; position:relative;
+  border-radius:.3rem;
 }
-.grow-icon svg{ width:2.3rem; height:2.3rem; fill:rgba(255,255,255,.72); }
+.grow-icon.glyph{ border-radius:0; }
+.grow-icon svg{ width:3rem; height:3rem; fill:rgba(255,255,255,.92); }
 .grow-text{ flex:1; min-width:0; }
-.grow-name{ font-size:1.7rem; font-weight:400; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.grow-meta{ font-size:1.3rem; color:var(--text-3); margin-top:.1rem;
+.grow-name{ font-size:1.9rem; font-weight:400; white-space:nowrap;
+  overflow:hidden; text-overflow:ellipsis; }
+.grow-meta{ font-size:1.35rem; color:rgba(255,255,255,.6); margin-top:.1rem;
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.grow-right{ font-size:1.4rem; color:var(--text-3); flex:none; }
+.grow-right{ font-size:1.4rem; color:rgba(255,255,255,.6); flex:none; }
 .grow-chev{ flex:none; display:grid; place-items:center; }
-.grow-chev svg{ width:1.6rem; height:1.6rem; fill:rgba(255,255,255,.3); }
+.grow-chev svg{ width:1.6rem; height:1.6rem; fill:rgba(255,255,255,.45); }
 
-/* ── quick action strip ── */
-.guide-quick{
-  display:flex; align-items:center; gap:.8rem;
-  padding:1.2rem 1.6rem 1.6rem;
-  border-top:.1rem solid rgba(255,255,255,.06);
+/* the divider between the fixed entries and recent titles */
+.guide-divider{
+  height:.1rem; background:rgba(255,255,255,.16);
+  margin:1.2rem 1.6rem;
 }
-.quick-btn{
-  flex:1; height:4.6rem; border-radius:.5rem;
-  display:grid; place-items:center;
-  background:rgba(255,255,255,.06);
-  color:rgba(255,255,255,.8);
-  transition:background var(--dur) var(--ease-standard), color var(--dur) var(--ease-standard);
-}
-.quick-btn svg{ width:2.3rem; height:2.3rem; fill:currentColor; }
-.quick-btn[data-focused]{ background:var(--accent); color:#06210a; }
-.quick-btn .gp-chip{ font-size:.95rem; border-width:.15rem; padding:.25rem .3rem; }
-
-/* ── contextual hints beside the panel ── */
-.guide-hints{
-  position:absolute; left:52rem; top:5rem;
-  display:flex; flex-direction:column; gap:1.2rem;
-  font-size:1.6rem; color:rgba(255,255,255,.82);
-  animation:fade var(--dur-slow) var(--ease-decel);
-}
-.guide-hint{ display:flex; align-items:center; gap:1.1rem; }
-.guide-hint .glyph{
-  width:2.6rem; height:2.6rem; border-radius:50%; flex:none;
-  display:grid; place-items:center;
-  background:rgba(255,255,255,.16);
-}
-.guide-hint .glyph svg{ width:1.6rem; height:1.6rem; fill:#fff; }
 
 .guide-tile-row{ display:grid; grid-template-columns:repeat(4,1fr); gap:.8rem; }
 .guide-tile{
@@ -305,3 +290,41 @@ body[data-theme="light"] .guide-panel{ background:#f4f5f7; }
   transition:background var(--dur), transform var(--dur);
 }
 .modal-btn[data-focused]{ background:var(--accent); color:#06210a; font-weight:600; }
+
+/* ───────── guide: quick action strip ─────────
+   (restored — an earlier edit removed these along with the rail) */
+.guide-quick{
+  display:flex; align-items:center; gap:.8rem;
+  padding:1.2rem 1.4rem 1.4rem;
+  border-top:.1rem solid rgba(255,255,255,.14);
+}
+.quick-btn{
+  flex:1; height:4.8rem; border-radius:.5rem;
+  display:grid; place-items:center;
+  background:rgba(255,255,255,.1);
+  color:rgba(255,255,255,.88);
+  transition:background var(--dur) var(--ease-standard), color var(--dur) var(--ease-standard);
+}
+.quick-btn svg{ width:2.3rem; height:2.3rem; fill:currentColor; }
+.quick-btn[data-focused]{ background:var(--accent); color:#06210a; }
+.quick-btn .gp-chip{ font-size:.95rem; border-width:.15rem; padding:.25rem .3rem; }
+
+/* ───────── guide: contextual actions beside the panel ───────── */
+.guide-hints{
+  position:absolute; left:52rem; top:5rem;
+  display:flex; flex-direction:column; gap:1.4rem;
+  font-size:1.7rem; color:rgba(255,255,255,.9);
+  text-shadow:0 .2rem 1.2rem rgba(0,0,0,.8);
+  animation:fade var(--dur-slow) var(--ease-decel);
+}
+.guide-hint{ display:flex; align-items:center; gap:1.2rem; }
+.guide-hint .glyph{
+  width:2.8rem; height:2.8rem; border-radius:50%; flex:none;
+  display:grid; place-items:center;
+  background:rgba(255,255,255,.22);
+}
+.guide-hint .glyph svg{ width:1.7rem; height:1.7rem; fill:#fff; }
+
+/* a thumbnail slot reads as one even before its cover lands */
+.grow-icon{ background:rgba(0,0,0,.28); }
+.grow-icon.glyph{ background:none; }
