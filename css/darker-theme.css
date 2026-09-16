@@ -1,5 +1,5 @@
 /* Slightly darker Xbox theme pass.
-   Intentionally leaves buttons and focus treatments alone. */
+   Intentionally leaves the main Home controls alone while deepening system chrome. */
 
 /* Home wallpaper stays visible, just pulled down so the UI reads on top of it. */
 body[data-view="home"] .backdrop-scrim{
@@ -15,7 +15,7 @@ body[data-view="home"] .topbar-scrim{
   background:linear-gradient(180deg,rgba(0,0,0,.28),rgba(0,0,0,.10) 72%,transparent)!important;
 }
 
-/* Secondary surfaces use a deeper neutral black, without touching controls. */
+/* Secondary surfaces use a deeper neutral black. */
 .console-page-view,
 .console-shell,
 .console-main,
@@ -38,11 +38,196 @@ body[data-view="store"] .xstore-rail{
   background:#090909!important;
 }
 
-/* The Guide/profile sidebar should feel like part of the darker system chrome. */
+/* ───────────────── Xbox Guide / profile sidebar ─────────────────
+   Darker, cleaner and flatter so it reads more like console chrome than a web modal. */
 .guide-scrim{
-  background:rgba(0,0,0,.38)!important;
+  background:rgba(0,0,0,.57)!important;
+  backdrop-filter:none!important;
 }
+
 .guide-panel{
-  background:rgba(27,29,31,.975)!important;
-  box-shadow:0 1.2rem 4.2rem rgba(0,0,0,.48)!important;
+  background:rgba(15,16,18,.992)!important;
+  border:0!important;
+  border-right:.1rem solid rgba(255,255,255,.055)!important;
+  border-radius:.32rem!important;
+  box-shadow:1.1rem 1.4rem 5rem rgba(0,0,0,.72)!important;
+  backdrop-filter:none!important;
+}
+
+/* Tabs become their own darker system strip. */
+.guide-tabs{
+  min-height:6.3rem!important;
+  padding:1.05rem 1.2rem .25rem!important;
+  gap:.15rem!important;
+  background:#090a0b!important;
+  border-bottom:.1rem solid rgba(255,255,255,.06)!important;
+}
+.guide-tab{
+  height:4.85rem!important;
+  border-radius:.18rem!important;
+  color:rgba(255,255,255,.52)!important;
+}
+.guide-tab.active{
+  color:#fff!important;
+}
+.guide-tab[data-focused]{
+  background:#1f2224!important;
+  color:#fff!important;
+}
+.guide-tab.active::after{
+  left:.72rem!important;
+  right:.72rem!important;
+  bottom:-.25rem!important;
+  height:.34rem!important;
+  border-radius:0!important;
+  background:#53d64b!important;
+}
+
+/* Keep the profile identity consistent with the black xboxtest badge on Home. */
+.guide-tab[data-guide-tab="profile"] .guide-avatar{
+  background:#000!important;
+  box-shadow:inset 0 0 0 .14rem rgba(255,255,255,.18)!important;
+}
+.guide-tab[data-guide-tab="profile"] .guide-avatar img{
+  opacity:0!important;
+}
+
+/* Main Guide content. */
+.guide-body{
+  padding:1rem 1.15rem 1.2rem!important;
+  background:#111315!important;
+  scrollbar-width:none;
+}
+.guide-body::-webkit-scrollbar{ display:none; }
+
+.guide-head{
+  margin:.2rem .2rem 1.15rem!important;
+  padding:.7rem .55rem 1rem!important;
+  border-bottom:.1rem solid rgba(255,255,255,.07)!important;
+}
+.guide-title{
+  font-size:2.15rem!important;
+  font-weight:600!important;
+}
+.guide-sub{
+  color:rgba(255,255,255,.52)!important;
+}
+.status-pill{
+  background:#090a0b!important;
+  color:rgba(255,255,255,.72)!important;
+  border:.1rem solid rgba(255,255,255,.07)!important;
+}
+
+.guide-section{
+  margin:1.45rem 0 .55rem!important;
+  padding-left:.8rem!important;
+  color:rgba(255,255,255,.43)!important;
+  font-size:1.08rem!important;
+  letter-spacing:.14rem!important;
+}
+
+/* Rows stay flat when idle and gain a strong Xbox focus treatment only when selected. */
+.grow{
+  position:relative!important;
+  min-height:6.15rem!important;
+  gap:1.15rem!important;
+  padding:.9rem 1.05rem!important;
+  border:.28rem solid transparent!important;
+  border-radius:.16rem!important;
+  background:transparent!important;
+}
+.grow:hover{
+  background:#191b1d!important;
+}
+.grow[data-focused]{
+  background:#24272a!important;
+  border-color:#53d64b!important;
+  box-shadow:inset .34rem 0 0 #53d64b!important;
+}
+.grow-icon{
+  width:4rem!important;
+  height:4rem!important;
+  border-radius:.12rem!important;
+  background:rgba(255,255,255,.025)!important;
+}
+.grow-icon.glyph{
+  background:transparent!important;
+}
+.grow-icon svg{
+  width:2.45rem!important;
+  height:2.45rem!important;
+  fill:rgba(255,255,255,.9)!important;
+}
+.grow-name{
+  font-size:1.68rem!important;
+  font-weight:450!important;
+  color:#fff!important;
+}
+.grow-meta,
+.grow-right{
+  color:rgba(255,255,255,.5)!important;
+}
+.grow[data-focused] .grow-meta,
+.grow[data-focused] .grow-right{
+  color:rgba(255,255,255,.68)!important;
+}
+.grow-chev svg{
+  fill:rgba(255,255,255,.42)!important;
+}
+
+.guide-divider{
+  height:.1rem!important;
+  margin:.75rem 1rem!important;
+  background:rgba(255,255,255,.095)!important;
+}
+
+/* Bottom quick-launch bar feels attached to the Guide instead of floating. */
+.guide-quick{
+  min-height:7rem!important;
+  padding:.85rem 1.15rem 1.05rem!important;
+  gap:.55rem!important;
+  background:#090a0b!important;
+  border-top:.1rem solid rgba(255,255,255,.06)!important;
+}
+.quick-btn{
+  height:5.15rem!important;
+  border-radius:.18rem!important;
+  background:#131517!important;
+  border:.1rem solid rgba(255,255,255,.035)!important;
+}
+.quick-btn:hover{
+  background:#1c1f21!important;
+}
+.quick-btn[data-focused]{
+  background:#25282b!important;
+  outline:.28rem solid #53d64b!important;
+  outline-offset:-.28rem!important;
+}
+.quick-btn svg{
+  opacity:.9!important;
+}
+
+/* Context hints outside the panel are quieter and darker. */
+.guide-hints{
+  opacity:.86!important;
+}
+.guide-hint{
+  width:max-content!important;
+  padding:.46rem .72rem!important;
+  border-radius:.22rem!important;
+  background:rgba(7,8,9,.76)!important;
+  color:rgba(255,255,255,.74)!important;
+  box-shadow:0 .25rem 1rem rgba(0,0,0,.26)!important;
+}
+
+@media (max-aspect-ratio:16/10){
+  .guide-panel{
+    width:46rem!important;
+    left:3.6rem!important;
+    top:3.6rem!important;
+    bottom:3.6rem!important;
+  }
+  .guide-hints{
+    left:51.5rem!important;
+  }
 }
