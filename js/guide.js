@@ -303,14 +303,7 @@ function cycleTab(delta){
 }
 
 /* the rail flies out whenever focus is sitting on one of its tabs */
-window.addEventListener('nav:focus', () => {
-  const inner = rail.querySelector('.rail-inner');
-  if (!inner) return;
-  const onRail = !!window.Nav.current?.dataset.guideTab;
-  inner.classList.toggle('expanded', onRail);
-  guide.querySelector('.guide-panel')?.classList.toggle('rail-open', onRail);
-  window.Nav.repaint();
-});
+/* the focused tab names itself through CSS alone now; nothing to toggle */
 
 /* ───────── open / close ───────── */
 function open_(tab){
