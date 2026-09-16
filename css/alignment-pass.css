@@ -3,13 +3,30 @@
 :root{
   --xbox-page-top:3.2rem;
   --xbox-side-top:3.2rem;
+  --xbox-home-chrome-top:3rem;
+  --xbox-home-chrome-height:5.75rem;
 }
 
-/* The connected five-button capsule should read as one perfectly level control. */
+/* Home chrome: profile, five-button capsule and status all share one row. */
 .sysnav{
+  top:var(--xbox-home-chrome-top)!important;
   display:flex!important;
   align-items:center!important;
 }
+.profile{
+  top:var(--xbox-home-chrome-top)!important;
+  min-height:var(--xbox-home-chrome-height)!important;
+  display:flex!important;
+  align-items:center!important;
+}
+.sysstatus{
+  top:var(--xbox-home-chrome-top)!important;
+  min-height:var(--xbox-home-chrome-height)!important;
+  display:flex!important;
+  align-items:center!important;
+}
+
+/* The connected five-button capsule should read as one perfectly level control. */
 .sysnav-btn{
   display:grid!important;
   place-items:center!important;
@@ -46,6 +63,12 @@
 .battery,
 .clock{
   align-items:center!important;
+}
+.friends,
+.status-btn,
+.battery,
+.clock{
+  align-self:center!important;
 }
 .status-btn{
   display:grid!important;
@@ -90,6 +113,11 @@
 
 /* Keep the same grid on taller iPad/browser aspect ratios. */
 @media (max-aspect-ratio:16/10){
+  .sysnav,
+  .profile,
+  .sysstatus{
+    top:var(--xbox-home-chrome-top)!important;
+  }
   .console-main,
   .console-pass-main,
   .console-settings-main,
