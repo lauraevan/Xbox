@@ -1,0 +1,110 @@
+/* Xbox Home sizing + radius pass.
+   Loaded after reference.css so it only nudges the already-matched layout. */
+
+:root{
+  --tile-r:.58rem;
+  --card-r:.58rem;
+}
+
+/* Bigger game row, while keeping the same Xbox shelf rhythm. */
+.ref-strip{
+  gap:1.2rem !important;
+}
+.ref-tile{
+  width:18rem !important;
+}
+.ref-tile .tile-face{
+  width:18rem !important;
+  height:18rem !important;
+  border-radius:var(--tile-r) !important;
+}
+.ref-tile.tile-sm{
+  margin-top:4rem !important;
+}
+.ref-tile.ref-hero{
+  width:22.5rem !important;
+}
+.ref-tile.ref-hero .tile-face{
+  width:22.5rem !important;
+  height:22.5rem !important;
+  border-radius:var(--tile-r) !important;
+}
+.ref-art,
+.ref-art img{
+  border-radius:inherit !important;
+}
+
+/* The Friends tile is intentionally a little larger than the standard covers. */
+.ref-friends{
+  width:21.5rem !important;
+  margin-top:.5rem !important;
+}
+.ref-friends .tile-face{
+  width:21.5rem !important;
+  height:21.5rem !important;
+  border-radius:var(--tile-r) !important;
+}
+
+/* Match the softer Xbox card corners on the lower row. */
+.ref-card{
+  height:20.4rem !important;
+  border-radius:var(--card-r) !important;
+}
+.ref-card-art,
+.ref-card-art img,
+.ref-card.card-store{
+  border-radius:inherit !important;
+}
+.ref-card .card-chip{
+  border-radius:.32rem !important;
+}
+
+/* Focus should trace the rounded selected tile instead of looking like a square box. */
+.focus-ring{
+  border-radius:.62rem !important;
+}
+
+/* Round the rest of the visible Xbox chrome a little more too. */
+.profile{
+  border-radius:3rem !important;
+}
+.gp-chip{
+  border-radius:.38rem !important;
+}
+.guide-panel{
+  border-radius:.65rem !important;
+}
+.guide-tab{
+  border-radius:.38rem !important;
+}
+.grow{
+  border-radius:.5rem !important;
+}
+.grow-icon{
+  border-radius:.42rem !important;
+}
+.quick-btn{
+  border-radius:.5rem !important;
+}
+
+@media (max-aspect-ratio:16/10){
+  .ref-tile{
+    width:17.4rem !important;
+  }
+  .ref-tile .tile-face{
+    width:17.4rem !important;
+    height:17.4rem !important;
+  }
+  .ref-tile.ref-hero{
+    width:21.8rem !important;
+  }
+  .ref-tile.ref-hero .tile-face{
+    width:21.8rem !important;
+    height:21.8rem !important;
+  }
+  .ref-friends,
+  .ref-friends .tile-face{
+    width:20.8rem !important;
+    height:20.8rem !important;
+  }
+}
