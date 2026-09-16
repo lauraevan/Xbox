@@ -1,0 +1,279 @@
+/* Xbox reference-only fidelity overrides.
+   The real dashboard is artwork + spacing + one focus ring, not a grid of
+   outlined cards. Keep inactive surfaces visually borderless. */
+
+:root{
+  --safe-x: 9.2rem;
+  --bar-h: 34rem;
+  --tile-r: .15rem;
+  --card-r: .15rem;
+  --green-bright: #53d64b;
+  --accent: #53d64b;
+}
+
+/* wallpaper */
+.backdrop-glow{ display:none !important; }
+.backdrop-scrim{ background:rgba(0,0,0,.055) !important; }
+.topbar-scrim{
+  height:31rem;
+  background:linear-gradient(180deg, rgba(0,0,0,.25) 0%, rgba(0,0,0,.06) 72%, transparent 100%) !important;
+}
+.backdrop-layer,
+.backdrop-layer.wide,
+.backdrop-layer.reference-wide{
+  inset:0 !important;
+  transform:none !important;
+  background-size:cover !important;
+  background-repeat:no-repeat !important;
+  filter:saturate(1.03) contrast(1.01) brightness(1) !important;
+}
+.backdrop-layer.reference-wide.on{ transform:none !important; }
+
+/* Only the selected element gets a border. */
+.focus-ring{
+  border:.32rem solid #53d64b !important;
+  border-radius:.14rem !important;
+  box-shadow:0 0 0 .08rem rgba(0,0,0,.58) !important;
+}
+.focus-ring.pop{ animation:none !important; }
+
+/* top chrome */
+.sysbar-top{ top:10.8rem; left:var(--safe-x); right:var(--safe-x); }
+.sysnav{ gap:1.25rem; transform:translateX(-3.2rem); }
+.sysnav-btn{
+  width:5.25rem;
+  height:5.25rem;
+  background:rgba(28,30,32,.65);
+  backdrop-filter:none;
+  box-shadow:none;
+}
+.sysnav-btn:hover,
+.sysnav-btn.active,
+.sysnav-btn[data-focused]{ background:rgba(39,41,43,.79); transform:none; }
+.sysnav-btn svg{ width:2.55rem; height:2.55rem; }
+.badge-dot{
+  width:.95rem; height:.95rem; top:.15rem; right:.2rem;
+  box-shadow:0 0 0 .18rem rgba(20,22,24,.95);
+}
+.sysstatus{ gap:1.8rem; }
+.friends-count{ font-size:1.85rem; font-weight:500; }
+.friends-icon svg{ width:2.05rem; height:2.05rem; }
+.status-btn{ width:3.1rem; height:3.1rem; }
+.status-btn svg{ width:2.2rem; height:2.2rem; }
+.battery-shell{ width:2.65rem; height:1.55rem; }
+.clock{ font-size:2.55rem; font-weight:500; min-width:10.8rem; }
+.profile{
+  top:22.8rem;
+  left:calc(var(--safe-x) - .5rem);
+  gap:1.25rem;
+  padding:.45rem 1rem .45rem .45rem;
+}
+.avatar{
+  width:4.5rem; height:4.5rem;
+  box-shadow:0 0 0 .1rem rgba(255,255,255,.16), 0 .2rem .9rem rgba(0,0,0,.28);
+}
+.gamertag{ font-size:1.65rem; font-weight:500; }
+.profile-sub{ font-size:1.25rem; color:rgba(255,255,255,.72); }
+
+/* Home */
+.reference-home .hero{ display:none !important; }
+.ref-rail{ top:30rem; }
+.ref-strip{
+  gap:1.45rem;
+  padding-left:var(--safe-x);
+  padding-right:var(--safe-x);
+  overflow:visible;
+}
+
+.reference-home .ref-tile,
+.reference-home .ref-tile .tile-face,
+.reference-home .ref-card{
+  border:0 !important;
+  outline:0 !important;
+  box-shadow:none !important;
+}
+
+.ref-tile{ width:13.8rem; background:transparent !important; }
+.ref-tile .tile-face{
+  width:13.8rem;
+  height:13.8rem;
+  border-radius:.12rem;
+  background:#151718;
+}
+.ref-tile.tile-sm{ margin-top:6.1rem; }
+.ref-tile.ref-hero{ width:20rem; }
+.ref-tile.ref-hero .tile-face{ width:20rem; height:20rem; }
+.ref-tile[data-focused]{ transform:none !important; }
+
+.ref-art,
+.ref-art img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+}
+.ref-art{ overflow:hidden; border-radius:inherit; }
+.ref-art img{ object-fit:cover; opacity:1 !important; filter:none !important; }
+
+.edge-tile .tile-face{ background:#08a83e !important; }
+.edge-tile .ref-art{ display:grid; place-items:center; }
+.edge-tile .ref-art img{
+  position:static;
+  width:52%;
+  height:52%;
+  object-fit:contain;
+}
+
+.ref-platform{
+  position:absolute;
+  left:.48rem;
+  bottom:.48rem;
+  z-index:4;
+  color:#fff;
+  font-size:.82rem;
+  font-weight:700;
+  line-height:1;
+  padding:.23rem .28rem;
+  background:rgba(0,0,0,.62);
+  text-shadow:none;
+}
+
+.ref-tile .tile-label{
+  background:rgba(7,8,9,.96);
+  font-size:1.45rem;
+  border:0 !important;
+}
+.ref-tile[data-focused] .tile-label{ height:3.45rem; padding:.9rem .8rem 0; }
+
+.ref-friends{ width:16.7rem; margin-top:3.15rem; }
+.ref-friends .tile-face{
+  width:16.7rem;
+  height:16.7rem;
+  border-radius:.12rem;
+  background:linear-gradient(140deg,#34c95b 0%,#25bd84 48%,#269fda 100%) !important;
+  display:grid;
+  place-items:center;
+}
+.ref-friends-icon{ display:grid; place-items:center; }
+.ref-friends-icon svg{ width:5.5rem; height:5.5rem; fill:#fff; }
+
+.ref-cards{
+  top:55rem;
+  grid-template-columns:24rem 1fr 1.06fr 1.16fr;
+  gap:1.8rem;
+}
+.ref-card{
+  height:19.4rem;
+  border-radius:.12rem;
+  overflow:hidden;
+  background:#151718;
+}
+.ref-card[data-focused]{ transform:none !important; }
+.ref-card-art,
+.ref-card-art img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+}
+.ref-card-art{ overflow:hidden; }
+.ref-card-art img{ object-fit:cover; opacity:1 !important; filter:none !important; }
+
+/* Real Xbox cards only darken the lower text area, they do not have a frame. */
+.ref-card::after{
+  content:"";
+  position:absolute;
+  inset:53% 0 0;
+  background:linear-gradient(180deg, transparent, rgba(0,0,0,.65));
+  pointer-events:none;
+}
+.ref-card .card-label{
+  left:1.55rem;
+  right:1.3rem;
+  bottom:1.25rem;
+  font-size:1.95rem;
+  font-weight:400;
+  line-height:1.15;
+  text-shadow:0 .14rem .45rem rgba(0,0,0,.9);
+}
+.ref-card .card-label .sub{
+  margin-top:.2rem;
+  font-size:1.58rem;
+  font-weight:400;
+  color:#fff;
+}
+.ref-card .card-chip{
+  top:1rem;
+  left:1rem;
+  padding:.28rem .58rem;
+  border-radius:.1rem;
+  background:rgba(0,0,0,.8);
+  font-size:1.02rem;
+}
+.ref-card.card-store{
+  background:linear-gradient(135deg,#6848d6 0%,#5734c8 56%,#4526a4 100%) !important;
+}
+.ref-card.card-store::after{ display:none; }
+.ref-store-icon{ position:absolute; top:2.2rem; left:2rem; display:grid; place-items:center; }
+.ref-store-icon svg{ width:3.6rem; height:3.6rem; fill:#fff; }
+.ref-card.card-store .card-label{ bottom:1.55rem; font-size:1.65rem; }
+
+body[data-view="home"] .legend{ display:none !important; }
+
+/* Guide */
+.guide-scrim{ background:rgba(0,0,0,.24) !important; backdrop-filter:none !important; }
+.guide-panel{
+  left:5.4rem;
+  top:4.8rem;
+  bottom:4.8rem;
+  width:45.5rem;
+  background:rgba(72,75,79,.95) !important;
+  backdrop-filter:none !important;
+  border:0 !important;
+  border-radius:.2rem !important;
+  box-shadow:0 1.1rem 3.6rem rgba(0,0,0,.34) !important;
+}
+.guide-tabs{ gap:.1rem; padding:1.2rem 1.45rem 0; }
+.guide-tab{ height:4.8rem; border-radius:0; color:rgba(255,255,255,.72); }
+.guide-tab svg{ width:2.35rem; height:2.35rem; }
+.guide-tab[data-focused]{ background:rgba(255,255,255,.08); }
+.guide-tab.active::after{
+  left:.85rem; right:.85rem; bottom:0; height:.32rem;
+  border-radius:0; background:#53d64b;
+}
+.guide-tab.reference-hidden-tab{ display:none !important; }
+.xbox-guide-mark{ width:2.75rem !important; height:2.75rem !important; }
+.guide-body{ padding:1rem 1.25rem 1.1rem; }
+.grow{
+  min-height:6.15rem;
+  gap:1.2rem;
+  padding:1rem 1.15rem;
+  border:.3rem solid transparent;
+  border-radius:.1rem;
+}
+.grow[data-focused]{ background:rgba(255,255,255,.14); border-color:#53d64b; }
+.grow-icon{ width:4.05rem; height:4.05rem; border-radius:.08rem; }
+.grow-icon svg{ width:2.45rem; height:2.45rem; }
+.grow-name{ font-size:1.7rem; font-weight:400; }
+.grow-meta{ font-size:1.2rem; }
+.guide-divider{ margin:.7rem 1.1rem; background:rgba(255,255,255,.22); }
+.guide-quick{ padding:1rem 1.35rem 1.35rem; gap:.8rem; }
+.quick-btn{ height:5.4rem; border-radius:.1rem !important; background:rgba(24,26,28,.38) !important; }
+.quick-btn[data-focused]{ background:rgba(255,255,255,.12) !important; }
+.guide-hints{ left:53.5rem !important; top:15.8rem !important; }
+.guide-hint{ font-size:1.55rem !important; gap:.9rem !important; margin-bottom:.55rem !important; }
+.guide-hint .glyph svg{ width:1.85rem !important; height:1.85rem !important; }
+
+/* If a non-reference page needs a placeholder, keep it flat and quiet. */
+.cover-plate{ background:#202326 !important; }
+.cover-plate::after{ display:none !important; }
+.cover-initials{ color:rgba(255,255,255,.52) !important; text-shadow:none !important; }
+
+@media (max-aspect-ratio:16/10){
+  .ref-strip{ gap:1.2rem; }
+  .ref-tile{ width:13.2rem; }
+  .ref-tile .tile-face{ width:13.2rem; height:13.2rem; }
+  .ref-tile.ref-hero{ width:19rem; }
+  .ref-tile.ref-hero .tile-face{ width:19rem; height:19rem; }
+  .ref-cards{ grid-template-columns:23rem 1fr 1fr 1.08fr; gap:1.4rem; }
+}
