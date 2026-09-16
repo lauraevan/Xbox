@@ -26,23 +26,44 @@ let historyStack = [];
 /* ═══════════ backdrop ═══════════ */
 let bgToken = 0;
 let bgCancel = null;
-function setBackdrop(file){
-  if (window.State.settings.background === 'plain') return;
-  const token = ++bgToken;
+
+/** Paint a resolved image into the idle backdrop layer and cross-fade. */
+function paintBackdrop(url, token, wide){
+  if (token !== bgToken) return;
   const a = $('#bgA'), b = $('#bgB');
   const next = bgFlip ? a : b;
   const prev = bgFlip ? b : a;
-  if (!file){ a.classList.remove('on'); b.classList.remove('on'); return; }
+  next.style.backgroundImage = `url("${url}")`;
+  // real widescreen art is shown as-is; a square cover still needs the blur
+  next.classList.toggle('wide', !!wide);
+  next.classList.add('on');
+  prev.classList.remove('on');
+  bgFlip = !bgFlip;
+}
 
-  // drop any in-flight backdrop so fast scrolling does not queue them up
+function setBackdrop(game){
+  if (window.State.settings.background === 'plain') return;
+  const token = ++bgToken;
+  const file = typeof game === 'string' ? game : game?.coverFile;
+  if (!file){
+    $('#bgA').classList.remove('on'); $('#bgB').classList.remove('on');
+    return;
+  }
+
+  // the square cover goes up straight away so the screen is never empty
   bgCancel?.();
-  bgCancel = window.Media.resolveCover(file, url => {
-    if (token !== bgToken) return;
-    next.style.backgroundImage = `url("${url}")`;
-    next.classList.add('on');
-    prev.classList.remove('on');
-    bgFlip = !bgFlip;
-  });
+  bgCancel = window.Media.resolveCover(file, url => paintBackdrop(url, token, false));
+
+  // and is replaced if proper widescreen art exists for this title
+  const name = typeof game === 'object' ? game?.name : null;
+  if (name && window.Artwork?.enabled){
+    window.Artwork.hero(name).then(hero => {
+      if (!hero || token !== bgToken) return;
+      const probe = new Image();
+      probe.onload = () => paintBackdrop(hero, token, true);
+      probe.src = hero;
+    });
+  }
 }
 
 /* ═══════════ icons ═══════════ */
@@ -218,7 +239,7 @@ function openDetail(game){
 
   window.Nav.pushLayer(node);
   window.Nav.focusFirst('.btn.primary');
-  setBackdrop(game.coverFile);
+  setBackdrop(game);
   updateLegend();
 }
 
@@ -457,6 +478,29 @@ function promptGamertag(){
   });
 }
 
+function promptArtworkKey(){
+  modal({
+    title: window.Artwork.enabled ? 'SteamGridDB key' : 'Add a SteamGridDB key',
+    text: 'Widescreen key art for titles that also exist on Steam. Most of this '
+        + 'catalogue is browser and Flash originals, which SteamGridDB does not '
+        + 'carry, so expect only a fraction to match. The key is kept in this '
+        + 'browser and never written into the repository.',
+    input:{ value: window.Artwork.key },
+    actions:[
+      { label:'Save', onSelect: value => {
+          window.Artwork.setKey(value);
+          window.Artwork.clearCache();
+          toast(value && value.trim() ? 'Artwork key saved' : 'Artwork key removed',
+                value && value.trim() ? 'Widescreen art will load where it exists' : null);
+          if (currentView === 'settings') setView('settings', { section:'personalization' });
+          const game = currentFocusGame();
+          if (game) setBackdrop(game);
+        } },
+      { label:'Cancel' }
+    ]
+  });
+}
+
 function confirmReset(){
   modal({
     title:'Reset this profile?',
@@ -556,7 +600,7 @@ function currentFocusGame(){
 window.addEventListener('nav:focus', () => {
   const game = currentFocusGame();
   if (game){
-    setBackdrop(game.coverFile);
+    setBackdrop(game);
     if (currentView === 'home' && !detailGame) window.Views.updateHero(game);
   }
 });
@@ -898,6 +942,7 @@ window.App = {
   toast, modal, closeModal, promptGamertag, confirmReset, powerOff, screenshot,
   syncProfile, tickClock, updateLegend, setBackdrop, paintIcons, syncMicIcon,
   applyNightMode, captureActions, promptNewProfile, manageProfiles, testRumble, rumble,
+  promptArtworkKey,
   isPlaying: () => !!playing,
   get view(){ return currentView; }
 };

@@ -651,6 +651,23 @@ function renderSettings(root, opts = {}){
       control: toggleControl(set.heroText === true),
       onActivate: () => { S.setSetting('heroText', !set.heroText); renderSettings(root); window.Nav.focusFirst(); }
     }));
+    const art = window.Artwork;
+    const stats = art.stats();
+    body.append(srow({
+      name:'Widescreen artwork', desc: art.enabled
+        ? `SteamGridDB key saved \u00b7 ${stats.found} of ${stats.looked} titles matched so far`
+        : 'Add a SteamGridDB key to use real 16:9 key art behind the dashboard',
+      value: art.enabled ? 'Connected' : 'Add key',
+      onActivate: () => window.App.promptArtworkKey()
+    }));
+    if (art.enabled){
+      body.append(srow({
+        name:'Clear artwork cache', desc:'Forget which titles matched and look again',
+        value:'Clear',
+        onActivate: () => { art.clearCache(); window.App.toast('Artwork cache cleared');
+                            renderSettings(root); window.Nav.focusFirst(); }
+      }));
+    }
     body.append(srow({
       name:'Tag badges on tiles', desc:'Mark ports, Flash titles and emulators',
       control: toggleControl(set.tileBadges === true),

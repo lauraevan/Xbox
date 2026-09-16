@@ -127,6 +127,13 @@ svg .s{ fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; 
      instead of a giant cropped face. */
   filter:saturate(1.15) blur(1.6rem) brightness(.72);
 }
+/* proper 16:9 key art is shown close to as-shot; only the square covers
+   need blurring to survive being cropped to a widescreen frame */
+.backdrop-layer.wide{
+  inset:0; transform:none;
+  filter:saturate(1.04) brightness(.86);
+}
+.backdrop-layer.wide.on{ transform:scale(1.03); }
 .backdrop-layer.on{ opacity:1; transform:scale(1.12); }
 .backdrop-scrim{
   position:absolute; inset:0;
