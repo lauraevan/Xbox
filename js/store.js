@@ -235,6 +235,15 @@ window.addEventListener('nav:button', event => {
   if (event.detail?.button === 'b' && product) closeProduct();
 });
 
+// Nav.activate handles controller/keyboard A presses. Native pointer taps need
+// the same activation path so Store stays fully usable on touch and mouse.
+document.addEventListener('click', event => {
+  const target = event.target.closest?.('#view-store [data-nav]');
+  if (!target || typeof target._navActivate !== 'function') return;
+  event.preventDefault();
+  target._navActivate(target);
+});
+
 window.XboxStore = {
   render,
   openProduct,
