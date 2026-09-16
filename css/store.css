@@ -1,90 +1,194 @@
-/* Microsoft Store-style catalogue surface. Flat, controller-first Xbox geometry. */
+/* Xbox console Microsoft Store surface.
+   Designed around the 10-foot/controller Store: persistent left navigation,
+   wide gallery hero, horizontal shelves and full-screen product details. */
 .view-store{
-  z-index:12;
+  z-index:30;
   color:#fff;
+  background:#070707;
+  font-family:'Segoe UI',system-ui,sans-serif;
+}
+.xstore-shell{
+  position:absolute;
+  inset:0;
+  display:grid;
+  grid-template-columns:25rem minmax(0,1fr);
   background:#090909;
 }
-.store-scroll{
+.xstore-rail{
+  position:relative;
+  z-index:3;
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+  padding:4.2rem 1.5rem 3rem;
+  background:#111;
+  border-right:.1rem solid rgba(255,255,255,.08);
+}
+.xstore-brand{
+  display:flex;
+  align-items:center;
+  gap:1.2rem;
+  padding:0 1.35rem 3.5rem;
+  font-size:2rem;
+  font-weight:600;
+  letter-spacing:-.03rem;
+}
+.xstore-brand-icon{
+  width:3.5rem;
+  height:3.5rem;
+  display:grid;
+  place-items:center;
+  color:#fff;
+}
+.xstore-brand-icon svg{ width:2.9rem; height:2.9rem; }
+.xstore-nav{ display:flex; flex-direction:column; gap:.35rem; }
+.xstore-nav-btn{
+  position:relative;
+  min-height:5.7rem;
+  display:flex;
+  align-items:center;
+  gap:1.4rem;
+  padding:0 1.35rem;
+  border:0;
+  border-radius:.35rem;
+  background:transparent;
+  color:#eee;
+  text-align:left;
+  font:500 1.65rem/1 'Segoe UI',system-ui,sans-serif;
+}
+.xstore-nav-btn::before{
+  content:'';
+  position:absolute;
+  left:0;
+  width:.4rem;
+  height:0;
+  border-radius:.25rem;
+  background:#9bf00b;
+  transition:height .12s ease;
+}
+.xstore-nav-btn.active{
+  background:#282828;
+  color:#fff;
+}
+.xstore-nav-btn.active::before{ height:3.2rem; }
+.xstore-nav-btn[data-focused]{
+  outline:.3rem solid #fff;
+  outline-offset:-.3rem;
+  background:#f2f2f2;
+  color:#111;
+}
+.xstore-nav-btn[data-focused]::before{ background:#107c10; height:3.2rem; }
+.xstore-nav-icon{ width:2.7rem; height:2.7rem; display:grid; place-items:center; flex:0 0 auto; }
+.xstore-nav-icon svg{ width:2.35rem; height:2.35rem; }
+.xstore-rail-foot{
+  margin-top:auto;
+  padding:0 1.35rem;
+  font-size:1.25rem;
+  font-weight:700;
+  letter-spacing:.35rem;
+  color:rgba(255,255,255,.35);
+}
+.xstore-main{
+  position:relative;
+  min-width:0;
+  overflow:hidden;
+  background:#080808;
+}
+.xstore-content{
   position:absolute;
   inset:0;
   overflow:auto;
-  padding:10.5rem 6.8rem 7.5rem;
+  padding:3.8rem 4.6rem 7rem;
   scrollbar-width:none;
 }
-.store-scroll::-webkit-scrollbar{ display:none; }
-.store-head{
+.xstore-content::-webkit-scrollbar{ display:none; }
+.xstore-top{
+  height:5.6rem;
   display:flex;
-  align-items:end;
+  align-items:flex-start;
   justify-content:space-between;
-  gap:3rem;
-  margin-bottom:2.4rem;
+  gap:2rem;
+  margin-bottom:2.8rem;
 }
-.store-title{
-  margin:0;
-  font-size:4rem;
-  line-height:1;
+.xstore-breadcrumb{
+  font-size:1.55rem;
+  color:rgba(255,255,255,.6);
+}
+.xstore-breadcrumb strong{ color:#fff; font-weight:600; }
+.xstore-top-actions{ display:flex; align-items:center; gap:2rem; }
+.xstore-account{
+  font-size:1.45rem;
   font-weight:600;
-  letter-spacing:-.07rem;
+  color:rgba(255,255,255,.82);
 }
-.store-subtitle{
-  margin-top:.9rem;
-  font-size:1.65rem;
-  color:rgba(255,255,255,.62);
+.xstore-cart{ display:flex; align-items:center; gap:.45rem; color:rgba(255,255,255,.8); }
+.xstore-cart svg{ width:2.3rem; height:2.3rem; }
+.xstore-cart b{
+  min-width:1.8rem;
+  height:1.8rem;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:#107c10;
+  font-size:1rem;
 }
-.store-search{
-  width:32rem;
-  min-height:4.6rem;
-  border:.1rem solid rgba(255,255,255,.24);
-  border-radius:.35rem;
-  background:#1c1c1c;
-  color:#fff;
-  padding:0 1.5rem;
-  font:500 1.6rem/1 'Segoe UI',system-ui,sans-serif;
-  outline:none;
-}
-.store-search:focus{ border-color:#fff; }
-.store-hero{
+.xstore-hero{
   position:relative;
-  height:35rem;
+  height:42rem;
   overflow:hidden;
   border-radius:.45rem;
   background:#181818;
-  margin-bottom:2.6rem;
+  margin-bottom:3.7rem;
 }
-.store-hero-art{
+.xstore-hero-art{
   position:absolute;
   inset:0;
   background-size:cover;
   background-position:center;
-  transition:background-image .16s ease;
+  transform:scale(1.002);
+  transition:background-image .18s ease;
 }
-.store-hero-copy{
+.xstore-hero-shade{
   position:absolute;
-  inset:0 auto 0 0;
-  width:42%;
+  inset:0;
+  background:linear-gradient(90deg,rgba(0,0,0,.92) 0%,rgba(0,0,0,.78) 27%,rgba(0,0,0,.22) 64%,rgba(0,0,0,.05) 100%);
+}
+.xstore-hero-copy{
+  position:absolute;
+  left:3.8rem;
+  top:3.6rem;
+  bottom:3.5rem;
+  width:48rem;
   display:flex;
   flex-direction:column;
-  justify-content:end;
-  padding:3.2rem 3.4rem;
-  background:rgba(0,0,0,.76);
+  justify-content:flex-end;
 }
-.store-hero-eyebrow{
+.xstore-hero-kicker{
+  color:#9bf00b;
+  text-transform:uppercase;
   font-size:1.35rem;
   font-weight:700;
-  letter-spacing:.08rem;
-  text-transform:uppercase;
-  margin-bottom:.9rem;
+  letter-spacing:.09rem;
+  margin-bottom:.8rem;
 }
-.store-hero-title{
-  margin:0 0 1.15rem;
-  font-size:3.8rem;
-  line-height:1.02;
+.xstore-hero-title{
+  margin:0 0 1rem;
+  max-width:46rem;
+  font-size:4.4rem;
+  line-height:1;
   font-weight:600;
+  letter-spacing:-.08rem;
 }
-.store-hero-desc{
+.xstore-hero-meta{
+  font-size:1.35rem;
+  font-weight:600;
+  color:rgba(255,255,255,.7);
+  margin-bottom:1.3rem;
+}
+.xstore-hero-desc{
   margin:0;
-  max-width:54rem;
-  font-size:1.55rem;
+  max-width:45rem;
+  font-size:1.5rem;
   line-height:1.42;
   color:rgba(255,255,255,.82);
   display:-webkit-box;
@@ -92,52 +196,59 @@
   -webkit-box-orient:vertical;
   overflow:hidden;
 }
-.store-hero-tags{
-  margin-top:1.3rem;
-  font-size:1.3rem;
-  color:rgba(255,255,255,.63);
+.xstore-hero-price{
+  margin-top:1.55rem;
+  font-size:1.55rem;
+  font-weight:700;
 }
-.store-filters{
-  display:flex;
-  gap:.9rem;
-  overflow-x:auto;
-  padding:.25rem .2rem 1.3rem;
-  scrollbar-width:none;
-}
-.store-filters::-webkit-scrollbar{ display:none; }
-.store-filter{
-  flex:0 0 auto;
-  min-height:4.2rem;
-  padding:0 1.7rem;
+.xstore-hero-action{
+  align-self:flex-start;
+  min-width:18rem;
+  min-height:4.6rem;
+  margin-top:1.45rem;
   border:0;
-  border-radius:.3rem;
-  background:#242424;
-  color:#fff;
-  font:600 1.45rem/1 'Segoe UI',system-ui,sans-serif;
+  border-radius:.25rem;
+  padding:0 1.7rem;
+  background:#f2f2f2;
+  color:#111;
+  font:700 1.45rem/1 'Segoe UI',system-ui,sans-serif;
+  text-transform:uppercase;
 }
-.store-filter.active{ background:#107c10; }
-.store-filter[data-focused]{ outline:.3rem solid #52d64b; outline-offset:.2rem; }
-.store-section-head{
+.xstore-hero-action[data-focused]{
+  outline:.35rem solid #9bf00b;
+  outline-offset:.25rem;
+}
+.xstore-shelf{ margin-bottom:4.2rem; }
+.xstore-shelf-head{
   display:flex;
-  align-items:baseline;
+  align-items:end;
   justify-content:space-between;
-  margin:1.2rem 0 1.35rem;
+  min-height:4.4rem;
+  margin-bottom:1.4rem;
 }
-.store-section-title{
+.xstore-shelf-title{
   margin:0;
-  font-size:2.4rem;
+  font-size:2.45rem;
+  line-height:1;
   font-weight:600;
 }
-.store-count{
-  font-size:1.4rem;
-  color:rgba(255,255,255,.56);
+.xstore-shelf-sub,.xstore-shelf-count{
+  margin-top:.55rem;
+  color:rgba(255,255,255,.5);
+  font-size:1.25rem;
 }
-.store-grid{
+.xstore-row{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(17.5rem,1fr));
-  gap:2.2rem 1.35rem;
-  padding-bottom:5rem;
+  grid-auto-flow:column;
+  grid-auto-columns:18.5rem;
+  gap:1.25rem;
+  overflow-x:auto;
+  overflow-y:hidden;
+  padding:.45rem .45rem 1.3rem;
+  margin:0 -.45rem;
+  scrollbar-width:none;
 }
+.xstore-row::-webkit-scrollbar{ display:none; }
 .store-game{
   min-width:0;
   border:0;
@@ -148,12 +259,13 @@
   font:inherit;
 }
 .store-cover{
+  position:relative;
   display:block;
   width:100%;
   aspect-ratio:3/4;
   overflow:hidden;
-  border-radius:.55rem;
-  background:#202020;
+  border-radius:.38rem;
+  background:#1d1d1d;
 }
 .store-cover img{
   width:100%;
@@ -161,124 +273,284 @@
   display:block;
   object-fit:cover;
 }
-.store-game-meta{
-  display:block;
-  padding:.9rem .15rem 0;
+.store-cloud-badge{
+  position:absolute;
+  left:.7rem;
+  bottom:.7rem;
+  height:2.4rem;
+  display:flex;
+  align-items:center;
+  gap:.45rem;
+  padding:0 .75rem;
+  border-radius:.25rem;
+  background:rgba(0,0,0,.78);
+  color:#fff;
+  font-size:1rem;
+  font-weight:600;
 }
+.store-cloud-badge svg{ width:1.35rem; height:1.35rem; }
+.store-owned-badge{
+  position:absolute;
+  top:.7rem;
+  right:.7rem;
+  padding:.45rem .65rem;
+  border-radius:.2rem;
+  background:#107c10;
+  color:#fff;
+  font-size:.95rem;
+  font-weight:800;
+  letter-spacing:.04rem;
+}
+.store-game-meta{ display:block; padding:.85rem .05rem 0; }
 .store-game-title{
   display:block;
   overflow:hidden;
   white-space:nowrap;
   text-overflow:ellipsis;
-  font-size:1.5rem;
+  font-size:1.45rem;
   font-weight:600;
+}
+.store-game-price{
+  display:block;
+  margin-top:.32rem;
+  font-size:1.3rem;
+  font-weight:600;
+  color:#9bf00b;
 }
 .store-game-sub{
   display:block;
   overflow:hidden;
   white-space:nowrap;
   text-overflow:ellipsis;
-  margin-top:.3rem;
-  font-size:1.25rem;
-  color:rgba(255,255,255,.55);
+  margin-top:.2rem;
+  font-size:1.15rem;
+  color:rgba(255,255,255,.5);
 }
 .store-game[data-focused] .store-cover{
-  outline:.32rem solid #52d64b;
+  outline:.35rem solid #fff;
   outline-offset:.28rem;
 }
-.store-empty{
+.store-game[data-focused] .store-game-title{ color:#fff; }
+.xstore-gallery-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:end;
+  margin:1rem 0 2rem;
+}
+.xstore-gallery-title{
+  margin:0;
+  font-size:4.1rem;
+  font-weight:600;
+  letter-spacing:-.07rem;
+}
+.xstore-gallery-count{ font-size:1.35rem; color:rgba(255,255,255,.55); }
+.xstore-filters{
+  display:flex;
+  gap:.75rem;
+  overflow-x:auto;
+  margin-bottom:2.3rem;
+  padding:.3rem;
+  scrollbar-width:none;
+}
+.xstore-filters::-webkit-scrollbar{ display:none; }
+.xstore-filter{
+  flex:0 0 auto;
+  min-height:4.1rem;
+  padding:0 1.6rem;
+  border:0;
+  border-radius:.25rem;
+  background:#242424;
+  color:#fff;
+  font:600 1.35rem/1 'Segoe UI',system-ui,sans-serif;
+}
+.xstore-filter.active{ background:#107c10; }
+.xstore-filter[data-focused]{ outline:.3rem solid #fff; outline-offset:.22rem; }
+.xstore-search-wrap{
+  position:relative;
+  max-width:82rem;
+  height:5.5rem;
+  margin:0 0 2.6rem;
+  display:flex;
+  align-items:center;
+  border:.2rem solid rgba(255,255,255,.3);
+  border-radius:.25rem;
+  background:#191919;
+}
+.xstore-search-wrap:focus-within{ border-color:#fff; }
+.xstore-search-icon{ width:5.2rem; display:grid; place-items:center; color:rgba(255,255,255,.7); }
+.xstore-search-icon svg{ width:2.2rem; height:2.2rem; }
+.xstore-search{
+  flex:1;
+  height:100%;
+  border:0;
+  outline:0;
+  background:transparent;
+  color:#fff;
+  font:500 1.75rem/1 'Segoe UI',system-ui,sans-serif;
+}
+.xstore-search::placeholder{ color:rgba(255,255,255,.38); }
+.xstore-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(17rem,1fr));
+  gap:2.6rem 1.45rem;
+  padding-bottom:6rem;
+}
+.xstore-empty{
   grid-column:1/-1;
-  padding:5rem 1rem;
-  color:rgba(255,255,255,.6);
+  min-height:26rem;
+  display:grid;
+  place-items:center;
+  color:rgba(255,255,255,.5);
   font-size:1.7rem;
 }
-.store-product{
+.xstore-loading{
   position:absolute;
   inset:0;
-  z-index:80;
-  overflow:hidden;
-  background:#090909;
+  display:grid;
+  place-items:center;
+  align-content:center;
+  gap:1rem;
+  background:#080808;
+  color:#fff;
+  text-align:center;
+  font-size:3.1rem;
+  font-weight:600;
 }
-.store-product-art{
+.xstore-loading span{ margin-top:1rem; font-size:1.45rem; color:rgba(255,255,255,.5); font-weight:400; }
+.xstore-loading.error span{ color:#ffb4ab; }
+
+/* Product detail screen */
+.xproduct{
+  position:absolute;
+  inset:0;
+  z-index:100;
+  overflow:hidden;
+  background:#070707;
+}
+.xproduct-art{
   position:absolute;
   inset:0;
   background-size:cover;
   background-position:center;
-  opacity:.42;
+  opacity:.7;
 }
-.store-product::after{
-  content:'';
+.xproduct-scrim{
   position:absolute;
   inset:0;
-  background:rgba(0,0,0,.52);
-  pointer-events:none;
+  background:linear-gradient(90deg,rgba(0,0,0,.98) 0%,rgba(0,0,0,.94) 36%,rgba(0,0,0,.58) 68%,rgba(0,0,0,.34) 100%);
 }
-.store-product-panel{
+.xproduct-body{
   position:relative;
   z-index:1;
   height:100%;
   display:flex;
   align-items:center;
   gap:4rem;
-  padding:12rem 8rem 7rem;
+  padding:6rem 7rem 5rem;
 }
-.store-product-cover{
-  width:28rem;
+.xproduct-cover-wrap{ flex:0 0 auto; }
+.xproduct-cover{
+  width:27rem;
   aspect-ratio:3/4;
+  display:block;
   object-fit:cover;
-  border-radius:.6rem;
-  box-shadow:0 1.1rem 3rem rgba(0,0,0,.35);
+  border-radius:.45rem;
+  box-shadow:0 2rem 5rem rgba(0,0,0,.45);
 }
-.store-product-copy{ max-width:74rem; }
-.store-product-kicker{
-  font-size:1.35rem;
-  font-weight:700;
-  letter-spacing:.1rem;
-  color:#9bf00b;
+.xproduct-copy{ max-width:76rem; }
+.xproduct-type{
   margin-bottom:1rem;
+  color:#9bf00b;
+  font-size:1.25rem;
+  font-weight:700;
+  letter-spacing:.08rem;
 }
-.store-product-title{
-  margin:0 0 1.3rem;
-  font-size:5.2rem;
-  line-height:1;
+.xproduct-title{
+  margin:0 0 1.2rem;
+  font-size:5.4rem;
+  line-height:.98;
   font-weight:600;
+  letter-spacing:-.09rem;
 }
-.store-product-tags{
-  font-size:1.45rem;
-  color:rgba(255,255,255,.66);
-  margin-bottom:1.8rem;
+.xproduct-meta{
+  margin-bottom:1.25rem;
+  font-size:1.35rem;
+  font-weight:600;
+  color:rgba(255,255,255,.63);
 }
-.store-product-desc{
+.xproduct-cloud{
+  display:inline-flex;
+  align-items:center;
+  min-height:3rem;
+  padding:0 .9rem;
+  border-radius:.2rem;
+  background:rgba(255,255,255,.11);
+  font-size:1.2rem;
+  font-weight:600;
+  margin-bottom:1.5rem;
+}
+.xproduct-desc{
   margin:0;
-  font-size:1.7rem;
+  max-width:69rem;
+  font-size:1.65rem;
   line-height:1.48;
   color:rgba(255,255,255,.84);
-  max-width:68rem;
+  display:-webkit-box;
+  -webkit-line-clamp:5;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
 }
-.store-product-actions{
+.xproduct-price{
+  margin-top:2rem;
+  font-size:2rem;
+  font-weight:600;
+}
+.xproduct-license{
+  margin-top:.35rem;
+  font-size:1.25rem;
+  color:rgba(255,255,255,.55);
+}
+.xproduct-actions{
   display:flex;
-  gap:1rem;
-  margin-top:2.7rem;
+  flex-wrap:wrap;
+  gap:.8rem;
+  margin-top:2.2rem;
 }
-.store-action{
-  min-width:14rem;
+.xproduct-action{
+  min-width:17rem;
   min-height:4.8rem;
   border:0;
-  border-radius:.3rem;
-  padding:0 2rem;
-  background:#ededed;
+  border-radius:.22rem;
+  padding:0 1.8rem;
+  background:#e7e7e7;
   color:#111;
-  font:700 1.55rem/1 'Segoe UI',system-ui,sans-serif;
+  font:700 1.35rem/1 'Segoe UI',system-ui,sans-serif;
 }
-.store-action.primary{ background:#107c10; color:#fff; }
-.store-action[data-focused]{ outline:.3rem solid #52d64b; outline-offset:.25rem; }
+.xproduct-action.primary{ background:#107c10; color:#fff; }
+.xproduct-action.primary.play{ background:#9bf00b; color:#0b0b0b; }
+.xproduct-action.icon-only{ min-width:5rem; width:5rem; padding:0; }
+.xproduct-action.icon-only svg{ width:2.2rem; height:2.2rem; }
+.xproduct-action[data-focused]{ outline:.35rem solid #fff; outline-offset:.25rem; }
+.xproduct-note{
+  margin-top:1.6rem;
+  font-size:1.2rem;
+  color:rgba(255,255,255,.5);
+}
 
 body[data-view="store"] .backdrop,
-body[data-view="store"] .topbar-scrim{ opacity:0; }
-body[data-view="store"] .profile{ opacity:.85; }
+body[data-view="store"] .topbar-scrim,
+body[data-view="store"] .sysbar,
+body[data-view="store"] .legend{
+  opacity:0!important;
+  pointer-events:none!important;
+}
 
 @media (max-aspect-ratio:16/10){
-  .store-scroll{ padding-left:4.8rem; padding-right:4.8rem; }
-  .store-grid{ grid-template-columns:repeat(auto-fill,minmax(16rem,1fr)); }
-  .store-hero-copy{ width:52%; }
+  .xstore-shell{ grid-template-columns:21rem minmax(0,1fr); }
+  .xstore-rail{ padding-left:1rem; padding-right:1rem; }
+  .xstore-brand{ font-size:1.7rem; }
+  .xstore-content{ padding-left:3.4rem; padding-right:3.4rem; }
+  .xstore-hero{ height:38rem; }
+  .xstore-hero-copy{ width:43rem; }
+  .xstore-grid{ grid-template-columns:repeat(auto-fill,minmax(15.5rem,1fr)); }
 }
