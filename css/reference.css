@@ -1,81 +1,130 @@
 /* Xbox reference-only fidelity overrides.
-   The real dashboard is artwork + spacing + one focus ring, not a grid of
-   outlined cards. Keep inactive surfaces visually borderless. */
+   This file intentionally mirrors the supplied Xbox Home frame instead of
+   redesigning it: artwork first, restrained chrome, one focus ring. */
 
 :root{
-  --safe-x: 9.2rem;
+  --safe-x: 8.8rem;
   --bar-h: 34rem;
-  --tile-r: .15rem;
-  --card-r: .15rem;
+  --tile-r: .12rem;
+  --card-r: .12rem;
   --green-bright: #53d64b;
   --accent: #53d64b;
 }
 
-/* wallpaper */
+/* ───────── reference wallpaper ─────────
+   The console UI is authored as a 16:9 picture. On taller browser windows we
+   keep that composition instead of zooming the wallpaper and moving the car. */
+.backdrop{ background:#090d0b !important; }
 .backdrop-glow{ display:none !important; }
-.backdrop-scrim{ background:rgba(0,0,0,.055) !important; }
+.backdrop-scrim{
+  background:linear-gradient(180deg,rgba(0,0,0,.025),rgba(0,0,0,.015) 65%,rgba(0,0,0,.08) 100%) !important;
+}
 .topbar-scrim{
-  height:31rem;
-  background:linear-gradient(180deg, rgba(0,0,0,.25) 0%, rgba(0,0,0,.06) 72%, transparent 100%) !important;
+  height:29rem !important;
+  background:linear-gradient(180deg,rgba(0,0,0,.15),rgba(0,0,0,.035) 72%,transparent) !important;
 }
 .backdrop-layer,
 .backdrop-layer.wide,
 .backdrop-layer.reference-wide{
   inset:0 !important;
   transform:none !important;
-  background-size:cover !important;
+  background-size:100% auto !important;
   background-repeat:no-repeat !important;
-  filter:saturate(1.03) contrast(1.01) brightness(1) !important;
+  background-position:center top !important;
+  filter:saturate(1.08) contrast(1.025) brightness(.99) !important;
 }
 .backdrop-layer.reference-wide.on{ transform:none !important; }
 
-/* Only the selected element gets a border. */
+/* only the selected Xbox item receives chrome */
 .focus-ring{
-  border:.32rem solid #53d64b !important;
-  border-radius:.14rem !important;
-  box-shadow:0 0 0 .08rem rgba(0,0,0,.58) !important;
+  border:.42rem solid #53d64b !important;
+  border-radius:.1rem !important;
+  box-shadow:0 0 0 .07rem rgba(0,0,0,.62) !important;
 }
 .focus-ring.pop{ animation:none !important; }
 
-/* top chrome */
-.sysbar-top{ top:10.8rem; left:var(--safe-x); right:var(--safe-x); }
-.sysnav{ gap:1.25rem; transform:translateX(-3.2rem); }
+/* ───────── top chrome ─────────
+   Unlike the old implementation, the status cluster is not on the same row
+   as the centre navigation. This is the relationship visible in the photo. */
+.sysbar{ height:var(--bar-h); }
+.sysbar-top{
+  position:absolute !important;
+  inset:0 !important;
+  display:block !important;
+}
+.sysnav{
+  position:absolute !important;
+  left:50% !important;
+  top:16.7rem !important;
+  transform:translateX(-50%) !important;
+  display:flex;
+  gap:1.05rem;
+}
 .sysnav-btn{
-  width:5.25rem;
-  height:5.25rem;
-  background:rgba(28,30,32,.65);
-  backdrop-filter:none;
-  box-shadow:none;
+  width:5.05rem;
+  height:5.05rem;
+  background:rgba(28,30,32,.62);
+  backdrop-filter:none !important;
+  box-shadow:none !important;
 }
 .sysnav-btn:hover,
 .sysnav-btn.active,
-.sysnav-btn[data-focused]{ background:rgba(39,41,43,.79); transform:none; }
-.sysnav-btn svg{ width:2.55rem; height:2.55rem; }
+.sysnav-btn[data-focused]{
+  background:rgba(38,40,42,.76);
+  transform:none !important;
+}
+.sysnav-btn svg{ width:2.42rem; height:2.42rem; }
+.gp-chip{
+  font-size:.94rem !important;
+  border-width:.18rem !important;
+  border-radius:.25rem !important;
+  padding:.25rem .3rem !important;
+}
 .badge-dot{
-  width:.95rem; height:.95rem; top:.15rem; right:.2rem;
-  box-shadow:0 0 0 .18rem rgba(20,22,24,.95);
+  width:.82rem;
+  height:.82rem;
+  top:.12rem;
+  right:.15rem;
+  box-shadow:0 0 0 .16rem rgba(22,24,26,.96);
 }
-.sysstatus{ gap:1.8rem; }
-.friends-count{ font-size:1.85rem; font-weight:500; }
-.friends-icon svg{ width:2.05rem; height:2.05rem; }
-.status-btn{ width:3.1rem; height:3.1rem; }
-.status-btn svg{ width:2.2rem; height:2.2rem; }
-.battery-shell{ width:2.65rem; height:1.55rem; }
-.clock{ font-size:2.55rem; font-weight:500; min-width:10.8rem; }
-.profile{
-  top:22.8rem;
-  left:calc(var(--safe-x) - .5rem);
-  gap:1.25rem;
-  padding:.45rem 1rem .45rem .45rem;
-}
-.avatar{
-  width:4.5rem; height:4.5rem;
-  box-shadow:0 0 0 .1rem rgba(255,255,255,.16), 0 .2rem .9rem rgba(0,0,0,.28);
-}
-.gamertag{ font-size:1.65rem; font-weight:500; }
-.profile-sub{ font-size:1.25rem; color:rgba(255,255,255,.72); }
 
-/* Home */
+.sysstatus{
+  position:absolute !important;
+  right:5.6rem !important;
+  top:2.8rem !important;
+  display:flex !important;
+  align-items:center;
+  gap:1.65rem;
+}
+.friends{ padding:.25rem .45rem; }
+.friends-count{ font-size:1.85rem; font-weight:500; }
+.friends-icon svg{ width:2rem; height:2rem; }
+.status-btn{ width:2.8rem; height:2.8rem; }
+.status-btn svg{ width:2.05rem; height:2.05rem; }
+.battery-shell{ width:2.7rem; height:1.55rem; }
+.clock{
+  font-size:2.7rem;
+  font-weight:500;
+  min-width:11.8rem;
+  letter-spacing:.005rem;
+}
+
+.profile{
+  top:24.9rem !important;
+  left:calc(var(--safe-x) - .45rem) !important;
+  gap:1.15rem;
+  padding:.4rem .9rem .4rem .4rem;
+}
+body[data-view="home"] .profile[data-focused]{ background:transparent !important; }
+.avatar{
+  width:4.45rem;
+  height:4.45rem;
+  box-shadow:0 0 0 .09rem rgba(255,255,255,.15),0 .18rem .8rem rgba(0,0,0,.24);
+}
+.gamertag{ font-size:1.58rem; font-weight:500; line-height:1.16; }
+.profile-sub{ font-size:1.18rem; color:rgba(255,255,255,.68); line-height:1.18; }
+
+/* ───────── Home rail ───────── */
 .reference-home .hero{ display:none !important; }
 .ref-rail{ top:30rem; }
 .ref-strip{
@@ -84,7 +133,6 @@
   padding-right:var(--safe-x);
   overflow:visible;
 }
-
 .reference-home .ref-tile,
 .reference-home .ref-tile .tile-face,
 .reference-home .ref-card{
@@ -93,16 +141,19 @@
   box-shadow:none !important;
 }
 
-.ref-tile{ width:13.8rem; background:transparent !important; }
+.ref-tile{
+  width:17rem;
+  background:transparent !important;
+}
 .ref-tile .tile-face{
-  width:13.8rem;
-  height:13.8rem;
-  border-radius:.12rem;
+  width:17rem;
+  height:17rem;
+  border-radius:.08rem;
   background:#151718;
 }
-.ref-tile.tile-sm{ margin-top:6.1rem; }
-.ref-tile.ref-hero{ width:20rem; }
-.ref-tile.ref-hero .tile-face{ width:20rem; height:20rem; }
+.ref-tile.tile-sm{ margin-top:4rem; }
+.ref-tile.ref-hero{ width:21rem; }
+.ref-tile.ref-hero .tile-face{ width:21rem; height:21rem; }
 .ref-tile[data-focused]{ transform:none !important; }
 
 .ref-art,
@@ -119,52 +170,59 @@
 .edge-tile .ref-art{ display:grid; place-items:center; }
 .edge-tile .ref-art img{
   position:static;
-  width:52%;
-  height:52%;
+  width:50%;
+  height:50%;
   object-fit:contain;
 }
 
 .ref-platform{
   position:absolute;
   left:.48rem;
-  bottom:.48rem;
+  bottom:.46rem;
   z-index:4;
   color:#fff;
-  font-size:.82rem;
+  font-size:.8rem;
   font-weight:700;
   line-height:1;
-  padding:.23rem .28rem;
-  background:rgba(0,0,0,.62);
+  padding:.22rem .27rem;
+  background:rgba(0,0,0,.65);
   text-shadow:none;
 }
 
 .ref-tile .tile-label{
-  background:rgba(7,8,9,.96);
-  font-size:1.45rem;
+  background:rgba(8,9,10,.965);
+  font-size:1.42rem;
   border:0 !important;
 }
-.ref-tile[data-focused] .tile-label{ height:3.45rem; padding:.9rem .8rem 0; }
+.ref-tile[data-focused] .tile-label{
+  height:3.45rem;
+  padding:.88rem .78rem 0;
+}
 
-.ref-friends{ width:16.7rem; margin-top:3.15rem; }
+.ref-friends{
+  width:20.5rem;
+  margin-top:.55rem;
+}
 .ref-friends .tile-face{
-  width:16.7rem;
-  height:16.7rem;
-  border-radius:.12rem;
-  background:linear-gradient(140deg,#34c95b 0%,#25bd84 48%,#269fda 100%) !important;
+  width:20.5rem;
+  height:20.5rem;
+  border-radius:.08rem;
+  background:linear-gradient(145deg,#35d15d 0%,#25c17f 43%,#22a9d9 100%) !important;
   display:grid;
   place-items:center;
 }
 .ref-friends-icon{ display:grid; place-items:center; }
-.ref-friends-icon svg{ width:5.5rem; height:5.5rem; fill:#fff; }
+.ref-friends-icon svg{ width:5.7rem; height:5.7rem; fill:none !important; stroke:#fff; stroke-width:1.7; }
 
+/* ───────── lower promo row ───────── */
 .ref-cards{
   top:55rem;
-  grid-template-columns:24rem 1fr 1.06fr 1.16fr;
-  gap:1.8rem;
+  grid-template-columns:33.5rem .9fr 1.08fr 1.08fr;
+  gap:1.7rem;
 }
 .ref-card{
   height:19.4rem;
-  border-radius:.12rem;
+  border-radius:.08rem;
   overflow:hidden;
   background:#151718;
 }
@@ -177,50 +235,60 @@
   height:100%;
 }
 .ref-card-art{ overflow:hidden; }
-.ref-card-art img{ object-fit:cover; opacity:1 !important; filter:none !important; }
-
-/* Real Xbox cards only darken the lower text area, they do not have a frame. */
+.ref-card-art img{
+  object-fit:cover;
+  object-position:center center;
+  opacity:1 !important;
+  filter:none !important;
+}
 .ref-card::after{
   content:"";
   position:absolute;
-  inset:53% 0 0;
-  background:linear-gradient(180deg, transparent, rgba(0,0,0,.65));
+  inset:54% 0 0;
+  background:linear-gradient(180deg,transparent,rgba(0,0,0,.63));
   pointer-events:none;
 }
 .ref-card .card-label{
-  left:1.55rem;
-  right:1.3rem;
-  bottom:1.25rem;
-  font-size:1.95rem;
+  left:1.45rem;
+  right:1.25rem;
+  bottom:1.08rem;
+  font-size:2.05rem;
   font-weight:400;
-  line-height:1.15;
-  text-shadow:0 .14rem .45rem rgba(0,0,0,.9);
+  line-height:1.12;
+  text-shadow:0 .13rem .42rem rgba(0,0,0,.9);
 }
 .ref-card .card-label .sub{
-  margin-top:.2rem;
-  font-size:1.58rem;
+  margin-top:.18rem;
+  font-size:1.62rem;
   font-weight:400;
   color:#fff;
 }
 .ref-card .card-chip{
-  top:1rem;
-  left:1rem;
-  padding:.28rem .58rem;
-  border-radius:.1rem;
-  background:rgba(0,0,0,.8);
-  font-size:1.02rem;
+  top:.95rem;
+  left:.95rem;
+  padding:.26rem .55rem;
+  border-radius:.08rem;
+  background:rgba(0,0,0,.79);
+  font-size:.98rem;
 }
 .ref-card.card-store{
-  background:linear-gradient(135deg,#6848d6 0%,#5734c8 56%,#4526a4 100%) !important;
+  background:linear-gradient(136deg,#704fe0 0%,#5d3aca 55%,#4728a6 100%) !important;
 }
 .ref-card.card-store::after{ display:none; }
-.ref-store-icon{ position:absolute; top:2.2rem; left:2rem; display:grid; place-items:center; }
-.ref-store-icon svg{ width:3.6rem; height:3.6rem; fill:#fff; }
-.ref-card.card-store .card-label{ bottom:1.55rem; font-size:1.65rem; }
+.ref-store-icon{
+  position:absolute;
+  left:50%;
+  top:4.6rem;
+  transform:translateX(-50%);
+  display:grid;
+  place-items:center;
+}
+.ref-store-icon svg{ width:3.7rem; height:3.7rem; fill:#fff; }
+.ref-card.card-store .card-label{ bottom:1.4rem; font-size:1.62rem; }
 
 body[data-view="home"] .legend{ display:none !important; }
 
-/* Guide */
+/* ───────── Guide ───────── */
 .guide-scrim{ background:rgba(0,0,0,.24) !important; backdrop-filter:none !important; }
 .guide-panel{
   left:5.4rem;
@@ -230,7 +298,7 @@ body[data-view="home"] .legend{ display:none !important; }
   background:rgba(72,75,79,.95) !important;
   backdrop-filter:none !important;
   border:0 !important;
-  border-radius:.2rem !important;
+  border-radius:.18rem !important;
   box-shadow:0 1.1rem 3.6rem rgba(0,0,0,.34) !important;
 }
 .guide-tabs{ gap:.1rem; padding:1.2rem 1.45rem 0; }
@@ -264,16 +332,12 @@ body[data-view="home"] .legend{ display:none !important; }
 .guide-hint{ font-size:1.55rem !important; gap:.9rem !important; margin-bottom:.55rem !important; }
 .guide-hint .glyph svg{ width:1.85rem !important; height:1.85rem !important; }
 
-/* If a non-reference page needs a placeholder, keep it flat and quiet. */
 .cover-plate{ background:#202326 !important; }
 .cover-plate::after{ display:none !important; }
 .cover-initials{ color:rgba(255,255,255,.52) !important; text-shadow:none !important; }
 
+/* keep the same measured 1920x1080 geometry on taller tablet windows */
 @media (max-aspect-ratio:16/10){
-  .ref-strip{ gap:1.2rem; }
-  .ref-tile{ width:13.2rem; }
-  .ref-tile .tile-face{ width:13.2rem; height:13.2rem; }
-  .ref-tile.ref-hero{ width:19rem; }
-  .ref-tile.ref-hero .tile-face{ width:19rem; height:19rem; }
-  .ref-cards{ grid-template-columns:23rem 1fr 1fr 1.08fr; gap:1.4rem; }
+  .ref-strip{ gap:1.35rem; }
+  .ref-cards{ gap:1.55rem; }
 }
