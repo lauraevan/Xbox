@@ -1,6 +1,6 @@
 /* Xbox Home/Guide reference pass.
-   Home-critical artwork is deliberately pinned to direct, known image URLs so
-   the first screen never depends on a runtime search API. */
+   Home-critical artwork is pinned to direct image URLs so the first screen
+   does not depend on a runtime search API. */
 (() => {
 'use strict';
 
@@ -9,15 +9,16 @@ if (!V) return;
 const { el, escapeHtml, ICON } = V;
 
 const EDGE_LOGO = 'https://upload.wikimedia.org/wikipedia/commons/9/98/Microsoft_Edge_logo_%282019%29.svg';
+const FORZA_CLEAN = 'https://gaming-cdn.com/images/news/articles/13710/cover/forza-horizon-5-hat-auf-ps5-schon-2-millionen-spielkopien-verkauft-cover687427dc70621.jpg';
 
-/* Real artwork used by the reference screen. These are primary sources, not
-   placeholders. If one host fails we still retain the existing SGDB lookup as
-   a secondary fallback, but the dashboard does not wait for it. */
+/* The wallpaper is deliberately separate from the Forza tile art. The old
+   build used the retail key art as the wallpaper, which baked an enormous
+   FORZA HORIZON 5 logo behind the system navigation. */
 const ART = {
   'Forza Horizon 5': {
     cover: 'https://xboxwire.thesourcemediaassets.com/sites/2/2021/11/ForzaHorizon5_KeyArt_Horiz_RGB_Final.jpg',
-    landscape: 'https://xboxwire.thesourcemediaassets.com/sites/2/2021/11/ForzaHorizon5_KeyArt_Horiz_RGB_Final.jpg',
-    hero: 'https://xboxwire.thesourcemediaassets.com/sites/2/2021/11/ForzaHorizon5_KeyArt_Horiz_RGB_Final.jpg'
+    landscape: FORZA_CLEAN,
+    hero: FORZA_CLEAN
   },
   'Subnautica 2': {
     cover: 'https://static.actugaming.net/media/2024/10/subnautica-2-jaquette.jpg'
@@ -44,13 +45,13 @@ const ART = {
     cover: 'https://prcdn.freetls.fastly.net/release_image/13450/5749/13450-5749-b7598adbebf47b9e843dde5a75a2021d-1200x630.png?auto=webp&fit=bounds&format=jpeg&height=1260&width=2400'
   },
   'BlizzCon 2026': {
-    landscape: 'https://bnetcmsus-a.akamaihd.net/cms/gallery/92/92VP0JKRT60R1762190999272.png',
-    cover: 'https://bnetcmsus-a.akamaihd.net/cms/gallery/92/92VP0JKRT60R1762190999272.png'
+    landscape: 'https://pliki.ppe.pl/storage/1cc680bbd7391274e9bf/1cc680bbd7391274e9bf.png',
+    cover: 'https://pliki.ppe.pl/storage/1cc680bbd7391274e9bf/1cc680bbd7391274e9bf.png'
   }
 };
 
 const SGDB = 'https://www.steamgriddb.com/api/v2';
-const CACHE_KEY = 'xbox.web.reference-art.v3';
+const CACHE_KEY = 'xbox.web.reference-art.v4';
 let cache = {};
 try { cache = JSON.parse(localStorage.getItem(CACHE_KEY) || '{}'); } catch {}
 const saveCache = () => { try { localStorage.setItem(CACHE_KEY, JSON.stringify(cache)); } catch {} };
@@ -100,14 +101,15 @@ function loadArt(img, name, kind = 'cover', explicitFallback = ''){
     img.classList.add('loaded');
   }
 
-  /* Only ask SGDB if the pinned source fails or does not exist. This avoids
-     the black placeholder screen seen when the API is blocked by the host. */
   let triedSecondary = false;
   const secondary = async () => {
     if (triedSecondary) return;
     triedSecondary = true;
     const url = await sgdb(kind, name);
-    if (url && url !== img.src){ img.src = url; img.classList.add('loaded'); }
+    if (url && url !== img.src){
+      img.src = url;
+      img.classList.add('loaded');
+    }
   };
   img.addEventListener('error', secondary, { once:true });
   if (!primary) secondary();
@@ -140,6 +142,7 @@ function refTile(def){
   const btn = el('button', `tile ref-tile ${def.hero ? 'tile-hero ref-hero' : 'tile-sm'} ${def.className || ''}`);
   btn.dataset.nav = '';
   btn.dataset.refTitle = def.name;
+  btn.dataset.ringRadius = '.08rem';
   btn.setAttribute('aria-label', def.name);
 
   const face = el('span', 'tile-face');
@@ -156,12 +159,21 @@ function refTile(def){
   return btn;
 }
 
+const FRIENDS_MARK = `
+<svg viewBox="0 0 64 64" aria-hidden="true">
+  <circle cx="23" cy="24" r="7"></circle>
+  <circle cx="43" cy="24" r="7"></circle>
+  <path d="M8 48c0-9 6-14 15-14s15 5 15 14"></path>
+  <path d="M29 48c0-9 5-14 14-14s13 5 13 14"></path>
+</svg>`;
+
 function friendsTile(){
   const btn = el('button', 'tile tile-wide ref-friends');
   btn.dataset.nav = '';
+  btn.dataset.ringRadius = '.08rem';
   btn.setAttribute('aria-label', 'Friends & community');
   const face = el('span', 'tile-face');
-  face.innerHTML = `<span class="ref-friends-icon">${ICON.party}</span>`;
+  face.innerHTML = `<span class="ref-friends-icon">${FRIENDS_MARK}</span>`;
   btn.append(face, el('span', 'tile-label', 'Friends & community'));
   btn._navActivate = () => window.App.setView('library');
   return btn;
@@ -170,6 +182,8 @@ function friendsTile(){
 function refCard({ label, sub, artName, chip, cls }){
   const btn = el('button', `card ref-card ${cls || ''}`);
   btn.dataset.nav = '';
+  btn.dataset.ringRadius = '.08rem';
+  if (artName) btn.dataset.artName = artName;
   btn.setAttribute('aria-label', label);
 
   if (cls === 'card-store'){
@@ -178,6 +192,8 @@ function refCard({ label, sub, artName, chip, cls }){
     const wrap = el('div', 'ref-card-art');
     const img = el('img', 'cover loaded');
     loadArt(img, artName || label, 'landscape');
+    if (artName === 'Onimusha: Way of the Sword') img.style.objectPosition = 'center 22%';
+    if (artName === 'BlizzCon 2026') img.style.objectPosition = 'center 29%';
     wrap.append(img);
     btn.append(wrap);
   }
@@ -195,9 +211,24 @@ function setReferenceBackdrop(){
   if (!layer) return;
   const url = primaryArt('Forza Horizon 5', 'hero');
   layer.style.backgroundImage = `url("${url}")`;
-  layer.style.backgroundPosition = 'center 42%';
+  layer.style.backgroundPosition = 'center top';
   layer.classList.add('on', 'wide', 'reference-wide');
   other?.classList.remove('on');
+}
+
+let focusEpoch = 0;
+function focusReferenceHero(root){
+  const epoch = ++focusEpoch;
+  const enforce = () => {
+    if (epoch !== focusEpoch) return;
+    if (document.body.dataset.view && document.body.dataset.view !== 'home') return;
+    const hero = root.querySelector('.ref-hero');
+    if (hero) window.Nav?.focus?.(hero, { silent:true });
+  };
+
+  requestAnimationFrame(() => requestAnimationFrame(enforce));
+  setTimeout(enforce, 120);
+  setTimeout(enforce, 650);
 }
 
 function renderReferenceHome(root){
@@ -222,16 +253,21 @@ function renderReferenceHome(root){
 
   [...strip.children, ...cards.children].forEach((n, i) => n.style.setProperty('--i', i));
   setReferenceBackdrop();
-
-  /* Always enter Home focused on the first tile, matching the reference.
-     This runs after App's own focus restore so an old lower-card focus does
-     not survive a reload. */
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    window.Nav?.focusIn?.(root, '.ref-hero');
-  }));
+  focusReferenceHero(root);
 }
 
 V.renderHome = renderReferenceHome;
+
+/* Re-anchor once more when the stage becomes visible after the boot clip. */
+const stage = document.getElementById('stage');
+if (stage){
+  new MutationObserver(() => {
+    if (!stage.hidden && document.body.dataset.view === 'home'){
+      const home = document.getElementById('view-home');
+      if (home) focusReferenceHero(home);
+    }
+  }).observe(stage, { attributes:true, attributeFilter:['hidden'] });
+}
 
 const XBOX_MARK = `
 <svg class="xbox-guide-mark" viewBox="0 0 24 24" aria-hidden="true">
