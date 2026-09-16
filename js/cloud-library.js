@@ -83,9 +83,11 @@ function refresh(){
 }
 
 if (library){
+  // Only watch the library root being replaced/shown by the core renderer.
+  // Watching the whole subtree would see our own shelf insertion and loop.
   new MutationObserver(() => {
     if (!library.hidden) requestAnimationFrame(() => mount());
-  }).observe(library, { childList:true, subtree:true, attributes:true, attributeFilter:['hidden'] });
+  }).observe(library, { childList:true, attributes:true, attributeFilter:['hidden'] });
 }
 
 window.addEventListener('stratus:library-change', refresh);
