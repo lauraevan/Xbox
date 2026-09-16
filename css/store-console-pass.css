@@ -1,0 +1,384 @@
+/* Medium Xbox Store fidelity pass. Loaded after store.css.
+   Keeps the existing Store implementation intact and only tightens the
+   controller-first console presentation plus the Stratus player surfaces. */
+
+/* Store shell */
+.xstore-shell{
+  grid-template-columns:21.5rem minmax(0,1fr)!important;
+  background:#050505!important;
+}
+.xstore-rail{
+  padding:3.2rem 1.15rem 2.4rem!important;
+  background:#0b0b0b!important;
+  border-right:.1rem solid rgba(255,255,255,.055)!important;
+}
+.xstore-brand{
+  gap:1rem!important;
+  padding:0 1.1rem 2.5rem!important;
+  font-size:1.75rem!important;
+}
+.xstore-brand-icon{ width:3rem!important; height:3rem!important; }
+.xstore-nav{ gap:.18rem!important; }
+.xstore-nav-btn{
+  min-height:5rem!important;
+  gap:1.15rem!important;
+  padding:0 1.1rem!important;
+  border-radius:.5rem!important;
+  font-size:1.5rem!important;
+}
+.xstore-nav-btn.active{ background:#1d1d1d!important; }
+.xstore-nav-btn.active::before{ height:2.7rem!important; }
+.xstore-main{ background:#050505!important; }
+.xstore-content{
+  padding:2.7rem 3.2rem 7rem!important;
+}
+.xstore-top{
+  height:4.7rem!important;
+  margin-bottom:1.35rem!important;
+  align-items:center!important;
+}
+.xstore-breadcrumb{ font-size:1.4rem!important; }
+.xstore-account{ font-size:1.35rem!important; }
+
+/* Small console tabs above the featured area. */
+.xstore-console-tabs{
+  display:flex;
+  align-items:center;
+  gap:.6rem;
+  min-height:4.6rem;
+  margin:0 0 1.35rem;
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+.xstore-console-tabs::-webkit-scrollbar{ display:none; }
+.xstore-console-tab{
+  flex:0 0 auto;
+  min-height:3.7rem;
+  padding:0 1.35rem;
+  border:0;
+  border-radius:.55rem;
+  background:#171717;
+  color:#eee;
+  font:600 1.25rem/1 'Segoe UI',system-ui,sans-serif;
+}
+.xstore-console-tab.active{ background:#107c10; color:#fff; }
+.xstore-console-tab[data-focused]{
+  outline:.3rem solid #fff;
+  outline-offset:.2rem;
+}
+
+/* Featured area more closely resembles the Xbox Store's promo mosaic. */
+.xstore-feature-grid{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 26rem;
+  gap:1rem;
+  margin-bottom:3.1rem;
+}
+.xstore-feature-grid .xstore-hero{
+  height:34rem!important;
+  margin:0!important;
+  border-radius:.75rem!important;
+}
+.xstore-feature-grid .xstore-hero-copy{
+  left:3rem!important;
+  top:2.8rem!important;
+  bottom:2.8rem!important;
+  width:42rem!important;
+}
+.xstore-feature-grid .xstore-hero-title{
+  font-size:3.8rem!important;
+  max-width:41rem!important;
+}
+.xstore-feature-grid .xstore-hero-desc{
+  max-width:40rem!important;
+  font-size:1.38rem!important;
+  -webkit-line-clamp:2!important;
+}
+.xstore-feature-grid .xstore-hero-action{
+  min-height:4.2rem!important;
+  min-width:15rem!important;
+  margin-top:1.15rem!important;
+}
+.xstore-side-promos{
+  display:grid;
+  grid-template-rows:1fr 1fr;
+  gap:1rem;
+  min-width:0;
+}
+.xstore-mini-promo{
+  position:relative;
+  min-height:0;
+  overflow:hidden;
+  border:0;
+  border-radius:.75rem;
+  padding:0;
+  background:#151515;
+  color:#fff;
+  text-align:left;
+}
+.xstore-mini-promo-art{
+  position:absolute;
+  inset:0;
+  background-size:cover;
+  background-position:center;
+  transform:scale(1.01);
+}
+.xstore-mini-promo::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg,transparent 28%,rgba(0,0,0,.18) 54%,rgba(0,0,0,.91) 100%);
+}
+.xstore-mini-promo-copy{
+  position:absolute;
+  z-index:1;
+  left:1.5rem;
+  right:1.5rem;
+  bottom:1.35rem;
+}
+.xstore-mini-promo-kicker{
+  display:block;
+  margin-bottom:.3rem;
+  color:#9bf00b;
+  font-size:1rem;
+  font-weight:800;
+  letter-spacing:.07rem;
+  text-transform:uppercase;
+}
+.xstore-mini-promo-title{
+  display:block;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  font-size:1.55rem;
+  font-weight:650;
+}
+.xstore-mini-promo[data-focused]{
+  outline:.35rem solid #fff;
+  outline-offset:.25rem;
+  z-index:2;
+}
+
+/* Denser shelves and cards, closer to a 10-foot console UI. */
+.xstore-shelf{ margin-bottom:3.25rem!important; }
+.xstore-shelf-head{
+  min-height:3.8rem!important;
+  margin-bottom:1rem!important;
+}
+.xstore-shelf-title{ font-size:2.15rem!important; }
+.xstore-row{
+  grid-auto-columns:16.7rem!important;
+  gap:1rem!important;
+  padding:.45rem .45rem 1rem!important;
+}
+.store-cover{
+  border-radius:.62rem!important;
+  background:#171717!important;
+}
+.store-game-meta{ padding:.72rem .08rem 0!important; }
+.store-game-title{ font-size:1.35rem!important; }
+.store-game-price{ font-size:1.17rem!important; }
+.store-game-sub{ font-size:1.05rem!important; }
+.store-cloud-badge{
+  left:.6rem!important;
+  bottom:.6rem!important;
+  height:2.2rem!important;
+  border-radius:.45rem!important;
+  background:rgba(0,0,0,.83)!important;
+}
+.store-owned-badge{ border-radius:.4rem!important; }
+.store-game[data-focused] .store-cover{
+  outline:.35rem solid #fff!important;
+  outline-offset:.24rem!important;
+}
+
+/* Gallery pages */
+.xstore-gallery-title{ font-size:3.45rem!important; }
+.xstore-gallery-head{ margin:.4rem 0 1.45rem!important; }
+.xstore-filters{ margin-bottom:1.7rem!important; }
+.xstore-filter{ border-radius:.5rem!important; }
+.xstore-grid{
+  grid-template-columns:repeat(auto-fill,minmax(15.5rem,1fr))!important;
+  gap:2.15rem 1.15rem!important;
+}
+.xstore-search-wrap{
+  height:5rem!important;
+  max-width:74rem!important;
+  border-radius:.55rem!important;
+}
+
+/* Product detail: keep artwork visible while the purchase/play actions read first. */
+.xproduct-art{ opacity:.62!important; }
+.xproduct-scrim{
+  background:linear-gradient(90deg,rgba(0,0,0,.985) 0%,rgba(0,0,0,.93) 32%,rgba(0,0,0,.52) 67%,rgba(0,0,0,.28) 100%)!important;
+}
+.xproduct-body{
+  gap:3.3rem!important;
+  padding:5.1rem 6rem 4.5rem!important;
+}
+.xproduct-cover{
+  width:24rem!important;
+  border-radius:.72rem!important;
+}
+.xproduct-copy{ max-width:71rem!important; }
+.xproduct-title{
+  font-size:4.7rem!important;
+  margin-bottom:1rem!important;
+}
+.xproduct-desc{
+  max-width:64rem!important;
+  font-size:1.5rem!important;
+  -webkit-line-clamp:4!important;
+}
+.xproduct-actions{ gap:.7rem!important; margin-top:1.8rem!important; }
+.xproduct-action{
+  min-height:4.55rem!important;
+  border-radius:.5rem!important;
+}
+.xproduct-action.primary{
+  min-width:20rem!important;
+  background:#107c10!important;
+  color:#fff!important;
+}
+.xproduct-action.primary.play{
+  background:#107c10!important;
+  color:#fff!important;
+}
+.xproduct-action[data-focused]{
+  outline:.35rem solid #fff!important;
+  outline-offset:.23rem!important;
+}
+.xproduct-console-facts{
+  display:flex;
+  flex-wrap:wrap;
+  gap:.65rem;
+  margin:1.3rem 0 0;
+}
+.xproduct-console-fact{
+  min-height:3rem;
+  display:inline-flex;
+  align-items:center;
+  padding:0 .9rem;
+  border-radius:.45rem;
+  background:rgba(255,255,255,.105);
+  color:rgba(255,255,255,.86);
+  font-size:1.1rem;
+  font-weight:600;
+}
+
+/* Cloud connection screen */
+#launch{
+  background:#050505!important;
+}
+#launch .launch-art{
+  opacity:.32!important;
+  filter:blur(1.2rem) saturate(.9)!important;
+  transform:scale(1.06)!important;
+}
+#launch .launch-center{
+  min-width:34rem;
+  padding:3rem 3.4rem;
+  border-radius:1rem;
+  background:rgba(8,8,8,.82);
+  box-shadow:0 1.5rem 5rem rgba(0,0,0,.45);
+  backdrop-filter:blur(1.2rem);
+}
+.cloud-launch-brand{
+  margin-bottom:1.5rem;
+  color:#9bf00b;
+  font-size:1.15rem;
+  font-weight:800;
+  letter-spacing:.12rem;
+  text-transform:uppercase;
+}
+.cloud-launch-cancel{
+  min-width:13rem;
+  min-height:4rem;
+  margin-top:1.6rem;
+  border:0;
+  border-radius:.5rem;
+  background:#262626;
+  color:#fff;
+  font:650 1.25rem/1 'Segoe UI',system-ui,sans-serif;
+}
+.cloud-launch-cancel:active{ transform:scale(.98); }
+
+/* Full-screen cloud player chrome. */
+#player.cloud-player{
+  position:fixed!important;
+  inset:0!important;
+  z-index:1000!important;
+  background:#000!important;
+}
+#player.cloud-player #playerFrame{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  border:0!important;
+  background:#000!important;
+}
+.cloud-player-hud{
+  position:absolute;
+  z-index:1002;
+  left:2rem;
+  right:2rem;
+  top:1.7rem;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1rem;
+  opacity:1;
+  transition:opacity .35s ease;
+  pointer-events:none;
+}
+.cloud-player-hud.hide{ opacity:0; }
+.cloud-player-id{
+  display:flex;
+  align-items:center;
+  gap:.8rem;
+  min-height:3.8rem;
+  padding:0 1.15rem;
+  border-radius:2rem;
+  background:rgba(0,0,0,.78);
+  color:#fff;
+  font-size:1.25rem;
+  font-weight:600;
+  backdrop-filter:blur(.7rem);
+}
+.cloud-player-id::before{
+  content:'';
+  width:.85rem;
+  height:.85rem;
+  border-radius:50%;
+  background:#9bf00b;
+  box-shadow:0 0 0 .25rem rgba(155,240,11,.14);
+}
+.cloud-player-exit{
+  pointer-events:auto;
+  min-height:3.8rem;
+  padding:0 1.25rem;
+  border:0;
+  border-radius:2rem;
+  background:rgba(0,0,0,.78);
+  color:#fff;
+  font:650 1.15rem/1 'Segoe UI',system-ui,sans-serif;
+  backdrop-filter:blur(.7rem);
+}
+#player.cloud-player .player-hint{
+  z-index:1002!important;
+  border-radius:2rem!important;
+  background:rgba(0,0,0,.74)!important;
+}
+
+@media (max-aspect-ratio:16/10){
+  .xstore-shell{ grid-template-columns:18.5rem minmax(0,1fr)!important; }
+  .xstore-content{ padding-left:2.4rem!important; padding-right:2.4rem!important; }
+  .xstore-feature-grid{ grid-template-columns:minmax(0,1fr) 21rem; }
+  .xstore-feature-grid .xstore-hero-copy{ width:36rem!important; }
+  .xstore-side-promos{ gap:.8rem; }
+  .xstore-row{ grid-auto-columns:15.5rem!important; }
+  .xstore-grid{ grid-template-columns:repeat(auto-fill,minmax(14.5rem,1fr))!important; }
+  .xproduct-body{ padding-left:4.5rem!important; padding-right:4.5rem!important; }
+  .xproduct-cover{ width:21.5rem!important; }
+}
