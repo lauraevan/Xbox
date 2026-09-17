@@ -94,3 +94,35 @@
   height:3.45rem;
   padding:.88rem .78rem 0;
 }
+
+/* Keep the selected-title reveal inside the artwork instead of growing a
+   separate black box below the tile. This also keeps the focus geometry locked
+   to the cover itself on touch, keyboard and controller navigation. */
+.reference-home .ref-tile .tile-label{
+  position:absolute!important;
+  left:0!important;
+  right:0!important;
+  bottom:0!important;
+  z-index:6!important;
+  width:100%!important;
+  height:0!important;
+  margin:0!important;
+  padding:0 .8rem!important;
+  display:flex!important;
+  align-items:center!important;
+  overflow:hidden!important;
+  opacity:0!important;
+  color:#fff!important;
+  background:linear-gradient(180deg,rgba(5,6,7,.1),rgba(5,6,7,.9) 42%,rgba(5,6,7,.96))!important;
+  backdrop-filter:blur(.28rem)!important;
+  -webkit-backdrop-filter:blur(.28rem)!important;
+  text-shadow:0 .12rem .4rem rgba(0,0,0,.8)!important;
+  pointer-events:none!important;
+  transition:height .16s var(--ease-decel),opacity .12s linear!important;
+}
+.reference-home .ref-tile[data-focused] .tile-label,
+.reference-home .ref-tile:hover .tile-label{
+  height:3.65rem!important;
+  padding:0 .8rem!important;
+  opacity:1!important;
+}
