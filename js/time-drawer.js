@@ -57,6 +57,10 @@ function renderTime(){
   drawer.querySelector('[data-month-year]').textContent = p.monthYear;
 }
 
+function stat(label, key){
+  return `<div class="time-weather-stat"><span>${label}</span><strong data-weather-${key}>—</strong></div>`;
+}
+
 function makeDrawer(){
   const root = document.createElement('aside');
   root.className = 'time-drawer';
@@ -82,6 +86,14 @@ function makeDrawer(){
           </div>
         </div>
         <div class="time-weather-status" data-weather-status>Getting current conditions…</div>
+        <div class="time-weather-stats" aria-label="Current weather details">
+          ${stat('Feels like','feels')}
+          ${stat('Humidity','humidity')}
+          ${stat('Wind','wind')}
+          ${stat('Precipitation','precip')}
+          ${stat('High / Low','range')}
+          ${stat('Sunrise / Sunset','sun')}
+        </div>
       </div>
       <footer class="time-drawer-foot">
         <div class="time-drawer-hint">Press B or Esc to close</div>
@@ -107,8 +119,20 @@ async function fetchWeather(coords){
   const url = new URL('https://api.open-meteo.com/v1/forecast');
   url.searchParams.set('latitude', String(coords.lat));
   url.searchParams.set('longitude', String(coords.lon));
-  url.searchParams.set('current', 'temperature_2m,weather_code');
+  url.searchParams.set('current', [
+    'temperature_2m',
+    'apparent_temperature',
+    'relative_humidity_2m',
+    'weather_code',
+    'wind_speed_10m',
+    'wind_direction_10m',
+    'precipitation',
+    'cloud_cover'
+  ].join(','));
+  url.searchParams.set('daily', 'temperature_2m_max,temperature_2m_min,sunrise,sunset');
   url.searchParams.set('temperature_unit', 'fahrenheit');
+  url.searchParams.set('wind_speed_unit', 'mph');
+  url.searchParams.set('precipitation_unit', 'inch');
   url.searchParams.set('timezone', 'auto');
   url.searchParams.set('forecast_days', '1');
 
@@ -118,10 +142,43 @@ async function fetchWeather(coords){
   const current = data?.current;
   if (!current || !Number.isFinite(Number(current.temperature_2m)))
     throw new Error('No current weather');
-  return current;
+  return { current, daily:data?.daily || null };
 }
 
-function paintWeather(current, usingDefault){
+function num(value, suffix = '', digits = 0){
+  const n = Number(value);
+  return Number.isFinite(n) ? `${n.toFixed(digits)}${suffix}` : '—';
+}
+
+function compass(degrees){
+  const n = Number(degrees);
+  if (!Number.isFinite(n)) return '';
+  const dirs = ['N','NE','E','SE','S','SW','W','NW'];
+  return dirs[Math.round((((n % 360) + 360) % 360) / 45) % 8];
+}
+
+function shortClock(value){
+  if (!value || typeof value !== 'string') return '—';
+  const m = value.match(/T(\d{2}):(\d{2})/);
+  if (!m) return '—';
+  let hour = Number(m[1]);
+  const minute = m[2];
+  const period = hour >= 12 ? 'PM' : 'AM';
+  hour = hour % 12 || 12;
+  return `${hour}:${minute} ${period}`;
+}
+
+function setStat(key, value){
+  const el = drawer?.querySelector(`[data-weather-${key}]`);
+  if (el) el.textContent = value;
+}
+
+function clearStats(){
+  ['feels','humidity','wind','precip','range','sun'].forEach(key => setStat(key, '—'));
+}
+
+function paintWeather(payload, usingDefault){
+  const { current, daily } = payload;
   const condition = drawer.querySelector('[data-weather-condition]');
   const temp = drawer.querySelector('[data-weather-temp]');
   const icon = drawer.querySelector('[data-weather-icon]');
@@ -131,7 +188,25 @@ function paintWeather(current, usingDefault){
   temp.textContent = `${Math.round(Number(current.temperature_2m))}°`;
   condition.textContent = label;
   icon.innerHTML = iconSvg(kind);
-  status.textContent = usingDefault ? 'Default conditions' : 'Current conditions';
+
+  const windDir = compass(current.wind_direction_10m);
+  const wind = num(current.wind_speed_10m, ' mph');
+  setStat('feels', num(current.apparent_temperature, '°'));
+  setStat('humidity', num(current.relative_humidity_2m, '%'));
+  setStat('wind', wind === '—' ? '—' : `${wind}${windDir ? ` ${windDir}` : ''}`);
+  setStat('precip', num(current.precipitation, ' in', 2));
+
+  const hi = Number(daily?.temperature_2m_max?.[0]);
+  const lo = Number(daily?.temperature_2m_min?.[0]);
+  setStat('range', Number.isFinite(hi) && Number.isFinite(lo) ? `${Math.round(hi)}° / ${Math.round(lo)}°` : '—');
+
+  const rise = shortClock(daily?.sunrise?.[0]);
+  const set = shortClock(daily?.sunset?.[0]);
+  setStat('sun', rise !== '—' && set !== '—' ? `${rise} / ${set}` : '—');
+
+  const cloud = Number(current.cloud_cover);
+  const cloudText = Number.isFinite(cloud) ? ` • ${Math.round(cloud)}% cloud cover` : '';
+  status.textContent = `${usingDefault ? 'Default location' : 'Current location'}${cloudText}`;
   status.classList.toggle('default', usingDefault);
   lastWeatherAt = Date.now();
 }
@@ -149,6 +224,7 @@ async function updateWeather(force = false){
   condition.textContent = 'Loading weather…';
   temp.textContent = '--°';
   icon.innerHTML = iconSvg('cloudy');
+  clearStats();
   status.classList.remove('default');
   status.textContent = 'Getting current conditions…';
 
@@ -163,9 +239,9 @@ async function updateWeather(force = false){
   }
 
   try {
-    const current = await fetchWeather(coords);
-    paintWeather(current, usingDefault);
-  } catch (err){
+    const payload = await fetchWeather(coords);
+    paintWeather(payload, usingDefault);
+  } catch {
     if (!usingDefault){
       try {
         const fallback = await fetchWeather(DEFAULT_WEATHER);
@@ -174,12 +250,13 @@ async function updateWeather(force = false){
       } catch {}
     }
 
-    temp.textContent = '50°';
-    condition.textContent = 'Cloudy';
+    /* No invented values. If live weather cannot be fetched, say so. */
+    temp.textContent = '--°';
+    condition.textContent = 'Weather unavailable';
     icon.innerHTML = iconSvg('cloudy');
-    status.textContent = 'Default weather';
+    clearStats();
+    status.textContent = 'No live weather data';
     status.classList.add('default');
-    lastWeatherAt = Date.now();
   }
 }
 
