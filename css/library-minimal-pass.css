@@ -170,16 +170,11 @@
 }
 
 .library-game-menu button[data-focused],
-.library-game-menu button:first-child{
+.library-game-menu button:focus-visible{
   background:#143c1d;
   color:#fff;
   outline:.26rem solid #52d64b;
   outline-offset:-.26rem;
-}
-
-.library-game-menu button[data-focused] ~ button:first-child{
-  background:transparent;
-  outline:0;
 }
 
 @media (max-aspect-ratio:16/10){
