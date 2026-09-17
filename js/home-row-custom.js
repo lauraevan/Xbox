@@ -124,7 +124,7 @@ function wireAllGameTiles(){
 
 function ownedCard(game){
   const btn = document.createElement('button');
-  btn.className = 'console-poster';
+  btn.className = 'console-poster owned-only-card';
   btn.dataset.nav = '';
   btn.dataset.ownedStoreGame = game.gameKey;
   btn.dataset.ringRadius = '.55rem';
@@ -132,10 +132,7 @@ function ownedCard(game){
   btn.innerHTML = `
     <span class="console-poster-art">
       <img src="${esc(game.cover || game.image)}" alt="" loading="lazy" decoding="async">
-      <span class="console-cloud-pill"><span>☁</span><span>CLOUD</span></span>
-    </span>
-    <span class="console-poster-name">${esc(game.name)}</span>
-    <span class="console-poster-meta">Owned • Ready to play</span>`;
+    </span>`;
   btn._navActivate = async () => {
     try { await Cloud()?.play?.(game); }
     catch (err){ window.App?.toast?.('Cloud gaming', err?.message || 'Could not start game.'); }
@@ -155,55 +152,27 @@ async function openOwnedLibrary(){
   const root = document.getElementById('view-library');
   if (!root || root.hidden) return;
   root.innerHTML = '';
-  root.classList.add('console-page-view');
+  root.classList.add('console-page-view', 'owned-only-library');
   root.dataset.storeOwnedLibrary = '1';
 
-  const shell = document.createElement('div');
-  shell.className = 'console-shell console-library';
-
-  const side = document.createElement('aside');
-  side.className = 'console-side';
-  side.innerHTML = `
-    <div class="console-side-brand">My games &amp; apps</div>
-    <nav class="console-side-list">
-      <button class="console-side-item active" data-nav><span class="console-side-icon">▦</span><span>Full library</span></button>
-      <button class="console-side-item" data-nav data-owned-store-open><span class="console-side-icon">▣</span><span>Microsoft Store</span></button>
-    </nav>`;
-
   const main = document.createElement('main');
-  main.className = 'console-main';
-  main.innerHTML = `
-    <header class="console-page-head">
-      <div><div class="console-page-kicker">XBOX</div><h1>Full library</h1><p>Games you got from Microsoft Store</p></div>
-      <div class="console-head-actions"><span class="console-head-profile">xboxtest</span></div>
-    </header>
-    <div class="console-grid-head"><h2>${owned.length} owned game${owned.length === 1 ? '' : 's'}</h2><span>Ready to play</span></div>`;
+  main.className = 'console-main owned-only-main';
 
-  if (owned.length){
-    const grid = document.createElement('section');
-    grid.className = 'console-poster-grid';
-    owned.forEach(game => grid.append(ownedCard(game)));
-    main.append(grid);
-  } else {
-    const empty = document.createElement('div');
-    empty.className = 'console-empty';
-    empty.innerHTML = '<h2>Your library is empty</h2><p>Get a free cloud game from Microsoft Store and it will show up here.</p>';
-    const browse = document.createElement('button');
-    browse.className = 'btn primary';
-    browse.dataset.nav = '';
-    browse.textContent = 'BROWSE MICROSOFT STORE';
-    browse._navActivate = () => window.App?.setView?.('store');
-    empty.append(browse);
-    main.append(empty);
-  }
+  const header = document.createElement('header');
+  header.className = 'console-page-head owned-only-head';
+  header.innerHTML = '<h1>My games & apps</h1>';
+  main.append(header);
 
-  shell.append(side, main);
-  root.append(shell);
+  const row = document.createElement('section');
+  row.className = 'console-poster-grid owned-only-row';
+  row.setAttribute('aria-label', 'Owned games');
+  owned.forEach(game => row.append(ownedCard(game)));
+  main.append(row);
 
-  const storeBtn = root.querySelector('[data-owned-store-open]');
-  if (storeBtn) storeBtn._navActivate = () => window.App?.setView?.('store');
+  root.append(main);
+
   window.Nav?.repaint?.();
-  window.Nav?.focusIn?.(root, owned.length ? '.console-poster' : '.btn.primary');
+  if (owned.length) window.Nav?.focusIn?.(root, '.console-poster');
 }
 
 function makeLibraryTile(){
@@ -216,6 +185,7 @@ function makeLibraryTile(){
 
   const face = document.createElement('span');
   face.className = 'tile-face';
+
   const mosaic = document.createElement('span');
   mosaic.className = 'ref-library-mosaic';
   ['Grand Theft Auto V','Elden Ring','Red Dead Redemption 2','Minecraft'].forEach(title => {
@@ -226,7 +196,13 @@ function makeLibraryTile(){
     img.decoding = 'async';
     mosaic.append(img);
   });
-  face.append(mosaic);
+
+  const plus = document.createElement('span');
+  plus.className = 'ref-library-plus';
+  plus.setAttribute('aria-hidden','true');
+  plus.innerHTML = '<span></span><span></span>';
+
+  face.append(mosaic, plus);
   btn.append(face);
 
   const label = document.createElement('span');
@@ -269,7 +245,7 @@ document.addEventListener('click', event => {
     return;
   }
 
-  const owned = event.target.closest?.('#view-library [data-owned-store-game], #view-library [data-owned-store-open]');
+  const owned = event.target.closest?.('#view-library [data-owned-store-game]');
   if (owned && typeof owned._navActivate === 'function'){
     event.preventDefault();
     owned._navActivate(owned);
