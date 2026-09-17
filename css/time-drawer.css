@@ -1,0 +1,154 @@
+/* Time / weather drawer opened from the system clock. */
+.clock.clock-action{
+  cursor:pointer;
+  min-height:3.8rem;
+  padding:0 .85rem;
+  border-radius:.45rem;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  transition:background .16s ease, color .16s ease;
+}
+.clock.clock-action:hover,
+.clock.clock-action[data-focused],
+.clock.clock-action[aria-expanded="true"]{
+  background:rgba(255,255,255,.08);
+  color:#fff;
+}
+
+.time-drawer{
+  position:fixed;
+  inset:0;
+  z-index:175;
+  pointer-events:none;
+  visibility:hidden;
+}
+.time-drawer.open{
+  pointer-events:auto;
+  visibility:visible;
+}
+.time-drawer-scrim{
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,.48);
+  opacity:0;
+  transition:opacity .2s ease;
+}
+.time-drawer.open .time-drawer-scrim{ opacity:1; }
+
+.time-drawer-panel{
+  position:absolute;
+  top:3.6rem;
+  right:3.6rem;
+  bottom:3.6rem;
+  width:40rem;
+  display:flex;
+  flex-direction:column;
+  padding:3.1rem 3rem;
+  overflow:hidden;
+  background:#111315;
+  border:.1rem solid rgba(255,255,255,.055);
+  border-radius:1.2rem;
+  box-shadow:-1.2rem 1.6rem 5rem rgba(0,0,0,.72);
+  transform:translateX(calc(100% + 5rem));
+  opacity:.5;
+  transition:transform .24s cubic-bezier(.2,.85,.2,1), opacity .2s ease;
+}
+.time-drawer.open .time-drawer-panel{
+  transform:none;
+  opacity:1;
+}
+
+.time-drawer-eyebrow{
+  font-size:1.05rem;
+  font-weight:700;
+  letter-spacing:.18rem;
+  text-transform:uppercase;
+  color:rgba(255,255,255,.42);
+}
+.time-drawer-clock{
+  margin-top:1.2rem;
+  font-size:6.4rem;
+  line-height:.96;
+  font-weight:300;
+  letter-spacing:-.18rem;
+  color:#fff;
+}
+.time-drawer-period{
+  margin-left:.65rem;
+  font-size:1.55rem;
+  font-weight:600;
+  letter-spacing:.03rem;
+  color:rgba(255,255,255,.52);
+}
+.time-drawer-month{
+  margin-top:1rem;
+  font-size:1.65rem;
+  font-weight:500;
+  color:rgba(255,255,255,.62);
+}
+.time-drawer-rule{
+  height:.1rem;
+  margin:3rem 0 2.6rem;
+  background:rgba(255,255,255,.075);
+}
+
+.time-weather{
+  display:grid;
+  grid-template-columns:6.4rem minmax(0,1fr);
+  gap:1.6rem;
+  align-items:center;
+}
+.time-weather-icon{
+  width:6.4rem;
+  height:6.4rem;
+  display:grid;
+  place-items:center;
+  color:#fff;
+}
+.time-weather-icon svg{
+  width:5.5rem;
+  height:5.5rem;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.65;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.time-weather-temp{
+  font-size:4.2rem;
+  line-height:1;
+  font-weight:300;
+  letter-spacing:-.09rem;
+  color:#fff;
+}
+.time-weather-condition{
+  margin-top:.55rem;
+  font-size:1.45rem;
+  line-height:1.25;
+  font-weight:500;
+  color:rgba(255,255,255,.58);
+}
+.time-weather-status{
+  margin-top:1.5rem;
+  font-size:1.12rem;
+  color:rgba(255,255,255,.34);
+}
+
+.time-drawer-spacer{ flex:1; }
+.time-drawer-hint{
+  padding-top:2rem;
+  font-size:1.08rem;
+  color:rgba(255,255,255,.34);
+}
+
+@media (max-aspect-ratio:16/10){
+  .time-drawer-panel{
+    top:3rem;
+    right:3rem;
+    bottom:3rem;
+    width:36rem;
+    padding:2.8rem 2.7rem;
+  }
+  .time-drawer-clock{ font-size:5.8rem; }
+}
