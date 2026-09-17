@@ -1,0 +1,595 @@
+/* Flagship Xbox secondary-page + launch pass.
+   Deliberately does not touch the Home top-bar capsule or the one-row library. */
+
+/* Shared secondary surfaces ------------------------------------------------ */
+#view-settings.console-page-view,
+#view-search.console-page-view,
+#view-pass.console-page-view,
+#view-store.console-page-view{
+  background:#050505!important;
+  color:#fff!important;
+}
+
+#view-settings .console-shell,
+#view-pass .console-shell{
+  grid-template-columns:25.5rem minmax(0,1fr)!important;
+  background:#050505!important;
+}
+
+#view-settings .console-side,
+#view-pass .console-side{
+  padding:3.2rem 1.15rem 2.4rem!important;
+  background:#0b0b0b!important;
+  border-right:.1rem solid rgba(255,255,255,.055)!important;
+}
+
+#view-settings .console-side-brand,
+#view-pass .console-side-brand{
+  min-height:6.2rem!important;
+  padding:0 1rem 1.55rem!important;
+  font-size:2.15rem!important;
+  font-weight:600!important;
+  letter-spacing:-.04rem!important;
+}
+
+#view-settings .console-side-list,
+#view-pass .console-side-list{
+  gap:.2rem!important;
+}
+
+#view-settings .console-side-item,
+#view-pass .console-side-item{
+  min-height:5.05rem!important;
+  padding:0 1.05rem!important;
+  border-radius:.5rem!important;
+  color:rgba(255,255,255,.72)!important;
+  font-size:1.47rem!important;
+  font-weight:500!important;
+}
+
+#view-settings .console-side-item.active,
+#view-pass .console-side-item.active{
+  background:#171717!important;
+  color:#fff!important;
+}
+
+#view-settings .console-side-item::before,
+#view-pass .console-side-item::before{
+  left:.25rem!important;
+  top:1.1rem!important;
+  bottom:1.1rem!important;
+  width:.32rem!important;
+  border-radius:.4rem!important;
+}
+
+#view-settings .console-side-item.active::before,
+#view-pass .console-side-item.active::before{
+  background:#52d64b!important;
+}
+
+#view-settings .console-side-item[data-focused],
+#view-pass .console-side-item[data-focused]{
+  background:#202020!important;
+  color:#fff!important;
+  outline:0!important;
+  box-shadow:inset 0 0 0 .22rem #52d64b!important;
+}
+
+#view-settings .console-main,
+#view-pass .console-main{
+  padding:3.25rem 4.5rem 6rem!important;
+  background:#050505!important;
+}
+
+#view-settings .console-page-head,
+#view-search .console-page-head,
+#view-pass .console-page-head{
+  min-height:7.2rem!important;
+  margin-bottom:1.5rem!important;
+  align-items:flex-start!important;
+}
+
+#view-settings .console-page-kicker,
+#view-search .console-page-kicker,
+#view-pass .console-page-kicker{
+  display:none!important;
+}
+
+#view-settings .console-page-head h1,
+#view-search .console-page-head h1,
+#view-pass .console-page-head h1{
+  font-size:3.45rem!important;
+  font-weight:600!important;
+  letter-spacing:-.055rem!important;
+}
+
+#view-settings .console-page-head p,
+#view-search .console-page-head p,
+#view-pass .console-page-head p{
+  margin-top:.62rem!important;
+  color:rgba(255,255,255,.43)!important;
+  font-size:1.3rem!important;
+}
+
+#view-settings .console-head-actions,
+#view-search .console-head-actions,
+#view-pass .console-head-actions{
+  color:rgba(255,255,255,.55)!important;
+}
+
+/* Settings --------------------------------------------------------------- */
+#view-settings .console-settings-main{
+  overflow:auto!important;
+}
+
+#view-settings .console-settings-panel{
+  width:min(100%,104rem)!important;
+  max-width:104rem!important;
+  gap:.55rem!important;
+  padding:.4rem 0 5rem!important;
+}
+
+#view-settings .console-settings-row{
+  min-height:7.65rem!important;
+  padding:1.3rem 1.55rem!important;
+  border-radius:.52rem!important;
+  background:#141414!important;
+  border:.1rem solid rgba(255,255,255,.035)!important;
+  color:#fff!important;
+  transition:background .12s ease,box-shadow .12s ease,transform .12s ease!important;
+}
+
+#view-settings .console-settings-row:hover{
+  background:#1b1b1b!important;
+}
+
+#view-settings .console-settings-row[data-focused]{
+  background:#1d1d1d!important;
+  color:#fff!important;
+  outline:0!important;
+  box-shadow:inset 0 0 0 .24rem #52d64b!important;
+  transform:none!important;
+}
+
+#view-settings .console-settings-copy strong{
+  font-size:1.62rem!important;
+  font-weight:550!important;
+  letter-spacing:-.015rem!important;
+}
+
+#view-settings .console-settings-copy small,
+#view-settings .console-settings-row[data-focused] .console-settings-copy small{
+  margin-top:.42rem!important;
+  color:rgba(255,255,255,.42)!important;
+  font-size:1.13rem!important;
+}
+
+#view-settings .console-settings-value,
+#view-settings .console-settings-row[data-focused] .console-settings-value{
+  color:rgba(255,255,255,.72)!important;
+  font-size:1.28rem!important;
+  font-weight:550!important;
+}
+
+#view-settings .console-toggle{
+  width:4.8rem!important;
+  height:2.65rem!important;
+  background:#343434!important;
+  box-shadow:inset 0 0 0 .1rem rgba(255,255,255,.08)!important;
+}
+
+#view-settings .console-toggle.on{
+  background:#107c10!important;
+}
+
+#view-settings .console-toggle span{
+  background:#f3f3f3!important;
+}
+
+/* Game Pass -------------------------------------------------------------- */
+#view-pass .console-top-tabs{
+  gap:.35rem!important;
+  margin:-.3rem 0 1.45rem!important;
+}
+
+#view-pass .console-top-tab{
+  min-height:3.8rem!important;
+  padding:0 1.15rem!important;
+  border-radius:1.9rem!important;
+  color:rgba(255,255,255,.6)!important;
+  background:transparent!important;
+}
+
+#view-pass .console-top-tab.active{
+  background:#1a1a1a!important;
+  color:#fff!important;
+}
+
+#view-pass .console-top-tab[data-focused]{
+  background:#1a1a1a!important;
+  color:#fff!important;
+  outline:0!important;
+  box-shadow:inset 0 0 0 .22rem #52d64b!important;
+}
+
+#view-pass .console-pass-hero{
+  height:39rem!important;
+  border-radius:.7rem!important;
+  margin-bottom:2.7rem!important;
+  background:#101010!important;
+  box-shadow:0 1.1rem 3rem rgba(0,0,0,.4)!important;
+}
+
+#view-pass .console-pass-hero-shade{
+  background:linear-gradient(90deg,rgba(0,0,0,.95) 0%,rgba(0,0,0,.76) 33%,rgba(0,0,0,.18) 72%,rgba(0,0,0,.05))!important;
+}
+
+#view-pass .console-pass-hero-copy{
+  left:3.3rem!important;
+  top:3rem!important;
+  bottom:3rem!important;
+  width:44rem!important;
+}
+
+#view-pass .console-pass-logo{
+  background:#107c10!important;
+  border-radius:.18rem!important;
+}
+
+#view-pass .console-pass-kicker{
+  color:#9bf00b!important;
+}
+
+#view-pass .console-pass-hero h1{
+  font-size:4.45rem!important;
+  letter-spacing:-.09rem!important;
+}
+
+#view-pass .console-pass-play{
+  min-height:4.2rem!important;
+  border-radius:.32rem!important;
+  background:#f3f3f3!important;
+  color:#111!important;
+}
+
+#view-pass .console-pass-hero[data-focused]{
+  outline:0!important;
+  box-shadow:0 0 0 .28rem #52d64b,0 1.4rem 3.5rem rgba(0,0,0,.55)!important;
+}
+
+#view-pass .console-horizontal-row{
+  gap:1.1rem!important;
+}
+
+/* Search ----------------------------------------------------------------- */
+#view-search .console-search-page{
+  padding:3.25rem 4.5rem 5rem!important;
+  background:#050505!important;
+}
+
+#view-search .console-search-body{
+  grid-template-columns:minmax(41rem,50rem) minmax(0,1fr)!important;
+  gap:3.5rem!important;
+}
+
+#view-search .console-search-field{
+  height:5.75rem!important;
+  border:.12rem solid rgba(255,255,255,.16)!important;
+  border-radius:.55rem!important;
+  background:#151515!important;
+}
+
+#view-search .console-search-field:focus-within{
+  border-color:#52d64b!important;
+  box-shadow:inset 0 0 0 .13rem #52d64b!important;
+}
+
+#view-search .console-search-field input{
+  font-size:2rem!important;
+}
+
+#view-search .console-search-chips{
+  gap:.55rem!important;
+  margin:1rem 0 1.65rem!important;
+}
+
+#view-search .console-chip{
+  min-height:3.55rem!important;
+  border-radius:1.8rem!important;
+  background:#1b1b1b!important;
+  color:rgba(255,255,255,.84)!important;
+}
+
+#view-search .console-chip[data-focused]{
+  background:#1f1f1f!important;
+  color:#fff!important;
+  outline:0!important;
+  box-shadow:inset 0 0 0 .2rem #52d64b!important;
+}
+
+#view-search .console-keyboard{
+  gap:.55rem!important;
+}
+
+#view-search .console-key-row{
+  gap:.55rem!important;
+}
+
+#view-search .console-key{
+  min-height:4.8rem!important;
+  border-radius:.45rem!important;
+  background:#1a1a1a!important;
+  color:#fff!important;
+}
+
+#view-search .console-key[data-focused]{
+  background:#242424!important;
+  color:#fff!important;
+  outline:0!important;
+  box-shadow:inset 0 0 0 .22rem #52d64b!important;
+}
+
+/* Store ------------------------------------------------------------------ */
+#view-store .xstore-shell,
+#view-store .xstore-main,
+#view-store .xstore-content{
+  background:#050505!important;
+}
+
+#view-store .xstore-rail{
+  background:#0b0b0b!important;
+  border-right:.1rem solid rgba(255,255,255,.055)!important;
+}
+
+#view-store .xstore-nav-btn{
+  border-radius:.5rem!important;
+}
+
+#view-store .xstore-nav-btn[data-focused],
+#view-store .xstore-nav-btn.active{
+  background:#1b1b1b!important;
+  color:#fff!important;
+}
+
+#view-store .xstore-nav-btn[data-focused]{
+  outline:0!important;
+  box-shadow:inset 0 0 0 .22rem #52d64b!important;
+}
+
+#view-store .xstore-hero,
+#view-store .store-cover,
+#view-store .xproduct-cover{
+  border-radius:.62rem!important;
+}
+
+/* Detail page ------------------------------------------------------------ */
+.detail{
+  background:#030303!important;
+}
+
+.detail-bg{
+  inset:0!important;
+  filter:saturate(.9) brightness(.52)!important;
+  transform:scale(1.02)!important;
+}
+
+.detail-scrim{
+  background:linear-gradient(90deg,rgba(3,3,3,.98) 0%,rgba(3,3,3,.89) 31%,rgba(3,3,3,.58) 61%,rgba(3,3,3,.72) 100%)!important;
+}
+
+.detail-inner{
+  grid-template-columns:31rem minmax(0,1fr)!important;
+  gap:4.3rem!important;
+  padding:6.1rem 9rem 5.2rem!important;
+  align-content:center!important;
+}
+
+.detail-cover{
+  width:31rem!important;
+  height:43rem!important;
+  border-radius:.75rem!important;
+  box-shadow:0 2.2rem 7rem rgba(0,0,0,.74)!important;
+}
+
+.detail-cover img,
+.detail-cover .cover{
+  width:100%!important;
+  height:100%!important;
+  object-fit:cover!important;
+}
+
+.detail-main{
+  max-width:76rem!important;
+}
+
+.detail-kicker{
+  color:#9bf00b!important;
+  font-size:1.18rem!important;
+  letter-spacing:.16rem!important;
+}
+
+.detail-title{
+  font-size:5.8rem!important;
+  letter-spacing:-.12rem!important;
+}
+
+.detail-desc{
+  max-width:66rem!important;
+  color:rgba(255,255,255,.7)!important;
+}
+
+.detail-actions .btn{
+  min-height:5rem!important;
+  padding:0 2.2rem!important;
+  border-radius:.45rem!important;
+  background:#1a1a1a!important;
+  border:0!important;
+  color:#fff!important;
+}
+
+.detail-actions .btn.primary{
+  background:#f3f3f3!important;
+  color:#111!important;
+}
+
+.detail-actions .btn[data-focused]{
+  color:#fff!important;
+  background:#1f1f1f!important;
+  transform:none!important;
+  box-shadow:inset 0 0 0 .24rem #52d64b!important;
+}
+
+/* Flagship launch -------------------------------------------------------- */
+.launch{
+  background:#000!important;
+  overflow:hidden!important;
+}
+
+.launch::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:1;
+  background:linear-gradient(180deg,rgba(0,0,0,.28),rgba(0,0,0,.67) 72%,rgba(0,0,0,.9));
+  pointer-events:none;
+}
+
+.launch-art{
+  inset:-1.5%!important;
+  opacity:.72!important;
+  filter:saturate(.92) brightness(.7)!important;
+  transform:scale(1.035)!important;
+  animation:flagshipLaunchArt 9s cubic-bezier(.2,.8,.2,1) forwards!important;
+}
+
+@keyframes flagshipLaunchArt{
+  from{ transform:scale(1.035); }
+  to{ transform:scale(1.085); }
+}
+
+.launch-center{
+  position:relative!important;
+  z-index:3!important;
+  width:min(72rem,78vw)!important;
+  display:grid!important;
+  justify-items:center!important;
+  gap:1.05rem!important;
+  padding:3.2rem 4rem 3.6rem!important;
+  text-align:center!important;
+}
+
+.launch-brand{
+  display:flex;
+  align-items:center;
+  gap:.78rem;
+  margin-bottom:1rem;
+  color:rgba(255,255,255,.82);
+  font-size:1.05rem;
+  font-weight:700;
+  letter-spacing:.17rem;
+}
+
+.launch-brand svg{
+  width:2.25rem;
+  height:2.25rem;
+  fill:currentColor;
+}
+
+.launch-title{
+  max-width:70rem!important;
+  font-size:4.65rem!important;
+  line-height:1.02!important;
+  font-weight:600!important;
+  letter-spacing:-.085rem!important;
+  text-shadow:0 .4rem 2rem rgba(0,0,0,.65)!important;
+}
+
+.launch-sub{
+  min-height:2.2rem!important;
+  color:rgba(255,255,255,.62)!important;
+  font-size:1.38rem!important;
+  letter-spacing:.01rem!important;
+}
+
+.launch-spinner{
+  width:4.6rem!important;
+  height:4.6rem!important;
+  margin:.85rem 0 .4rem!important;
+}
+
+.launch-spinner span{
+  display:none!important;
+}
+
+.launch-spinner span:first-child{
+  display:block!important;
+  inset:0!important;
+  border:.24rem solid rgba(255,255,255,.16)!important;
+  border-top-color:#52d64b!important;
+  animation:spin .9s linear infinite!important;
+}
+
+.launch-status-rail{
+  position:relative;
+  width:20rem;
+  height:.28rem;
+  margin-top:1.15rem;
+  overflow:hidden;
+  border-radius:1rem;
+  background:rgba(255,255,255,.15);
+}
+
+.launch-status-rail::after{
+  content:"";
+  position:absolute;
+  top:0;
+  bottom:0;
+  width:7rem;
+  border-radius:1rem;
+  background:#52d64b;
+  animation:launchRail 1.35s cubic-bezier(.4,0,.2,1) infinite;
+}
+
+@keyframes launchRail{
+  0%{ left:-7rem; }
+  55%{ left:9rem; }
+  100%{ left:20rem; }
+}
+
+.launch-footnote{
+  margin-top:.55rem;
+  color:rgba(255,255,255,.34);
+  font-size:1.05rem;
+  letter-spacing:.06rem;
+  text-transform:uppercase;
+}
+
+.player.cloud-player{
+  background:#000!important;
+}
+
+.player.cloud-player .player-hint{
+  border-radius:.55rem!important;
+  background:rgba(8,8,8,.88)!important;
+  color:rgba(255,255,255,.86)!important;
+  box-shadow:0 .6rem 2rem rgba(0,0,0,.45)!important;
+}
+
+@media (max-aspect-ratio:16/10){
+  #view-settings .console-main,
+  #view-pass .console-main,
+  #view-search .console-search-page{
+    padding-left:3.2rem!important;
+    padding-right:3.2rem!important;
+  }
+  .detail-inner{
+    grid-template-columns:27rem minmax(0,1fr)!important;
+    padding-left:6rem!important;
+    padding-right:6rem!important;
+  }
+  .detail-cover{
+    width:27rem!important;
+    height:37.5rem!important;
+  }
+  .detail-title{ font-size:5rem!important; }
+}
