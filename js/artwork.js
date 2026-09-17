@@ -21,14 +21,10 @@ const normal = value => String(value || '')
   .replace(/\s+/g, ' ')
   .trim();
 
-/* Current/clean sources for the Home shelf. Steam raw page backgrounds are
-   maintained with the live store assets, so GTA V uses Enhanced-era art
-   instead of the old 2013 backdrop. The Fortnite image is current 2026 key art.
-   Each entry is a candidate list so one CDN failure never leaves Home blank. */
+/* Current/clean sources for the Home shelf. Each entry is a candidate list so
+   one CDN failure never leaves Home blank. Forza Horizon 5 intentionally stays
+   on the original pre-curation SteamGridDB selection. */
 const CURATED = new Map([
-  [normal('Forza Horizon 5'), [
-    'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1551360/page_bg_raw.jpg'
-  ]],
   [normal('Grand Theft Auto V'), [
     'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3240220/page_bg_raw.jpg'
   ]],
@@ -59,6 +55,8 @@ const SEARCH_ALIAS = new Map([
   [normal('Fortnite'), 'Fortnite Battle Royale'],
   [normal('Hollow Knight: Silksong'), 'Hollow Knight Silksong']
 ]);
+
+const LEGACY_ART = new Set([normal('Forza Horizon 5')]);
 
 function readCache(){
   try { return JSON.parse(localStorage.getItem(CACHE_STORE) || '{}'); }
@@ -115,12 +113,26 @@ function rankHero(row){
   let score = Number(row.score || 0) * 30;
   if (w >= 1920) score += 50;
   if (w >= 3840) score += 18;
-  /* Home is 16:9. SteamGridDB heroes are often ultrawide, so reward anything
-     closer to TV aspect without throwing away strong official-looking art. */
   if (ratio) score += Math.max(0, 35 - Math.abs(ratio - (16 / 9)) * 28);
   if (row.nsfw) score -= 1000;
   if (row.humor) score -= 500;
   return score;
+}
+
+async function legacySteamGridHero(name, key){
+  if (!key || !name) return null;
+  const headers = { Authorization: `Bearer ${key}` };
+  const found = await fetch(
+    `${API}/search/autocomplete/${encodeURIComponent(name)}`, { headers });
+  if (!found.ok) throw new Error('search ' + found.status);
+  const list = (await found.json())?.data || [];
+  if (!list.length) return null;
+
+  const heroes = await fetch(
+    `${API}/heroes/game/${list[0].id}?dimensions=1920x620,3840x1240`, { headers });
+  if (!heroes.ok) throw new Error('heroes ' + heroes.status);
+  const art = (await heroes.json())?.data || [];
+  return art[0]?.url || null;
 }
 
 async function steamGridHero(name, key){
@@ -134,7 +146,6 @@ async function steamGridHero(name, key){
   const list = (await found.json())?.data || [];
   if (!list.length) return null;
 
-  /* Try the first few autocomplete matches instead of blindly trusting #1. */
   for (const game of list.slice(0, 3)){
     const heroes = await fetch(
       `${API}/heroes/game/${game.id}?dimensions=1920x620,3840x1240`, { headers });
@@ -165,7 +176,6 @@ const Artwork = {
       else localStorage.removeItem(KEY_STORE);
     } catch {}
   },
-  /* Curated art works even if the optional SGDB key is unavailable. */
   get enabled(){ return true; },
 
   clearCache(){
@@ -186,6 +196,29 @@ const Artwork = {
   async hero(name){
     if (!name) return null;
     const id = normal(name);
+
+    /* FH5 deliberately bypasses the newer curated/ranked selection so its
+       wallpaper matches the original behavior from before the art pass. */
+    if (LEGACY_ART.has(id)){
+      if (inflight.has(id)) return inflight.get(id);
+      const legacyJob = (async () => {
+        try {
+          const url = await legacySteamGridHero(name, Artwork.key);
+          if (url){
+            cache[id] = { url, source:'legacy', at:Date.now() };
+            saveCache();
+          }
+          return url;
+        } catch {
+          return null;
+        } finally {
+          inflight.delete(id);
+        }
+      })();
+      inflight.set(id, legacyJob);
+      return legacyJob;
+    }
+
     const hit = cache[id];
     if (hit && Date.now() - hit.at < CACHE_TTL) return hit.url;
     if (inflight.has(id)) return inflight.get(id);
@@ -204,7 +237,6 @@ const Artwork = {
         saveCache();
         return url;
       } catch {
-        /* Do not poison the cache on an API outage/rate limit. */
         return null;
       } finally {
         inflight.delete(id);
