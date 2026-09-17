@@ -282,116 +282,64 @@ body:has(#view-home .home-catalog-game[data-focused]) .focus-ring.on{
 }
 
 
-/* High-resolution Series X|S-style Waves vector background. This SVG is
-   rendered by the browser, so it stays crisp on 4K displays and iPad Retina. */
+/* Xbox Series X|S Waves background, matched to the supplied reference.
+   Pure vector artwork keeps the curved ribbons crisp on Retina/4K displays. */
 #view-home .home-series-waves{
   --wave-scroll:0;
   position:absolute;
   z-index:0;
-  left:0;
-  right:0;
-  top:0;
-  height:100%;
+  inset:0;
   min-height:184rem;
   overflow:hidden;
   pointer-events:none;
-  background:
-    radial-gradient(95% 50% at 8% 18%,rgba(13,72,28,.22),transparent 66%),
-    linear-gradient(180deg,#020805 0%,#031008 48%,#020705 100%);
+  background:#001d07;
 }
-#view-home .home-series-waves svg{
+#view-home .home-series-waves .waves-svg{
   position:absolute;
-  left:-5%;
-  top:-1%;
-  width:110%;
+  left:-2.5%;
+  top:0;
+  width:105%;
   height:100%;
   overflow:visible;
-  transform:translate3d(0,calc(var(--wave-scroll) * .018px),0) scale(1.02);
+  transform:translate3d(0,calc(var(--wave-scroll) * .012px),0);
   transform-origin:center top;
-  filter:saturate(1.18) contrast(1.055);
+  filter:saturate(1.04) contrast(1.03);
 }
-#view-home .home-series-waves::before,
-#view-home .home-series-waves::after{
-  content:"";
-  position:absolute;
-  pointer-events:none;
-  border-radius:50%;
-  filter:blur(5rem);
-  opacity:.32;
+#view-home .home-series-waves .waves-scene{
+  transform-box:fill-box;
+  transform-origin:center center;
+  will-change:transform;
 }
-#view-home .home-series-waves::before{
-  width:70rem;
-  height:70rem;
-  right:-18rem;
-  top:20rem;
-  background:radial-gradient(circle,rgba(42,196,61,.35),transparent 68%);
-  animation:xboxWaveGlowA 12s ease-in-out infinite alternate;
+#view-home .home-series-waves .waves-scene-a{
+  animation:xboxWavesA 17s cubic-bezier(.45,0,.55,1) infinite alternate;
 }
-#view-home .home-series-waves::after{
-  width:64rem;
-  height:64rem;
-  left:-22rem;
-  top:72rem;
-  background:radial-gradient(circle,rgba(16,116,34,.3),transparent 70%);
-  animation:xboxWaveGlowB 16s ease-in-out infinite alternate;
+#view-home .home-series-waves .waves-scene-b{
+  animation:xboxWavesB 21s cubic-bezier(.45,0,.55,1) infinite alternate;
 }
-#view-home .home-series-waves .xwave{
-  transform-origin:center;
-  will-change:transform,opacity;
+#view-home .home-series-waves .waves-scene-c{
+  animation:xboxWavesC 19s cubic-bezier(.45,0,.55,1) infinite alternate;
 }
-#view-home .home-series-waves .xwave-back{
-  animation:xboxWaveBack 18s ease-in-out infinite alternate;
-  opacity:.7;
+@keyframes xboxWavesA{
+  0%{transform:translate3d(-1.1%,0,0) scale(1.008)}
+  50%{transform:translate3d(.6%,-.35%,0) scale(1.016)}
+  100%{transform:translate3d(1.4%,.25%,0) scale(1.01)}
 }
-#view-home .home-series-waves .xwave-mid{
-  animation:xboxWaveMid 13s ease-in-out infinite alternate;
+@keyframes xboxWavesB{
+  0%{transform:translate3d(1.2%,.15%,0) scale(1.01)}
+  50%{transform:translate3d(-.5%,-.3%,0) scale(1.018)}
+  100%{transform:translate3d(-1.35%,.25%,0) scale(1.012)}
 }
-#view-home .home-series-waves .xwave-front{
-  animation:xboxWaveFront 10s ease-in-out infinite alternate;
+@keyframes xboxWavesC{
+  0%{transform:translate3d(-.8%,.2%,0) scale(1.012)}
+  100%{transform:translate3d(1.1%,-.3%,0) scale(1.018)}
 }
-@keyframes xboxWaveBack{
-  0%{transform:translate3d(-3%,2%,0) scale(1.02)}
-  100%{transform:translate3d(4%,-2%,0) scale(1.08)}
-}
-@keyframes xboxWaveMid{
-  0%{transform:translate3d(-2%,0,0) rotate(-1deg) scale(1.03)}
-  50%{transform:translate3d(2%,-2%,0) rotate(1deg) scale(1.07)}
-  100%{transform:translate3d(5%,1%,0) rotate(2deg) scale(1.04)}
-}
-@keyframes xboxWaveFront{
-  0%{transform:translate3d(1%,2%,0) scale(1.04)}
-  100%{transform:translate3d(-5%,-1%,0) scale(1.1)}
-}
-@keyframes xboxWaveGlowA{
-  to{transform:translate3d(-10rem,5rem,0) scale(1.12);opacity:.42}
-}
-@keyframes xboxWaveGlowB{
-  to{transform:translate3d(12rem,-4rem,0) scale(1.08);opacity:.4}
-}
-
-/* Repeated subtle wave echoes farther down the page so the dynamic background
-   continues behind every lower shelf instead of ending after the first rail. */
 #view-home .home-catalog-body{
   position:relative;
   z-index:2;
 }
 #view-home .home-catalog-body::before{
-  content:"";
-  position:absolute;
-  z-index:-1;
-  left:-16rem;
-  right:-18rem;
-  top:56rem;
-  height:118rem;
-  pointer-events:none;
-  opacity:.35;
-  background:
-    radial-gradient(70% 32% at 25% 22%,transparent 0 62%,rgba(17,129,34,.27) 63% 69%,transparent 70%),
-    radial-gradient(78% 35% at 76% 48%,transparent 0 64%,rgba(47,201,58,.2) 65% 70%,transparent 71%),
-    radial-gradient(82% 40% at 35% 82%,transparent 0 66%,rgba(24,151,42,.19) 67% 72%,transparent 73%);
-  transform:rotate(-4deg);
+  display:none;
 }
-
 /* Blue "New games" showcase based on the Xbox dashboard reference. */
 .home-new-games-section{
   position:relative;
@@ -550,9 +498,8 @@ body:has(#view-home .home-catalog-game[data-focused]) .focus-ring.on{
 }
 
 @media (prefers-reduced-motion:reduce){
-  #view-home .home-series-waves .xwave,
-  #view-home .home-series-waves::before,
-  #view-home .home-series-waves::after{animation:none!important}
+  #view-home .home-series-waves .waves-scene{animation:none!important}
+  #view-home .home-series-waves .waves-svg{transform:none!important}
 }
 
 #view-home .home-series-waves::before,
