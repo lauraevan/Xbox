@@ -1,0 +1,196 @@
+/* Home catalogue extension.
+   IMPORTANT: the photographed Home viewport is intentionally untouched.
+   This file only makes #view-home scrollable and places new content exactly
+   one viewport below it, so nothing above the fold changes size or position. */
+
+#view-home.reference-home{
+  overflow-x:hidden !important;
+  overflow-y:auto !important;
+  scrollbar-width:none;
+  overscroll-behavior-y:contain;
+}
+#view-home.reference-home::-webkit-scrollbar{ display:none; }
+
+/* Invisible flow height creates scroll range without participating in the
+   existing absolutely-positioned Home layout. */
+#view-home .home-catalog-spacer{
+  width:1px;
+  height:calc(100% + 78rem);
+  opacity:0;
+  pointer-events:none;
+}
+
+/* Starts precisely below the current Home viewport. It cannot be seen until
+   the user actually scrolls down. */
+#view-home .home-catalog-drawer{
+  position:absolute;
+  left:0;
+  right:0;
+  top:100%;
+  z-index:8;
+  min-height:76rem;
+  padding:2.5rem var(--safe-x) 8rem;
+  background:
+    linear-gradient(180deg,rgba(4,6,8,.97) 0%,#050607 14rem,#050607 100%);
+  color:#fff;
+  box-shadow:0 -2rem 5rem rgba(0,0,0,.26);
+}
+#view-home .home-catalog-drawer::before{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  top:-2.5rem;
+  height:2.5rem;
+  background:linear-gradient(180deg,transparent,rgba(4,6,8,.97));
+  pointer-events:none;
+}
+.home-catalog-head{
+  display:flex;
+  align-items:end;
+  justify-content:space-between;
+  gap:2rem;
+  margin:0 0 1.45rem;
+}
+.home-catalog-title{
+  margin:0;
+  font-size:2.15rem;
+  line-height:1;
+  font-weight:600;
+  letter-spacing:-.025rem;
+}
+.home-catalog-sub{
+  margin-top:.55rem;
+  color:rgba(255,255,255,.52);
+  font-size:1.18rem;
+}
+.home-catalog-count{
+  color:rgba(255,255,255,.42);
+  font-size:1.05rem;
+  white-space:nowrap;
+}
+.home-catalog-loading,
+.home-catalog-error{
+  min-height:20rem;
+  display:grid;
+  place-items:center;
+  color:rgba(255,255,255,.58);
+  font-size:1.35rem;
+}
+.home-catalog-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(12.8rem,1fr));
+  gap:1.9rem 1.15rem;
+  align-items:start;
+}
+.home-catalog-game{
+  position:relative !important;
+  min-width:0;
+  text-align:left;
+  color:#fff;
+}
+.home-catalog-art{
+  position:relative;
+  display:block;
+  width:100%;
+  aspect-ratio:4/5;
+  overflow:hidden;
+  background:#121416;
+  border-radius:.45rem;
+  box-shadow:0 .7rem 2rem rgba(0,0,0,.42);
+}
+.home-catalog-art img{
+  position:absolute;
+  inset:0;
+  z-index:2;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  transition:filter .14s ease,transform .16s var(--ease-decel);
+}
+.home-catalog-fallback{
+  position:absolute;
+  inset:0;
+  z-index:1;
+  display:grid;
+  place-items:center;
+  padding:1rem;
+  background:
+    radial-gradient(100% 85% at 30% 0%,rgba(66,91,112,.52),transparent 62%),
+    #14181c;
+  color:rgba(255,255,255,.54);
+  font-size:2.2rem;
+  font-weight:700;
+  text-align:center;
+}
+.home-catalog-name{
+  display:block;
+  margin-top:.62rem;
+  overflow:hidden;
+  color:rgba(255,255,255,.93);
+  font-size:1.13rem;
+  font-weight:500;
+  line-height:1.18;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+.home-catalog-action{
+  display:block;
+  margin-top:.22rem;
+  color:rgba(255,255,255,.42);
+  font-size:.92rem;
+}
+.home-catalog-owned{
+  position:absolute;
+  z-index:4;
+  left:.55rem;
+  bottom:.55rem;
+  display:none;
+  min-height:1.85rem;
+  align-items:center;
+  padding:0 .55rem;
+  background:rgba(0,0,0,.84);
+  color:#9bf00b;
+  font-size:.75rem;
+  font-weight:800;
+  letter-spacing:.04rem;
+}
+.home-catalog-game.owned .home-catalog-owned{ display:flex; }
+.home-catalog-game.owned .home-catalog-action{ color:#9bf00b; }
+
+.home-catalog-game:hover .home-catalog-art img,
+.home-catalog-game[data-focused] .home-catalog-art img{
+  filter:brightness(1.06);
+  transform:scale(1.015);
+}
+.home-catalog-game[data-focused] .home-catalog-art{
+  outline:.34rem solid #52d64b;
+  outline-offset:.22rem;
+}
+
+/* Keep the floating selector limited to the pre-existing Home game row.
+   Catalogue cards have their own Xbox-shaped green outline. */
+body:has(#view-home .home-catalog-game[data-focused]) .focus-ring.on{
+  opacity:0 !important;
+}
+
+@media (max-aspect-ratio:16/10){
+  #view-home .home-catalog-drawer{
+    padding-left:6rem;
+    padding-right:6rem;
+  }
+  .home-catalog-grid{
+    grid-template-columns:repeat(auto-fill,minmax(11.8rem,1fr));
+    gap:1.65rem 1rem;
+  }
+}
+
+@media (max-width:760px){
+  #view-home .home-catalog-drawer{
+    padding-left:2.4rem;
+    padding-right:2.4rem;
+  }
+  .home-catalog-grid{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+  }
+}
