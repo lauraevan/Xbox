@@ -63,7 +63,7 @@
 }
 .home-catalog-count{
   color:rgba(255,255,255,.42);
-  font-size:1.25rem;
+  font-size:1.05rem;
   white-space:nowrap;
 }
 .home-catalog-loading,
@@ -164,7 +164,7 @@
   overflow:hidden;
   color:#fff;
   background:linear-gradient(180deg,transparent,rgba(0,0,0,.88));
-  font-size:1.05rem;
+  font-size:1.25rem;
   font-weight:500;
   line-height:1.1;
   white-space:nowrap;
