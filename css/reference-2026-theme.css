@@ -1,0 +1,161 @@
+/* Dark Xbox dashboard pass based on the user's current console references.
+   Keep the existing geometry, but make Home + My games & apps feel like the
+   same calm, dark system instead of two unrelated surfaces. */
+
+:root{
+  --xbox-night:#0a1019;
+  --xbox-night-2:#101925;
+  --xbox-night-3:#162231;
+}
+
+/* HOME ------------------------------------------------------------------ */
+body[data-view="home"] .backdrop{
+  background:linear-gradient(180deg,var(--xbox-night-2),var(--xbox-night)) !important;
+}
+body[data-view="home"] .backdrop-layer,
+body[data-view="home"] .backdrop-layer.wide,
+body[data-view="home"] .backdrop-layer.reference-wide{
+  filter:saturate(.78) brightness(.66) contrast(1.02) !important;
+}
+body[data-view="home"] .backdrop-scrim{
+  background:
+    radial-gradient(110% 82% at 50% 12%,rgba(56,78,103,.08),transparent 55%),
+    linear-gradient(180deg,rgba(5,9,15,.28) 0%,rgba(8,13,20,.34) 42%,rgba(7,11,18,.73) 100%) !important;
+}
+body[data-view="home"] .topbar-scrim{
+  background:linear-gradient(180deg,rgba(5,8,13,.48),rgba(7,11,18,.12) 72%,transparent) !important;
+}
+body[data-view="home"] .ref-card{
+  filter:saturate(.9) brightness(.88);
+}
+body[data-view="home"] .ref-tile:not([data-focused]) .ref-art img{
+  filter:saturate(.92) brightness(.92) !important;
+}
+body[data-view="home"] .ref-friends .tile-face{
+  background:linear-gradient(145deg,#193748 0%,#1a5c63 52%,#1c6f79 100%) !important;
+}
+
+/* MY GAMES & APPS ------------------------------------------------------- */
+#view-library.console-page-view{
+  background:
+    radial-gradient(120% 82% at 50% 0%,rgba(55,75,98,.22),transparent 58%),
+    linear-gradient(180deg,#111b28 0%,#0d1621 42%,#09101a 100%) !important;
+}
+#view-library .console-shell{
+  grid-template-columns:minmax(0,1fr) !important;
+  background:transparent !important;
+}
+#view-library .console-side{
+  display:none !important;
+}
+#view-library .console-main{
+  padding:4.4rem 6.4rem 7rem !important;
+  background:transparent !important;
+}
+#view-library .console-page-head{
+  min-height:auto !important;
+  margin-bottom:2.7rem !important;
+  align-items:flex-start !important;
+}
+#view-library .console-page-kicker{
+  display:none !important;
+}
+#view-library .console-page-head h1{
+  font-size:3.55rem !important;
+  font-weight:600 !important;
+  letter-spacing:-.055rem !important;
+}
+#view-library .console-page-head p{
+  margin-top:.6rem !important;
+  color:rgba(255,255,255,.46) !important;
+}
+#view-library .console-head-profile{
+  display:inline-flex;
+  align-items:center;
+  min-height:3.5rem;
+  padding:0 1.15rem;
+  border-radius:1.8rem;
+  background:rgba(0,0,0,.34);
+  color:rgba(255,255,255,.86);
+}
+#view-library .console-grid-head{
+  margin:.35rem 0 1.55rem !important;
+}
+#view-library .console-grid-head h2{
+  font-size:1.75rem !important;
+  font-weight:600 !important;
+}
+#view-library .console-grid-head span{
+  font-size:1.05rem !important;
+}
+
+/* The library intentionally becomes two compact horizontal cover rows,
+   matching the console reference instead of a desktop-style giant grid. */
+#view-library .console-poster-grid{
+  display:grid !important;
+  grid-auto-flow:column !important;
+  grid-template-rows:repeat(2,max-content) !important;
+  grid-auto-columns:13.8rem !important;
+  grid-template-columns:none !important;
+  gap:1.75rem 1.15rem !important;
+  overflow-x:auto !important;
+  overflow-y:hidden !important;
+  align-content:start !important;
+  padding:.55rem .65rem 2.2rem !important;
+  margin:0 -.65rem !important;
+  scrollbar-width:none;
+  scroll-snap-type:x proximity;
+}
+#view-library .console-poster-grid::-webkit-scrollbar{ display:none; }
+#view-library .console-poster{
+  width:13.8rem !important;
+  scroll-snap-align:start;
+}
+#view-library .console-poster-art{
+  width:13.8rem !important;
+  height:16.2rem !important;
+  aspect-ratio:auto !important;
+  border-radius:1.05rem !important;
+  background:#151c25 !important;
+  box-shadow:0 .9rem 2.5rem rgba(0,0,0,.32) !important;
+}
+#view-library .console-poster-name{
+  margin-top:.7rem !important;
+  font-size:1.18rem !important;
+  font-weight:600 !important;
+  color:rgba(255,255,255,.88) !important;
+}
+#view-library .console-poster-meta{
+  margin-top:.18rem !important;
+  font-size:.98rem !important;
+  color:rgba(255,255,255,.4) !important;
+}
+#view-library .console-poster[data-focused]{
+  transform:translateY(-.22rem) !important;
+}
+#view-library .console-poster[data-focused] .console-poster-art{
+  outline:.34rem solid #52d64b !important;
+  outline-offset:.28rem !important;
+  box-shadow:0 1.4rem 3rem rgba(0,0,0,.5) !important;
+}
+#view-library .console-cloud-pill{
+  left:.55rem !important;
+  bottom:.55rem !important;
+  height:2.05rem !important;
+  border-radius:.55rem !important;
+  background:rgba(4,7,11,.78) !important;
+  font-size:.78rem !important;
+}
+#view-library .console-empty{
+  min-height:34rem !important;
+  border-radius:1.25rem;
+  background:rgba(11,18,27,.45);
+}
+
+@media (max-aspect-ratio:16/10){
+  #view-library .console-main{ padding:4rem 4.8rem 6rem !important; }
+  #view-library .console-poster-grid{ grid-auto-columns:13rem !important; }
+  #view-library .console-poster,
+  #view-library .console-poster-art{ width:13rem !important; }
+  #view-library .console-poster-art{ height:15.25rem !important; }
+}
