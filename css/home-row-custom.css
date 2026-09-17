@@ -26,6 +26,40 @@
   min-width:0;
   min-height:0;
 }
+
+/* Thin transparent plus over the 4-cover My games & apps tile. */
+.ref-library-plus{
+  position:absolute;
+  inset:0;
+  display:grid;
+  place-items:center;
+  pointer-events:none;
+}
+.ref-library-plus::before{
+  content:"";
+  position:absolute;
+  width:5.4rem;
+  height:5.4rem;
+  border-radius:50%;
+  background:rgba(0,0,0,.16);
+  backdrop-filter:blur(.18rem);
+}
+.ref-library-plus span{
+  position:absolute;
+  z-index:1;
+  width:2.65rem;
+  height:.28rem;
+  border-radius:1rem;
+  background:rgba(255,255,255,.68);
+  box-shadow:0 .1rem .35rem rgba(0,0,0,.38);
+}
+.ref-library-plus span:last-child{
+  transform:rotate(90deg);
+}
+.ref-library-tile:hover .ref-library-plus span,
+.ref-library-tile[data-focused] .ref-library-plus span{
+  background:rgba(255,255,255,.9);
+}
 .ref-library-tile .tile-label{
   background:rgba(8,9,10,.965)!important;
 }
