@@ -115,13 +115,22 @@ document.addEventListener('nav:activate', event => {
   if (view && view !== 'store') hideStore();
 });
 
+/* Pointer/touch needs to actually open the top-bar destination, not only move
+   focus onto the button. This is especially important on iPad where there is
+   no separate controller A press after tapping the icon. */
 document.addEventListener('click', event => {
-  const storeButton = event.target.closest?.('.sysnav-btn[data-view="store"]');
-  if (storeButton){
+  const viewButton = event.target.closest?.('.sysnav-btn[data-view]');
+  if (viewButton){
     event.preventDefault();
-    showStore();
+    const view = viewButton.dataset.view;
+    if (view === 'store') showStore();
+    else {
+      hideStore();
+      window.App?.setView?.(view);
+    }
     return;
   }
+
   const browse = event.target.closest?.('#view-home [data-opens-store="1"]');
   if (browse){
     event.preventDefault();
