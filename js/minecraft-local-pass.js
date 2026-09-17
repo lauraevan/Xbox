@@ -6,7 +6,7 @@
 
 const ROOT = 'games/minecraft-launcher';
 const LAUNCHER = `${ROOT}/index.html`;
-const COVER = 'assets/game-art/minecraft-cover-user.jpg';
+const COVER = 'assets/game-art/minecraft-cover-user.jpg?v=2';
 const HERO = 'assets/game-art/minecraft-hero-user.jpg';
 const COVER_SENTINEL = '__xbox_local_minecraft_cover__';
 const HOME = document.getElementById('view-home');
