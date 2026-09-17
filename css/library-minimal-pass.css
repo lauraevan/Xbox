@@ -1,17 +1,33 @@
 /* Minimal My games & apps pass: one row, solid black, no labels or extra chrome. */
 
-/* The old global selector was a thick neon-green floating box. Xbox focus is
-   much quieter: a crisp light edge with no glow. Keep this override late in
-   the cascade so Home, library and other normal nav targets all share it. */
+/* Keep the Xbox-green selector only on actual game-cover selection. Other
+   controls show focus by filling the control itself instead of drawing a box. */
 .focus-ring{
-  border:.22rem solid rgba(255,255,255,.96) !important;
+  border:.24rem solid #52d64b !important;
   box-shadow:0 0 0 .1rem rgba(0,0,0,.72) !important;
   transition:top .10s var(--ease-decel), left .10s var(--ease-decel),
              width .10s var(--ease-decel), height .10s var(--ease-decel),
-             border-radius .10s var(--ease-decel), opacity .08s linear !important;
+             border-radius .10s var(--ease-decel), opacity .07s linear !important;
+  opacity:0 !important;
 }
-.focus-ring.pop{
-  animation:none !important;
+.focus-ring.on{ opacity:0 !important; }
+body:has(#view-home .ref-tile[data-ref-title][data-focused]) .focus-ring.on,
+body:has(#view-home [data-home-library-mosaic="1"][data-focused]) .focus-ring.on,
+body:has(#view-library .console-poster[data-focused]) .focus-ring.on{
+  opacity:1 !important;
+}
+.focus-ring.pop{ animation:none !important; }
+
+/* System bar uses a green button state with no floating square selector. */
+.sysbar .sysnav-btn[data-focused],
+.sysbar .friends[data-focused],
+.sysbar .status-btn[data-focused],
+.sysbar .profile[data-focused],
+.sysbar .clock.clock-action[data-focused]{
+  background:#107c10 !important;
+  color:#fff !important;
+  box-shadow:none !important;
+  outline:0 !important;
 }
 
 #view-library,
@@ -141,8 +157,7 @@
   z-index:4;
 }
 
-/* Do not draw a second green ring on the artwork. The shared focus ring above
-   already hugs the actual selectable button, so the selector stays aligned. */
+/* One selector only: the shared green ring above. */
 #view-library .console-poster[data-focused] .console-poster-art,
 #view-library .console-poster.library-menu-open .console-poster-art{
   outline:0 !important;
@@ -186,10 +201,9 @@
 
 .library-game-menu button[data-focused],
 .library-game-menu button:focus-visible{
-  background:#34373a;
+  background:#107c10;
   color:#fff;
-  outline:.2rem solid rgba(255,255,255,.96);
-  outline-offset:-.2rem;
+  outline:0;
 }
 
 @media (max-aspect-ratio:16/10){
