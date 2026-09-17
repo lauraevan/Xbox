@@ -1,0 +1,204 @@
+/* Minimal My games & apps pass: one row, solid black, no labels or extra chrome. */
+#view-library,
+#view-library.console-page-view,
+#view-library .console-shell,
+#view-library .console-main{
+  background:#070707 !important;
+}
+
+#view-library.console-page-view{
+  color:#fff;
+}
+
+#view-library .console-shell{
+  display:block !important;
+}
+
+#view-library .console-side,
+#view-library .console-library-toolbar,
+#view-library .console-grid-head,
+#view-library .console-cloud-library,
+#view-library .console-search-status,
+#view-library .console-page-kicker,
+#view-library .console-page-head p,
+#view-library .console-head-actions,
+#view-library .console-poster-name,
+#view-library .console-poster-meta,
+#view-library .console-cloud-pill,
+#view-library .console-tag{
+  display:none !important;
+}
+
+#view-library .console-main{
+  height:100% !important;
+  overflow:hidden !important;
+  padding:5.2rem 5.8rem 4rem !important;
+}
+
+#view-library .console-page-head{
+  min-height:auto !important;
+  margin:0 0 3rem !important;
+  padding:0 !important;
+  border:0 !important;
+}
+
+#view-library .console-page-head h1{
+  margin:0 !important;
+  font-size:3rem !important;
+  line-height:1 !important;
+  font-weight:600 !important;
+  letter-spacing:-.045rem !important;
+  color:#fff !important;
+}
+
+/* One continuous row only. */
+#view-library .console-poster-grid,
+#view-library .console-horizontal-row{
+  display:grid !important;
+  grid-auto-flow:column !important;
+  grid-template-rows:max-content !important;
+  grid-template-columns:none !important;
+  grid-auto-columns:15.2rem !important;
+  gap:1.35rem !important;
+  align-items:start !important;
+  overflow-x:auto !important;
+  overflow-y:visible !important;
+  padding:1rem .8rem 3.2rem !important;
+  margin:0 -.8rem !important;
+  scrollbar-width:none !important;
+  scroll-snap-type:x proximity;
+}
+
+#view-library .console-poster-grid::-webkit-scrollbar,
+#view-library .console-horizontal-row::-webkit-scrollbar{
+  display:none !important;
+}
+
+#view-library .console-poster{
+  width:15.2rem !important;
+  padding:0 !important;
+  margin:0 !important;
+  background:transparent !important;
+  border:0 !important;
+  outline:0 !important;
+  color:#fff !important;
+  scroll-snap-align:start;
+  transform-origin:center center;
+  transition:transform .16s ease, filter .16s ease !important;
+}
+
+#view-library .console-poster-art{
+  display:block !important;
+  width:15.2rem !important;
+  height:19rem !important;
+  aspect-ratio:auto !important;
+  overflow:hidden !important;
+  border-radius:.78rem !important;
+  background:#111 !important;
+  border:0 !important;
+  outline:0 !important;
+  box-shadow:0 .9rem 2.2rem rgba(0,0,0,.5) !important;
+  transition:transform .16s ease, filter .16s ease, box-shadow .16s ease, outline-color .12s ease !important;
+}
+
+#view-library .console-poster-art img,
+#view-library .console-poster-art .tile-art,
+#view-library .console-poster-art .tile-art img{
+  width:100% !important;
+  height:100% !important;
+  object-fit:cover !important;
+}
+
+/* Mouse/touch hover feels like the real dashboard instead of a web card. */
+@media (hover:hover){
+  #view-library .console-poster:hover{
+    transform:translateY(-.45rem) scale(1.035) !important;
+    z-index:3;
+  }
+  #view-library .console-poster:hover .console-poster-art{
+    filter:brightness(1.08) saturate(1.03) !important;
+    box-shadow:0 1.35rem 3.1rem rgba(0,0,0,.68) !important;
+  }
+}
+
+#view-library .console-poster[data-focused],
+#view-library .console-poster.library-menu-open{
+  transform:translateY(-.35rem) scale(1.025) !important;
+  z-index:4;
+}
+
+#view-library .console-poster[data-focused] .console-poster-art,
+#view-library .console-poster.library-menu-open .console-poster-art{
+  outline:.34rem solid #52d64b !important;
+  outline-offset:.28rem !important;
+  box-shadow:0 1.35rem 3rem rgba(0,0,0,.7) !important;
+}
+
+/* Small Xbox-style action flyout shown when a game is selected. */
+.library-game-menu{
+  position:fixed;
+  z-index:180;
+  width:29rem;
+  padding:.75rem;
+  background:#27292c;
+  border:0;
+  border-radius:.65rem;
+  box-shadow:0 1.5rem 4rem rgba(0,0,0,.72);
+}
+
+.library-game-menu button{
+  width:100%;
+  min-height:5rem;
+  display:flex;
+  align-items:center;
+  padding:0 1.25rem;
+  margin:0;
+  border:0;
+  border-radius:.35rem;
+  background:transparent;
+  color:#f3f3f3;
+  text-align:left;
+  font:500 1.45rem/1.2 'Segoe UI',system-ui,sans-serif;
+}
+
+.library-game-menu button + button{
+  margin-top:.18rem;
+}
+
+.library-game-menu button:hover{
+  background:#34373a;
+}
+
+.library-game-menu button[data-focused],
+.library-game-menu button:first-child{
+  background:#143c1d;
+  color:#fff;
+  outline:.26rem solid #52d64b;
+  outline-offset:-.26rem;
+}
+
+.library-game-menu button[data-focused] ~ button:first-child{
+  background:transparent;
+  outline:0;
+}
+
+@media (max-aspect-ratio:16/10){
+  #view-library .console-main{
+    padding:4.5rem 4.3rem 3.6rem !important;
+  }
+  #view-library .console-poster-grid,
+  #view-library .console-horizontal-row{
+    grid-auto-columns:13.8rem !important;
+    gap:1.15rem !important;
+  }
+  #view-library .console-poster,
+  #view-library .console-poster-art{
+    width:13.8rem !important;
+  }
+  #view-library .console-poster-art{
+    height:17.25rem !important;
+  }
+  .library-game-menu{
+    width:27rem;
+  }
+}
