@@ -245,56 +245,26 @@ function wavesMarkup(){
   const wrap = document.createElement('div');
   wrap.className = 'home-series-waves';
   wrap.setAttribute('aria-hidden','true');
-  wrap.innerHTML = `
-    <svg class="waves-svg" viewBox="0 0 1920 3240" preserveAspectRatio="xMidYMin slice">
-      <defs>
-        <linearGradient id="wavesLime" x1="0" y1="0" x2="1" y2=".25">
-          <stop offset="0" stop-color="#b6f13a"/>
-          <stop offset=".28" stop-color="#8ad11e"/>
-          <stop offset=".62" stop-color="#4aaa1d"/>
-          <stop offset="1" stop-color="#1b6e16"/>
-        </linearGradient>
-        <linearGradient id="wavesGreen" x1="0" y1=".1" x2="1" y2=".8">
-          <stop offset="0" stop-color="#4b9f1a"/>
-          <stop offset=".36" stop-color="#187923"/>
-          <stop offset=".74" stop-color="#086424"/>
-          <stop offset="1" stop-color="#063f18"/>
-        </linearGradient>
-        <linearGradient id="wavesDeep" x1="0" y1="1" x2="1" y2=".1">
-          <stop offset="0" stop-color="#163c12"/>
-          <stop offset=".5" stop-color="#074b18"/>
-          <stop offset="1" stop-color="#022810"/>
-        </linearGradient>
-        <linearGradient id="wavesShade" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stop-color="#102c0e"/>
-          <stop offset="1" stop-color="#001e0b"/>
-        </linearGradient>
 
-        <g id="wavesScene">
-          <rect width="1920" height="1080" fill="#001d07"/>
-
-          <!-- cropped upper ribbon exactly like the Waves reference -->
-          <g>
-            <path d="M560 -145 C770 -35 1005 34 1275 46 C1510 56 1725 28 1950 -52 L1950 118 C1730 184 1505 205 1267 190 C990 173 744 97 520 -18 Z" fill="url(#wavesShade)" opacity=".92"/>
-            <path d="M650 -132 C850 -35 1060 22 1284 31 C1497 40 1704 20 1930 -44 L1930 53 C1706 118 1500 139 1284 130 C1041 120 815 61 610 -39 Z" fill="url(#wavesGreen)" opacity=".9"/>
-            <path d="M735 -115 C904 -36 1086 7 1288 14 C1482 20 1689 0 1912 -54 L1912 -2 C1689 57 1495 76 1292 69 C1077 61 882 18 700 -65 Z" fill="url(#wavesLime)" opacity=".72"/>
-          </g>
-
-          <!-- large rounded lower bend -->
-          <g>
-            <path d="M-180 470 C-112 700 -8 858 177 946 C360 1034 607 1023 828 968 C1050 913 1211 794 1370 676 C1495 583 1617 523 1768 510 C1862 502 1940 514 2010 542 L2010 874 C1892 826 1774 808 1648 824 C1473 845 1330 918 1178 1008 C1000 1113 803 1194 590 1218 C327 1248 96 1197 -78 1089 C-238 990 -338 842 -393 675 Z" fill="url(#wavesShade)" opacity=".95"/>
-            <path d="M-150 520 C-80 716 30 850 212 925 C392 1000 616 986 827 931 C1048 873 1215 758 1375 646 C1507 553 1625 505 1763 493 C1868 484 1947 499 2018 531 L2018 777 C1905 735 1790 720 1666 735 C1494 756 1348 821 1196 904 C1018 1001 823 1073 611 1093 C351 1118 127 1075 -43 981 C-201 894 -298 764 -353 612 Z" fill="url(#wavesDeep)" opacity=".98"/>
-            <path d="M-121 567 C-51 729 59 833 238 892 C414 950 625 930 828 875 C1048 816 1211 709 1380 606 C1517 522 1631 483 1758 474 C1870 466 1953 487 2025 524 L2025 691 C1910 654 1801 643 1682 657 C1513 677 1365 734 1216 807 C1041 892 846 953 638 969 C381 988 159 952 -7 874 C-163 801 -258 691 -315 567 Z" fill="url(#wavesGreen)"/>
-            <path d="M-97 612 C-23 742 82 821 255 861 C424 901 631 878 828 826 C1042 769 1202 670 1387 573 C1525 501 1638 468 1756 461 C1872 454 1957 482 2030 526 L2030 614 C1914 583 1810 576 1698 591 C1532 612 1385 662 1234 728 C1060 804 866 858 661 869 C408 883 191 855 29 791 C-126 730 -219 641 -277 535 Z" fill="url(#wavesLime)" opacity=".95"/>
-          </g>
-        </g>
-      </defs>
-
-      <use class="waves-scene waves-scene-a" href="#wavesScene" y="0"/>
-      <use class="waves-scene waves-scene-b" href="#wavesScene" y="1080"/>
-      <use class="waves-scene waves-scene-c" href="#wavesScene" y="2160"/>
-    </svg>
+  const video = document.createElement('video');
+  video.className = 'home-series-waves-video';
+  video.autoplay = true;
+  video.muted = true;
+  video.loop = true;
+  video.playsInline = true;
+  video.preload = 'auto';
+  video.setAttribute('webkit-playsinline','');
+  video.setAttribute('disablepictureinpicture','');
+  video.innerHTML = `
+    <source src="https://assets.website-files.com/641c16e4615b407626afd625/641c16e4615b406724afd72a_Xbox%20Series%20X_S%20Waves%20(Xbox%20green)%20Dynamic%20Background-transcode.mp4" type="video/mp4">
+    <source src="https://assets.website-files.com/641c16e4615b407626afd625/641c16e4615b406724afd72a_Xbox%20Series%20X_S%20Waves%20(Xbox%20green)%20Dynamic%20Background-transcode.webm" type="video/webm">
   `;
+
+  video.addEventListener('canplay', () => {
+    video.play().catch(() => {});
+  }, { once:true });
+
+  wrap.append(video);
   return wrap;
 }
 
@@ -392,8 +362,8 @@ function onHomeScroll(){
   /* The catalogue remains entirely out of sight at scrollTop 0. The first
      intentional downward motion starts loading it. */
   if (HOME.scrollTop > 0) renderCatalogue();
-  const waves = HOME.querySelector('.home-series-waves');
-  if (waves) waves.style.setProperty('--wave-scroll', String(HOME.scrollTop));
+  const wavesVideo = HOME.querySelector('.home-series-waves-video');
+  if (wavesVideo && wavesVideo.paused) wavesVideo.play().catch(() => {});
 }
 
 function refreshOwnedState(game){
