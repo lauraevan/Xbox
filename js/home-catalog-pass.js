@@ -246,57 +246,54 @@ function wavesMarkup(){
   wrap.className = 'home-series-waves';
   wrap.setAttribute('aria-hidden','true');
   wrap.innerHTML = `
-    <svg viewBox="0 0 1920 2160" preserveAspectRatio="xMidYMin slice">
+    <svg class="waves-svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
       <defs>
-        <linearGradient id="waveA" x1="0" y1="0" x2="1" y2=".2">
-          <stop offset="0" stop-color="#061a0b"/>
-          <stop offset=".24" stop-color="#0a4f19"/>
-          <stop offset=".5" stop-color="#107c10"/>
-          <stop offset=".78" stop-color="#2ecb48"/>
-          <stop offset="1" stop-color="#6ef05d"/>
+        <linearGradient id="wavesLime" x1="0" y1="0" x2="1" y2=".25">
+          <stop offset="0" stop-color="#b6f13a"/>
+          <stop offset=".28" stop-color="#8ad11e"/>
+          <stop offset=".62" stop-color="#4aaa1d"/>
+          <stop offset="1" stop-color="#1b6e16"/>
         </linearGradient>
-        <linearGradient id="waveB" x1="0" y1=".2" x2="1" y2=".8">
-          <stop offset="0" stop-color="#031007"/>
-          <stop offset=".4" stop-color="#0b5d1e"/>
-          <stop offset=".72" stop-color="#19a537"/>
-          <stop offset="1" stop-color="#44db53"/>
+        <linearGradient id="wavesGreen" x1="0" y1=".1" x2="1" y2=".8">
+          <stop offset="0" stop-color="#4b9f1a"/>
+          <stop offset=".36" stop-color="#187923"/>
+          <stop offset=".74" stop-color="#086424"/>
+          <stop offset="1" stop-color="#063f18"/>
         </linearGradient>
-        <linearGradient id="waveC" x1="0" y1="1" x2="1" y2=".1">
-          <stop offset="0" stop-color="#020b05"/>
-          <stop offset=".44" stop-color="#0b4516"/>
-          <stop offset=".74" stop-color="#12852a"/>
-          <stop offset="1" stop-color="#31c747"/>
+        <linearGradient id="wavesDeep" x1="0" y1="1" x2="1" y2=".1">
+          <stop offset="0" stop-color="#163c12"/>
+          <stop offset=".5" stop-color="#074b18"/>
+          <stop offset="1" stop-color="#022810"/>
+        </linearGradient>
+        <linearGradient id="wavesShade" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#102c0e"/>
+          <stop offset="1" stop-color="#001e0b"/>
         </linearGradient>
       </defs>
-      <rect width="1920" height="2160" fill="#020704"/>
 
-      <g class="wave-set wave-set-a">
-        <g class="xwave xwave-back" opacity=".86">
-          <path d="M-260 55 C150 230 370 390 675 428 C1005 470 1238 300 1510 175 C1730 74 1960 63 2200 134 L2200 320 C1930 252 1748 268 1555 355 C1260 489 1010 646 650 594 C318 547 98 389 -280 214 Z" fill="url(#waveC)"/>
-        </g>
-        <g class="xwave xwave-mid" opacity=".94">
-          <path d="M-300 205 C78 362 340 500 678 518 C1014 537 1218 405 1497 295 C1732 202 1955 211 2200 300 L2200 485 C1950 394 1748 389 1544 469 C1244 585 1013 730 644 698 C313 669 58 520 -300 370 Z" fill="url(#waveB)"/>
-        </g>
-        <g class="xwave xwave-front">
-          <path d="M-335 378 C40 492 286 630 642 652 C978 673 1190 556 1475 462 C1718 382 1944 410 2200 510 L2200 684 C1944 590 1738 575 1535 645 C1230 751 1014 852 636 822 C294 796 28 651 -350 527 Z" fill="url(#waveA)"/>
-        </g>
-        <g class="xwave xwave-highlight" opacity=".18">
-          <path d="M-230 281 C112 410 368 539 678 555 C1009 573 1224 438 1495 340 C1737 252 1945 271 2182 347" fill="none" stroke="#9aff85" stroke-width="10" stroke-linecap="round"/>
-        </g>
+      <rect width="1920" height="1080" fill="#001d07"/>
+
+      <!-- Partial top ribbon, matching the real Waves composition -->
+      <g class="waves-top">
+        <path d="M560 -145 C770 -35 1005 34 1275 46 C1510 56 1725 28 1950 -52 L1950 118 C1730 184 1505 205 1267 190 C990 173 744 97 520 -18 Z" fill="url(#wavesShade)" opacity=".92"/>
+        <path d="M650 -132 C850 -35 1060 22 1284 31 C1497 40 1704 20 1930 -44 L1930 53 C1706 118 1500 139 1284 130 C1041 120 815 61 610 -39 Z" fill="url(#wavesGreen)" opacity=".9"/>
+        <path d="M735 -115 C904 -36 1086 7 1288 14 C1482 20 1689 0 1912 -54 L1912 -2 C1689 57 1495 76 1292 69 C1077 61 882 18 700 -65 Z" fill="url(#wavesLime)" opacity=".72"/>
       </g>
 
-      <g class="wave-set wave-set-b" transform="translate(0 925) scale(1 -1) translate(0 -925)" opacity=".88">
-        <g class="xwave xwave-back">
-          <path d="M-270 1200 C130 1378 365 1518 670 1555 C1000 1596 1248 1440 1515 1320 C1740 1218 1965 1228 2200 1300 L2200 1485 C1930 1418 1748 1435 1550 1520 C1256 1648 1010 1795 650 1747 C320 1702 92 1555 -286 1372 Z" fill="url(#waveC)"/>
-        </g>
-        <g class="xwave xwave-mid">
-          <path d="M-300 1348 C78 1508 345 1642 680 1660 C1018 1678 1219 1551 1499 1442 C1735 1350 1952 1364 2200 1450 L2200 1635 C1951 1546 1746 1541 1540 1620 C1240 1736 1010 1873 642 1842 C312 1814 54 1670 -300 1518 Z" fill="url(#waveB)"/>
-        </g>
-        <g class="xwave xwave-front">
-          <path d="M-345 1512 C24 1628 286 1764 642 1785 C978 1805 1190 1692 1476 1597 C1720 1516 1942 1545 2200 1646 L2200 1823 C1940 1728 1738 1712 1535 1785 C1230 1892 1013 1985 635 1957 C294 1932 20 1784 -352 1664 Z" fill="url(#waveA)"/>
-        </g>
+      <!-- The distinctive large lower Waves bend -->
+      <g class="waves-bottom">
+        <path d="M-180 470 C-112 700 -8 858 177 946 C360 1034 607 1023 828 968 C1050 913 1211 794 1370 676 C1495 583 1617 523 1768 510 C1862 502 1940 514 2010 542 L2010 874 C1892 826 1774 808 1648 824 C1473 845 1330 918 1178 1008 C1000 1113 803 1194 590 1218 C327 1248 96 1197 -78 1089 C-238 990 -338 842 -393 675 Z" fill="url(#wavesShade)" opacity=".95"/>
+
+        <path d="M-150 520 C-80 716 30 850 212 925 C392 1000 616 986 827 931 C1048 873 1215 758 1375 646 C1507 553 1625 505 1763 493 C1868 484 1947 499 2018 531 L2018 777 C1905 735 1790 720 1666 735 C1494 756 1348 821 1196 904 C1018 1001 823 1073 611 1093 C351 1118 127 1075 -43 981 C-201 894 -298 764 -353 612 Z" fill="url(#wavesDeep)" opacity=".98"/>
+
+        <path d="M-121 567 C-51 729 59 833 238 892 C414 950 625 930 828 875 C1048 816 1211 709 1380 606 C1517 522 1631 483 1758 474 C1870 466 1953 487 2025 524 L2025 691 C1910 654 1801 643 1682 657 C1513 677 1365 734 1216 807 C1041 892 846 953 638 969 C381 988 159 952 -7 874 C-163 801 -258 691 -315 567 Z" fill="url(#wavesGreen)"/>
+
+        <path d="M-97 612 C-23 742 82 821 255 861 C424 901 631 878 828 826 C1042 769 1202 670 1387 573 C1525 501 1638 468 1756 461 C1872 454 1957 482 2030 526 L2030 614 C1914 583 1810 576 1698 591 C1532 612 1385 662 1234 728 C1060 804 866 858 661 869 C408 883 191 855 29 791 C-126 730 -219 641 -277 535 Z" fill="url(#wavesLime)" opacity=".95"/>
+
+        <path d="M-61 649 C5 756 103 817 268 843 C433 869 634 842 830 795 C1034 746 1199 652 1393 559 C1535 491 1648 463 1756 460 C1875 457 1960 492 2030 542" fill="none" stroke="#9bd832" stroke-width="12" stroke-linecap="round" opacity=".25"/>
       </g>
-    </svg>`;
+    </svg>
+  `;
   return wrap;
 }
 
