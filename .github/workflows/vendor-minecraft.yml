@@ -1,0 +1,44 @@
+name: Vendor Minecraft build
+
+on:
+  push:
+    paths:
+      - .github/workflows/vendor-minecraft.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  vendor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: claude/xbox-web-replica-v4s0jk
+      - name: Copy standalone Minecraft HTML into this repo
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p games
+          curl --fail --location --retry 3 --retry-delay 2 \
+            --user-agent 'Mozilla/5.0' \
+            https://t9os.space/novix.html \
+            --output games/minecraft.html
+          test "$(wc -c < games/minecraft.html)" -gt 70000000
+          grep -q 'Minecraft 26.1.2' games/minecraft.html
+          grep -q '__eagManifest' games/minecraft.html
+          grep -q 'id="eag26js"' games/minecraft.html
+      - name: Commit local copy
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'xbox-build-bot'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add games/minecraft.html
+          if git diff --cached --quiet; then
+            echo 'Minecraft build already matches.'
+            exit 0
+          fi
+          git commit -m 'Add local Minecraft 26.1.2 game build'
+          git push origin HEAD:claude/xbox-web-replica-v4s0jk
