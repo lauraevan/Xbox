@@ -15,7 +15,7 @@ const COVER = {
   'Hollow Knight: Silksong': 'assets/game-art/silksong-cover.png',
   'Elden Ring': 'assets/game-art/elden-ring-cover.jpg',
   'Red Dead Redemption 2': 'assets/game-art/rdr2-cover.jpg',
-  'Minecraft': 'assets/game-art/minecraft-cover-user.jpg',
+  'Minecraft': 'assets/game-art/minecraft-cover-user.jpg?v=2',
   'Fortnite': 'assets/game-art/fortnite-cover.jpg'
 };
 
