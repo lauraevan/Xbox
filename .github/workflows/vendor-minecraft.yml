@@ -1,4 +1,4 @@
-name: Vendor Minecraft build
+name: Vendor Minecraft launcher
 
 on:
   push:
@@ -16,29 +16,71 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: claude/xbox-web-replica-v4s0jk
-      - name: Copy standalone Minecraft HTML into this repo
+          fetch-depth: 0
+
+      - name: Clone the owned Minecraft launcher repository
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p games
-          curl --fail --location --retry 3 --retry-delay 2 \
-            --user-agent 'Mozilla/5.0' \
-            https://t9os.space/novix.html \
-            --output games/minecraft.html
-          test "$(wc -c < games/minecraft.html)" -gt 70000000
-          grep -q 'Minecraft 26.1.2' games/minecraft.html
-          grep -q '__eagManifest' games/minecraft.html
-          grep -q 'id="eag26js"' games/minecraft.html
-      - name: Commit local copy
+          rm -rf /tmp/mclauncherrep
+          git clone --depth 1 \
+            --branch claude/minecraft-launcher-replica-bakqq2 \
+            https://github.com/lauraevan/mclauncherrep.git \
+            /tmp/mclauncherrep
+
+      - name: Vendor launcher, artwork, and Minecraft game files locally
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf games/minecraft-launcher
+          mkdir -p games/minecraft-launcher
+
+          rsync -a --delete \
+            --exclude '.git/' \
+            --exclude '.github/' \
+            --exclude 'README.md' \
+            --exclude '.nojekyll' \
+            /tmp/mclauncherrep/ games/minecraft-launcher/
+
+          # Remove the old t9os-sourced standalone copy. The Xbox build now
+          # runs only the code copied from lauraevan/mclauncherrep.
+          rm -f games/minecraft.html
+
+          test -f games/minecraft-launcher/index.html
+          test -f games/minecraft-launcher/js/launcher.js
+          test -f games/minecraft-launcher/assets/hero-art.png
+          test -f games/minecraft-launcher/assets/icons/java.webp
+          test -f games/minecraft-launcher/game/index.html
+          test "$(wc -c < games/minecraft-launcher/game/index.html)" -gt 70000000
+          grep -q 'var GAME_URL = "game/index.html"' games/minecraft-launcher/js/launcher.js
+
+      - name: Load the local Minecraft integration in Xbox
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text()
+          tag = '<script src="js/minecraft-local-pass.js"></script>'
+          if tag not in s:
+              anchor = '<script src="js/home-row-custom.js"></script>'
+              if anchor not in s:
+                  raise SystemExit('home-row-custom script anchor missing')
+              s = s.replace(anchor, anchor + '\n' + tag, 1)
+              p.write_text(s)
+          PY
+
+      - name: Commit the vendored local launcher
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'xbox-build-bot'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add games/minecraft.html
+          git add -A games index.html
           if git diff --cached --quiet; then
-            echo 'Minecraft build already matches.'
+            echo 'Minecraft launcher is already up to date.'
             exit 0
           fi
-          git commit -m 'Add local Minecraft 26.1.2 game build'
+          git commit -m 'Import local Minecraft launcher and game from mclauncherrep'
           git push origin HEAD:claude/xbox-web-replica-v4s0jk
