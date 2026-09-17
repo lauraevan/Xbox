@@ -6,14 +6,14 @@
 
 const ROOT = 'games/minecraft-launcher';
 const LAUNCHER = `${ROOT}/index.html`;
-const COVER = `${ROOT}/assets/icons/java.webp`;
-const HERO = `${ROOT}/assets/hero-art.png`;
+const COVER = 'assets/game-art/minecraft-cover-user.jpg';
+const HERO = 'assets/game-art/minecraft-hero-user.jpg';
 const COVER_SENTINEL = '__xbox_local_minecraft_cover__';
 const HOME = document.getElementById('view-home');
 
 const isMinecraft = value => String(value || '').trim().toLowerCase() === 'minecraft';
 
-/* Let the existing Home background system use the local launcher artwork. */
+/* Use the user-supplied Minecraft artwork everywhere Xbox presents the game. */
 if (window.Artwork?.hero && !window.Artwork.__minecraftLocalHero){
   const originalHero = window.Artwork.hero.bind(window.Artwork);
   window.Artwork.hero = name => isMinecraft(name)
