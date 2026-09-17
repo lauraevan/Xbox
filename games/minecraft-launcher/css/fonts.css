@@ -1,0 +1,14 @@
+/* Self-hosted fonts (Google Fonts, OFL) — no external dependency */
+@font-face{font-family:'Pixelify Sans';font-style:normal;font-weight:400;font-display:swap;src:url('../assets/fonts/pixelify-400.woff2') format('woff2');}
+@font-face{font-family:'Pixelify Sans';font-style:normal;font-weight:500;font-display:swap;src:url('../assets/fonts/pixelify-500.woff2') format('woff2');}
+@font-face{font-family:'Pixelify Sans';font-style:normal;font-weight:600;font-display:swap;src:url('../assets/fonts/pixelify-600.woff2') format('woff2');}
+@font-face{font-family:'Pixelify Sans';font-style:normal;font-weight:700;font-display:swap;src:url('../assets/fonts/pixelify-700.woff2') format('woff2');}
+@font-face{font-family:'Press Start 2P';font-style:normal;font-weight:400;font-display:swap;src:url('../assets/fonts/pressstart-400.woff2') format('woff2');}
+@font-face{font-family:'Silkscreen';font-style:normal;font-weight:400;font-display:swap;src:url('../assets/fonts/silkscreen-400.woff2') format('woff2');}
+@font-face{font-family:'Silkscreen';font-style:normal;font-weight:700;font-display:swap;src:url('../assets/fonts/silkscreen-700.woff2') format('woff2');}
+@font-face{font-family:'Minecraft';font-style:normal;font-weight:400;font-display:swap;src:url('../assets/fonts/minecraft.woff2') format('woff2'),url('../assets/fonts/minecraft.woff') format('woff');}
+@font-face{font-family:'Noto Sans';font-style:normal;font-weight:400;font-display:swap;src:url('../assets/fonts/noto-400.woff2') format('woff2');}
+@font-face{font-family:'Noto Sans';font-style:normal;font-weight:500;font-display:swap;src:url('../assets/fonts/noto-500.woff2') format('woff2');}
+@font-face{font-family:'Noto Sans';font-style:normal;font-weight:600;font-display:swap;src:url('../assets/fonts/noto-600.woff2') format('woff2');}
+@font-face{font-family:'Noto Sans';font-style:normal;font-weight:700;font-display:swap;src:url('../assets/fonts/noto-700.woff2') format('woff2');}
+@font-face{font-family:'Noto Sans';font-style:normal;font-weight:800;font-display:swap;src:url('../assets/fonts/noto-800.woff2') format('woff2');}

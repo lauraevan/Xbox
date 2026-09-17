@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" shape-rendering="crispEdges">
+  <!-- Minecraft Dungeons — orange axe/crest -->
+  <rect width="64" height="64" rx="6" fill="#3a1c10"/>
+  <rect width="64" height="64" rx="6" fill="url(#gd)" opacity=".85"/>
+  <defs><linearGradient id="gd" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#c8631f"/><stop offset="1" stop-color="#6a2c0c"/>
+  </linearGradient></defs>
+  <rect x="29" y="12" width="6" height="40" fill="#e8dcc0"/>
+  <path d="M35 14 h14 v10 a12 12 0 0 1 -14 6 z" fill="#d9d9d9"/>
+  <path d="M29 14 h-14 v10 a12 12 0 0 0 14 6 z" fill="#bfbfbf"/>
+  <rect x="27" y="48" width="10" height="8" fill="#7a4a22"/>
+</svg>

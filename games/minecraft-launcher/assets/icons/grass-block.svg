@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" shape-rendering="crispEdges">
+  <!-- Isometric grass block (Minecraft: Java Edition) -->
+  <!-- Top face (grass) -->
+  <polygon points="32,4 60,20 32,36 4,20" fill="#83B141"/>
+  <polygon points="32,4 46,12 32,20 18,12" fill="#8FBE49"/>
+  <polygon points="46,12 60,20 46,28 32,20" fill="#79A63B"/>
+  <polygon points="18,12 32,20 18,28 4,20" fill="#79A63B"/>
+  <polygon points="32,20 46,28 32,36 18,28" fill="#6E9A34"/>
+  <!-- Left face (dirt + grass edge) -->
+  <polygon points="4,20 32,36 32,60 4,44" fill="#8A6144"/>
+  <polygon points="4,20 32,36 32,41 4,25" fill="#5F8A2E"/>
+  <rect x="9" y="30" width="6" height="6" fill="#77543B"/>
+  <rect x="19" y="41" width="6" height="6" fill="#9C7150"/>
+  <rect x="9" y="48" width="6" height="6" fill="#9C7150"/>
+  <!-- Right face (dirt darker + grass edge) -->
+  <polygon points="60,20 32,36 32,60 60,44" fill="#734F38"/>
+  <polygon points="60,20 32,36 32,41 60,25" fill="#4E7325"/>
+  <rect x="41" y="30" width="6" height="6" fill="#8A6144"/>
+  <rect x="49" y="43" width="6" height="6" fill="#634331"/>
+  <rect x="38" y="49" width="6" height="6" fill="#634331"/>
+</svg>

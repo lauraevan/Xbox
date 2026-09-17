@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" shape-rendering="crispEdges">
+  <!-- Minecraft: Bedrock Edition — flat grass block front face -->
+  <rect width="64" height="64" fill="#7B5B3F"/>
+  <!-- grass top -->
+  <rect y="0" width="64" height="18" fill="#6DA82F"/>
+  <rect y="14" width="64" height="6" fill="#5C8F27"/>
+  <!-- grass pixel variation -->
+  <rect x="0" y="0" width="8" height="8" fill="#7CBB38"/>
+  <rect x="24" y="0" width="8" height="8" fill="#7CBB38"/>
+  <rect x="48" y="0" width="8" height="8" fill="#7CBB38"/>
+  <rect x="12" y="8" width="8" height="6" fill="#5C8F27"/>
+  <rect x="40" y="6" width="8" height="8" fill="#7CBB38"/>
+  <!-- dirt pixels -->
+  <rect x="6" y="26" width="8" height="8" fill="#6B4E36"/>
+  <rect x="30" y="24" width="10" height="8" fill="#8A6647"/>
+  <rect x="50" y="30" width="8" height="8" fill="#6B4E36"/>
+  <rect x="16" y="40" width="8" height="8" fill="#8A6647"/>
+  <rect x="42" y="46" width="10" height="8" fill="#6B4E36"/>
+  <rect x="4" y="50" width="8" height="8" fill="#8A6647"/>
+  <rect x="28" y="52" width="8" height="8" fill="#5E4430"/>
+</svg>

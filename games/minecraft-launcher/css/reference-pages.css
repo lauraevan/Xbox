@@ -1,0 +1,165 @@
+/* Reference-page fidelity pass for the supplied Minecraft Launcher screenshots.
+   This file deliberately leaves the existing boot/loading screen untouched. */
+
+/* ---------------- Java play-page micro alignment ---------------- */
+@media (min-width: 901px){
+  .content-head{height:67px;min-height:67px}
+  .content-label{line-height:12px}
+  .tabs{margin-top:9px;gap:30px}
+  .tab{padding-top:5px;padding-bottom:9px}
+  .hero{height:406px}
+  .play-bar{height:58px}
+  .news-row{padding-top:22px}
+}
+
+/* ---------------- Shared reference buttons ---------------- */
+.ref-pixel-btn{
+  position:relative;border:0;cursor:pointer;color:#fff;background:#7b43d8;
+  font-family:'Minecraft','Noto Sans',sans-serif;font-size:13px;line-height:1;
+  min-width:126px;height:32px;padding:0 17px;
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.24),inset 0 -3px 0 rgba(39,14,77,.62),0 2px 0 rgba(0,0,0,.35)
+}
+.ref-pixel-btn:hover{filter:brightness(1.08)}
+.ref-pixel-btn:active{transform:translateY(1px)}
+.ref-pixel-btn.green{background:#398526;box-shadow:inset 0 2px 0 rgba(255,255,255,.22),inset 0 -3px 0 #245d18,0 2px 0 rgba(0,0,0,.38)}
+
+/* ==================== REALMS ==================== */
+.tab-panel[data-panel="realms"]{background:#171614;min-height:100%;overflow:hidden}
+.ref-realms{
+  position:relative;min-height:655px;padding:23px 48px 56px;background:#171614;color:#f4f2f0;
+  font-family:'Noto Sans','Segoe UI',sans-serif
+}
+.rm-logo{width:346px;margin:0 auto 50px;text-align:center;line-height:1;user-select:none}
+.rm-logo-minecraft{
+  font-family:'Minecraft','Pixelify Sans',sans-serif;font-size:40px;letter-spacing:-1px;color:#f4f1ed;
+  -webkit-text-stroke:2px #080808;text-shadow:0 4px 0 #050505;transform:scaleX(1.05)
+}
+.rm-logo-realms{
+  display:inline-block;margin-top:5px;padding:3px 18px 5px;background:#461451;color:#ff5edf;
+  border:4px solid #f66be7;outline:3px solid #1b071f;
+  font-family:'Minecraft','Pixelify Sans',sans-serif;font-size:45px;letter-spacing:2px;
+  transform:skewX(-8deg) scaleX(1.12);text-shadow:0 4px 0 #4f0752
+}
+.rm-tools{position:absolute;right:48px;top:25px;width:201px;display:flex;flex-direction:column;gap:14px}
+.rm-updated,.rm-manage{
+  min-height:44px;background:#d8d0cc;border:2px solid #f4eeee;color:#9b8e88;
+  box-shadow:inset 0 -2px 0 #b3aaa5;font-size:12px
+}
+.rm-updated{display:flex;align-items:center;gap:9px;padding:4px 10px}
+.rm-refresh{font-size:23px;line-height:1;color:#fff;transform:rotate(-16deg)}
+.rm-updated b{display:block;font-size:15px;line-height:1.06}.rm-updated span{display:block;font-size:11px;margin-top:2px}
+.rm-manage{min-height:32px;height:32px;cursor:pointer;color:#17120f;font-weight:700;letter-spacing:.2px}
+.rm-manage:hover{filter:brightness(1.04)}
+.rm-hero{
+  max-width:1002px;height:375px;margin:0 auto;background:#3eb0df;display:grid;grid-template-columns:43% 57%;
+  align-items:center;overflow:hidden;position:relative
+}
+.rm-island-wrap{height:100%;position:relative;display:flex;align-items:center;justify-content:center}
+.rm-island-wrap::after{
+  content:"";position:absolute;left:25%;right:23%;bottom:31px;height:26px;background:rgba(8,83,153,.26);
+  filter:blur(8px);border-radius:50%
+}
+.rm-island{width:314px;height:300px;filter:drop-shadow(0 15px 8px rgba(18,87,128,.22));z-index:1}
+.rm-copy{padding:0 43px 0 6px;text-align:center;color:#053e86}
+.rm-copy h1{
+  font-family:'Minecraft','Pixelify Sans',sans-serif;font-size:28px;line-height:1.12;letter-spacing:.8px;
+  color:#064b9f;text-transform:uppercase;margin:0 0 20px;white-space:nowrap
+}
+.rm-copy p{font-size:16px;line-height:1.35;margin:0 auto 48px;max-width:545px;color:#063d77}
+.rm-actions{display:flex;justify-content:center;gap:17px}
+.rm-buyline{text-align:center;color:#fff;font-size:16px;margin:10px 0 26px}
+.rm-buyline a{color:#fff;font-weight:800;text-decoration:underline;cursor:pointer}.rm-buyline .ext{font-size:12px;margin-left:4px}
+.rm-teasers{display:grid;grid-template-columns:repeat(3,1fr);gap:31px;max-width:797px;margin:0 auto}
+.rm-teaser{height:126px;border:1px solid #e66ad8;background:#081237;box-shadow:inset 0 0 0 1px #482158;overflow:hidden;position:relative}
+.rm-teaser::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 52% 10%,rgba(172,64,255,.28),transparent 42%)}
+.rm-teaser span{position:absolute;left:12px;bottom:10px;font-family:'Minecraft','Noto Sans',sans-serif;font-size:12px;color:#fff}
+
+/* blocky realms island illustration */
+.rm-island .sky-water{fill:#2c97d5}.rm-island .dirt{fill:#7f522e}.rm-island .dirt2{fill:#6e4427}.rm-island .stone{fill:#777b78}.rm-island .stone2{fill:#626764}
+.rm-island .grass{fill:#67a51f}.rm-island .grass2{fill:#4f8b16}.rm-island .wood{fill:#87582c}.rm-island .leaf{fill:#429716}.rm-island .leaf2{fill:#337b10}
+.rm-island .water{fill:#1788da}.rm-island .portal{fill:#711bb4}.rm-island .portal2{fill:#a542e7}.rm-island .birch{fill:#e7e3d2}.rm-island .birchmark{fill:#4a443d}
+.rm-island .tiny{fill:#d8a56d}.rm-island .tiny2{fill:#4f8e27}.rm-island .flower{fill:#fff}.rm-island .flower2{fill:#e4d624}
+
+/* ==================== SKINS ==================== */
+.tab-panel[data-panel="skins"]{background:#171614;min-height:100%;overflow:hidden}
+.ref-skins{min-height:646px;display:grid;grid-template-columns:37.8% 62.2%;background:#171614;color:#ece9e6}
+.rs-current{position:relative;border-right:1px solid #77716c;padding:35px 36px 40px;text-align:center}
+.rs-library{padding:35px 43px 60px}
+.ref-skins h2{font-size:18px;line-height:1;font-weight:800;margin:0 0 38px;text-align:left;color:#f2efec}
+.rs-current h2{margin-left:34px}
+.rs-current-stage{height:320px;display:flex;align-items:center;justify-content:center}
+.rs-current-img{height:286px;width:auto;object-fit:contain;image-rendering:auto;filter:drop-shadow(0 4px 2px rgba(0,0,0,.25))}
+.rs-add-library{margin-top:10px;height:33px;min-width:120px;font-size:12px}
+.rs-grid{display:grid;grid-template-columns:repeat(4,minmax(94px,1fr));column-gap:42px;row-gap:42px;align-items:start}
+.rs-item{text-align:center;min-width:0;color:#d8d2ce;font-size:14px;font-weight:700}
+.rs-item-name{height:26px;line-height:18px;margin-bottom:7px;white-space:nowrap}
+.rs-new{padding-top:44px;font-weight:400;color:#fff}
+.rs-new .rs-item-name{margin-top:16px}
+.rs-plus{width:34px;height:34px;border:2px solid #f5f5f4;border-radius:50%;margin:0 auto;position:relative}
+.rs-plus::before,.rs-plus::after{content:"";position:absolute;left:50%;top:50%;background:#fff;transform:translate(-50%,-50%)}
+.rs-plus::before{width:16px;height:2px}.rs-plus::after{width:2px;height:16px}
+
+/* tiny, launcher-style skin mannequins */
+.skin-doll{width:58px;height:118px;margin:0 auto;position:relative;transform:rotate(1deg);filter:drop-shadow(0 3px 1px rgba(0,0,0,.28))}
+.skin-doll .sd-head{position:absolute;left:16px;top:0;width:28px;height:29px;background:var(--skin);box-shadow:inset 0 7px 0 var(--hair)}
+.skin-doll .sd-body{position:absolute;left:17px;top:29px;width:26px;height:42px;background:var(--shirt)}
+.skin-doll .sd-arm{position:absolute;top:30px;width:10px;height:43px;background:linear-gradient(var(--shirt) 0 52%,var(--skin) 52%)}
+.skin-doll .sd-arm.left{left:7px;transform:rotate(7deg);transform-origin:top right}.skin-doll .sd-arm.right{right:5px;transform:rotate(-6deg);transform-origin:top left}
+.skin-doll .sd-leg{position:absolute;top:70px;width:12px;height:46px;background:var(--pants)}
+.skin-doll .sd-leg.left{left:17px;transform:rotate(2deg)}.skin-doll .sd-leg.right{left:31px;transform:rotate(-2deg)}
+.skin-doll .sd-leg::after{content:"";position:absolute;left:0;right:0;bottom:0;height:10px;background:var(--shoe)}
+.skin-doll::after{content:"";position:absolute;left:19px;top:13px;width:4px;height:4px;background:#211813;box-shadow:15px 0 0 #211813}
+
+/* ==================== MINECOINS ==================== */
+.minecoins-overlay{position:fixed;inset:0;z-index:11000;background:#000;color:#fff;display:none;overflow:auto;font-family:'Noto Sans','Segoe UI',sans-serif}
+.minecoins-overlay.open{display:block}
+.mc-store-top{height:42px;background:#45413f;display:flex;align-items:center;padding:0 34px;position:sticky;top:0;z-index:4}
+.mc-store-title{font-family:'Minecraft','Pixelify Sans',sans-serif;font-size:28px;letter-spacing:1px;white-space:nowrap}
+.mc-balance{height:22px;margin-left:7px;background:#0e0e0e;border:2px solid #2c2a29;min-width:88px;display:flex;align-items:center;padding:0 8px;gap:7px;font-family:'Minecraft','Pixelify Sans',sans-serif;font-size:14px}
+.mc-coin{width:16px;height:16px;border-radius:50%;background:#ffd327;border:2px solid #bd8810;color:#674500;font-size:10px;font-weight:900;display:inline-flex;align-items:center;justify-content:center;line-height:1;box-shadow:inset 2px 0 #ffec72}
+.mc-close{margin-left:auto;width:46px;height:42px;border:0;background:none;color:#fff;cursor:pointer;font-size:44px;font-weight:200;line-height:36px;transform:rotate(0deg)}
+.mc-close:hover{background:#5b5653}
+.mc-store-body{min-height:calc(100vh - 42px);padding:36px 7vw 70px;position:relative;overflow:hidden;background:#000}
+.mc-store-body::before,.mc-store-body::after{content:"";position:absolute;z-index:0;opacity:.68;pointer-events:none}
+.mc-store-body::before{left:-23px;top:265px;width:123px;height:360px;background:linear-gradient(140deg,#4b3c70 0 31%,#31263f 31% 56%,#d29c13 56% 61%,transparent 61%);transform:skewY(-12deg)}
+.mc-store-body::after{right:-23px;top:207px;width:136px;height:405px;background:linear-gradient(145deg,#3f230e 0 25%,transparent 25% 54%,#398f18 54% 74%,transparent 74%);transform:skewY(12deg)}
+.mc-store-inner{position:relative;z-index:1;max-width:1042px;margin:0 auto}
+.mc-store-heading{text-align:center;font-family:'Minecraft','Pixelify Sans',sans-serif;color:#ffd13f;font-size:51px;line-height:1.08;letter-spacing:2px;margin:0 0 18px}
+.mc-store-sub{text-align:center;font-size:16px;line-height:1.45;max-width:715px;margin:0 auto 17px;color:#fff}
+.mc-select-line{display:flex;align-items:center;justify-content:space-between;margin:15px 1px 14px}
+.mc-select-title{font-family:'Minecraft','Pixelify Sans',sans-serif;font-size:17px;letter-spacing:2px;color:#fff}
+.mc-redeem{background:none;border:0;color:#ffca20;font-family:'Minecraft','Pixelify Sans',sans-serif;font-size:14px;text-decoration:underline;cursor:pointer;padding:7px 0}
+.mc-redeem::before{content:"▦";margin-right:8px;font-size:18px}.mc-redeem:hover{color:#ffe26e}
+.mc-pack-panel{background:#282523;border:4px solid #494541;padding:23px 34px 34px;box-shadow:inset 0 1px 0 #6a6560}
+.mc-pack-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:46px}
+.mc-pack{height:242px;background:#151413;border:4px solid #050505;position:relative;cursor:pointer;display:flex;flex-direction:column;transition:filter .1s}
+.mc-pack:hover{filter:brightness(1.12)}.mc-pack.selected{outline:3px solid #ffd12e;outline-offset:2px}
+.mc-pack-art{height:154px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.mc-pack-art .coin-pile{width:94px;height:86px;position:relative;transform:scale(var(--pile-scale,1))}
+.coin-pile i{position:absolute;width:22px;height:15px;border-radius:50%;background:#ffd62b;border:3px solid #d59808;box-shadow:inset 3px 2px #fff17c}
+.coin-pile i:nth-child(1){left:35px;top:42px}.coin-pile i:nth-child(2){left:20px;top:52px}.coin-pile i:nth-child(3){left:53px;top:54px}.coin-pile i:nth-child(4){left:42px;top:26px}.coin-pile i:nth-child(5){left:8px;top:64px}.coin-pile i:nth-child(6){left:68px;top:64px}.coin-pile i:nth-child(7){left:35px;top:67px}
+.mc-chest{position:absolute;left:28px;top:46px;width:42px;height:31px;background:#9e611c;border:4px solid #5a310b;box-shadow:inset 0 5px #d99531;transform:skewY(-5deg)}
+.mc-pack-amount{height:38px;display:flex;align-items:center;justify-content:center;font-family:'Minecraft','Pixelify Sans',sans-serif;font-size:23px;gap:4px}
+.mc-pack-amount .mc-coin{width:18px;height:18px;font-size:10px}
+.mc-bonus{height:36px;margin:0 7px 0;background:#262321;color:#ffcb14;font-size:12px;display:flex;align-items:center;padding:0 9px}
+.mc-bonus.blue{color:#00bdf4}.mc-bonus.blank{visibility:hidden}
+.mc-price{margin-top:auto;height:41px;background:#474341;border-top:4px solid #6b6662;display:flex;align-items:center;padding:0 15px;font-family:'Minecraft','Pixelify Sans',sans-serif;font-size:25px;gap:13px}
+.mc-price-gem{width:22px;height:22px;background:#fff;clip-path:polygon(25% 0,75% 0,100% 25%,100% 75%,75% 100%,25% 100%,0 75%,0 25%);position:relative}
+.mc-price-gem::after{content:"";position:absolute;inset:4px;background:#474341;clip-path:inherit}
+.mc-tag{position:absolute;right:-3px;top:7px;padding:4px 7px;font-family:'Minecraft','Pixelify Sans',sans-serif;font-size:11px;color:#191600;background:#ffe22a;z-index:2}
+.mc-tag::after{content:"";position:absolute;right:-7px;top:0;border-top:11px solid transparent;border-bottom:11px solid transparent;border-left:7px solid #ffe22a}
+.mc-tag.deal{background:#12cdf4;color:#042c34}.mc-tag.deal::after{border-left-color:#12cdf4}
+.mc-lower-row{margin-top:46px;display:grid;grid-template-columns:repeat(4,1fr);gap:46px}
+.mc-lower-row .mc-pack{height:225px}
+
+@media (max-width: 900px){
+  .ref-realms{padding:22px 18px 40px}.rm-tools{position:static;margin:0 auto 20px}.rm-logo{margin-bottom:24px}
+  .rm-hero{height:auto;grid-template-columns:1fr;padding:20px 0 28px}.rm-island-wrap{height:250px}.rm-copy{padding:0 25px}.rm-copy h1{white-space:normal;font-size:24px}.rm-copy p{margin-bottom:28px}
+  .ref-skins{grid-template-columns:1fr}.rs-current{border-right:0;border-bottom:1px solid #77716c}.rs-grid{grid-template-columns:repeat(3,1fr);gap:30px 20px}
+  .mc-store-heading{font-size:34px}.mc-pack-grid,.mc-lower-row{grid-template-columns:repeat(2,1fr);gap:22px}.mc-pack-panel{padding:20px}
+}
+@media (max-width: 520px){
+  .rm-logo{width:260px}.rm-logo-minecraft{font-size:31px}.rm-logo-realms{font-size:35px}
+  .rs-library{padding:28px 18px 45px}.rs-current{padding:28px 18px}.rs-grid{grid-template-columns:repeat(2,1fr)}
+  .mc-store-top{padding-left:12px}.mc-store-title{font-size:20px}.mc-store-body{padding:26px 14px 50px}.mc-store-heading{font-size:28px}.mc-store-sub{font-size:14px}.mc-pack-grid,.mc-lower-row{grid-template-columns:1fr}.mc-pack{max-width:240px;width:100%;margin:0 auto}
+}

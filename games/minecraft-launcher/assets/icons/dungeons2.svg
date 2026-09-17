@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" shape-rendering="crispEdges">
+  <!-- Minecraft Dungeons II — teal crossed-swords crest -->
+  <rect width="64" height="64" rx="6" fill="#123043"/>
+  <rect width="64" height="64" rx="6" fill="url(#g)" opacity=".6"/>
+  <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#2f6f8f"/><stop offset="1" stop-color="#0d2331"/>
+  </linearGradient></defs>
+  <g stroke="#7fd7e6" stroke-width="4" stroke-linecap="square" fill="none">
+    <path d="M18 16 L46 48"/>
+    <path d="M46 16 L18 48"/>
+  </g>
+  <rect x="28" y="10" width="8" height="8" fill="#d9f4fa"/>
+  <circle cx="32" cy="34" r="5" fill="#f5c542"/>
+</svg>
