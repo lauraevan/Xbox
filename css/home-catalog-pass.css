@@ -15,7 +15,7 @@
    existing absolutely-positioned Home layout. */
 #view-home .home-catalog-spacer{
   width:1px;
-  height:calc(100% + 78rem);
+  height:calc(100% + 190rem);
   opacity:0;
   pointer-events:none;
 }
@@ -28,7 +28,7 @@
   right:0;
   top:100%;
   z-index:8;
-  min-height:86rem;
+  min-height:184rem;
   padding:3rem var(--safe-x) 9rem;
   overflow:hidden;
   isolation:isolate;
@@ -281,25 +281,96 @@ body:has(#view-home .home-catalog-game[data-focused]) .focus-ring.on{
   fill:currentColor;
 }
 
-#view-home .home-catalog-drawer::after{
-  content:"";
+
+/* High-resolution Series X|S-style Waves vector background. This SVG is
+   rendered by the browser, so it stays crisp on 4K displays and iPad Retina. */
+#view-home .home-series-waves{
+  --wave-scroll:0;
   position:absolute;
   z-index:0;
-  left:-14%;
-  right:-18%;
-  top:-18%;
-  height:135%;
+  left:0;
+  right:0;
+  top:0;
+  height:100%;
+  min-height:184rem;
+  overflow:hidden;
   pointer-events:none;
-  opacity:.82;
   background:
-    radial-gradient(72% 42% at 18% 64%,transparent 0 54%,rgba(16,124,34,.42) 55% 60%,transparent 61% 100%),
-    radial-gradient(82% 50% at 58% 42%,transparent 0 57%,rgba(24,174,50,.30) 58% 63%,transparent 64% 100%),
-    radial-gradient(92% 58% at 98% 56%,transparent 0 59%,rgba(41,211,67,.22) 60% 65%,transparent 66% 100%);
-  filter:blur(.1rem) saturate(1.12);
-  transform:translate3d(0,0,0) rotate(-3deg) scale(1.06);
-  transform-origin:center;
-  animation:xboxSeriesWaves 16s ease-in-out infinite alternate;
+    radial-gradient(95% 50% at 8% 18%,rgba(13,72,28,.22),transparent 66%),
+    linear-gradient(180deg,#020805 0%,#031008 48%,#020705 100%);
 }
+#view-home .home-series-waves svg{
+  position:absolute;
+  left:-6%;
+  top:-2%;
+  width:112%;
+  height:78rem;
+  overflow:visible;
+  transform:translate3d(0,calc(var(--wave-scroll) * .018px),0) scale(1.02);
+  transform-origin:center top;
+  filter:saturate(1.12) contrast(1.03);
+}
+#view-home .home-series-waves::before,
+#view-home .home-series-waves::after{
+  content:"";
+  position:absolute;
+  pointer-events:none;
+  border-radius:50%;
+  filter:blur(5rem);
+  opacity:.32;
+}
+#view-home .home-series-waves::before{
+  width:70rem;
+  height:70rem;
+  right:-18rem;
+  top:20rem;
+  background:radial-gradient(circle,rgba(42,196,61,.35),transparent 68%);
+  animation:xboxWaveGlowA 12s ease-in-out infinite alternate;
+}
+#view-home .home-series-waves::after{
+  width:64rem;
+  height:64rem;
+  left:-22rem;
+  top:72rem;
+  background:radial-gradient(circle,rgba(16,116,34,.3),transparent 70%);
+  animation:xboxWaveGlowB 16s ease-in-out infinite alternate;
+}
+#view-home .home-series-waves .xwave{
+  transform-origin:center;
+  will-change:transform,opacity;
+}
+#view-home .home-series-waves .xwave-back{
+  animation:xboxWaveBack 18s ease-in-out infinite alternate;
+  opacity:.7;
+}
+#view-home .home-series-waves .xwave-mid{
+  animation:xboxWaveMid 13s ease-in-out infinite alternate;
+}
+#view-home .home-series-waves .xwave-front{
+  animation:xboxWaveFront 10s ease-in-out infinite alternate;
+}
+@keyframes xboxWaveBack{
+  0%{transform:translate3d(-3%,2%,0) scale(1.02)}
+  100%{transform:translate3d(4%,-2%,0) scale(1.08)}
+}
+@keyframes xboxWaveMid{
+  0%{transform:translate3d(-2%,0,0) rotate(-1deg) scale(1.03)}
+  50%{transform:translate3d(2%,-2%,0) rotate(1deg) scale(1.07)}
+  100%{transform:translate3d(5%,1%,0) rotate(2deg) scale(1.04)}
+}
+@keyframes xboxWaveFront{
+  0%{transform:translate3d(1%,2%,0) scale(1.04)}
+  100%{transform:translate3d(-5%,-1%,0) scale(1.1)}
+}
+@keyframes xboxWaveGlowA{
+  to{transform:translate3d(-10rem,5rem,0) scale(1.12);opacity:.42}
+}
+@keyframes xboxWaveGlowB{
+  to{transform:translate3d(12rem,-4rem,0) scale(1.08);opacity:.4}
+}
+
+/* Repeated subtle wave echoes farther down the page so the dynamic background
+   continues behind every lower shelf instead of ending after the first rail. */
 #view-home .home-catalog-body{
   position:relative;
   z-index:2;
@@ -308,28 +379,178 @@ body:has(#view-home .home-catalog-game[data-focused]) .focus-ring.on{
   content:"";
   position:absolute;
   z-index:-1;
-  left:-18%;
-  top:10rem;
-  width:138%;
-  height:70rem;
+  left:-16rem;
+  right:-18rem;
+  top:56rem;
+  height:118rem;
   pointer-events:none;
-  opacity:.46;
+  opacity:.35;
   background:
-    radial-gradient(78% 50% at 28% 48%,transparent 0 62%,rgba(11,99,28,.34) 63% 68%,transparent 69%),
-    radial-gradient(72% 46% at 74% 56%,transparent 0 60%,rgba(31,146,43,.24) 61% 66%,transparent 67%);
-  transform:rotate(6deg) translate3d(0,0,0);
-  animation:xboxSeriesWavesBack 22s ease-in-out infinite alternate;
+    radial-gradient(70% 32% at 25% 22%,transparent 0 62%,rgba(17,129,34,.27) 63% 69%,transparent 70%),
+    radial-gradient(78% 35% at 76% 48%,transparent 0 64%,rgba(47,201,58,.2) 65% 70%,transparent 71%),
+    radial-gradient(82% 40% at 35% 82%,transparent 0 66%,rgba(24,151,42,.19) 67% 72%,transparent 73%);
+  transform:rotate(-4deg);
 }
-@keyframes xboxSeriesWaves{
-  0%{ transform:translate3d(-2.5%,1%,0) rotate(-4deg) scale(1.04); }
-  50%{ transform:translate3d(2%, -1.5%,0) rotate(-1deg) scale(1.09); }
-  100%{ transform:translate3d(5%,1.5%,0) rotate(2deg) scale(1.05); }
+
+/* Blue "New games" showcase based on the Xbox dashboard reference. */
+.home-new-games-section{
+  position:relative;
+  z-index:2;
+  display:grid;
+  grid-template-columns:28rem minmax(0,1fr);
+  gap:3rem;
+  min-height:34rem;
+  margin:0 calc(var(--safe-x) * -.12) 4.8rem;
+  padding:3.2rem 3.4rem;
+  overflow:hidden;
+  border-radius:1.2rem;
+  background:
+    radial-gradient(80% 130% at 0% 50%,rgba(9,186,192,.72),transparent 58%),
+    linear-gradient(110deg,#087f9b 0%,#1261a5 50%,#1a3a8c 100%);
+  box-shadow:0 1rem 3rem rgba(0,0,0,.28);
 }
-@keyframes xboxSeriesWavesBack{
-  0%{ transform:translate3d(2%,0,0) rotate(6deg) scale(1.02); }
-  100%{ transform:translate3d(-4%,2%,0) rotate(2deg) scale(1.08); }
+.home-new-games-section::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    linear-gradient(160deg,rgba(255,255,255,.06),transparent 45%),
+    radial-gradient(60% 120% at 100% 30%,rgba(56,83,201,.35),transparent 70%);
 }
+.home-new-games-copy{
+  position:relative;
+  z-index:2;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+}
+.home-new-games-copy h3{
+  margin:.3rem 0 0;
+  font-size:3.15rem;
+  font-weight:600;
+  letter-spacing:-.06rem;
+}
+.home-catalog-more{
+  position:relative !important;
+  margin-top:auto;
+  min-width:17rem;
+  min-height:5.6rem;
+  display:grid;
+  place-items:center;
+  border-radius:.8rem;
+  background:rgba(12,34,54,.5);
+  border:.13rem solid rgba(255,255,255,.16);
+  color:#fff;
+  font-size:1.2rem;
+  font-weight:700;
+  letter-spacing:.03rem;
+}
+.home-catalog-more[data-focused]{
+  outline:.4rem solid #52d64b !important;
+  outline-offset:.18rem !important;
+  background:rgba(10,29,46,.74);
+}
+.home-new-games-rail{
+  position:relative;
+  z-index:2;
+  display:flex;
+  gap:1.15rem;
+  min-width:0;
+  overflow-x:auto;
+  padding:.55rem;
+  margin:-.55rem;
+  scrollbar-width:none;
+}
+.home-new-games-rail::-webkit-scrollbar{display:none}
+.home-new-games-rail .home-catalog-game{
+  flex-basis:17.7rem;
+  width:17.7rem;
+  min-width:17.7rem;
+}
+.home-new-games-rail .home-catalog-art{
+  height:25.1rem;
+  border-radius:1.15rem;
+}
+
+/* Essential apps uses the wide rectangular cards seen below New games. */
+.home-apps-section{
+  position:relative;
+  z-index:2;
+  margin:0 0 5rem;
+}
+.home-apps-row{
+  display:flex;
+  gap:1.15rem;
+  overflow-x:auto;
+  padding:.55rem;
+  margin:0 -.55rem;
+  scrollbar-width:none;
+}
+.home-apps-row::-webkit-scrollbar{display:none}
+.home-app-card{
+  position:relative !important;
+  flex:0 0 20rem;
+  width:20rem;
+  height:12rem;
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+  border-radius:1rem;
+  box-shadow:0 .7rem 2rem rgba(0,0,0,.35);
+  color:#fff;
+  font-weight:700;
+  line-height:.95;
+  text-align:center;
+}
+.home-app-card span{font-size:2.5rem}
+.home-app-card[data-focused]{
+  outline:.4rem solid #52d64b !important;
+  outline-offset:.18rem !important;
+}
+.home-app-card.app-netflix{background:#f1f1f1;color:#d71920}
+.home-app-card.app-prime{background:#156ee8;color:#fff}
+.home-app-card.app-youtube{background:#f3f3f3;color:#202020}
+.home-app-card.app-youtube span::first-letter{color:#f00}
+.home-app-card.app-nitrado{background:#060707;color:#ffe600}
+.home-app-card.app-gallery{background:#e7ecec;color:#283a43}
+.home-app-card.app-gallery span{font-size:5rem}
+.home-app-card.app-gportal{
+  background:linear-gradient(145deg,#1c2087,#4739c9);
+  color:#43e6df;
+}
+
+@media (max-aspect-ratio:16/10){
+  #view-home .home-series-waves svg{height:70rem}
+  .home-new-games-section{
+    grid-template-columns:22rem minmax(0,1fr);
+    min-height:30rem;
+    padding:2.6rem;
+  }
+  .home-new-games-copy h3{font-size:2.75rem}
+  .home-new-games-rail .home-catalog-game{
+    flex-basis:15rem;width:15rem;min-width:15rem;
+  }
+  .home-new-games-rail .home-catalog-art{height:21.3rem}
+  .home-app-card{flex-basis:17rem;width:17rem;height:10rem}
+  .home-app-card span{font-size:2.1rem}
+}
+@media (max-width:760px){
+  .home-new-games-section{
+    grid-template-columns:14rem minmax(0,1fr);
+    gap:1.5rem;
+    padding:2rem;
+  }
+  .home-catalog-more{min-width:12rem;min-height:4.8rem}
+  .home-new-games-rail .home-catalog-game{
+    flex-basis:13rem;width:13rem;min-width:13rem;
+  }
+  .home-new-games-rail .home-catalog-art{height:18.5rem}
+  .home-app-card{flex-basis:14rem;width:14rem;height:8.5rem}
+}
+
 @media (prefers-reduced-motion:reduce){
-  #view-home .home-catalog-drawer::after,
-  #view-home .home-catalog-body::before{ animation:none; }
+  #view-home .home-series-waves .xwave,
+  #view-home .home-series-waves::before,
+  #view-home .home-series-waves::after{animation:none!important}
 }
