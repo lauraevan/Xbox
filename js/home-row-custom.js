@@ -6,11 +6,27 @@ const HOME = document.getElementById('view-home');
 if (!HOME) return;
 
 const Cloud = () => window.StratusCloud;
+
+/* These are real files committed into this repo. Home no longer depends on
+   SteamGridDB / remote hotlinks for the seven games in the main row. */
 const COVER = {
-  'Grand Theft Auto V': 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3240220/library_600x900.jpg',
-  'Elden Ring': 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1245620/library_600x900.jpg',
-  'Red Dead Redemption 2': 'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1174180/library_600x900.jpg',
-  'Minecraft': 'https://upload.wikimedia.org/wikipedia/en/b/b6/Minecraft_2024_cover_art.png'
+  'Forza Horizon 5': 'assets/game-art/forza-horizon-5-cover.jpg',
+  'Grand Theft Auto V': 'assets/game-art/gta-v-cover.jpg',
+  'Hollow Knight: Silksong': 'assets/game-art/silksong-cover.png',
+  'Elden Ring': 'assets/game-art/elden-ring-cover.jpg',
+  'Red Dead Redemption 2': 'assets/game-art/rdr2-cover.jpg',
+  'Minecraft': 'assets/game-art/minecraft-cover.webp',
+  'Fortnite': 'assets/game-art/fortnite-cover.jpg'
+};
+
+const HERO = {
+  'Forza Horizon 5': 'assets/game-art/forza-horizon-5-hero.jpg',
+  'Grand Theft Auto V': 'assets/game-art/gta-v-hero.jpg',
+  'Hollow Knight: Silksong': 'assets/game-art/silksong-hero.jpg',
+  'Elden Ring': 'assets/game-art/elden-ring-hero.jpg',
+  'Red Dead Redemption 2': 'assets/game-art/rdr2-hero.jpg',
+  'Minecraft': 'assets/game-art/minecraft-hero.png',
+  'Fortnite': 'assets/game-art/fortnite-hero.jpg'
 };
 
 const SWAPS = [
@@ -34,6 +50,26 @@ const norm = value => String(value || '').toLowerCase().replace(/[^a-z0-9]/g, ''
 const esc = value => String(value ?? '').replace(/[&<>"']/g, ch => ({
   '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
 })[ch]);
+
+function canonicalTitle(value){
+  const key = norm(value);
+  return Object.keys(COVER).find(title => {
+    if (norm(title) === key) return true;
+    return (CLOUD_ALIASES[title] || []).some(alias => norm(alias) === key);
+  }) || null;
+}
+
+/* Keep the global artwork API for the rest of the catalogue, but short-circuit
+   these Home games to repo-local files so a failed API/CDN can never paint a
+   question-mark placeholder over the dashboard. */
+if (window.Artwork?.hero && !window.Artwork.__homeLocalArt){
+  const originalHero = window.Artwork.hero.bind(window.Artwork);
+  window.Artwork.hero = name => {
+    const title = canonicalTitle(name);
+    return title && HERO[title] ? Promise.resolve(HERO[title]) : originalHero(name);
+  };
+  window.Artwork.__homeLocalArt = true;
+}
 
 function localGame(title){
   const names = [title, ...(CLOUD_ALIASES[title] || [])].map(norm);
@@ -91,6 +127,19 @@ function ensureBadge(face, text){
   badge.textContent = text;
 }
 
+function setTileArtwork(tile, title){
+  const src = COVER[title];
+  if (!src) return;
+  const img = tile.querySelector('.ref-art img');
+  if (!img) return;
+  if (img.getAttribute('src') !== src) img.src = src;
+  img.alt = '';
+  img.loading = 'eager';
+  img.decoding = 'async';
+  img.classList.add('loaded');
+  img.style.objectFit = 'cover';
+}
+
 function patchTile(def){
   const tile = HOME.querySelector(`.ref-tile[data-ref-title="${CSS.escape(def.from)}"]`);
   if (!tile || tile.dataset.homeSwap === def.to) return;
@@ -102,23 +151,22 @@ function patchTile(def){
   const label = tile.querySelector('.tile-label');
   if (label) label.textContent = def.to;
   const face = tile.querySelector('.tile-face');
-  const img = tile.querySelector('.ref-art img');
-  if (img){
-    img.src = COVER[def.to];
-    img.alt = '';
-    img.classList.add('loaded');
-    img.style.objectFit = 'cover';
-  }
+  setTileArtwork(tile, def.to);
   if (face) ensureBadge(face, def.badge);
   tile._navActivate = () => activateTitle(def.to);
 }
 
 function wireAllGameTiles(){
   HOME.querySelectorAll('.ref-tile[data-ref-title]').forEach(tile => {
-    const title = tile.dataset.refTitle;
-    if (!title || tile.dataset.homeDirectLaunch === title) return;
-    tile.dataset.homeDirectLaunch = title;
-    tile._navActivate = () => activateTitle(title);
+    const title = canonicalTitle(tile.dataset.refTitle) || tile.dataset.refTitle;
+    if (!title) return;
+
+    setTileArtwork(tile, title);
+
+    if (tile.dataset.homeDirectLaunch !== title){
+      tile.dataset.homeDirectLaunch = title;
+      tile._navActivate = () => activateTitle(title);
+    }
   });
 }
 
@@ -129,9 +177,12 @@ function ownedCard(game){
   btn.dataset.ownedStoreGame = game.gameKey;
   btn.dataset.ringRadius = '.55rem';
   btn.setAttribute('aria-label', game.name);
+
+  const known = canonicalTitle(game.name);
+  const cover = (known && COVER[known]) || game.cover || game.image || '';
   btn.innerHTML = `
     <span class="console-poster-art">
-      <img src="${esc(game.cover || game.image)}" alt="" loading="lazy" decoding="async">
+      <img src="${esc(cover)}" alt="" loading="lazy" decoding="async">
     </span>`;
   btn._navActivate = async () => {
     try { await Cloud()?.play?.(game); }
@@ -220,11 +271,21 @@ function ensureLibraryTile(){
   friends.insertAdjacentElement('afterend', makeLibraryTile());
 }
 
+function pinInitialBackdrop(){
+  if (document.body.dataset.view && document.body.dataset.view !== 'home') return;
+  const layers = [...document.querySelectorAll('.backdrop-layer')];
+  const active = layers.find(layer => layer.classList.contains('on'));
+  if (!active || active.dataset.dynamicTitle) return;
+  active.style.backgroundImage = `url("${HERO['Forza Horizon 5']}")`;
+  active.style.backgroundPosition = 'center top';
+}
+
 function patchHome(){
   if (!HOME.querySelector('.ref-strip')) return;
   SWAPS.forEach(patchTile);
   wireAllGameTiles();
   ensureLibraryTile();
+  pinInitialBackdrop();
 }
 
 let queued = false;
