@@ -158,12 +158,37 @@ function newGamesFeature(games){
 }
 
 const APPS = [
-  ['NETFLIX','netflix'],
-  ['prime\nvideo','prime'],
-  ['YouTube','youtube'],
-  ['NITRADO','nitrado'],
-  ['▱','gallery'],
-  ['GPORTAL','gportal']
+  {
+    name:'Netflix',
+    cls:'netflix',
+    logo:'https://commons.wikimedia.org/wiki/Special:Redirect/file/Netflix_2015_logo.svg'
+  },
+  {
+    name:'Prime Video',
+    cls:'prime',
+    logo:'https://commons.wikimedia.org/wiki/Special:Redirect/file/Prime_Video_logo_(2024).svg'
+  },
+  {
+    name:'YouTube',
+    cls:'youtube',
+    logo:'https://commons.wikimedia.org/wiki/Special:Redirect/file/YouTube_Logo_2017.svg'
+  },
+  {
+    name:'Nitrado',
+    cls:'nitrado',
+    logo:'https://commons.wikimedia.org/wiki/Special:Redirect/file/Nitrado_yellow.png'
+  },
+  {
+    name:'Media Gallery',
+    cls:'gallery',
+    localIcon:true
+  },
+  {
+    name:'GPORTAL',
+    cls:'gportal',
+    logo:'https://www.g-portal.com/favicon.ico',
+    wordmark:'GPORTAL'
+  }
 ];
 
 function essentialApps(){
@@ -177,14 +202,38 @@ function essentialApps(){
   const row = document.createElement('div');
   row.className = 'home-apps-row';
 
-  APPS.forEach(([label, cls]) => {
+  APPS.forEach(app => {
     const btn = document.createElement('button');
-    btn.className = 'home-app-card app-' + cls;
+    btn.className = 'home-app-card app-' + app.cls;
     btn.dataset.nav = '';
     btn.dataset.ringRadius = '.7rem';
-    btn.setAttribute('aria-label', label.replace(/\n/g,' '));
-    btn.innerHTML = '<span>' + label.replace(/\n/g,'<br>') + '</span>';
-    btn._navActivate = () => window.App?.toast?.('Essential app', label.replace(/\n/g,' '));
+    btn.setAttribute('aria-label', app.name);
+
+    if (app.logo){
+      const img = document.createElement('img');
+      img.className = 'home-app-logo';
+      img.src = app.logo;
+      img.alt = app.name;
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      btn.append(img);
+    }
+
+    if (app.localIcon){
+      const mark = document.createElement('span');
+      mark.className = 'home-app-gallery-mark';
+      mark.innerHTML = '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M11 17h42v31H11z" fill="none" stroke="currentColor" stroke-width="5"/><path d="M18 41l10-11 7 7 6-6 9 10" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/><circle cx="42" cy="26" r="4" fill="currentColor"/></svg>';
+      btn.append(mark);
+    }
+
+    if (app.wordmark){
+      const word = document.createElement('span');
+      word.className = 'home-app-wordmark';
+      word.textContent = app.wordmark;
+      btn.append(word);
+    }
+
+    btn._navActivate = () => window.App?.toast?.('Essential app', app.name);
     row.append(btn);
   });
 
@@ -199,35 +248,44 @@ function wavesMarkup(){
   wrap.innerHTML = `
     <svg viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
       <defs>
-        <linearGradient id="xw1" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stop-color="#07250f" stop-opacity=".18"/>
-          <stop offset=".32" stop-color="#0c6f20" stop-opacity=".72"/>
-          <stop offset=".72" stop-color="#39d353" stop-opacity=".82"/>
-          <stop offset="1" stop-color="#8cff5a" stop-opacity=".28"/>
+        <linearGradient id="waveA" x1="0" y1="0" x2="1" y2=".2">
+          <stop offset="0" stop-color="#061a0b"/>
+          <stop offset=".25" stop-color="#0a4f19"/>
+          <stop offset=".52" stop-color="#107c10"/>
+          <stop offset=".8" stop-color="#2ecb48"/>
+          <stop offset="1" stop-color="#6ef05d"/>
         </linearGradient>
-        <linearGradient id="xw2" x1="1" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="#5cff46" stop-opacity=".42"/>
-          <stop offset=".5" stop-color="#15962f" stop-opacity=".66"/>
-          <stop offset="1" stop-color="#061b0c" stop-opacity=".08"/>
+        <linearGradient id="waveB" x1="0" y1=".2" x2="1" y2=".8">
+          <stop offset="0" stop-color="#031007"/>
+          <stop offset=".42" stop-color="#0b5d1e"/>
+          <stop offset=".74" stop-color="#19a537"/>
+          <stop offset="1" stop-color="#44db53"/>
         </linearGradient>
-        <linearGradient id="xw3" x1="0" y1="1" x2="1" y2="0">
-          <stop offset="0" stop-color="#04160a" stop-opacity=".1"/>
-          <stop offset=".48" stop-color="#0b7d22" stop-opacity=".5"/>
-          <stop offset="1" stop-color="#47e45a" stop-opacity=".36"/>
+        <linearGradient id="waveC" x1="0" y1="1" x2="1" y2=".1">
+          <stop offset="0" stop-color="#020b05"/>
+          <stop offset=".46" stop-color="#0b4516"/>
+          <stop offset=".76" stop-color="#12852a"/>
+          <stop offset="1" stop-color="#31c747"/>
         </linearGradient>
-        <filter id="xwGlow" x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur stdDeviation="8"/>
-        </filter>
       </defs>
-      <g class="xwave xwave-back">
-        <path d="M-220 830 C210 430 580 340 940 390 C1300 440 1480 220 2140 120" fill="none" stroke="url(#xw3)" stroke-width="185" stroke-linecap="round"/>
+
+      <rect width="1920" height="1080" fill="#020704"/>
+
+      <g class="xwave xwave-back" opacity=".88">
+        <path d="M-250 55 C180 245 365 390 655 433 C990 483 1225 315 1490 180 C1710 68 1940 52 2195 112 L2195 290 C1928 235 1738 254 1546 354 C1256 505 1009 648 646 587 C323 533 107 371 -270 197 Z" fill="url(#waveC)"/>
       </g>
-      <g class="xwave xwave-mid">
-        <path d="M-260 940 C160 520 560 465 910 505 C1265 545 1550 320 2160 230" fill="none" stroke="url(#xw1)" stroke-width="140" stroke-linecap="round"/>
+
+      <g class="xwave xwave-mid" opacity=".94">
+        <path d="M-280 187 C100 360 347 500 671 522 C1017 546 1208 402 1477 288 C1717 186 1940 197 2195 279 L2195 469 C1943 379 1732 369 1538 450 C1243 573 1021 727 646 690 C326 658 62 507 -286 351 Z" fill="url(#waveB)"/>
       </g>
+
       <g class="xwave xwave-front">
-        <path d="M-160 1050 C280 650 610 610 980 640 C1370 675 1630 470 2120 420" fill="none" stroke="url(#xw2)" stroke-width="84" stroke-linecap="round"/>
-        <path d="M-120 960 C330 570 690 540 1030 575 C1415 615 1645 420 2090 350" fill="none" stroke="#41dd50" stroke-opacity=".18" stroke-width="30" stroke-linecap="round" filter="url(#xwGlow)"/>
+        <path d="M-320 351 C40 481 290 634 632 654 C966 673 1186 548 1464 451 C1713 363 1938 389 2194 489 L2194 665 C1937 566 1735 554 1535 624 C1241 727 1020 845 645 817 C305 790 34 640 -336 513 Z" fill="url(#waveA)"/>
+      </g>
+
+      <g class="xwave xwave-highlight" opacity=".23">
+        <path d="M-240 259 C111 406 357 549 672 565 C1010 581 1219 445 1484 338 C1719 243 1931 255 2174 335" fill="none" stroke="#8cff77" stroke-width="12" stroke-linecap="round"/>
+        <path d="M-245 449 C95 573 332 703 640 719 C954 735 1197 619 1465 525 C1707 440 1937 461 2176 545" fill="none" stroke="#72ef68" stroke-width="8" stroke-linecap="round"/>
       </g>
     </svg>`;
   return wrap;
