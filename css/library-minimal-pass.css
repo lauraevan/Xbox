@@ -18,11 +18,37 @@ body:has(#view-library .console-poster[data-focused]) .focus-ring.on{
 }
 .focus-ring.pop{ animation:none !important; }
 
+/* Keep the existing outer top-bar capsule exactly as-is. Only the five inner
+   controls become separated circles, with breathing room between them. */
+.sysbar .sysnav-btn{
+  width:4.45rem !important;
+  height:4.45rem !important;
+  flex:0 0 4.45rem !important;
+  margin:0 .28rem !important;
+  border-radius:50% !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  transform:none !important;
+}
+.sysbar .sysnav-btn:first-child,
+.sysbar .sysnav-btn:last-child{
+  border-radius:50% !important;
+}
+.sysbar .sysnav-btn + .sysnav-btn{
+  box-shadow:none !important;
+}
+.sysbar .sysnav-btn:hover,
+.sysbar .sysnav-btn.active{
+  border-radius:50% !important;
+  background:rgba(255,255,255,.075) !important;
+}
+
 /* System-bar controls keep their normal dark surface and get a thin green
    outline that follows the actual button shape. No floating selector here. */
 .sysbar .sysnav-btn[data-focused]{
   background:rgba(34,38,42,.9) !important;
   color:#fff !important;
+  border-radius:50% !important;
   box-shadow:inset 0 0 0 .24rem #52d64b !important;
   outline:0 !important;
 }
