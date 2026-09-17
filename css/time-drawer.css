@@ -60,9 +60,44 @@
 }
 
 .time-drawer-head{
+  position:relative;
   padding:2.4rem 2.5rem 2.2rem;
   background:#090a0b;
   border-bottom:.1rem solid rgba(255,255,255,.06);
+}
+.time-wallpaper-toggle{
+  position:absolute;
+  top:1.7rem;
+  right:1.8rem;
+  width:4.2rem;
+  height:4.2rem;
+  display:grid;
+  place-items:center;
+  padding:0;
+  border:0;
+  border-radius:1rem;
+  background:transparent;
+  color:rgba(255,255,255,.66);
+  cursor:pointer;
+  transition:background .15s ease,color .15s ease;
+}
+.time-wallpaper-toggle:hover,
+.time-wallpaper-toggle[aria-pressed="true"]{
+  background:#17191b;
+  color:#fff;
+}
+.time-wallpaper-toggle:focus-visible{
+  outline:.24rem solid #53d64b;
+  outline-offset:-.24rem;
+}
+.time-wallpaper-toggle svg{
+  width:2.15rem;
+  height:2.15rem;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.75;
+  stroke-linecap:round;
+  stroke-linejoin:round;
 }
 .time-drawer-body{
   flex:1;
@@ -202,6 +237,25 @@
 .time-drawer-hint{
   font-size:1.08rem;
   color:rgba(255,255,255,.38);
+}
+
+/* Wallpaper-only brightness toggle. The rest of the console stays dark. */
+body.wallpaper-light[data-view="home"] .backdrop{
+  background:#111!important;
+}
+body.wallpaper-light[data-view="home"] .backdrop-layer,
+body.wallpaper-light[data-view="home"] .backdrop-layer.wide,
+body.wallpaper-light[data-view="home"] .backdrop-layer.reference-wide{
+  filter:saturate(1.03) brightness(1.04) contrast(1.01)!important;
+}
+body.wallpaper-light[data-view="home"] .backdrop-scrim{
+  background:linear-gradient(180deg,rgba(0,0,0,.02) 0%,rgba(0,0,0,.025) 60%,rgba(0,0,0,.13) 100%)!important;
+}
+body.wallpaper-light[data-view="home"] .topbar-scrim{
+  background:linear-gradient(180deg,rgba(0,0,0,.14),rgba(0,0,0,.02) 72%,transparent)!important;
+}
+body.wallpaper-light[data-view="home"] .backdrop-glow{
+  opacity:.08!important;
 }
 
 @media (max-aspect-ratio:16/10){
