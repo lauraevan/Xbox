@@ -1,7 +1,7 @@
 /* Minimal My games & apps pass: one row, solid black, no labels or extra chrome. */
 
 /* Keep the Xbox-green selector only on actual game-cover selection. Other
-   controls show focus by filling the control itself instead of drawing a box. */
+   controls show focus on the control itself instead of drawing a floating box. */
 .focus-ring{
   border:.24rem solid #52d64b !important;
   box-shadow:0 0 0 .1rem rgba(0,0,0,.72) !important;
@@ -18,15 +18,26 @@ body:has(#view-library .console-poster[data-focused]) .focus-ring.on{
 }
 .focus-ring.pop{ animation:none !important; }
 
-/* System bar uses a green button state with no floating square selector. */
-.sysbar .sysnav-btn[data-focused],
+/* System-bar controls keep their normal dark surface and get a thin green
+   outline that follows the actual button shape. No floating selector here. */
+.sysbar .sysnav-btn[data-focused]{
+  background:rgba(34,38,42,.9) !important;
+  color:#fff !important;
+  box-shadow:inset 0 0 0 .24rem #52d64b !important;
+  outline:0 !important;
+}
 .sysbar .friends[data-focused],
 .sysbar .status-btn[data-focused],
-.sysbar .profile[data-focused],
 .sysbar .clock.clock-action[data-focused]{
-  background:#107c10 !important;
+  background:rgba(255,255,255,.08) !important;
   color:#fff !important;
-  box-shadow:none !important;
+  box-shadow:inset 0 0 0 .24rem #52d64b !important;
+  outline:0 !important;
+}
+.sysbar .profile[data-focused]{
+  background:#000 !important;
+  color:#fff !important;
+  box-shadow:inset 0 0 0 .24rem #52d64b !important;
   outline:0 !important;
 }
 
@@ -201,9 +212,10 @@ body:has(#view-library .console-poster[data-focused]) .focus-ring.on{
 
 .library-game-menu button[data-focused],
 .library-game-menu button:focus-visible{
-  background:#107c10;
+  background:#34373a;
   color:#fff;
   outline:0;
+  box-shadow:inset 0 0 0 .22rem #52d64b;
 }
 
 @media (max-aspect-ratio:16/10){
