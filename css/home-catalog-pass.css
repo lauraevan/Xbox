@@ -77,17 +77,35 @@
   color:rgba(255,255,255,.58);
   font-size:1.35rem;
 }
-.home-catalog-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(12.8rem,1fr));
-  gap:1.9rem 1.15rem;
-  align-items:start;
+.home-catalog-row-section{
+  margin:0 0 3rem;
 }
+.home-catalog-row-title{
+  margin:0 0 1rem;
+  color:rgba(255,255,255,.94);
+  font-size:1.55rem;
+  font-weight:600;
+}
+.home-catalog-row{
+  display:grid;
+  grid-auto-flow:column;
+  grid-auto-columns:12.8rem;
+  gap:1.15rem;
+  overflow-x:auto;
+  overflow-y:visible;
+  padding:.35rem .35rem 1rem;
+  margin:0 -.35rem;
+  scroll-snap-type:x proximity;
+  scrollbar-width:none;
+}
+.home-catalog-row::-webkit-scrollbar{ display:none; }
 .home-catalog-game{
   position:relative !important;
+  width:12.8rem;
   min-width:0;
   text-align:left;
   color:#fff;
+  scroll-snap-align:start;
 }
 .home-catalog-art{
   position:relative;
@@ -107,6 +125,14 @@
   height:100%;
   object-fit:cover;
   transition:filter .14s ease,transform .16s var(--ease-decel);
+}
+.home-catalog-game.minecraft .home-catalog-art{
+  background:#111;
+}
+.home-catalog-game.minecraft .home-catalog-art img{
+  object-fit:contain;
+  object-position:center;
+  background:#111;
 }
 .home-catalog-fallback{
   position:absolute;
@@ -179,10 +205,11 @@ body:has(#view-home .home-catalog-game[data-focused]) .focus-ring.on{
     padding-left:6rem;
     padding-right:6rem;
   }
-  .home-catalog-grid{
-    grid-template-columns:repeat(auto-fill,minmax(11.8rem,1fr));
-    gap:1.65rem 1rem;
+  .home-catalog-row{
+    grid-auto-columns:11.8rem;
+    gap:1rem;
   }
+  .home-catalog-game{ width:11.8rem; }
 }
 
 @media (max-width:760px){
@@ -190,7 +217,8 @@ body:has(#view-home .home-catalog-game[data-focused]) .focus-ring.on{
     padding-left:2.4rem;
     padding-right:2.4rem;
   }
-  .home-catalog-grid{
-    grid-template-columns:repeat(3,minmax(0,1fr));
+  .home-catalog-row{
+    grid-auto-columns:10.8rem;
   }
+  .home-catalog-game{ width:10.8rem; }
 }
