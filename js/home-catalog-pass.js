@@ -17,7 +17,7 @@ const LOCAL_COVERS = {
   'eldenring':'assets/game-art/elden-ring-cover.jpg',
   'reddeadredemption2':'assets/game-art/rdr2-cover.jpg',
   'rdr2':'assets/game-art/rdr2-cover.jpg',
-  'minecraft':'assets/game-art/minecraft-cover-user.jpg',
+  'minecraft':'assets/game-art/minecraft-cover-user.jpg?v=2',
   'fortnite':'assets/game-art/fortnite-cover.jpg'
 };
 
@@ -46,6 +46,7 @@ function initials(name){
 function cardFor(game){
   const btn = document.createElement('button');
   btn.className = 'home-catalog-game';
+  if (norm(game?.name) === 'minecraft') btn.classList.add('minecraft');
   btn.dataset.nav = '';
   btn.dataset.ringRadius = '.45rem';
   btn.dataset.homeCatalogKey = game.gameKey;
@@ -177,10 +178,24 @@ async function renderCatalogue(){
     count.textContent = `${rows.length.toLocaleString()} games`;
     body.innerHTML = '';
 
-    const grid = document.createElement('div');
-    grid.className = 'home-catalog-grid';
-    rows.forEach(game => grid.append(cardFor(game)));
-    body.append(grid);
+    const perRow = 8;
+    rows.forEach((game, index) => {
+      if (index % perRow !== 0) return;
+
+      const section = document.createElement('section');
+      section.className = 'home-catalog-row-section';
+
+      const title = document.createElement('h3');
+      title.className = 'home-catalog-row-title';
+      title.textContent = index === 0 ? 'Featured games' : index === perRow ? 'More games' : 'More to explore';
+
+      const rail = document.createElement('div');
+      rail.className = 'home-catalog-row';
+      rows.slice(index, index + perRow).forEach(item => rail.append(cardFor(item)));
+
+      section.append(title, rail);
+      body.append(section);
+    });
 
     window.Nav?.repaint?.();
   } catch (err){
