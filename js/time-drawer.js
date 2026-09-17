@@ -5,6 +5,9 @@
 const clock = document.getElementById('clock');
 if (!clock) return;
 
+/* Used only when browser/device location is unavailable or denied. */
+const DEFAULT_WEATHER = Object.freeze({ lat:46.7216, lon:-92.4594 });
+
 let drawer = null;
 let timer = null;
 let weatherTimer = null;
@@ -61,24 +64,28 @@ function makeDrawer(){
   root.innerHTML = `
     <div class="time-drawer-scrim" data-time-close></div>
     <section class="time-drawer-panel" role="dialog" aria-modal="true" aria-label="Time and weather">
-      <div class="time-drawer-eyebrow">Time</div>
-      <div>
-        <span class="time-drawer-clock" data-time-main>--:--</span>
-        <span class="time-drawer-period" data-time-period></span>
-      </div>
-      <div class="time-drawer-month" data-month-year></div>
-      <div class="time-drawer-rule"></div>
-      <div class="time-drawer-eyebrow">Weather</div>
-      <div class="time-weather" style="margin-top:1.4rem">
-        <div class="time-weather-icon" data-weather-icon>${iconSvg('cloudy')}</div>
+      <header class="time-drawer-head">
+        <div class="time-drawer-eyebrow">Time</div>
         <div>
-          <div class="time-weather-temp" data-weather-temp>--°</div>
-          <div class="time-weather-condition" data-weather-condition>Loading weather…</div>
+          <span class="time-drawer-clock" data-time-main>--:--</span>
+          <span class="time-drawer-period" data-time-period></span>
         </div>
+        <div class="time-drawer-month" data-month-year></div>
+      </header>
+      <div class="time-drawer-body">
+        <div class="time-drawer-eyebrow">Weather</div>
+        <div class="time-weather">
+          <div class="time-weather-icon" data-weather-icon>${iconSvg('cloudy')}</div>
+          <div>
+            <div class="time-weather-temp" data-weather-temp>--°</div>
+            <div class="time-weather-condition" data-weather-condition>Loading weather…</div>
+          </div>
+        </div>
+        <div class="time-weather-status" data-weather-status>Getting current conditions…</div>
       </div>
-      <div class="time-weather-status" data-weather-status>Uses your device location for current conditions.</div>
-      <div class="time-drawer-spacer"></div>
-      <div class="time-drawer-hint">Press B or Esc to close</div>
+      <footer class="time-drawer-foot">
+        <div class="time-drawer-hint">Press B or Esc to close</div>
+      </footer>
     </section>`;
   document.body.append(root);
   root.querySelector('[data-time-close]').addEventListener('click', close);
@@ -87,13 +94,46 @@ function makeDrawer(){
 
 function getCoords(){
   return new Promise((resolve, reject) => {
-    if (!navigator.geolocation) return reject(new Error('Location is unavailable'));
+    if (!navigator.geolocation) return reject(new Error('Location unavailable'));
     navigator.geolocation.getCurrentPosition(
       pos => resolve({ lat:pos.coords.latitude, lon:pos.coords.longitude }),
       err => reject(err),
-      { enableHighAccuracy:false, timeout:8000, maximumAge:10 * 60 * 1000 }
+      { enableHighAccuracy:false, timeout:6500, maximumAge:10 * 60 * 1000 }
     );
   });
+}
+
+async function fetchWeather(coords){
+  const url = new URL('https://api.open-meteo.com/v1/forecast');
+  url.searchParams.set('latitude', String(coords.lat));
+  url.searchParams.set('longitude', String(coords.lon));
+  url.searchParams.set('current', 'temperature_2m,weather_code');
+  url.searchParams.set('temperature_unit', 'fahrenheit');
+  url.searchParams.set('timezone', 'auto');
+  url.searchParams.set('forecast_days', '1');
+
+  const res = await fetch(url, { cache:'no-store' });
+  if (!res.ok) throw new Error(`Weather ${res.status}`);
+  const data = await res.json();
+  const current = data?.current;
+  if (!current || !Number.isFinite(Number(current.temperature_2m)))
+    throw new Error('No current weather');
+  return current;
+}
+
+function paintWeather(current, usingDefault){
+  const condition = drawer.querySelector('[data-weather-condition]');
+  const temp = drawer.querySelector('[data-weather-temp]');
+  const icon = drawer.querySelector('[data-weather-icon]');
+  const status = drawer.querySelector('[data-weather-status]');
+  const [label, kind] = weatherMeta(current.weather_code);
+
+  temp.textContent = `${Math.round(Number(current.temperature_2m))}°`;
+  condition.textContent = label;
+  icon.innerHTML = iconSvg(kind);
+  status.textContent = usingDefault ? 'Default conditions' : 'Current conditions';
+  status.classList.toggle('default', usingDefault);
+  lastWeatherAt = Date.now();
 }
 
 async function updateWeather(force = false){
@@ -107,36 +147,39 @@ async function updateWeather(force = false){
   const status = drawer.querySelector('[data-weather-status]');
 
   condition.textContent = 'Loading weather…';
+  temp.textContent = '--°';
+  icon.innerHTML = iconSvg('cloudy');
+  status.classList.remove('default');
   status.textContent = 'Getting current conditions…';
 
+  let coords = DEFAULT_WEATHER;
+  let usingDefault = true;
+
   try {
-    const { lat, lon } = await getCoords();
-    const url = new URL('https://api.open-meteo.com/v1/forecast');
-    url.searchParams.set('latitude', String(lat));
-    url.searchParams.set('longitude', String(lon));
-    url.searchParams.set('current', 'temperature_2m,weather_code');
-    url.searchParams.set('temperature_unit', 'fahrenheit');
-    url.searchParams.set('timezone', 'auto');
-    url.searchParams.set('forecast_days', '1');
+    coords = await getCoords();
+    usingDefault = false;
+  } catch {
+    /* Permission denied, unsupported browser, or timeout: use default weather. */
+  }
 
-    const res = await fetch(url, { cache:'no-store' });
-    if (!res.ok) throw new Error(`Weather ${res.status}`);
-    const data = await res.json();
-    const current = data?.current;
-    if (!current || !Number.isFinite(Number(current.temperature_2m))) throw new Error('No current weather');
-
-    const [label, kind] = weatherMeta(current.weather_code);
-    temp.textContent = `${Math.round(Number(current.temperature_2m))}°`;
-    condition.textContent = label;
-    icon.innerHTML = iconSvg(kind);
-    status.textContent = 'Current conditions';
-    lastWeatherAt = Date.now();
+  try {
+    const current = await fetchWeather(coords);
+    paintWeather(current, usingDefault);
   } catch (err){
-    temp.textContent = '--°';
-    condition.textContent = 'Weather unavailable';
-    status.textContent = err?.code === 1
-      ? 'Allow location access to show local weather.'
-      : 'Could not load current conditions.';
+    if (!usingDefault){
+      try {
+        const fallback = await fetchWeather(DEFAULT_WEATHER);
+        paintWeather(fallback, true);
+        return;
+      } catch {}
+    }
+
+    temp.textContent = '50°';
+    condition.textContent = 'Cloudy';
+    icon.innerHTML = iconSvg('cloudy');
+    status.textContent = 'Default weather';
+    status.classList.add('default');
+    lastWeatherAt = Date.now();
   }
 }
 
