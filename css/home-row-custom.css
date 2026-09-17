@@ -10,6 +10,7 @@
 .ref-library-mosaic{
   position:absolute;
   inset:0;
+  z-index:0;
   display:grid;
   grid-template-columns:1fr 1fr;
   grid-template-rows:1fr 1fr;
@@ -25,12 +26,27 @@
   object-fit:cover;
   min-width:0;
   min-height:0;
+  filter:saturate(.88) brightness(.9);
 }
 
-/* Thin transparent plus over the 4-cover My games & apps tile. */
+/* A soft tinted-glass sheet sits over the four covers. The art stays readable,
+   but the tile feels like one Xbox system surface instead of four raw images. */
+.ref-library-mosaic::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(145deg,rgba(20,28,24,.26),rgba(5,8,7,.34));
+  backdrop-filter:blur(.32rem) saturate(.88);
+  -webkit-backdrop-filter:blur(.32rem) saturate(.88);
+  box-shadow:inset 0 0 0 .1rem rgba(255,255,255,.055);
+}
+
+/* Glassy plus over the tinted 4-cover My games & apps tile. */
 .ref-library-plus{
   position:absolute;
   inset:0;
+  z-index:2;
   display:grid;
   place-items:center;
   pointer-events:none;
@@ -38,27 +54,38 @@
 .ref-library-plus::before{
   content:"";
   position:absolute;
-  width:5.4rem;
-  height:5.4rem;
+  width:5.7rem;
+  height:5.7rem;
   border-radius:50%;
-  background:rgba(0,0,0,.16);
-  backdrop-filter:blur(.18rem);
+  background:rgba(22,28,25,.38);
+  border:.1rem solid rgba(255,255,255,.2);
+  backdrop-filter:blur(.75rem) saturate(1.08);
+  -webkit-backdrop-filter:blur(.75rem) saturate(1.08);
+  box-shadow:
+    inset 0 .12rem .35rem rgba(255,255,255,.12),
+    inset 0 -.2rem .5rem rgba(0,0,0,.18),
+    0 .45rem 1.4rem rgba(0,0,0,.28);
 }
 .ref-library-plus span{
   position:absolute;
-  z-index:1;
+  z-index:3;
   width:2.65rem;
   height:.28rem;
   border-radius:1rem;
-  background:rgba(255,255,255,.68);
+  background:rgba(255,255,255,.76);
   box-shadow:0 .1rem .35rem rgba(0,0,0,.38);
 }
 .ref-library-plus span:last-child{
   transform:rotate(90deg);
 }
+.ref-library-tile:hover .ref-library-plus::before,
+.ref-library-tile[data-focused] .ref-library-plus::before{
+  background:rgba(28,36,32,.46);
+  border-color:rgba(255,255,255,.28);
+}
 .ref-library-tile:hover .ref-library-plus span,
 .ref-library-tile[data-focused] .ref-library-plus span{
-  background:rgba(255,255,255,.9);
+  background:rgba(255,255,255,.94);
 }
 .ref-library-tile .tile-label{
   background:rgba(8,9,10,.965)!important;
