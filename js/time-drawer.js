@@ -7,6 +7,7 @@ if (!clock) return;
 
 /* Used only when browser/device location is unavailable or denied. */
 const DEFAULT_WEATHER = Object.freeze({ lat:46.7216, lon:-92.4594 });
+const WALLPAPER_MODE_KEY = 'xbox.wallpaperLight';
 
 let drawer = null;
 let timer = null;
@@ -25,6 +26,28 @@ const iconSvg = kind => {
   };
   return icons[kind] || icons.cloudy;
 };
+
+const wallpaperIcon = light => light
+  ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.1A7.8 7.8 0 0 1 9.9 3.5 8.7 8.7 0 1 0 20.5 14.1Z"/></svg>'
+  : '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.4"/><path d="M12 2.2v2.1M12 19.7v2.1M2.2 12h2.1M19.7 12h2.1M5.1 5.1l1.5 1.5M17.4 17.4l1.5 1.5M18.9 5.1l-1.5 1.5M6.6 17.4l-1.5 1.5"/></svg>';
+
+function storedWallpaperLight(){
+  try { return localStorage.getItem(WALLPAPER_MODE_KEY) === '1'; }
+  catch { return false; }
+}
+
+function setWallpaperLight(light, persist = true){
+  document.body.classList.toggle('wallpaper-light', !!light);
+  if (persist){
+    try { localStorage.setItem(WALLPAPER_MODE_KEY, light ? '1' : '0'); } catch {}
+  }
+  const btn = drawer?.querySelector('[data-wallpaper-toggle]');
+  if (btn){
+    btn.setAttribute('aria-pressed', light ? 'true' : 'false');
+    btn.setAttribute('aria-label', light ? 'Dim wallpaper' : 'Brighten wallpaper');
+    btn.innerHTML = wallpaperIcon(light);
+  }
+}
 
 function weatherMeta(code){
   code = Number(code);
@@ -69,6 +92,7 @@ function makeDrawer(){
     <div class="time-drawer-scrim" data-time-close></div>
     <section class="time-drawer-panel" role="dialog" aria-modal="true" aria-label="Time and weather">
       <header class="time-drawer-head">
+        <button class="time-wallpaper-toggle" type="button" data-wallpaper-toggle aria-pressed="false" aria-label="Brighten wallpaper">${wallpaperIcon(false)}</button>
         <div class="time-drawer-eyebrow">Time</div>
         <div>
           <span class="time-drawer-clock" data-time-main>--:--</span>
@@ -101,6 +125,11 @@ function makeDrawer(){
     </section>`;
   document.body.append(root);
   root.querySelector('[data-time-close]').addEventListener('click', close);
+  root.querySelector('[data-wallpaper-toggle]').addEventListener('click', e => {
+    e.stopPropagation();
+    setWallpaperLight(!document.body.classList.contains('wallpaper-light'));
+  });
+  setWallpaperLight(document.body.classList.contains('wallpaper-light'), false);
   return root;
 }
 
@@ -310,8 +339,9 @@ weatherTimer = setInterval(() => {
   if (drawer?.classList.contains('open')) void updateWeather();
 }, 10 * 60 * 1000);
 
+setWallpaperLight(storedWallpaperLight(), false);
 renderTime();
 window.Nav?.repaint?.();
 
-window.TimeDrawer = { open, close, updateWeather };
+window.TimeDrawer = { open, close, updateWeather, setWallpaperLight };
 })();
