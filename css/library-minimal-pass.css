@@ -1,4 +1,19 @@
 /* Minimal My games & apps pass: one row, solid black, no labels or extra chrome. */
+
+/* The old global selector was a thick neon-green floating box. Xbox focus is
+   much quieter: a crisp light edge with no glow. Keep this override late in
+   the cascade so Home, library and other normal nav targets all share it. */
+.focus-ring{
+  border:.22rem solid rgba(255,255,255,.96) !important;
+  box-shadow:0 0 0 .1rem rgba(0,0,0,.72) !important;
+  transition:top .10s var(--ease-decel), left .10s var(--ease-decel),
+             width .10s var(--ease-decel), height .10s var(--ease-decel),
+             border-radius .10s var(--ease-decel), opacity .08s linear !important;
+}
+.focus-ring.pop{
+  animation:none !important;
+}
+
 #view-library,
 #view-library.console-page-view,
 #view-library .console-shell,
@@ -84,7 +99,7 @@
   color:#fff !important;
   scroll-snap-align:start;
   transform-origin:center center;
-  transition:transform .16s ease, filter .16s ease !important;
+  transition:transform .14s ease, filter .14s ease !important;
 }
 
 #view-library .console-poster-art{
@@ -98,7 +113,7 @@
   border:0 !important;
   outline:0 !important;
   box-shadow:0 .9rem 2.2rem rgba(0,0,0,.5) !important;
-  transition:transform .16s ease, filter .16s ease, box-shadow .16s ease, outline-color .12s ease !important;
+  transition:transform .14s ease, filter .14s ease, box-shadow .14s ease !important;
 }
 
 #view-library .console-poster-art img,
@@ -109,29 +124,29 @@
   object-fit:cover !important;
 }
 
-/* Mouse/touch hover feels like the real dashboard instead of a web card. */
 @media (hover:hover){
   #view-library .console-poster:hover{
-    transform:translateY(-.45rem) scale(1.035) !important;
+    transform:translateY(-.28rem) scale(1.022) !important;
     z-index:3;
   }
   #view-library .console-poster:hover .console-poster-art{
-    filter:brightness(1.08) saturate(1.03) !important;
-    box-shadow:0 1.35rem 3.1rem rgba(0,0,0,.68) !important;
+    filter:brightness(1.07) saturate(1.02) !important;
+    box-shadow:0 1.25rem 2.8rem rgba(0,0,0,.64) !important;
   }
 }
 
 #view-library .console-poster[data-focused],
 #view-library .console-poster.library-menu-open{
-  transform:translateY(-.35rem) scale(1.025) !important;
+  transform:translateY(-.22rem) scale(1.018) !important;
   z-index:4;
 }
 
+/* Do not draw a second green ring on the artwork. The shared focus ring above
+   already hugs the actual selectable button, so the selector stays aligned. */
 #view-library .console-poster[data-focused] .console-poster-art,
 #view-library .console-poster.library-menu-open .console-poster-art{
-  outline:.34rem solid #52d64b !important;
-  outline-offset:.28rem !important;
-  box-shadow:0 1.35rem 3rem rgba(0,0,0,.7) !important;
+  outline:0 !important;
+  box-shadow:0 1.3rem 2.9rem rgba(0,0,0,.68) !important;
 }
 
 /* Small Xbox-style action flyout shown when a game is selected. */
@@ -171,10 +186,10 @@
 
 .library-game-menu button[data-focused],
 .library-game-menu button:focus-visible{
-  background:#143c1d;
+  background:#34373a;
   color:#fff;
-  outline:.26rem solid #52d64b;
-  outline-offset:-.26rem;
+  outline:.2rem solid rgba(255,255,255,.96);
+  outline-offset:-.2rem;
 }
 
 @media (max-aspect-ratio:16/10){
