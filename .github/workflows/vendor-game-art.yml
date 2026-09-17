@@ -1,0 +1,105 @@
+name: Vendor Home game artwork
+
+on:
+  push:
+    paths:
+      - .github/workflows/vendor-game-art.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  vendor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: claude/xbox-web-replica-v4s0jk
+
+      - name: Download fixed Home artwork
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p assets/game-art
+
+          get() {
+            local out="$1"
+            shift
+            for url in "$@"; do
+              echo "Trying $url"
+              if curl --fail --location --retry 3 --retry-delay 2 --retry-all-errors \
+                --user-agent 'Mozilla/5.0' "$url" --output "$out.tmp"; then
+                if test -s "$out.tmp"; then
+                  mv "$out.tmp" "$out"
+                  return 0
+                fi
+              fi
+            done
+            rm -f "$out.tmp"
+            echo "Could not download $out" >&2
+            return 1
+          }
+
+          # Forza Horizon 5: keep the exact direct artwork that already worked.
+          get assets/game-art/forza-horizon-5-cover.jpg \
+            'https://xboxwire.thesourcemediaassets.com/sites/2/2021/11/ForzaHorizon5_KeyArt_Horiz_RGB_Final.jpg'
+          get assets/game-art/forza-horizon-5-hero.jpg \
+            'https://gaming-cdn.com/images/news/articles/13710/cover/forza-horizon-5-hat-auf-ps5-schon-2-millionen-spielkopien-verkauft-cover687427dc70621.jpg'
+
+          # GTA V
+          get assets/game-art/gta-v-cover.jpg \
+            'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3240220/library_600x900.jpg'
+          get assets/game-art/gta-v-hero.jpg \
+            'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/3240220/page_bg_raw.jpg'
+
+          # Hollow Knight: Silksong
+          get assets/game-art/silksong-cover.png \
+            'https://hollowknight.wiki/w/Special:Redirect/file/SilksongPromo1.png'
+          get assets/game-art/silksong-hero.jpg \
+            'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1030300/page_bg_raw.jpg'
+
+          # Elden Ring
+          get assets/game-art/elden-ring-cover.jpg \
+            'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1245620/library_600x900.jpg'
+          get assets/game-art/elden-ring-hero.jpg \
+            'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1245620/page_bg_raw.jpg'
+
+          # Red Dead Redemption 2
+          get assets/game-art/rdr2-cover.jpg \
+            'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1174180/library_600x900.jpg'
+          get assets/game-art/rdr2-hero.jpg \
+            'https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1174180/page_bg_raw.jpg'
+
+          # Fortnite
+          get assets/game-art/fortnite-cover.jpg \
+            'https://static.thcdn.com/productimg/1600/1600/11492349-4314494124984020.jpg'
+          get assets/game-art/fortnite-hero.jpg \
+            'https://cms-assets.unrealengine.com/cm6l5gfpm05kr07my04cqgy2x/cmt14h2ardvpq07o76t76zt0m'
+
+          # Minecraft is already local because mclauncherrep is vendored into this repo.
+          cp games/minecraft-launcher/assets/icons/java.webp assets/game-art/minecraft-cover.webp
+          cp games/minecraft-launcher/assets/hero-art.png assets/game-art/minecraft-hero.png
+
+          # Reject HTML/error documents masquerading as images.
+          for f in assets/game-art/*; do
+            test -s "$f"
+            if head -c 64 "$f" | grep -Eqi '<!doctype|<html|access denied|forbidden'; then
+              echo "Bad image payload: $f" >&2
+              exit 1
+            fi
+          done
+
+      - name: Commit local artwork
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'xbox-build-bot'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/game-art
+          if git diff --cached --quiet; then
+            echo 'Artwork already matches.'
+            exit 0
+          fi
+          git commit -m 'Add local Home game artwork'
+          git push origin HEAD:claude/xbox-web-replica-v4s0jk
