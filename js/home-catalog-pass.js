@@ -69,11 +69,18 @@ function cardFor(game){
   img.decoding = 'async';
   img.addEventListener('error', () => img.remove(), { once:true });
 
+  const platform = document.createElement('span');
+  platform.className = 'home-catalog-platform';
+  platform.textContent = 'GAME PASS  X|S';
+
+  const cloud = document.createElement('span');
+  cloud.className = 'home-catalog-cloud';
+  cloud.setAttribute('aria-hidden','true');
+  cloud.innerHTML = '<svg viewBox="0 0 24 24"><path d="M7.4 18.4a4.8 4.8 0 0 1-.7-9.55A6.35 6.35 0 0 1 18.9 10.8a3.8 3.8 0 0 1-.7 7.6H7.4Z"/></svg>';
+
   const badge = document.createElement('span');
   badge.className = 'home-catalog-owned';
   badge.textContent = 'OWNED';
-
-  art.append(fallback, img, badge);
 
   const name = document.createElement('span');
   name.className = 'home-catalog-name';
@@ -83,7 +90,8 @@ function cardFor(game){
   action.className = 'home-catalog-action';
   action.textContent = owned ? 'In My games & apps' : 'Add to My games & apps';
 
-  btn.append(art, name, action);
+  art.append(fallback, img, platform, cloud, badge, name);
+  btn.append(art, action);
 
   btn._navActivate = () => {
     if (Cloud.owns(game)){
@@ -187,7 +195,11 @@ async function renderCatalogue(){
 
       const title = document.createElement('h3');
       title.className = 'home-catalog-row-title';
-      title.textContent = index === 0 ? 'Featured games' : index === perRow ? 'More games' : 'More to explore';
+      title.textContent = index === 0
+        ? 'Recently added – Game Pass'
+        : index === perRow
+          ? 'Popular with Game Pass'
+          : 'More games to discover';
 
       const rail = document.createElement('div');
       rail.className = 'home-catalog-row';
