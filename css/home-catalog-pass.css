@@ -521,7 +521,7 @@ body:has(#view-home .home-catalog-game[data-focused]) .focus-ring.on{
 }
 
 @media (max-aspect-ratio:16/10){
-  #view-home .home-series-waves svg{height:70rem}
+  #view-home .home-series-waves svg{height:100%}
   .home-new-games-section{
     grid-template-columns:22rem minmax(0,1fr);
     min-height:30rem;
