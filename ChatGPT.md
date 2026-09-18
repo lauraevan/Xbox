@@ -819,6 +819,24 @@ Do not treat either handoff file as more authoritative than an explicit newer us
 
 Newest first. Short notes only; detail belongs in the commit.
 
+### 2026-09-18 — Stratus artwork is now vendored locally
+
+Commits:
+- `e11b30897b7f16dbc20c56fecb1eb11030b598bf` adds the vendor pipeline and local-art lookup in `stratus.js`.
+- `969670d618042e87c64cc47e3d9d735109f06a06` is the successful GitHub Actions asset commit.
+
+Result:
+- all 225 current Stratus catalogue entries have a local file under `assets/stratus-covers/`,
+- 215 were resolved from SteamGridDB,
+- 10 used the Stratus cover as a one-time vendored fallback because SteamGridDB had no usable match,
+- 0 placeholders were needed,
+- runtime Stratus cards now prefer the local manifest path, so client devices no longer hotlink cover art.
+
+Workflow: `.github/workflows/vendor-stratus-art.yml`
+Script: `scripts/vendor_stratus_art.py`
+Manifest: `assets/stratus-covers/manifest.json`
+
+
 ### 2026-09-18 — non-Home Home return + Guide clock emphasis
 
 Commit: `86d76de8935162de65231028fe23fa428650ce50`
