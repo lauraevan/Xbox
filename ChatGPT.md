@@ -819,6 +819,13 @@ Do not treat either handoff file as more authoritative than an explicit newer us
 
 Newest first. Short notes only; detail belongs in the commit.
 
+### 2026-09-18 — functional Share button in launcher preview
+
+Commit: `02ea690b1c1594db2e21e60577fbe9c50d7605fa`
+
+Added a top-right Share button to the Home game preview/launcher card. It uses the official Fluent share_24_filled icon added to `js/icons.js`, invokes `navigator.share({ title, text, url })` on supported devices, and falls back to copying the current launcher URL to the clipboard. Styling is scoped to `.home-game-preview-share`; top-bar/dashboard geometry is untouched.
+
+
 ### 2026-09-18 — launcher preview description fix
 
 Commit: `b5dd459afede4bca7a1ff33659e79608c36c48d8`
