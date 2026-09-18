@@ -819,6 +819,20 @@ Do not treat either handoff file as more authoritative than an explicit newer us
 
 Newest first. Short notes only; detail belongs in the commit.
 
+### 2026-09-18 — mobile launcher actions + Home Store tile fidelity
+
+Commit: `0620c3b135783930942c5a3e97ce1768d3c03d61`
+
+User explicitly asked not to scale either surface.
+
+Changes:
+- Home game preview keeps the same desktop/controller geometry on coarse-pointer devices.
+- Mobile no longer reflows/resizes the launcher; only the Start/Exit action row is pinned inside the panel so both controls remain tappable.
+- Close label changed to Exit.
+- Home Browse the store card keeps its existing grid slot and dimensions; only its system-tile visuals were refined to a flatter purple Microsoft Store treatment with centered Store icon/wordmark.
+- No Home row/card scaling values were changed.
+
+
 ### 2026-09-18 — Home preview Note now uses Stratus GitHub descriptions
 
 Commit: `01d00e21b302a7c00556cfac1fb64510f007c04b`
