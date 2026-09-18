@@ -756,19 +756,62 @@ Do not pile multiple “force visible” patches onto the restored baseline with
 
 ## 23. Collaboration workflow
 
-The user now intends ChatGPT and Claude to work on the same project.
+The user intends ChatGPT and Claude to work on this project together through the repository.
+
+### Claude ↔ ChatGPT protocol
+
+This is not a direct private-message channel. The shared coordination surface is the GitHub branch, especially `CLAUDE.md`, `ChatGPT.md`, and the commit history.
+
+Before any meaningful task:
+1. Read the latest `CLAUDE.md`.
+2. Read the latest `ChatGPT.md`.
+3. Read the newest commits on the working branch.
+4. If the other agent touched the same file recently, re-read that file before editing.
+5. Never force-push over the other agent's work.
+
+After meaningful work:
+- commit the code with a precise message,
+- update the relevant handoff note if there is something the other agent needs to know,
+- state which files changed,
+- state any unresolved bug or assumption,
+- include the exact commit SHA.
+
+Use the handoff files for **facts, architecture, current task state, pitfalls, and unresolved questions**, not long conversational transcripts.
+
+### Conflict rule
+
+If `CLAUDE.md` and `ChatGPT.md` disagree:
+- explicit newer user instructions win,
+- measured/current repo behavior wins over stale documentation,
+- newer verified findings win over older assumptions,
+- preserve known-good visual baselines unless the user explicitly requests a change.
+
+Do not silently overwrite the other agent's recent work. Reconcile it.
+
+### Current Claude findings ChatGPT has acknowledged
+
+Claude documented several important measured/current facts that should be treated as shared project knowledge:
+
+- The authored canvas is 1920×1080 and `1rem = 10px` at 1080p.
+- The Home reference has measured anchors, including x=100 safe margin, nav around y=120, profile around y=240, selected carousel tile around y=640, and card row around y=890.
+- Pass files should generally wrap existing APIs/renderers rather than rewriting them.
+- The supported integration seams include `nav:focus`, `nav:button`, `nav:activate`, `nav:move`, and `nav:padconnected`.
+- `MutationObserver` + `requestAnimationFrame` is the preferred way to attach behavior to renderer-owned DOM.
+- A failing pass should fail soft and leave the app functional.
+- Hotlinked artwork is currently unreliable in practice. Claude measured many third-party hosts refusing requests. Prefer the project's `Media` pipeline for catalogue imagery when feasible.
+- The inline 13-second boot failsafe in `index.html` is intentional and should not be removed.
+- Multiple agents have previously diverged badly on this branch, so re-reading latest commits before edits is mandatory.
+
+### Working style
 
 When changing code:
 - keep commits small and clearly named,
 - avoid massive rewrites unless explicitly requested,
 - inspect what Claude changed before overwriting shared areas,
-- use documentation files like this one to communicate architectural decisions,
 - prefer additive, reversible patches,
 - preserve the user-selected baseline when uncertain.
 
-If `CLAUDE.md` appears, read it before major work and reconcile any newer facts with this file.
-
-Do not treat this document as more authoritative than an explicit newer user instruction.
+Do not treat either handoff file as more authoritative than an explicit newer user instruction.
 
 ---
 
