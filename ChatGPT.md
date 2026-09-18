@@ -819,6 +819,13 @@ Do not treat either handoff file as more authoritative than an explicit newer us
 
 Newest first. Short notes only; detail belongs in the commit.
 
+### 2026-09-18 — boot greeting position/color correction
+
+Commit: `c3c9d0a81b3d5ba3ee8d94e0ae88bfef016462fc`
+
+User corrected the greeting reference: it belongs much lower on screen and the whole greeting surface is Xbox green. Updated `.boot-greeting` to a solid `#107c10` card near the bottom center, removed the dark-glass treatment and green edge stripe, and kept touch safe-area spacing. Size remains intentionally tiny.
+
+
 ### 2026-09-18 — post-boot greeting timing cleanup
 
 Commit: `9707adad21b040206facdd84f02cd950b0415f3b`
