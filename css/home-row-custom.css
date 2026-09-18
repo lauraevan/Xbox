@@ -44,12 +44,14 @@
 
 /* Glassy plus over the tinted 4-cover My games & apps tile. */
 .ref-library-plus{
-  position:absolute;
-  inset:0;
-  z-index:2;
-  display:grid;
-  place-items:center;
-  pointer-events:none;
+  position:absolute !important;
+  inset:0 !important;
+  z-index:12 !important;
+  display:grid !important;
+  place-items:center !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  pointer-events:none !important;
 }
 .ref-library-plus::before{
   content:"";
@@ -57,36 +59,35 @@
   width:5.7rem;
   height:5.7rem;
   border-radius:50%;
-  background:rgba(22,28,25,.38);
-  border:.1rem solid rgba(255,255,255,.2);
+  background:rgba(15,20,18,.56);
+  border:.12rem solid rgba(255,255,255,.3);
   backdrop-filter:blur(.75rem) saturate(1.08);
   -webkit-backdrop-filter:blur(.75rem) saturate(1.08);
   box-shadow:
-    inset 0 .12rem .35rem rgba(255,255,255,.12),
-    inset 0 -.2rem .5rem rgba(0,0,0,.18),
-    0 .45rem 1.4rem rgba(0,0,0,.28);
+    inset 0 .12rem .35rem rgba(255,255,255,.13),
+    inset 0 -.2rem .5rem rgba(0,0,0,.22),
+    0 .45rem 1.4rem rgba(0,0,0,.32);
 }
-.ref-library-plus span{
-  position:absolute;
-  z-index:3;
-  width:2.65rem;
-  height:.28rem;
-  border-radius:1rem;
-  background:rgba(255,255,255,.76);
-  box-shadow:0 .1rem .35rem rgba(0,0,0,.38);
-}
-.ref-library-plus span:last-child{
-  transform:rotate(90deg);
+.ref-library-plus::after{
+  content:"+";
+  position:relative;
+  z-index:13;
+  display:block;
+  color:#fff;
+  font:300 4.1rem/1 "Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;
+  transform:translateY(-.18rem);
+  text-shadow:0 .12rem .35rem rgba(0,0,0,.42);
 }
 .ref-library-tile:hover .ref-library-plus::before,
 .ref-library-tile[data-focused] .ref-library-plus::before{
-  background:rgba(28,36,32,.46);
-  border-color:rgba(255,255,255,.28);
+  background:rgba(24,32,28,.68);
+  border-color:rgba(255,255,255,.42);
 }
-.ref-library-tile:hover .ref-library-plus span,
-.ref-library-tile[data-focused] .ref-library-plus span{
-  background:rgba(255,255,255,.94);
+.ref-library-tile:hover .ref-library-plus::after,
+.ref-library-tile[data-focused] .ref-library-plus::after{
+  color:#fff;
 }
+
 .ref-library-tile .tile-label{
   background:rgba(8,9,10,.965)!important;
 }
