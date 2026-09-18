@@ -489,10 +489,12 @@
   letter-spacing:.17rem;
 }
 
-.launch-brand svg{
+.launch-brand svg,
+.launch-brand .launch-xbox-logo{
   width:2.25rem;
   height:2.25rem;
-  fill:currentColor;
+  object-fit:contain;
+  filter:invert(1);
 }
 
 .launch-title{
