@@ -208,39 +208,124 @@ function nudge(dir){
 const emitButton = button =>
   window.dispatchEvent(new CustomEvent('nav:button', { detail:{ button } }));
 
-/* ───────── gamepad ─────────
-   Standard mapping: 0=A 1=B 2=X 3=Y 4=LB 5=RB 8=View 9=Menu 16=Guide
-   12..15 = D-pad up/down/left/right. */
+/* ───────── Xbox / gamepad support ─────────
+   Standard Xbox layout:
+   0=A 1=B 2=X 3=Y 4=LB 5=RB 6=LT 7=RT 8=View 9=Menu
+   10/11=stick clicks 12..15=D-pad 16=Guide (when the browser exposes it).
+
+   Some Apple/browser combinations identify an Xbox controller correctly but
+   leave Gamepad.mapping empty. The physical Xbox layout still uses these same
+   indices, so recognized Xbox IDs are accepted as a safe fallback. */
 const PAD_BUTTONS = { 0:'a', 1:'b', 2:'x', 3:'y', 4:'lb', 5:'rb', 8:'view', 9:'menu', 16:'guide' };
 const PAD_DIRS    = { 12:'up', 13:'down', 14:'left', 15:'right' };
 const held = new Map();
-const REPEAT_FIRST = 380, REPEAT_RATE = 110;
+const knownPads = new Map();
+let activePadIndex = null;
+const REPEAT_FIRST = 360, REPEAT_RATE = 105;
+
+const isXboxPad = pad =>
+  /xbox|xinput|microsoft|045e/i.test(String(pad?.id || ''));
+
+function padLabel(pad){
+  if (isXboxPad(pad)) return 'Xbox controller';
+  return String(pad?.id || 'Controller').replace(/\s*\([^)]*\)\s*/g, ' ').trim() || 'Controller';
+}
+
+function registerPad(pad){
+  if (!pad || knownPads.has(pad.index)) return;
+  knownPads.set(pad.index, { id:pad.id, xbox:isXboxPad(pad) });
+  if (activePadIndex === null) activePadIndex = pad.index;
+
+  document.body.dataset.controller = isXboxPad(pad) ? 'xbox' : 'gamepad';
+  window.dispatchEvent(new CustomEvent('nav:padconnected', {
+    detail:{
+      id:pad.id,
+      index:pad.index,
+      mapping:pad.mapping || '',
+      xbox:isXboxPad(pad),
+      buttons:pad.buttons?.length || 0,
+      axes:pad.axes?.length || 0
+    }
+  }));
+
+  setTimeout(() => {
+    window.App?.toast?.('Controller connected', `${padLabel(pad)} ready`);
+  }, 0);
+
+  /* If the dashboard did not already establish focus, make the controller
+     usable immediately after the first button/axis interaction. */
+  requestAnimationFrame(() => {
+    if (!current) setFocus(candidates()[0], { silent:true });
+  });
+}
+
+function unregisterPad(pad){
+  if (!pad) return;
+  knownPads.delete(pad.index);
+  for (const key of [...held.keys()])
+    if (String(key).startsWith(`${pad.index}:`)) held.delete(key);
+
+  if (activePadIndex === pad.index){
+    const next = (navigator.getGamepads?.() || []).find(p => p && p.index !== pad.index);
+    activePadIndex = next?.index ?? null;
+  }
+
+  if (!knownPads.size) delete document.body.dataset.controller;
+  window.dispatchEvent(new CustomEvent('nav:paddisconnected', {
+    detail:{ id:pad.id, index:pad.index, xbox:isXboxPad(pad) }
+  }));
+  setTimeout(() => window.App?.toast?.('Controller disconnected', padLabel(pad)), 0);
+}
+
+function padDeadzone(){
+  const configured = Number(window.State?.settings.stickDeadzone);
+  if (!Number.isFinite(configured)) return .38;
+  return Math.max(.18, Math.min(.78, configured / 100));
+}
 
 function pollPads(){
-  const pads = navigator.getGamepads ? navigator.getGamepads() : [];
+  let pads = [];
+  try { pads = navigator.getGamepads ? navigator.getGamepads() : []; }
+  catch { pads = []; }
   const now = performance.now();
 
   for (const pad of pads){
-    if (!pad) continue;
+    if (!pad || pad.connected === false) continue;
+    registerPad(pad);
 
-    // face + shoulder buttons: edge-triggered
+    /* Prefer the first connected controller, but let any pad become active
+       as soon as it produces input. */
+    const hasButton = [...pad.buttons].some(button => button?.pressed || (button?.value || 0) > .55);
+    const hasAxis = [...pad.axes].some(axis => Math.abs(axis || 0) > .45);
+    if (hasButton || hasAxis) activePadIndex = pad.index;
+    if (activePadIndex !== pad.index) continue;
+
+    // Face / shoulder / Menu / View / Guide buttons are edge-triggered.
     const map = window.State?.settings.buttonMap || {};
     for (const [index, name] of Object.entries(PAD_BUTTONS)){
-      const pressed = pad.buttons[index]?.pressed;
+      const button = pad.buttons[index];
+      const pressed = !!button && (button.pressed || button.value > .65);
       const key = `${pad.index}:b${index}`;
-      if (pressed && !held.get(key)){
+      if (pressed && !held.has(key)){
         held.set(key, now);
-        const mapped = map[name] || name;      // face buttons may be swapped
-        if (mapped === 'a') activate(); else emitButton(mapped);
-      } else if (!pressed && held.get(key)) held.delete(key);
+        const mapped = map[name] || name;
+        if (mapped === 'a'){
+          if (!current) setFocus(candidates()[0], { silent:true });
+          else activate();
+        } else emitButton(mapped);
+      } else if (!pressed && held.has(key)){
+        held.delete(key);
+      }
     }
 
-    // d-pad + left stick: repeat while held
+    // D-pad + left stick navigate with console-style key repeat.
     const [sx, sy] = [pad.axes[0] || 0, pad.axes[1] || 0];
-    const DEAD = (window.State?.settings.stickDeadzone ?? 55) / 100;
+    const DEAD = padDeadzone();
     const dirs = new Set();
-    for (const [index, name] of Object.entries(PAD_DIRS))
-      if (pad.buttons[index]?.pressed) dirs.add(name);
+    for (const [index, name] of Object.entries(PAD_DIRS)){
+      const button = pad.buttons[index];
+      if (button && (button.pressed || button.value > .65)) dirs.add(name);
+    }
     if (sx < -DEAD) dirs.add('left');
     if (sx >  DEAD) dirs.add('right');
     if (sy < -DEAD) dirs.add('up');
@@ -250,14 +335,26 @@ function pollPads(){
       const key = `${pad.index}:d${dir}`;
       if (dirs.has(dir)){
         const since = held.get(key);
-        if (since === undefined){ held.set(key, now); move(dir); }
-        else if (now - since > REPEAT_FIRST){
+        if (since === undefined){
+          held.set(key, now);
+          move(dir);
+        } else if (now - since > REPEAT_FIRST){
           held.set(key, now - REPEAT_FIRST + REPEAT_RATE);
           move(dir);
         }
       } else held.delete(key);
     }
   }
+
+  /* Polling also discovers controllers that were already plugged in before
+     page load once the browser makes them visible after user interaction. */
+  for (const [index] of knownPads){
+    const live = pads[index];
+    if (!live || live.connected === false){
+      unregisterPad({ index, id:knownPads.get(index)?.id || 'Controller' });
+    }
+  }
+
   requestAnimationFrame(pollPads);
 }
 
@@ -328,9 +425,8 @@ document.addEventListener('click', e => {
 
 window.addEventListener('keydown', onKey);
 window.addEventListener('resize', schedulePaint);
-window.addEventListener('gamepadconnected', e => {
-  window.dispatchEvent(new CustomEvent('nav:padconnected', { detail:{ id: e.gamepad.id } }));
-});
+window.addEventListener('gamepadconnected', e => registerPad(e.gamepad));
+window.addEventListener('gamepaddisconnected', e => unregisterPad(e.gamepad));
 document.addEventListener('scroll', schedulePaint, true);
 requestAnimationFrame(pollPads);
 

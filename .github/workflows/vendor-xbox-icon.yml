@@ -1,0 +1,58 @@
+name: Vendor Xbox app icon
+
+on:
+  push:
+    paths:
+      - .github/workflows/vendor-xbox-icon.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  vendor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: claude/xbox-web-replica-v4s0jk
+          fetch-depth: 0
+
+      - name: Download Microsoft Xbox app logo locally
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p assets/pwa
+
+          curl --fail --location --retry 4 --retry-delay 2 \
+            --user-agent 'Mozilla/5.0' \
+            'https://upload.wikimedia.org/wikipedia/commons/3/3a/Xbox_app_logo.svg' \
+            -o assets/pwa/xbox-logo.svg
+
+          for size in 180 192 512; do
+            curl --fail --location --retry 4 --retry-delay 2 \
+              --user-agent 'Mozilla/5.0' \
+              "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Xbox_app_logo.svg/${size}px-Xbox_app_logo.svg.png" \
+              -o "assets/pwa/xbox-${size}.png"
+          done
+
+          grep -qi '<svg' assets/pwa/xbox-logo.svg
+          for f in assets/pwa/xbox-180.png assets/pwa/xbox-192.png assets/pwa/xbox-512.png; do
+            test -s "$f"
+            file "$f" | grep -qi 'PNG image data'
+          done
+
+      - name: Commit local Xbox icon assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'xbox-build-bot'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/pwa
+          if git diff --cached --quiet; then
+            echo 'Xbox icon assets already match.'
+            exit 0
+          fi
+          git commit -m 'Vendor real Xbox app icons locally'
+          git pull --rebase origin claude/xbox-web-replica-v4s0jk
+          git push origin HEAD:claude/xbox-web-replica-v4s0jk
