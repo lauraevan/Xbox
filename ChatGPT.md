@@ -819,6 +819,24 @@ Do not treat either handoff file as more authoritative than an explicit newer us
 
 Newest first. Short notes only; detail belongs in the commit.
 
+### 2026-09-18 — local Xbox PWA icon + stronger Xbox controller support
+
+Commits:
+- `e759777f9b249038f7d2540ee61d2f79ece10f95` switches manifest/head metadata to local Xbox icon paths and upgrades `nav.js` gamepad handling.
+- `c6d96dcd1685d390b46e1683ed2bfdb8c550cd59` fixes the icon-vendor workflow to render PNG sizes from the source SVG.
+- `46e2e66a0c5a6425da9aeaca354a657e89b125a8` is the successful asset commit with 180/192/512 PNGs plus the source SVG.
+
+Controller changes:
+- tracks connect/disconnect and active controller index,
+- detects Xbox/XInput/Microsoft IDs as an Xbox fallback when `Gamepad.mapping` is empty,
+- A activates, B backs out, D-pad/left stick navigate, X/Y/LB/RB/Menu/View/Guide preserve existing nav events,
+- controller already connected before page load is picked up by polling once the browser exposes it,
+- connection/disconnection toasts and body controller state are emitted,
+- cloud-player iframe already retains its existing `allow="gamepad"`.
+
+PWA metadata no longer hotlinks the icon. `index.html` and `manifest.webmanifest` now reference `assets/pwa/xbox-*.png` / `xbox-logo.svg`.
+
+
 ### 2026-09-18 — mobile launcher actions + Home Store tile fidelity
 
 Commit: `0620c3b135783930942c5a3e97ce1768d3c03d61`
