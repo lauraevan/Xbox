@@ -161,17 +161,17 @@ const APPS = [
   {
     name:'Netflix',
     cls:'netflix',
-    logo:'https://commons.wikimedia.org/wiki/Special:Redirect/file/Netflix_2015_logo.svg'
+    logo:'https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg'
   },
   {
     name:'Prime Video',
     cls:'prime',
-    logo:'https://commons.wikimedia.org/wiki/Special:Redirect/file/Prime_Video_logo_(2024).svg'
+    logo:'https://upload.wikimedia.org/wikipedia/commons/9/90/Prime_Video_logo_%282024%29.svg'
   },
   {
     name:'YouTube',
     cls:'youtube',
-    logo:'https://commons.wikimedia.org/wiki/Special:Redirect/file/YouTube_Logo_2017.svg'
+    logo:'https://upload.wikimedia.org/wikipedia/commons/b/b8/YouTube_Logo_2017.svg'
   },
   {
     name:'Nitrado',
