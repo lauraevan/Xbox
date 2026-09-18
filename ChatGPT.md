@@ -819,6 +819,18 @@ Do not treat either handoff file as more authoritative than an explicit newer us
 
 Newest first. Short notes only; detail belongs in the commit.
 
+### 2026-09-18 — touch navigation/mobile support pass
+
+Commit: `f1074061f4e04d46cc0fb33ebb3bafa6e042c48e`
+
+Changed:
+- `nav.js`: touch/pen pointermove no longer behaves like mouse hover during swipes; clean touch taps directly activate controller-style `[data-nav]` items instead of requiring a focus tap first. Existing direct click handlers are respected via `defaultPrevented`.
+- `base.css`: coarse-pointer-only tap sizing, momentum horizontal scrolling, swipe-friendly Home/console rows, safe-area-aware Home return button, and a physically touch-sized Guide panel/tabs/rows/quick actions.
+- Desktop mouse/controller geometry is intentionally unchanged because the CSS lives under `@media (hover:none), (pointer:coarse)`.
+
+No new script/pass file was added.
+
+
 ### 2026-09-18 — Stratus artwork is now vendored locally
 
 Commits:
