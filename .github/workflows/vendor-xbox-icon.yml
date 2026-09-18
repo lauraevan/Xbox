@@ -29,14 +29,22 @@ jobs:
             'https://upload.wikimedia.org/wikipedia/commons/3/3a/Xbox_app_logo.svg' \
             -o assets/pwa/xbox-logo.svg
 
-          for size in 180 192 512; do
-            curl --fail --location --retry 4 --retry-delay 2 \
-              --user-agent 'Mozilla/5.0' \
-              "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Xbox_app_logo.svg/${size}px-Xbox_app_logo.svg.png" \
-              -o "assets/pwa/xbox-${size}.png"
-          done
-
           grep -qi '<svg' assets/pwa/xbox-logo.svg
+          python3 -m pip install --disable-pip-version-check cairosvg
+          python3 - <<'PY'
+          from pathlib import Path
+          import cairosvg
+
+          svg = Path('assets/pwa/xbox-logo.svg').read_bytes()
+          for size in (180, 192, 512):
+              cairosvg.svg2png(
+                  bytestring=svg,
+                  write_to=f'assets/pwa/xbox-{size}.png',
+                  output_width=size,
+                  output_height=size,
+              )
+          PY
+
           for f in assets/pwa/xbox-180.png assets/pwa/xbox-192.png assets/pwa/xbox-512.png; do
             test -s "$f"
             file "$f" | grep -qi 'PNG image data'
