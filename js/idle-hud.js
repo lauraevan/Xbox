@@ -106,8 +106,8 @@ function gamepadSnapshot(){
   const pads = navigator.getGamepads?.() || [];
   return [...pads].filter(Boolean).map(pad => ({
     i:pad.index,
-    b:pad.buttons.map(b => Number(b.value.toFixed(2))),
-    a:pad.axes.map(a => Number(a.toFixed(2)))
+    b:pad.buttons.map(b => b.pressed ? 1 : Number(b.value > .25)),
+    a:pad.axes.map(a => Math.abs(a) < .14 ? 0 : Number(a.toFixed(1)))
   }));
 }
 function pollGamepads(){
@@ -116,10 +116,9 @@ function pollGamepads(){
     if (lastGamepad && snap !== lastGamepad) activity();
     lastGamepad = snap;
   } catch {}
-  requestAnimationFrame(pollGamepads);
 }
 
 arm();
-requestAnimationFrame(pollGamepads);
+setInterval(pollGamepads, 250);
 window.XboxIdleHud = { show, hide, reset:activity };
 })();
