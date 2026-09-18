@@ -819,6 +819,15 @@ Do not treat either handoff file as more authoritative than an explicit newer us
 
 Newest first. Short notes only; detail belongs in the commit.
 
+### 2026-09-18 — Home preview Note now uses Stratus GitHub descriptions
+
+Commit: `01d00e21b302a7c00556cfac1fb64510f007c04b`
+
+The preview's Note section now pulls only `cloud.description` from the Stratus catalogue. It no longer substitutes the local browser-game description. The full note is shown in a bounded scrollable panel so long Stratus control/loading notes fit without expanding the launcher.
+
+Current Home matches found in Stratus: Forza Horizon 5, Grand Theft Auto V, Hollow Knight: Silksong, Elden Ring, Red Dead Redemption 2. Minecraft and Fortnite currently have no exact Stratus catalogue row, so the UI states that no Xbox Cloud note is available instead of inventing content.
+
+
 ### 2026-09-18 — touch top bar size correction
 
 Commit: `a6c499edeac4f318925bf7d4964218f5b4cd8759`
