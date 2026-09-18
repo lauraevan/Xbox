@@ -16,15 +16,42 @@ const FORZA_CLEAN = 'https://gaming-cdn.com/images/news/articles/13710/cover/for
    FORZA HORIZON 5 logo behind the system navigation. */
 const ART = {
   'Forza Horizon 5': {
-    cover: 'https://xboxwire.thesourcemediaassets.com/sites/2/2021/11/ForzaHorizon5_KeyArt_Horiz_RGB_Final.jpg',
-    landscape: FORZA_CLEAN,
-    hero: FORZA_CLEAN
+    cover: 'assets/game-art/forza-horizon-5-cover.jpg',
+    landscape: 'assets/game-art/forza-horizon-5-hero.jpg',
+    hero: 'assets/game-art/forza-horizon-5-hero.jpg'
+  },
+  'Grand Theft Auto V': {
+    cover: 'assets/game-art/gta-v-cover.jpg',
+    landscape: 'assets/game-art/gta-v-hero.jpg',
+    hero: 'assets/game-art/gta-v-hero.jpg'
+  },
+  'Hollow Knight: Silksong': {
+    cover: 'assets/game-art/silksong-cover.png',
+    landscape: 'assets/game-art/silksong-hero.jpg',
+    hero: 'assets/game-art/silksong-hero.jpg'
+  },
+  'Elden Ring': {
+    cover: 'assets/game-art/elden-ring-cover.jpg',
+    landscape: 'assets/game-art/elden-ring-hero.jpg',
+    hero: 'assets/game-art/elden-ring-hero.jpg'
+  },
+  'Red Dead Redemption 2': {
+    cover: 'assets/game-art/rdr2-cover.jpg',
+    landscape: 'assets/game-art/rdr2-hero.jpg',
+    hero: 'assets/game-art/rdr2-hero.jpg'
+  },
+  'Minecraft': {
+    cover: 'assets/game-art/minecraft-cover.webp',
+    landscape: 'assets/game-art/minecraft-hero.png',
+    hero: 'assets/game-art/minecraft-hero.png'
+  },
+  'Fortnite': {
+    cover: 'assets/game-art/fortnite-cover.jpg',
+    landscape: 'assets/game-art/fortnite-hero.jpg',
+    hero: 'assets/game-art/fortnite-hero.jpg'
   },
   'Subnautica 2': {
     cover: 'https://static.actugaming.net/media/2024/10/subnautica-2-jaquette.jpg'
-  },
-  'Hollow Knight: Silksong': {
-    cover: 'https://hollowknight.wiki/w/Special:Redirect/file/SilksongPromo1.png'
   },
   'Microsoft Edge': { cover: EDGE_LOGO },
   'Mortal Kombat 1': {
@@ -32,9 +59,6 @@ const ART = {
   },
   'Roblox': {
     cover: 'https://m.media-amazon.com/images/I/715MvilCPGL.jpg'
-  },
-  'Fortnite': {
-    cover: 'https://static.thcdn.com/productimg/1600/1600/11492349-4314494124984020.jpg'
   },
   'Minecraft Dungeons II': {
     landscape: 'https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/key-art/homepage_discover_our_games_mc_dungeons_ii_key_art_864x864.jpg',
@@ -48,7 +72,7 @@ const ART = {
     landscape: 'https://pliki.ppe.pl/storage/1cc680bbd7391274e9bf/1cc680bbd7391274e9bf.png',
     cover: 'https://pliki.ppe.pl/storage/1cc680bbd7391274e9bf/1cc680bbd7391274e9bf.png'
   }
-};
+}
 
 const SGDB = 'https://www.steamgriddb.com/api/v2';
 const CACHE_KEY = 'xbox.web.reference-art.v4';
@@ -130,11 +154,11 @@ function activate(name){
 
 const ROW = [
   { name:'Forza Horizon 5', hero:true, badge:'X|S' },
-  { name:'Subnautica 2', badge:'GAME PASS  X|S' },
+  { name:'Grand Theft Auto V', badge:'X|S' },
   { name:'Hollow Knight: Silksong', badge:'GAME PASS  X|S' },
-  { name:'Microsoft Edge', className:'edge-tile' },
-  { name:'Mortal Kombat 1', badge:'X|S' },
-  { name:'Roblox' },
+  { name:'Elden Ring', badge:'X|S' },
+  { name:'Red Dead Redemption 2', badge:'X|S' },
+  { name:'Minecraft', badge:'X|S' },
   { name:'Fortnite', badge:'X|S' }
 ];
 
@@ -148,6 +172,21 @@ function refTile(def){
   const face = el('span', 'tile-face');
   const art = el('span', 'ref-art');
   const img = el('img', 'cover loaded');
+  const primary = primaryArt(def.name, 'cover');
+
+  if (primary){
+    const resolved = new URL(primary, document.baseURI).href;
+    const bg = `url("${resolved}")`;
+    face.style.setProperty('background-image', bg, 'important');
+    face.style.setProperty('background-size', 'cover', 'important');
+    face.style.setProperty('background-position', 'center', 'important');
+    face.style.setProperty('background-repeat', 'no-repeat', 'important');
+    art.style.setProperty('background-image', bg, 'important');
+    art.style.setProperty('background-size', 'cover', 'important');
+    art.style.setProperty('background-position', 'center', 'important');
+    art.style.setProperty('background-repeat', 'no-repeat', 'important');
+  }
+
   loadArt(img, def.name, 'cover');
   art.append(img);
   face.append(art);
