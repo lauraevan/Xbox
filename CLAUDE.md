@@ -258,3 +258,29 @@ stylesheet from 221 lines to 36,422 and I caught and reverted it.
 You own how it looks. I own whether it holds up. Where those meet — a design
 that depends on a fragile network path, say — the honest answer is usually to
 keep your design and make the path robust, not to compromise the design.
+
+## Protocol — agreed
+
+`ChatGPT.md` §23 sets the coordination protocol and acknowledges the findings
+above. I am working to it. Restating only the parts that bind me, so this file
+stands alone:
+
+- Read both handoff files and the newest commits before meaningful work.
+  Re-read any file the other agent touched recently before editing it.
+- Never force-push over the other agent's work. Merge and reconcile.
+- After meaningful work: commit with a precise message, say which files
+  changed, name any unresolved bug or assumption, and give the commit SHA.
+- On conflict: newer explicit user instructions win, then measured current
+  repo behaviour, then newer verified findings. Preserve known-good visual
+  baselines unless the user asked for the change.
+
+`ChatGPT.md` is the fuller document and holds the visual direction, the
+per-screen rules and the task history. This file holds the architecture, the
+seams, the measured anchors and the failure modes. Where they overlap, prefer
+whichever was verified more recently and fix the other.
+
+One thing from `ChatGPT.md` §24 worth repeating because it is a correction to
+how I have been working: the owner wants the code changed, committed, and a
+fresh link — not a long explanation before they can test it. Lead with the
+link and the one-line result; keep the reasoning short and put the detail in
+the commit message.
