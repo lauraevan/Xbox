@@ -187,7 +187,9 @@ function refCard({ label, sub, artName, chip, cls }){
   btn.setAttribute('aria-label', label);
 
   if (cls === 'card-store'){
-    btn.append(el('div', 'ref-store-icon', ICON.store));
+    const icon = el('div', 'ref-store-icon', ICON.store);
+    const word = el('div', 'ref-store-wordmark', 'Microsoft Store');
+    btn.append(icon, word);
   } else {
     const wrap = el('div', 'ref-card-art');
     const img = el('img', 'cover loaded');

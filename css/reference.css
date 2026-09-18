@@ -275,19 +275,50 @@ body[data-view="home"] .profile[data-focused]{ background:transparent !important
   font-size:.98rem;
 }
 .ref-card.card-store{
-  background:linear-gradient(136deg,#704fe0 0%,#5d3aca 55%,#4728a6 100%) !important;
+  /* Xbox Home's Store tile is a flat purple system tile, not a promo image.
+     Keep the existing card geometry exactly as authored. */
+  background:#5b2fb7 !important;
 }
 .ref-card.card-store::after{ display:none; }
+.ref-card.card-store::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(0,0,0,.08));
+}
 .ref-store-icon{
   position:absolute;
   left:50%;
-  top:4.6rem;
+  top:5rem;
   transform:translateX(-50%);
+  z-index:2;
   display:grid;
   place-items:center;
 }
-.ref-store-icon svg{ width:3.7rem; height:3.7rem; fill:#fff; }
-.ref-card.card-store .card-label{ bottom:1.4rem; font-size:1.62rem; }
+.ref-store-icon svg{
+  width:4.4rem;
+  height:4.4rem;
+  fill:#fff;
+}
+.ref-store-wordmark{
+  position:absolute;
+  left:0;
+  right:0;
+  top:10.25rem;
+  z-index:2;
+  color:rgba(255,255,255,.95);
+  font-size:1.22rem;
+  font-weight:500;
+  text-align:center;
+}
+.ref-card.card-store .card-label{
+  left:1.45rem;
+  right:1.25rem;
+  bottom:1.18rem;
+  font-size:1.62rem;
+  font-weight:400;
+}
 
 body[data-view="home"] .legend{ display:none !important; }
 

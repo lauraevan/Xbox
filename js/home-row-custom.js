@@ -235,7 +235,7 @@ async function openGamePreview(title){
   close.className = 'home-game-preview-close';
   close.dataset.nav = '';
   close.dataset.ringRadius = '.9rem';
-  close.innerHTML = `${window.Views?.ICON?.close || window.Views?.ICON?.back || ''}<span>Close</span>`;
+  close.innerHTML = `${window.Views?.ICON?.close || window.Views?.ICON?.back || ''}<span>Exit</span>`;
   close._navActivate = closeGamePreview;
   close.addEventListener('click', event => {
     event.preventDefault();

@@ -390,85 +390,65 @@
 }
 
 @media (hover:none), (pointer:coarse){
+  /* Keep the exact launcher composition and scale used on desktop/controller.
+     Touch only changes reachability of the action controls. */
   .home-game-preview{
-    padding:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right))
-            max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));
+    padding:5rem;
   }
   .home-game-preview-card{
-    width:min(94vw,900px);
-    max-height:92vh;
-    min-height:0;
-    grid-template-columns:minmax(110px,26%) minmax(0,1fr);
-    overflow:auto;
-    border-radius:18px;
-    -webkit-overflow-scrolling:touch;
+    width:min(116rem,88vw);
+    min-height:55rem;
+    grid-template-columns:24rem minmax(0,1fr);
+    overflow:hidden;
+    border-radius:2.2rem;
   }
   .home-game-preview-visual{
-    inset:0 0 0 26%;
+    inset:0 0 0 24rem;
   }
   .home-game-preview-cover{
-    width:calc(100% - 24px);
-    height:auto;
-    aspect-ratio:2/3;
-    margin:0 12px 22px;
-    border-radius:10px;
+    width:20rem;
+    height:30rem;
+    aspect-ratio:auto;
+    margin:0 0 4.2rem 3.2rem;
+    border-radius:1.15rem;
   }
   .home-game-preview-info{
-    padding:28px 22px 22px 12px;
+    padding:6rem 6rem 10rem 3rem;
   }
-  .home-game-preview-kicker{ font-size:12px; }
   .home-game-preview-info h2{
-    font-size:clamp(27px,5vw,42px);
-    letter-spacing:-1px;
+    font-size:4.4rem;
+    letter-spacing:-.08rem;
   }
   .home-game-preview-facts{
-    grid-template-columns:1fr;
-    gap:6px;
-    margin:14px 0;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:.8rem;
+    margin:2rem 0;
   }
   .home-game-preview-fact{
-    min-height:46px;
-    padding:8px 10px;
-    border-radius:9px;
+    min-height:0;
+    padding:1rem 1.1rem;
+    border-radius:1rem;
   }
+
+  /* Start/Exit stay in one fixed touch row inside the launcher itself. */
   .home-game-preview-actions{
-    position:sticky;
-    bottom:0;
-    padding-top:8px;
-    background:linear-gradient(transparent,#17191b 24%);
+    position:absolute;
+    z-index:12;
+    right:2.2rem;
+    bottom:2.2rem;
+    display:flex;
+    gap:1rem;
+    margin:0;
+    padding:0;
+    background:none;
   }
   .home-game-preview-start,
   .home-game-preview-close{
-    min-width:0;
-    min-height:50px;
-    flex:1;
-    border-radius:10px;
-    font-size:15px;
-  }
-}
-
-@media (max-width:620px) and (hover:none), (max-width:620px) and (pointer:coarse){
-  .home-game-preview-card{
-    grid-template-columns:1fr;
-  }
-  .home-game-preview-visual{
-    inset:0;
-    height:190px;
-  }
-  .home-game-preview-cover{
-    width:108px;
-    height:162px;
-    margin:92px 0 0 18px;
-    z-index:4;
-  }
-  .home-game-preview-info{
-    margin-top:-62px;
-    padding:78px 18px 18px;
-  }
-  .home-game-preview-info h2{
-    font-size:29px;
-  }
-  .home-game-preview-facts{
-    grid-template-columns:1fr;
+    min-width:15rem;
+    min-height:5.2rem;
+    flex:none;
+    border-radius:1rem;
+    font-size:1.55rem;
+    touch-action:manipulation;
   }
 }
