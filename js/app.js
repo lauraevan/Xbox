@@ -971,13 +971,9 @@ async function boot(){
   restoreWallpaper();
   window.State.unlock('boot');
 
-  /* The real console gives the signed-in profile a tiny post-boot greeting.
-     Wait until Home is visibly established so it floats over the dashboard,
-     not over the boot animation fade. */
-  setTimeout(showBootGreeting, 260);
-
-  const count = window.Catalog.count();
-  setTimeout(() => toast('Ready to play', `${count.toLocaleString()} titles in your catalogue`, { icon: ICON.store }), 3300);
+  /* Boot fade ends at 600ms and the boot node is removed at 620ms.
+     Show the signed-in greeting only after Home is completely unobstructed. */
+  setTimeout(showBootGreeting, 720);
 }
 
 /* ═══════════ captures, profiles, rumble ═══════════ */
