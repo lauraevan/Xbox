@@ -319,6 +319,7 @@ function cycleTab(delta){
 function open_(tab){
   if (open) return;
   open = true;
+  document.body.classList.add('guide-open');
   if (tab) activeTab = tab;
   guide.hidden = false;
   guide.classList.remove('out');
@@ -332,6 +333,7 @@ function open_(tab){
 function close_(){
   if (!open) return;
   open = false;
+  document.body.classList.remove('guide-open');
   guide.classList.add('out');
   window.Sound?.guide(false);
   setTimeout(() => {

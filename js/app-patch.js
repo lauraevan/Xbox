@@ -156,5 +156,36 @@ if (window.App?.setView){
   };
 }
 
+/* A small always-available way home for secondary pages, especially touch/iPad.
+   Controller B / Escape still use the native App.goBack path. */
+function ensureHomeReturn(){
+  if (document.querySelector('.global-home-return')) return;
+  const stage = document.getElementById('stage');
+  if (!stage) return;
+
+  const btn = document.createElement('button');
+  btn.className = 'global-home-return';
+  btn.type = 'button';
+  btn.dataset.nav = '';
+  btn.dataset.ringRadius = '50%';
+  btn.setAttribute('aria-label', 'Back to Home');
+  btn.title = 'Back to Home';
+  btn.innerHTML = window.Views?.ICON?.home || '⌂';
+
+  const goHome = () => {
+    hideStore();
+    window.App?.setView?.('home');
+  };
+  btn._navActivate = goHome;
+  btn.addEventListener('click', event => {
+    event.preventDefault();
+    event.stopPropagation();
+    goHome();
+  });
+  stage.append(btn);
+}
+
+ensureHomeReturn();
+
 window.XboxStoreRoute = { show:showStore, hide:hideStore };
 })();

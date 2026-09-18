@@ -330,3 +330,55 @@ body[data-theme="light"] .guide-panel{ background:rgba(240,241,243,.94); }
 /* a thumbnail slot reads as one even before its cover lands */
 .grow-icon{ background:rgba(0,0,0,.28); }
 .grow-icon.glyph{ background:none; }
+
+
+/* Secondary pages keep one compact route back to Dashboard/Home.
+   Hidden on Home so the reference frame remains untouched. */
+.global-home-return{
+  position:fixed;
+  left:1.25rem;
+  top:2.15rem;
+  z-index:85;
+  width:3.9rem;
+  height:3.9rem;
+  display:grid;
+  place-items:center;
+  border:0;
+  border-radius:50%;
+  background:rgba(28,31,34,.88);
+  color:rgba(255,255,255,.76);
+  box-shadow:0 .45rem 1.3rem rgba(0,0,0,.35);
+  backdrop-filter:blur(.55rem);
+  -webkit-backdrop-filter:blur(.55rem);
+  transition:background var(--dur) var(--ease-standard),
+             color var(--dur) var(--ease-standard),
+             transform var(--dur) var(--ease-decel);
+}
+.global-home-return svg{
+  width:2rem;
+  height:2rem;
+  fill:currentColor;
+}
+.global-home-return:hover,
+.global-home-return[data-focused]{
+  color:#fff;
+  background:rgba(44,48,52,.96);
+  transform:scale(1.05);
+}
+.global-home-return[data-focused]{
+  box-shadow:inset 0 0 0 .22rem #52d64b,0 .45rem 1.3rem rgba(0,0,0,.35);
+}
+body[data-view="home"] .global-home-return{
+  display:none !important;
+}
+
+/* Real Xbox Guide behavior: the status time becomes a touch more prominent
+   while the Guide/sidebar is open, then returns to normal on close. */
+.clock{
+  transition:font-size .17s var(--ease-decel),
+             min-width .17s var(--ease-decel) !important;
+}
+body.guide-open .clock{
+  font-size:3.15rem !important;
+  min-width:13.4rem !important;
+}
