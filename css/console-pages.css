@@ -162,3 +162,18 @@ body[data-view="library"] .legend,body[data-view="pass"] .legend,body[data-view=
   .console-search-results{ min-height:45rem; }
   .console-manage-grid,.console-perks-grid{ grid-template-columns:1fr; }
 }
+
+
+/* Functional Settings detail screens. */
+.console-settings-back{
+  min-height:5.2rem;
+  margin-bottom:.8rem;
+  background:#101112;
+}
+.console-settings-back .console-settings-copy strong{
+  font-size:1.35rem;
+}
+.console-settings-back .console-settings-value{
+  font-size:2rem;
+  line-height:1;
+}
