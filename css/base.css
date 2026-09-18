@@ -353,20 +353,11 @@ body[data-transparency="reduced"] .backdrop-layer{ filter:none; opacity:.18; }
     scroll-snap-align:start;
   }
 
-  /* 44px is the physical minimum only for touch. The TV-derived rem geometry
-     still controls desktop/controller mode. */
-  .sysnav-btn,
-  .status-btn,
+  /* Keep the visible Xbox top bar at its authored TV scale on touch devices.
+     The earlier 44px minimum made the actual chrome visibly larger on iPad. */
   .global-home-return{
     min-width:44px !important;
     min-height:44px !important;
-  }
-  .sysnav-btn svg{
-    width:max(2.42rem,22px) !important;
-    height:max(2.42rem,22px) !important;
-  }
-
-  .global-home-return{
     left:max(10px,env(safe-area-inset-left)) !important;
     top:max(10px,env(safe-area-inset-top)) !important;
   }
