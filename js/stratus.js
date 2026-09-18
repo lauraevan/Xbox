@@ -15,12 +15,15 @@ const CATALOG_SOURCES = [
   'https://raw.githubusercontent.com/evanjeffrey1212-eng/stratus-api/main/cloud.json',
   'https://cdn.jsdelivr.net/gh/evanjeffrey1212-eng/stratus-api@main/cloud.json'
 ];
+const LOCAL_ART_MANIFEST = 'assets/stratus-covers/manifest.json';
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 const isAbort = err => err?.name === 'AbortError';
 
 let catalogue = null;
 let cataloguePromise = null;
+let localArtwork = null;
+let localArtworkPromise = null;
 let active = null;
 let pending = null;
 let starting = false;
@@ -45,6 +48,31 @@ function writeLicenses(value){
 function licenseRows(){
   const rows = readLicenses()[profileId()];
   return Array.isArray(rows) ? rows : [];
+}
+
+async function loadLocalArtwork(){
+  if (localArtwork) return localArtwork;
+  if (localArtworkPromise) return localArtworkPromise;
+
+  localArtworkPromise = fetch(LOCAL_ART_MANIFEST, { cache:'no-store' })
+    .then(res => res.ok ? res.json() : {})
+    .then(data => {
+      localArtwork = data && typeof data === 'object' ? data : {};
+      return localArtwork;
+    })
+    .catch(() => {
+      localArtwork = {};
+      return localArtwork;
+    })
+    .finally(() => { localArtworkPromise = null; });
+
+  return localArtworkPromise;
+}
+
+function localArtworkPath(manifest, gameKey){
+  const row = manifest?.[String(gameKey || '')];
+  if (typeof row === 'string') return row;
+  return String(row?.path || '');
 }
 
 function normalizeGame(raw, index){
@@ -77,7 +105,14 @@ async function loadCatalogue(){
         if (!res.ok) throw new Error(`catalogue ${res.status}`);
         const data = await res.json();
         if (!Array.isArray(data)) throw new Error('catalogue response was not an array');
-        catalogue = data.map(normalizeGame).filter(game => game.gameKey && game.name);
+        const localArt = await loadLocalArtwork();
+        catalogue = data
+          .map(normalizeGame)
+          .filter(game => game.gameKey && game.name)
+          .map(game => {
+            const path = localArtworkPath(localArt, game.gameKey);
+            return path ? { ...game, image:path, cover:path, localCover:path } : game;
+          });
         return catalogue;
       } catch (err){ lastError = err; }
     }

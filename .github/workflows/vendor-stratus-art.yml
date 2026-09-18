@@ -1,0 +1,76 @@
+name: Vendor Stratus cover artwork
+
+on:
+  push:
+    paths:
+      - .github/workflows/vendor-stratus-art.yml
+      - scripts/vendor_stratus_art.py
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: vendor-stratus-art-claude-xbox
+  cancel-in-progress: false
+
+jobs:
+  vendor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: claude/xbox-web-replica-v4s0jk
+          fetch-depth: 0
+
+      - name: Install image vendor dependencies
+        run: python3 -m pip install --disable-pip-version-check requests pillow
+
+      - name: Download SteamGridDB covers into the repository
+        run: python3 scripts/vendor_stratus_art.py
+
+      - name: Verify all Stratus games resolve locally
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          manifest = json.loads(Path('assets/stratus-covers/manifest.json').read_text())
+          if len(manifest) < 225:
+              raise SystemExit(f'Expected at least 225 Stratus covers, got {len(manifest)}')
+
+          missing = [
+              (key, row.get('path'))
+              for key, row in manifest.items()
+              if not Path(row.get('path', '')).is_file()
+          ]
+          if missing:
+              raise SystemExit(f'Missing local cover files: {missing[:10]}')
+
+          tiny = [
+              (key, Path(row['path']).stat().st_size)
+              for key, row in manifest.items()
+              if Path(row['path']).stat().st_size < 3000
+          ]
+          if tiny:
+              raise SystemExit(f'Suspiciously small cover files: {tiny[:10]}')
+          print(f'Verified {len(manifest)} local Stratus covers.')
+          PY
+
+      - name: Commit vendored Stratus covers
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'xbox-build-bot'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/stratus-covers
+          if git diff --cached --quiet; then
+            echo 'Stratus artwork already matches.'
+            exit 0
+          fi
+          git commit -m 'Vendor Stratus game covers locally'
+          git pull --rebase origin claude/xbox-web-replica-v4s0jk
+          git push origin HEAD:claude/xbox-web-replica-v4s0jk
