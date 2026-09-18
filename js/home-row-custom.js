@@ -373,6 +373,7 @@ function makeLibraryTile(){
   const plus = document.createElement('span');
   plus.className = 'ref-library-plus';
   plus.setAttribute('aria-hidden','true');
+  plus.textContent = '+';
 
   face.append(mosaic, plus);
   btn.append(face);

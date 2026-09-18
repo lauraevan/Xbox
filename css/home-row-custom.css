@@ -45,47 +45,36 @@
 /* Glassy plus over the tinted 4-cover My games & apps tile. */
 .ref-library-plus{
   position:absolute !important;
-  inset:0 !important;
-  z-index:12 !important;
-  display:grid !important;
-  place-items:center !important;
+  left:50% !important;
+  top:50% !important;
+  z-index:50 !important;
+  width:5.7rem !important;
+  height:5.7rem !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  transform:translate(-50%,-50%) !important;
   opacity:1 !important;
   visibility:visible !important;
+  overflow:visible !important;
   pointer-events:none !important;
+  border-radius:50% !important;
+  background:rgba(15,20,18,.72) !important;
+  border:.12rem solid rgba(255,255,255,.35) !important;
+  color:#fff !important;
+  font-family:"Segoe UI Variable Display","Segoe UI",system-ui,sans-serif !important;
+  font-size:4rem !important;
+  font-weight:300 !important;
+  line-height:1 !important;
+  text-align:center !important;
+  text-shadow:0 .12rem .35rem rgba(0,0,0,.45) !important;
+  box-shadow:0 .45rem 1.4rem rgba(0,0,0,.34) !important;
 }
-.ref-library-plus::before{
-  content:"";
-  position:absolute;
-  width:5.7rem;
-  height:5.7rem;
-  border-radius:50%;
-  background:rgba(15,20,18,.56);
-  border:.12rem solid rgba(255,255,255,.3);
-  backdrop-filter:blur(.75rem) saturate(1.08);
-  -webkit-backdrop-filter:blur(.75rem) saturate(1.08);
-  box-shadow:
-    inset 0 .12rem .35rem rgba(255,255,255,.13),
-    inset 0 -.2rem .5rem rgba(0,0,0,.22),
-    0 .45rem 1.4rem rgba(0,0,0,.32);
-}
-.ref-library-plus::after{
-  content:"+";
-  position:relative;
-  z-index:13;
-  display:block;
-  color:#fff;
-  font:300 4.1rem/1 "Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;
-  transform:translateY(-.18rem);
-  text-shadow:0 .12rem .35rem rgba(0,0,0,.42);
-}
-.ref-library-tile:hover .ref-library-plus::before,
-.ref-library-tile[data-focused] .ref-library-plus::before{
-  background:rgba(24,32,28,.68);
-  border-color:rgba(255,255,255,.42);
-}
-.ref-library-tile:hover .ref-library-plus::after,
-.ref-library-tile[data-focused] .ref-library-plus::after{
-  color:#fff;
+.ref-library-tile:hover .ref-library-plus,
+.ref-library-tile[data-focused] .ref-library-plus{
+  background:rgba(24,32,28,.82) !important;
+  border-color:rgba(255,255,255,.48) !important;
+  color:#fff !important;
 }
 
 .ref-library-tile .tile-label{
