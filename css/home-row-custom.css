@@ -264,11 +264,24 @@
   letter-spacing:-.08rem;
   text-shadow:0 .25rem 1.2rem rgba(0,0,0,.5);
 }
+.home-game-preview-description{
+  max-width:72rem;
+  margin:1.45rem 0 0;
+  overflow:hidden;
+  display:-webkit-box;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:3;
+  color:rgba(255,255,255,.74);
+  font-size:1.42rem;
+  line-height:1.45;
+  font-weight:400;
+  text-shadow:0 .18rem .8rem rgba(0,0,0,.5);
+}
 .home-game-preview-chips{
   display:flex;
   flex-wrap:wrap;
   gap:.65rem;
-  margin:1.5rem 0 1.5rem;
+  margin:1.35rem 0 1.5rem;
 }
 .home-game-preview-chips span{
   min-height:2.8rem;

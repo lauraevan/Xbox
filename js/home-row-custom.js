@@ -194,6 +194,17 @@ async function openGamePreview(title){
   const heading = document.createElement('h2');
   heading.textContent = title;
 
+  const descriptionText = String(
+    game.description ||
+    game.desc ||
+    game.summary ||
+    game.overview ||
+    ''
+  ).trim();
+  const description = document.createElement('p');
+  description.className = 'home-game-preview-description';
+  description.textContent = descriptionText || `Play ${title} from your Xbox library.`;
+
   const chips = document.createElement('div');
   chips.className = 'home-game-preview-chips';
   [availability, ...tags].slice(0, 5).forEach(text => {
@@ -244,7 +255,7 @@ async function openGamePreview(title){
   });
 
   actions.append(start, close);
-  info.append(kicker, heading, chips, facts, actions);
+  info.append(kicker, heading, description, chips, facts, actions);
   card.append(visual, coverWrap, info);
   layer.append(scrim, card);
   document.body.append(layer);
