@@ -188,6 +188,26 @@ function setTileArtwork(tile, title){
     face.prepend(art);
   }
 
+  const resolved = new URL(src, document.baseURI).href;
+  const bg = `url("${resolved}")`;
+
+  /* Paint the cover onto the tile surface itself as well as the img element.
+     This makes the Home rail immune to later image-loader failures/removals. */
+  face.style.setProperty('background-image', bg, 'important');
+  face.style.setProperty('background-size', 'cover', 'important');
+  face.style.setProperty('background-position', 'center', 'important');
+  face.style.setProperty('background-repeat', 'no-repeat', 'important');
+  face.style.setProperty('isolation', 'isolate', 'important');
+
+  art.style.setProperty('background-image', bg, 'important');
+  art.style.setProperty('background-size', 'cover', 'important');
+  art.style.setProperty('background-position', 'center', 'important');
+  art.style.setProperty('background-repeat', 'no-repeat', 'important');
+  art.style.setProperty('display', 'block', 'important');
+  art.style.setProperty('opacity', '1', 'important');
+  art.style.setProperty('visibility', 'visible', 'important');
+  art.style.setProperty('z-index', '2', 'important');
+
   let img = art.querySelector('img');
   if (!img){
     img = document.createElement('img');
@@ -198,20 +218,25 @@ function setTileArtwork(tile, title){
   img.loading = 'eager';
   img.decoding = 'async';
   img.className = 'cover loaded home-row-cover';
-  img.style.objectFit = 'cover';
-  img.style.display = 'block';
-  img.style.width = '100%';
-  img.style.height = '100%';
-  img.style.opacity = '1';
-  img.style.visibility = 'visible';
-
-  const resolved = new URL(src, document.baseURI).href;
+  img.style.setProperty('object-fit', 'cover', 'important');
+  img.style.setProperty('display', 'block', 'important');
+  img.style.setProperty('width', '100%', 'important');
+  img.style.setProperty('height', '100%', 'important');
+  img.style.setProperty('opacity', '1', 'important');
+  img.style.setProperty('visibility', 'visible', 'important');
+  img.style.setProperty('z-index', '3', 'important');
   if (img.src !== resolved) img.src = resolved;
 
-  requestAnimationFrame(() => {
-    if (!img.isConnected) return;
-    if (!img.src || img.naturalWidth === 0) img.src = resolved;
-  });
+  const restore = () => {
+    if (!face.isConnected) return;
+    face.style.setProperty('background-image', bg, 'important');
+    art.style.setProperty('background-image', bg, 'important');
+    if (!img.isConnected) art.append(img);
+    if (!img.src || img.src !== resolved || img.naturalWidth === 0) img.src = resolved;
+  };
+  requestAnimationFrame(restore);
+  setTimeout(restore, 250);
+  setTimeout(restore, 1000);
 }
 
 function patchTile(def){
