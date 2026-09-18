@@ -819,6 +819,13 @@ Do not treat either handoff file as more authoritative than an explicit newer us
 
 Newest first. Short notes only; detail belongs in the commit.
 
+### 2026-09-18 — post-boot greeting timing cleanup
+
+Commit: `9707adad21b040206facdd84f02cd950b0415f3b`
+
+The compact Xbox-green signed-in greeting now appears 720ms after Home is revealed, which is after the 600ms boot fade and 620ms boot-node removal. The older “Ready to play / N titles” startup toast was removed so the greeting is the only post-boot message.
+
+
 ### 2026-09-18 — tiny post-boot Xbox profile greeting
 
 Commit: `3e4a09b9cca95d0b951fcdbd7ff7f90355516b29`
