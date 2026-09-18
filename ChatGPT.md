@@ -819,6 +819,23 @@ Do not treat either handoff file as more authoritative than an explicit newer us
 
 Newest first. Short notes only; detail belongs in the commit.
 
+### 2026-09-18 — My games & apps is intentionally Stratus-only now
+
+Commit: `e5e6c94a08bf6f625b01b05d7e64bda0a5550150`
+
+User explicitly changed the requirement: My games & apps should contain only one row of Stratus games, with no normal catalogue games.
+
+Implementation:
+- `console-pages.js` library renderer now renders only `StratusCloud.ownedGames()`,
+- Stratus posters are tagged `data-stratus-game="1"`,
+- `library-minimal-pass.js` attaches the action popout only to those tagged cards,
+- `cloud-library.js` skips its separate injection when the Stratus-only renderer is active,
+- cards are taller portrait tiles with hover/focus title reveal,
+- action flyout remains below the cover and now has a rounder outer/button radius.
+
+Do not restore the old normal catalogue grid unless the user asks to reverse this.
+
+
 ### 2026-09-18 — My games & apps now uses the real library renderer
 
 Commit: `0d4626dc33ce1ef44768e0c3e50a4264811845d6`
