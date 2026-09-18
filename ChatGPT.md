@@ -819,6 +819,21 @@ Do not treat either handoff file as more authoritative than an explicit newer us
 
 Newest first. Short notes only; detail belongs in the commit.
 
+### 2026-09-18 — non-Home Home return + Guide clock emphasis
+
+Commit: `86d76de8935162de65231028fe23fa428650ce50`
+
+User asked for every non-Home page to have a way back to Home, plus the real-Xbox behavior where the time gets slightly larger while the Guide/sidebar is open.
+
+Implementation:
+- `app-patch.js` adds one compact global Home control on non-Home views, mainly for touch/iPad; existing B/Escape behavior remains untouched,
+- Store uses the same control and routes through the existing Store hide/show wrapper,
+- `guide.js` toggles `body.guide-open` in the Guide lifecycle,
+- `chrome.css` enlarges the clock only while `guide-open` is present.
+
+Home reference layout remains untouched because the control is hidden on Home.
+
+
 ### 2026-09-18 — My games & apps is intentionally Stratus-only now
 
 Commit: `e5e6c94a08bf6f625b01b05d7e64bda0a5550150`
