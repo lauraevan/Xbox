@@ -249,40 +249,25 @@ function wavesMarkup(){
   wrap.className = 'home-series-waves';
   wrap.setAttribute('aria-hidden','true');
 
-  /* Keep the direct Xbox Waves MP4/WebM as an instant fallback, but layer the
-     original 4K Waves capture above it on capable connections/displays. */
-  const fallback = document.createElement('video');
-  fallback.className = 'home-series-waves-video home-series-waves-fallback';
-  fallback.autoplay = true;
-  fallback.muted = true;
-  fallback.loop = true;
-  fallback.playsInline = true;
-  fallback.preload = 'auto';
-  fallback.setAttribute('webkit-playsinline','');
-  fallback.setAttribute('disablepictureinpicture','');
-  fallback.innerHTML = `
-    <source src="https://assets.website-files.com/641c16e4615b407626afd625/641c16e4615b406724afd72a_Xbox%20Series%20X_S%20Waves%20(Xbox%20green)%20Dynamic%20Background-transcode.webm" type="video/webm">
+  const video = document.createElement('video');
+  video.className = 'home-series-waves-video';
+  video.autoplay = true;
+  video.muted = true;
+  video.loop = true;
+  video.playsInline = true;
+  video.preload = 'auto';
+  video.setAttribute('webkit-playsinline','');
+  video.setAttribute('disablepictureinpicture','');
+  video.innerHTML = `
     <source src="https://assets.website-files.com/641c16e4615b407626afd625/641c16e4615b406724afd72a_Xbox%20Series%20X_S%20Waves%20(Xbox%20green)%20Dynamic%20Background-transcode.mp4" type="video/mp4">
+    <source src="https://assets.website-files.com/641c16e4615b407626afd625/641c16e4615b406724afd72a_Xbox%20Series%20X_S%20Waves%20(Xbox%20green)%20Dynamic%20Background-transcode.webm" type="video/webm">
   `;
 
-  const hq = document.createElement('iframe');
-  hq.className = 'home-series-waves-hq';
-  hq.title = 'Xbox Waves dynamic background';
-  hq.tabIndex = -1;
-  hq.setAttribute('aria-hidden','true');
-  hq.setAttribute('allow','autoplay; encrypted-media');
-  hq.setAttribute('referrerpolicy','strict-origin-when-cross-origin');
-  hq.src = 'https://www.youtube-nocookie.com/embed/zkiKsw6yzDU?autoplay=1&mute=1&controls=0&loop=1&playlist=zkiKsw6yzDU&playsinline=1&rel=0&modestbranding=1&disablekb=1&iv_load_policy=3&vq=hd2160';
-
-  fallback.addEventListener('canplay', () => {
-    fallback.play().catch(() => {});
+  video.addEventListener('canplay', () => {
+    video.play().catch(() => {});
   }, { once:true });
 
-  hq.addEventListener('load', () => {
-    wrap.classList.add('hq-ready');
-  }, { once:true });
-
-  wrap.append(fallback, hq);
+  wrap.append(video);
   return wrap;
 }
 

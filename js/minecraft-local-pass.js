@@ -56,7 +56,6 @@ const MINECRAFT_GAME = {
 };
 
 function launchMinecraft(){
-  window.XboxHomeRecents?.mark?.('Minecraft');
   if (!window.App?.launch){
     location.href = LAUNCHER;
     return;

@@ -6,49 +6,6 @@ const HOME = document.getElementById('view-home');
 if (!HOME) return;
 
 const Cloud = () => window.StratusCloud;
-const HOME_ORDER_KEY = 'xbox.home.played-order.v1';
-
-function savedPlayedOrder(){
-  try{
-    const value = JSON.parse(localStorage.getItem(HOME_ORDER_KEY) || '[]');
-    return Array.isArray(value) ? value.filter(Boolean) : [];
-  } catch { return []; }
-}
-
-function reorderHomeStrip(){
-  const strip = HOME.querySelector('.ref-strip');
-  if (!strip) return;
-
-  const games = [...strip.querySelectorAll('.ref-tile[data-ref-title]')]
-    .filter(tile => !tile.matches('.ref-friends,[data-home-library-mosaic="1"]'));
-  if (!games.length) return;
-
-  const order = savedPlayedOrder();
-  const rank = title => {
-    const canonical = canonicalTitle(title) || title;
-    const i = order.indexOf(canonical);
-    return i < 0 ? Number.MAX_SAFE_INTEGER : i;
-  };
-
-  const original = new Map(games.map((tile,index)=>[tile,index]));
-  games.sort((a,b) => {
-    const d = rank(a.dataset.refTitle) - rank(b.dataset.refTitle);
-    return d || original.get(a) - original.get(b);
-  });
-
-  const anchor = strip.querySelector('.ref-friends,[data-home-library-mosaic="1"]');
-  games.forEach(tile => strip.insertBefore(tile, anchor || null));
-}
-
-function markHomePlayed(title){
-  const canonical = canonicalTitle(title) || title;
-  if (!canonical) return;
-  const order = savedPlayedOrder().filter(item => item !== canonical);
-  order.unshift(canonical);
-  try { localStorage.setItem(HOME_ORDER_KEY, JSON.stringify(order.slice(0,12))); } catch {}
-  reorderHomeStrip();
-  requestAnimationFrame(() => window.Nav?.repaint?.());
-}
 
 /* These are real files committed into this repo. Home no longer depends on
    SteamGridDB / remote hotlinks for the seven games in the main row. */
@@ -58,7 +15,7 @@ const COVER = {
   'Hollow Knight: Silksong': 'assets/game-art/silksong-cover.png',
   'Elden Ring': 'assets/game-art/elden-ring-cover.jpg',
   'Red Dead Redemption 2': 'assets/game-art/rdr2-cover.jpg',
-  'Minecraft': 'assets/game-art/minecraft-cover.webp',
+  'Minecraft': 'https://store-images.s-microsoft.com/image/apps.53095.13850085746326678.06e2dc5c-7997-46e9-a8e6-0e48b57cb13b.419e3c9d-9dd3-4a28-a9f3-a12350215871?h=1024&q=95&w=1024',
   'Fortnite': 'assets/game-art/fortnite-cover.jpg'
 };
 
@@ -68,7 +25,7 @@ const HERO = {
   'Hollow Knight: Silksong': 'assets/game-art/silksong-hero.jpg',
   'Elden Ring': 'assets/game-art/elden-ring-hero.jpg',
   'Red Dead Redemption 2': 'assets/game-art/rdr2-hero.jpg',
-  'Minecraft': 'assets/game-art/minecraft-hero.png',
+  'Minecraft': 'https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/key-art/NewKeyArt_Header.jpg',
   'Fortnite': 'assets/game-art/fortnite-hero.jpg'
 };
 
@@ -147,7 +104,6 @@ async function activateTitle(title){
         window.App?.toast?.('Added to your library', cloud.name);
       }
       await Cloud()?.play?.(cloud);
-      markHomePlayed(title);
       return;
     } catch (err){
       window.App?.toast?.('Cloud gaming', err?.message || 'Could not start game.');
@@ -156,10 +112,7 @@ async function activateTitle(title){
   }
 
   const local = localGame(title);
-  if (launchLocal(local)){
-    markHomePlayed(title);
-    return;
-  }
+  if (launchLocal(local)) return;
   window.App?.toast?.('Game unavailable', `${title} is not currently available in the connected catalogue.`);
 }
 
@@ -177,66 +130,14 @@ function ensureBadge(face, text){
 function setTileArtwork(tile, title){
   const src = COVER[title];
   if (!src) return;
-
-  const face = tile.querySelector('.tile-face');
-  if (!face) return;
-
-  let art = face.querySelector('.ref-art');
-  if (!art){
-    art = document.createElement('span');
-    art.className = 'ref-art';
-    face.prepend(art);
-  }
-
-  const resolved = new URL(src, document.baseURI).href;
-  const bg = `url("${resolved}")`;
-
-  /* Paint the cover onto the tile surface itself as well as the img element.
-     This makes the Home rail immune to later image-loader failures/removals. */
-  face.style.setProperty('background-image', bg, 'important');
-  face.style.setProperty('background-size', 'cover', 'important');
-  face.style.setProperty('background-position', 'center', 'important');
-  face.style.setProperty('background-repeat', 'no-repeat', 'important');
-  face.style.setProperty('isolation', 'isolate', 'important');
-
-  art.style.setProperty('background-image', bg, 'important');
-  art.style.setProperty('background-size', 'cover', 'important');
-  art.style.setProperty('background-position', 'center', 'important');
-  art.style.setProperty('background-repeat', 'no-repeat', 'important');
-  art.style.setProperty('display', 'block', 'important');
-  art.style.setProperty('opacity', '1', 'important');
-  art.style.setProperty('visibility', 'visible', 'important');
-  art.style.setProperty('z-index', '2', 'important');
-
-  let img = art.querySelector('img');
-  if (!img){
-    img = document.createElement('img');
-    art.append(img);
-  }
-
+  const img = tile.querySelector('.ref-art img');
+  if (!img) return;
+  if (img.getAttribute('src') !== src) img.src = src;
   img.alt = '';
   img.loading = 'eager';
   img.decoding = 'async';
-  img.className = 'cover loaded home-row-cover';
-  img.style.setProperty('object-fit', 'cover', 'important');
-  img.style.setProperty('display', 'block', 'important');
-  img.style.setProperty('width', '100%', 'important');
-  img.style.setProperty('height', '100%', 'important');
-  img.style.setProperty('opacity', '1', 'important');
-  img.style.setProperty('visibility', 'visible', 'important');
-  img.style.setProperty('z-index', '3', 'important');
-  if (img.src !== resolved) img.src = resolved;
-
-  const restore = () => {
-    if (!face.isConnected) return;
-    face.style.setProperty('background-image', bg, 'important');
-    art.style.setProperty('background-image', bg, 'important');
-    if (!img.isConnected) art.append(img);
-    if (!img.src || img.src !== resolved || img.naturalWidth === 0) img.src = resolved;
-  };
-  requestAnimationFrame(restore);
-  setTimeout(restore, 250);
-  setTimeout(restore, 1000);
+  img.classList.add('loaded');
+  img.style.objectFit = 'cover';
 }
 
 function patchTile(def){
@@ -284,10 +185,7 @@ function ownedCard(game){
       <img src="${esc(cover)}" alt="" loading="lazy" decoding="async">
     </span>`;
   btn._navActivate = async () => {
-    try {
-      await Cloud()?.play?.(game);
-      markHomePlayed(game.name);
-    }
+    try { await Cloud()?.play?.(game); }
     catch (err){ window.App?.toast?.('Cloud gaming', err?.message || 'Could not start game.'); }
   };
   return btn;
@@ -387,7 +285,6 @@ function patchHome(){
   SWAPS.forEach(patchTile);
   wireAllGameTiles();
   ensureLibraryTile();
-  reorderHomeStrip();
   pinInitialBackdrop();
 }
 
@@ -414,22 +311,6 @@ document.addEventListener('click', event => {
     event.preventDefault();
     owned._navActivate(owned);
   }
-});
-
-window.XboxHomeRecents = {
-  mark: markHomePlayed,
-  reorder: reorderHomeStrip
-};
-
-/* Local App.launch sessions already report into State.recents. Mirror the
-   newest compatible title back into the Home rail so launches from detail or
-   My games & apps also move that game to the first position. */
-window.State?.on?.(evt => {
-  if (evt.type !== 'recents') return;
-  const id = window.State?.recentIds?.()[0];
-  const game = id ? window.Catalog?.get?.(id) : null;
-  const title = canonicalTitle(game?.name);
-  if (title) markHomePlayed(title);
 });
 
 let homeFocusResizeTimer = null;
