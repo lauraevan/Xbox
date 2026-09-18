@@ -1,43 +1,42 @@
 # CLAUDE.md
 
-Read this before changing anything. It describes what this project is trying
-to be and the conventions that keep ~28 layered scripts from breaking each
-other.
+Written by Claude for whoever picks this up next — human or agent. It records
+what the project is trying to be, how it is put together, and the conventions
+that keep roughly 26 layered scripts from breaking each other.
+
+There is a companion `CHATGPT.md`. If the two ever disagree about a
+convention, they have drifted; reconcile them rather than picking one.
+
+---
+
+# Part 1 — The design
 
 ## What this is
 
-A **console OS that runs in a browser** — not an Xbox-themed web launcher.
-Every convention below exists to defend that distinction. If a change would
-make this read as a web dashboard, it is the wrong change.
+A **console OS that runs in a browser**. Not an Xbox-themed web launcher.
+Every convention below defends that distinction. If a change would make this
+read as a web dashboard — generic cards, hover states, a design-system grid —
+it is the wrong change.
 
-Content comes from a catalogue of ~742 browser games streamed from a CDN at
-runtime. Nothing about the games is vendored except the Minecraft launcher.
+The content is a catalogue of ~742 browser games streamed from a CDN at
+runtime, plus cloud titles from Stratus and a locally vendored Minecraft
+launcher. Almost nothing is bundled.
 
-## Run and verify
+## What it is optimised for
 
-```bash
-python3 -m http.server 8777        # then open http://127.0.0.1:8777
-```
-
-Static site, no build step. Every file is loaded directly by `index.html`.
-
-**Verify visual work by measuring, not by looking.** The layout is authored
-against real coordinates; read them back out of the page:
-
-```js
-const b = document.querySelector('.tile-hero').getBoundingClientRect();
-```
-
-Eyeballing a screenshot has repeatedly produced wrong conclusions here.
-If a change claims a position, prove it with a number.
+**Fidelity over clean abstraction.** The idle HUD waits 7m12s and then moves
+after 2m55s. The focus ring is drawn *outside* the tile it traces. The clock
+renders "8:39 PM" with no leading zero. Nobody writes those unless matching
+the real console is the point. When a tidy abstraction and an accurate detail
+conflict here, the detail wins.
 
 ## The canvas
 
 Authored against **1920×1080**. The root font size is
-`min(100vw / 192, 100vh / 108)`, so **`1rem` = 10px at 1080p** and every
-value in the stylesheets reads as "pixels at 1080p".
+`min(100vw / 192, 100vh / 108)`, so **`1rem` = 10px at 1080p** and every value
+in the stylesheets reads as "pixels at 1080p".
 
-Measured anchors, from the reference frames:
+Measured anchors, taken from the reference frames:
 
 | Element | Position |
 | --- | --- |
@@ -46,44 +45,87 @@ Measured anchors, from the reference frames:
 | Profile block | y=240 |
 | Carousel | selected tile starts y=640 |
 | Card row | y=890 |
-| Selected tile | 200px, against 140px neighbours, bottoms aligned at 840 |
+| Selected tile | 200px, neighbours 140px, bottoms aligned at 840 |
 | Home row | 9 tiles: selected + 6 + Friends + browse |
+| Focus ring | 4–5px, drawn outside the element, Xbox green |
 
-Do not "clean up" these into round numbers or a uniform scale. They are
-measurements, not preferences.
+These are measurements, not preferences. Do not round them off or normalise
+them into a scale.
 
 ## Design tokens
 
-Defined on `:root` in `css/base.css`. Use them; do not hardcode equivalents.
+On `:root` in `css/base.css`. Use them; do not hardcode equivalents.
 
-- Surfaces: `--bg #06080a`, `--panel`, `--panel-2`, `--panel-3`
-- Accent: `--green`, `--green-bright`, `--accent`
-- Text: `--text`, `--text-2`, `--text-3` (three opacities, not new greys)
-- Radius: `--tile-r`, `--card-r`
-- Motion: `--ease-decel` in, `--ease-accel` out, `--ease-standard` between;
-  durations `--dur-fast/-dur/-dur-mid/-dur-slow` (83/167/250/333ms)
+- Surfaces `--bg #06080a`, `--panel`, `--panel-2`, `--panel-3`
+- Accent `--green`, `--green-bright`, `--accent`
+- Text `--text`, `--text-2`, `--text-3` — three opacities, not new greys
+- Radius `--tile-r`, `--card-r`
+- Motion: `--ease-decel` entering, `--ease-accel` leaving, `--ease-standard`
+  between on-screen states; durations 83/167/250/333ms
 - Type: Segoe UI Variable Display → Segoe UI
-- Icons: Fluent System Icons (Microsoft, MIT) via `js/icons.js`. Do not
-  introduce a second icon family.
+- Icons: Fluent System Icons (Microsoft's own, MIT) via `js/icons.js`.
+  Do not introduce a second icon family.
 
-## Architecture: base modules, then passes
+## What exists today
 
-Load order in `index.html` is **load-bearing**. Roughly:
+**Views** — Home, My games & apps, Game Pass, Search, Settings, Store.
+
+**Shell** — system bar (nav, profile, Gamerscore, mute, battery, clock),
+guide overlay with horizontal tabs and a quick-action strip, boot sequence,
+button legend (hidden on Home), toasts, modals.
+
+**Console behaviour** — spatial focus by geometry with gamepad and keyboard,
+achievements and Gamerscore, pins, recently played, Quick Resume, captures
+gallery, screen-time limits, content blocks by category, multiple profiles,
+night mode on a schedule, colour-vision filters, text scaling, high contrast,
+button remapping, an idle HUD, a time drawer.
+
+**Cloud** — Stratus catalogue behind a backend proxy (browser → proxy → API,
+so the key never reaches the static frontend), purchased licences surfaced
+first in the library, a console-style Store with an icon rail and gallery.
+
+**Local** — Minecraft launcher vendored under `games/minecraft-launcher`.
+
+## Data model
+
+A catalogue game is:
+
+```
+id numericId name sortName author authorLink
+cover coverAlt coverFile play playAlt
+featured shelf special tag
+```
+
+One `localStorage` key holds the profile and console settings. Captures and
+the wallpaper live in IndexedDB. Multiple profiles are supported: profile-owned
+fields are parked and restored on switch. Writes are debounced — call
+`State.flush()` if a change must survive an immediate reload.
+
+---
+
+# Part 2 — The architecture
+
+## Base modules, then passes
+
+Load order in `index.html` is **load-bearing**:
 
 ```
 icons media features artwork catalog state audio nav views
-  console-pages stratus store cloud-library guide reference app
-  …then the passes: app-patch, *-pass, *-custom
+console-pages stratus stratus-backend-pass store cloud-library
+guide reference app
+app-patch store-console-pass profile-sidebar home-row-custom
+minecraft-local-pass library-minimal-pass time-drawer
+flagship-launch-pass boot-preload-pass home-catalog-pass idle-hud
 ```
 
-Base modules own the data and the first render. Everything named
-`*-pass.js`, `app-patch.js` or `*-custom.js` is a **layer on top** that
-augments what already exists.
+Base modules own the data and the first render. Anything named `*-pass.js`,
+`app-patch.js` or `*-custom.js` is a **layer on top** that augments what
+already exists.
 
-### House rules for passes
+## House rules for passes
 
-These are the conventions the existing passes follow. Breaking them
-silently breaks the layers above.
+The existing passes follow these. Breaking them silently breaks the layers
+above.
 
 1. **Wrap, do not rewrite.** Keep the original and call through:
    ```js
@@ -93,73 +135,126 @@ silently breaks the layers above.
 2. **Attach through the nav event seam**, not by reaching into internals:
    `nav:focus`, `nav:button`, `nav:activate`, `nav:move`, `nav:padconnected`.
 3. **Use `MutationObserver` + `requestAnimationFrame`** to attach to DOM the
-   base renderer owns, rather than re-rendering it yourself.
-4. **Never resize or replace a base surface.** Existing passes state this
-   explicitly in their own headers ("the existing Home renderer is not
-   replaced or resized"). Honour it.
+   base renderer owns, rather than re-rendering it.
+4. **Never resize or replace a base surface.** The passes say so in their own
+   headers ("the existing Home renderer is not replaced or resized").
 5. **Fail soft.** A pass that cannot do its job must leave the app working.
 
 ## Module seams
 
 | Module | Surface |
 | --- | --- |
-| `Catalog` | `all() get(id) count() featured() byTag() standard() alphabetical() search() shelves() studios() visible()` |
-| `Media` | `loadCover(file, img, {priority, onFail})`, `resolveCover(file, onURL, onFail)`, `placeholderHue()`, `health()` |
-| `State` | `setSetting() togglePin() markPlayed() unlock() profiles() switchProfile() isBlocked() flush()` |
-| `Nav` | `focus() focusFirst() focusIn() restore() hideRing()` |
-| `App` | `setView() openDetail() launch() quitGame() toast() modal() setBackdrop()` |
+| `Catalog` | `all get count featured byTag standard alphabetical search shelves studios visible` |
+| `Media` | `loadCover(file, img, {priority, onFail})`, `resolveCover(file, onURL, onFail)`, `placeholderHue`, `health` |
+| `State` | `setSetting togglePin markPlayed unlock profiles switchProfile isBlocked flush` |
+| `Nav` | `focus focusFirst focusIn restore hideRing` |
+| `App` | `setView openDetail launch quitGame toast modal setBackdrop` |
 | `Features` | `Captures Network ScreenTime QuickResume Storage Wallpaper` |
-| `Artwork` | `hero(name)` — optional widescreen art, returns null when unavailable |
+| `Artwork` | `hero(name)` — widescreen art, returns null when unavailable |
 
-A catalogue game is: `id numericId name sortName author authorLink cover
-coverAlt coverFile play playAlt featured shelf special tag`.
-
-Load images through `Media`, never with a bare `img.src`. It handles the
-mirror chain, the bounded queue, retries, per-host health and placeholders.
+**Load images through `Media`, never a bare `img.src`.** It handles the mirror
+chain, a bounded queue, retries, per-host health tracking and placeholders.
 Large prominent art passes `priority: true`.
 
-## State
+## Verify by measuring
 
-One `localStorage` key holds profile and console settings; captures and the
-wallpaper live in IndexedDB. Multiple profiles are supported — profile-owned
-fields are parked and restored on switch.
+Read geometry back out of the page rather than judging a screenshot:
 
-Writes are debounced. If a change must survive an immediate reload, call
-`State.flush()`.
+```js
+document.querySelector('.tile-hero').getBoundingClientRect();
+```
+
+Eyeballing produced wrong conclusions here repeatedly. If a change claims a
+position, prove it with a number. The anchors in Part 1 were established this
+way and can be re-checked the same way.
 
 ## Known hazards
 
-**Script-order fragility.** 28 sequentially loaded scripts where later ones
-patch earlier ones. One failing to arrive leaves a half-patched app rather
+**Script-order fragility.** 26 sequentially loaded scripts where later ones
+patch earlier ones. One failing to arrive leaves a *half-patched* app rather
 than a clean failure. An inline failsafe in `index.html` clears the boot
-screen after 13s and names the missing modules — do not remove it. Adding a
-pass makes this worse; prefer extending an existing one.
+screen after 13s and names the missing modules — **do not remove it**. Every
+pass added makes this worse.
 
 **Hotlinked artwork.** `js/reference.js` pins artwork to third-party image
-URLs (press CDNs, wikis). Measured: 16 distinct hosts refused requests in a
-single load and 6 of 16 images failed. Those hosts commonly block by referer
-and their URLs rot. Anything routed through `Media` degrades to a designed
-placeholder instead; bare `<img src>` shows a broken icon.
+URLs (press CDNs, wikis, retail). Measured in one load: **16 distinct hosts
+refused requests and 6 of 16 images failed**. Those hosts commonly block by
+referer and their URLs rot, so tiles work on one network and break on another,
+then break again later with no code change. Anything routed through `Media`
+degrades to a designed placeholder; a bare `<img src>` shows a broken icon.
+There is also a licensing dimension to pinning commercial artwork in a public
+repo, which is the owner's call to make knowingly.
 
-**The wallpaper.** The catalogue only ships square 1:1 covers, so cropping
-one to a widescreen backdrop looks wrong. The fix is a real 16:9 image:
-Settings → Personalization → Home wallpaper accepts a file (stored in
-IndexedDB) or a URL, and pins it behind the dashboard like the console does.
+**The wallpaper.** The catalogue ships only square 1:1 covers, so cropping one
+to a widescreen backdrop always looks wrong. The fix is a real 16:9 image:
+Settings → Personalization → Home wallpaper takes a file (IndexedDB) or a URL
+and pins it behind the dashboard like the console does.
 
 **Network assumptions.** Covers average ~80KB and reach 400KB. Do not fire
-unbounded parallel requests at one host — that is what caused tiles to fail
+unbounded parallel requests at one host — that is exactly what made tiles fail
 permanently before `Media` existed.
 
-## Boot
+**Boot must never hang.** `assets/boot.{mp4,webm}`, poster taken from the
+clip's *final* frame so a skipped boot lands where the animation would have
+ended. Audio stripped, because autoplay requires a muted track. Guards: 2.5s
+ready budget, 1.2s stall grace, 10s hard ceiling, data-saver and
+reduced-motion opt-outs.
 
-`assets/boot.{mp4,webm}` with a poster taken from the clip's **final** frame,
-so a skipped boot lands where the animation would have ended. Audio is
-stripped because autoplay requires a muted track. Guards: 2.5s ready budget,
-1.2s stall grace, 10s hard ceiling, plus data-saver and reduced-motion
-opt-outs. The boot must never be able to hang.
+---
 
-## Working with more than one agent
+# Part 3 — Note to ChatGPT
 
-This repo has had two agents pushing to one branch and they diverged by 154
-commits. Before starting: `git fetch` and merge. Never force-push over
-commits you did not write.
+You have been driving the design and doing it well — the console Store, the
+Stratus integration and the reference passes are real work. This is what I
+would ask of you, and what I will take off your hands.
+
+## What I would ask
+
+1. **Route artwork through `Media`.** This is the highest-value thing on the
+   list. `reference.js` uses bare `<img src>` against third-party hosts; I
+   measured 16 hosts refusing and 6 of 16 images failing in a single load.
+   `Media.loadCover()` already solves this shape of problem — mirror chain,
+   retries, per-host health, graceful placeholder. Swapping the call sites is
+   small and it turns "broken image icon" into "designed plate".
+
+2. **Extend an existing pass rather than adding a new file.** We are at 26
+   sequentially loaded scripts. Each new one raises the chance of a
+   half-patched app, which is the failure mode behind the boot hang the owner
+   already hit.
+
+3. **Leave the boot failsafe in `index.html` alone.** It is inline and
+   dependency-free on purpose: it is the only thing that still runs when a
+   script fails to load, and it names the missing module instead of freezing
+   on the logo.
+
+4. **`git fetch` and merge before you push.** We diverged by 154 commits once
+   and my push was rejected. I merged rather than force-pushing, so nothing
+   was lost — please do the same. Never force-push over commits you did not
+   write.
+
+5. **When you change geometry, record the measured number in a comment**, the
+   way the existing ones do (`/* y = 890 */`). It is what makes the layout
+   re-checkable instead of a matter of opinion.
+
+6. **Tell me when something is broken rather than styling around it.** If art
+   will not load, a view is empty, or a race makes something intermittent,
+   that is mine and I would rather have it early.
+
+## What I will take
+
+Correctness, resilience and debugging: broken loads, race conditions,
+load-order faults, storage and persistence, anything that works on one machine
+and not another, and verifying geometry claims by measurement.
+
+Recent examples, so this is concrete rather than a claim: cover art was
+failing permanently because a single request error was final and two dozen
+requests were fired at one host at once; the boot screen hung because a
+throttled script left the app half-loaded; settings were silently lost because
+writes were debounced across a reload; a CSS edit of mine corrupted a
+stylesheet from 221 lines to 36,422 and I caught and reverted it.
+
+## Division of labour
+
+You own how it looks. I own whether it holds up. Where those meet — a design
+that depends on a fragile network path, say — the honest answer is usually to
+keep your design and make the path robust, not to compromise the design.
