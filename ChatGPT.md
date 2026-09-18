@@ -819,6 +819,13 @@ Do not treat either handoff file as more authoritative than an explicit newer us
 
 Newest first. Short notes only; detail belongs in the commit.
 
+### 2026-09-18 — launcher preview description fix
+
+Commit: `b5dd459afede4bca7a1ff33659e79608c36c48d8`
+
+The Home game preview/launcher card now renders the actual Stratus game description between the title and metadata chips. It falls back to a short local library sentence only if no description field exists. CSS clamps the copy to three lines so the existing hero + cover + facts + Start/Exit geometry stays intact.
+
+
 ### 2026-09-18 — boot greeting position/color correction
 
 Commit: `c3c9d0a81b3d5ba3ee8d94e0ae88bfef016462fc`
