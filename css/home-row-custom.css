@@ -172,3 +172,38 @@
   width:21.5rem!important;
   height:21.5rem!important;
 }
+
+
+/* Home row artwork must always sit above the tile surface and remain visible
+   after the reference row is rebuilt or swapped. */
+.reference-home .ref-tile .tile-face{
+  position:relative!important;
+  overflow:hidden!important;
+}
+.reference-home .ref-tile .ref-art{
+  position:absolute!important;
+  inset:0!important;
+  z-index:1!important;
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  overflow:hidden!important;
+  border-radius:inherit!important;
+}
+.reference-home .ref-tile .ref-art img,
+.reference-home .ref-tile .home-row-cover{
+  position:absolute!important;
+  inset:0!important;
+  z-index:1!important;
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  min-width:100%!important;
+  min-height:100%!important;
+  object-fit:cover!important;
+  opacity:1!important;
+  visibility:visible!important;
+}
+.reference-home .ref-tile .ref-platform{
+  z-index:4!important;
+}
