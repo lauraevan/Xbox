@@ -819,6 +819,13 @@ Do not treat either handoff file as more authoritative than an explicit newer us
 
 Newest first. Short notes only; detail belongs in the commit.
 
+### 2026-09-18 — touch top bar size correction
+
+Commit: `a6c499edeac4f318925bf7d4964218f5b4cd8759`
+
+The coarse-pointer pass had forced `.sysnav-btn` and `.status-btn` to a 44px minimum and enlarged their SVGs, which visibly grew the Home top bar on iPad. That override is removed. Touch activation/swipe improvements remain, and only the separate global Home-return control keeps the 44px minimum.
+
+
 ### 2026-09-18 — Home row now opens a game preview before launch
 
 Commits:
