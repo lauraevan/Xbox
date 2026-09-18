@@ -1,1 +1,1127 @@
-{}
+{
+  "bs0078": {
+    "name": "DRAGON BALL: Sparking! ZERO",
+    "path": "assets/stratus-covers/bs0078.jpg",
+    "source": "steamgriddb"
+  },
+  "bs0096": {
+    "name": "Black Myth: Wukong",
+    "path": "assets/stratus-covers/bs0096.jpg",
+    "source": "steamgriddb"
+  },
+  "bs0095": {
+    "name": "Red Dead Redemption",
+    "path": "assets/stratus-covers/bs0095.jpg",
+    "source": "steamgriddb"
+  },
+  "bs0094": {
+    "name": "PRAGMATA",
+    "path": "assets/stratus-covers/bs0094.jpg",
+    "source": "steamgriddb"
+  },
+  "bs0093": {
+    "name": "Battlefield 6",
+    "path": "assets/stratus-covers/bs0093.jpg",
+    "source": "steamgriddb"
+  },
+  "bs0092": {
+    "name": "Mafia: The Old Country",
+    "path": "assets/stratus-covers/bs0092.jpg",
+    "source": "steamgriddb"
+  },
+  "bs0087": {
+    "name": "Detroit: Become Human",
+    "path": "assets/stratus-covers/bs0087.jpg",
+    "source": "steamgriddb"
+  },
+  "bs0083": {
+    "name": "INDUSTRIA 2",
+    "path": "assets/stratus-covers/bs0083.jpg",
+    "source": "steamgriddb"
+  },
+  "bs0082": {
+    "name": "Far Cry 5",
+    "path": "assets/stratus-covers/bs0082.jpg",
+    "source": "steamgriddb"
+  },
+  "bs0077": {
+    "name": "Invincible VS",
+    "path": "assets/stratus-covers/bs0077.jpg",
+    "source": "steamgriddb"
+  },
+  "bs0074": {
+    "name": "Commandos: Origins",
+    "path": "assets/stratus-covers/bs0074.jpg",
+    "source": "steamgriddb"
+  },
+  "bs0070": {
+    "name": "Maid of Sker",
+    "path": "assets/stratus-covers/bs0070.jpg",
+    "source": "steamgriddb"
+  },
+  "bs0069": {
+    "name": "Transformers: Battlegrounds",
+    "path": "assets/stratus-covers/bs0069.jpg",
+    "source": "steamgriddb"
+  },
+  "bs0067": {
+    "name": "Persona 5 Strikers",
+    "path": "assets/stratus-covers/bs0067.jpg",
+    "source": "steamgriddb"
+  },
+  "bs0064": {
+    "name": "Oddsparks: An Automation Adventure",
+    "path": "assets/stratus-covers/bs0064.jpg",
+    "source": "steamgriddb"
+  },
+  "bs0063": {
+    "name": "Burkina Faso: Radical Insurgency",
+    "path": "assets/stratus-covers/bs0063.jpg",
+    "source": "stratus-vendored-fallback"
+  },
+  "bs0062": {
+    "name": "World War Z - Aftermath",
+    "path": "assets/stratus-covers/bs0062.jpg",
+    "source": "steamgriddb"
+  },
+  "bs0061": {
+    "name": "GOD FORSAKEN",
+    "path": "assets/stratus-covers/bs0061.jpg",
+    "source": "steamgriddb"
+  },
+  "bs0060": {
+    "name": "Gym Manager",
+    "path": "assets/stratus-covers/bs0060.jpg",
+    "source": "stratus-vendored-fallback"
+  },
+  "bs0059": {
+    "name": "FEROCIOUS",
+    "path": "assets/stratus-covers/bs0059.jpg",
+    "source": "stratus-vendored-fallback"
+  },
+  "bs0058": {
+    "name": "Cavalry Girls",
+    "path": "assets/stratus-covers/bs0058.jpg",
+    "source": "steamgriddb"
+  },
+  "bs0057": {
+    "name": "Quarantine Zone - The Last Check",
+    "path": "assets/stratus-covers/bs0057.jpg",
+    "source": "steamgriddb"
+  },
+  "bs0056": {
+    "name": "Diablo II - Resurrected",
+    "path": "assets/stratus-covers/bs0056.jpg",
+    "source": "steamgriddb"
+  },
+  "bs0055": {
+    "name": "Resident Evil Requiem",
+    "path": "assets/stratus-covers/bs0055.jpg",
+    "source": "steamgriddb"
+  },
+  "bs0054": {
+    "name": "Forza Horizon 6",
+    "path": "assets/stratus-covers/bs0054.jpg",
+    "source": "steamgriddb"
+  },
+  "bs0053": {
+    "name": "God of War",
+    "path": "assets/stratus-covers/bs0053.jpg",
+    "source": "steamgriddb"
+  },
+  "bs0052": {
+    "name": "I Am Jesus Christ",
+    "path": "assets/stratus-covers/bs0052.jpg",
+    "source": "steamgriddb"
+  },
+  "bs0051": {
+    "name": "The Spirit of the Samurai",
+    "path": "assets/stratus-covers/bs0051.jpg",
+    "source": "steamgriddb"
+  },
+  "bs0050": {
+    "name": "Wicked Seed",
+    "path": "assets/stratus-covers/bs0050.jpg",
+    "source": "steamgriddb"
+  },
+  "bs0049": {
+    "name": "Taboo Trial",
+    "path": "assets/stratus-covers/bs0049.jpg",
+    "source": "steamgriddb"
+  },
+  "bs0048": {
+    "name": "Tomb Raider - Definitive Edition",
+    "path": "assets/stratus-covers/bs0048.jpg",
+    "source": "steamgriddb"
+  },
+  "bs0047": {
+    "name": "Cricket 26",
+    "path": "assets/stratus-covers/bs0047.jpg",
+    "source": "steamgriddb"
+  },
+  "bs0046": {
+    "name": "Hollow Knight: Silksong",
+    "path": "assets/stratus-covers/bs0046.jpg",
+    "source": "steamgriddb"
+  },
+  "bs0039": {
+    "name": "Little Nightmares III",
+    "path": "assets/stratus-covers/bs0039.jpg",
+    "source": "steamgriddb"
+  },
+  "dg0419": {
+    "name": "SAND LAND",
+    "path": "assets/stratus-covers/dg0419.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0495": {
+    "name": "X-Plane 11",
+    "path": "assets/stratus-covers/kj0495.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0530": {
+    "name": "GUILTY GEAR -STRIVE-",
+    "path": "assets/stratus-covers/kj0530.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0531": {
+    "name": "Sim Racing Telemetry - F1 22",
+    "path": "assets/stratus-covers/kj0531.jpg",
+    "source": "steamgriddb"
+  },
+  "bs0034": {
+    "name": "Clair Obscur: Expedition 33",
+    "path": "assets/stratus-covers/bs0034.jpg",
+    "source": "steamgriddb"
+  },
+  "bs0035": {
+    "name": "Easy Red 2",
+    "path": "assets/stratus-covers/bs0035.jpg",
+    "source": "steamgriddb"
+  },
+  "bs0036": {
+    "name": "Wolf Mate",
+    "path": "assets/stratus-covers/bs0036.jpg",
+    "source": "stratus-vendored-fallback"
+  },
+  "bs0026": {
+    "name": "JDM: Japanese Drift Master",
+    "path": "assets/stratus-covers/bs0026.jpg",
+    "source": "steamgriddb"
+  },
+  "bs0023": {
+    "name": "The First Berserker: Khazan",
+    "path": "assets/stratus-covers/bs0023.jpg",
+    "source": "steamgriddb"
+  },
+  "bs0021": {
+    "name": "Blue Prince",
+    "path": "assets/stratus-covers/bs0021.jpg",
+    "source": "steamgriddb"
+  },
+  "bs0025": {
+    "name": "Only Up",
+    "path": "assets/stratus-covers/bs0025.jpg",
+    "source": "stratus-vendored-fallback"
+  },
+  "bs0024": {
+    "name": "Schedule 1",
+    "path": "assets/stratus-covers/bs0024.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0599": {
+    "name": "WWE 2K25",
+    "path": "assets/stratus-covers/kj0599.jpg",
+    "source": "steamgriddb"
+  },
+  "bs0022": {
+    "name": "RuneScape: Dragonwilds",
+    "path": "assets/stratus-covers/bs0022.jpg",
+    "source": "steamgriddb"
+  },
+  "dg0364": {
+    "name": "Cities: Skylines 2",
+    "path": "assets/stratus-covers/dg0364.jpg",
+    "source": "steamgriddb"
+  },
+  "bs0020": {
+    "name": "Crashlands 2",
+    "path": "assets/stratus-covers/bs0020.jpg",
+    "source": "steamgriddb"
+  },
+  "bs0019": {
+    "name": "Mandragora: Whispers of the Witch Tree",
+    "path": "assets/stratus-covers/bs0019.jpg",
+    "source": "steamgriddb"
+  },
+  "dg0533": {
+    "name": "Frostpunk 2",
+    "path": "assets/stratus-covers/dg0533.jpg",
+    "source": "steamgriddb"
+  },
+  "kp0213": {
+    "name": "Manor Lords",
+    "path": "assets/stratus-covers/kp0213.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0620": {
+    "name": "inZOI",
+    "path": "assets/stratus-covers/kj0620.jpg",
+    "source": "steamgriddb"
+  },
+  "bs0018": {
+    "name": "AI LIMIT",
+    "path": "assets/stratus-covers/bs0018.jpg",
+    "source": "steamgriddb"
+  },
+  "dg0598": {
+    "name": "Horizon Zero Dawn",
+    "path": "assets/stratus-covers/dg0598.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0615": {
+    "name": "Dead Space™ 3",
+    "path": "assets/stratus-covers/kj0615.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0035": {
+    "name": "Deathloop",
+    "path": "assets/stratus-covers/kj0035.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0461": {
+    "name": "Football Manager 2023",
+    "path": "assets/stratus-covers/kj0461.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0614": {
+    "name": "Dead Space 2",
+    "path": "assets/stratus-covers/kj0614.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0630": {
+    "name": "The Last of Us™ Part II",
+    "path": "assets/stratus-covers/kj0630.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0179": {
+    "name": "Inside the Backrooms",
+    "path": "assets/stratus-covers/kj0179.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0529": {
+    "name": "Platform 8",
+    "path": "assets/stratus-covers/kj0529.jpg",
+    "source": "steamgriddb"
+  },
+  "dg0589": {
+    "name": "Five Hearts Under One Roof",
+    "path": "assets/stratus-covers/dg0589.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0516": {
+    "name": "Ghost of Tsushima",
+    "path": "assets/stratus-covers/kj0516.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0483": {
+    "name": "The Callisto Protocol",
+    "path": "assets/stratus-covers/kj0483.jpg",
+    "source": "steamgriddb"
+  },
+  "dg0730": {
+    "name": "Poppy Playtime: Chapter 4",
+    "path": "assets/stratus-covers/dg0730.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0209": {
+    "name": "Raft",
+    "path": "assets/stratus-covers/kj0209.jpg",
+    "source": "steamgriddb"
+  },
+  "dg0492": {
+    "name": "Mafia III: Definitive Edition",
+    "path": "assets/stratus-covers/dg0492.jpg",
+    "source": "steamgriddb"
+  },
+  "dg0491": {
+    "name": "Mafia II: Definitive Edition",
+    "path": "assets/stratus-covers/dg0491.jpg",
+    "source": "steamgriddb"
+  },
+  "kp0232": {
+    "name": "TCG Card Shop",
+    "path": "assets/stratus-covers/kp0232.jpg",
+    "source": "steamgriddb"
+  },
+  "dg0248": {
+    "name": "Uncharted 4",
+    "path": "assets/stratus-covers/dg0248.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0306": {
+    "name": "Undertale",
+    "path": "assets/stratus-covers/kj0306.jpg",
+    "source": "steamgriddb"
+  },
+  "dg0639": {
+    "name": "Yandere Simulator",
+    "path": "assets/stratus-covers/dg0639.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0177": {
+    "name": "Amanda the Adventurer",
+    "path": "assets/stratus-covers/kj0177.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0138": {
+    "name": "Poppy Playtime: Chapter 2",
+    "path": "assets/stratus-covers/kj0138.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0137": {
+    "name": "Poppy Playtime: Chapter 1",
+    "path": "assets/stratus-covers/kj0137.jpg",
+    "source": "stratus-vendored-fallback"
+  },
+  "dg0676": {
+    "name": "MiSide",
+    "path": "assets/stratus-covers/dg0676.jpg",
+    "source": "steamgriddb"
+  },
+  "bs0017": {
+    "name": "God of War: Ragnarök",
+    "path": "assets/stratus-covers/bs0017.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0442": {
+    "name": "Poppy Playtime: Chapter 3",
+    "path": "assets/stratus-covers/kj0442.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0328": {
+    "name": "FIFA23",
+    "path": "assets/stratus-covers/kj0328.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0222": {
+    "name": "SCUM",
+    "path": "assets/stratus-covers/kj0222.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0458": {
+    "name": "WWE 2K24",
+    "path": "assets/stratus-covers/kj0458.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0426": {
+    "name": "Buckshot Roulette",
+    "path": "assets/stratus-covers/kj0426.jpg",
+    "source": "steamgriddb"
+  },
+  "kp0203": {
+    "name": "Supermarket Simulator",
+    "path": "assets/stratus-covers/kp0203.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0202": {
+    "name": "The Long Drive",
+    "path": "assets/stratus-covers/kj0202.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0237": {
+    "name": "GigaBash",
+    "path": "assets/stratus-covers/kj0237.jpg",
+    "source": "steamgriddb"
+  },
+  "kp0208": {
+    "name": "Zoonomaly",
+    "path": "assets/stratus-covers/kp0208.jpg",
+    "source": "stratus-vendored-fallback"
+  },
+  "kj0499": {
+    "name": "Hades II",
+    "path": "assets/stratus-covers/kj0499.jpg",
+    "source": "steamgriddb"
+  },
+  "dg0380": {
+    "name": "Brotato",
+    "path": "assets/stratus-covers/dg0380.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0238": {
+    "name": "Wobbly Life",
+    "path": "assets/stratus-covers/kj0238.jpg",
+    "source": "steamgriddb"
+  },
+  "kp0133": {
+    "name": "Sniper：Ghost Warrior Contracts2",
+    "path": "assets/stratus-covers/kp0133.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0440": {
+    "name": "Tekken8",
+    "path": "assets/stratus-covers/kj0440.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0229": {
+    "name": "Halo: The Master Chief Collection",
+    "path": "assets/stratus-covers/kj0229.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0357": {
+    "name": "Alan Wake 2",
+    "path": "assets/stratus-covers/kj0357.jpg",
+    "source": "steamgriddb"
+  },
+  "dg0359": {
+    "name": "Neon Abyss",
+    "path": "assets/stratus-covers/dg0359.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0322": {
+    "name": "Stick Fight: The Game",
+    "path": "assets/stratus-covers/kj0322.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0287": {
+    "name": "Ratchet & Clank",
+    "path": "assets/stratus-covers/kj0287.jpg",
+    "source": "steamgriddb"
+  },
+  "dg0315": {
+    "name": "The Last of Us™ Part I",
+    "path": "assets/stratus-covers/dg0315.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0213": {
+    "name": "Resident Evil 4",
+    "path": "assets/stratus-covers/kj0213.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0135": {
+    "name": "Builder Simulator",
+    "path": "assets/stratus-covers/kj0135.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0191": {
+    "name": "Minecraft: Legends",
+    "path": "assets/stratus-covers/kj0191.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0181": {
+    "name": "Need for Speed: Payback",
+    "path": "assets/stratus-covers/kj0181.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0161": {
+    "name": "SpongeBob SquarePants: Battle for Bikini Bottom",
+    "path": "assets/stratus-covers/kj0161.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0171": {
+    "name": "Super Bunny Man",
+    "path": "assets/stratus-covers/kj0171.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0166": {
+    "name": "Hogwarts Legacy",
+    "path": "assets/stratus-covers/kj0166.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0150": {
+    "name": "SpongeBob SquarePants: The Cosmic Shake",
+    "path": "assets/stratus-covers/kj0150.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0141": {
+    "name": "Drift Racing Online",
+    "path": "assets/stratus-covers/kj0141.jpg",
+    "source": "steamgriddb"
+  },
+  "dg0278": {
+    "name": "Choo-Choo Charles",
+    "path": "assets/stratus-covers/dg0278.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0125": {
+    "name": "Marvel’s Spider-Man: Miles Morales",
+    "path": "assets/stratus-covers/kj0125.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0107": {
+    "name": "NBA 2K23",
+    "path": "assets/stratus-covers/kj0107.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0085": {
+    "name": "Ranch Simulator22",
+    "path": "assets/stratus-covers/kj0085.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0089": {
+    "name": "Marvel’s Spider-Man Remastered",
+    "path": "assets/stratus-covers/kj0089.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0214": {
+    "name": "Forza Horizon 5",
+    "path": "assets/stratus-covers/kj0214.jpg",
+    "source": "steamgriddb"
+  },
+  "dg0183": {
+    "name": "Stray",
+    "path": "assets/stratus-covers/dg0183.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0032": {
+    "name": "Pokémon Legends: Arceus",
+    "path": "assets/stratus-covers/kj0032.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0025": {
+    "name": "Subnautica Zero",
+    "path": "assets/stratus-covers/kj0025.jpg",
+    "source": "steamgriddb"
+  },
+  "KJ0019": {
+    "name": "GhostWire: Tokyo",
+    "path": "assets/stratus-covers/kj0019.jpg",
+    "source": "steamgriddb"
+  },
+  "dg0174": {
+    "name": "THE KING OF FIGHTERS XV",
+    "path": "assets/stratus-covers/dg0174.jpg",
+    "source": "steamgriddb"
+  },
+  "dg0168": {
+    "name": "Hitman 3",
+    "path": "assets/stratus-covers/dg0168.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0332": {
+    "name": "Nintendo Star Brawl",
+    "path": "assets/stratus-covers/kj0332.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0333": {
+    "name": "Red Dead Redemption 2",
+    "path": "assets/stratus-covers/jy0333.jpg",
+    "source": "steamgriddb"
+  },
+  "dg0170": {
+    "name": "Elden Ring",
+    "path": "assets/stratus-covers/dg0170.jpg",
+    "source": "steamgriddb"
+  },
+  "dg0163": {
+    "name": "LEGO The Incredibles",
+    "path": "assets/stratus-covers/dg0163.jpg",
+    "source": "steamgriddb"
+  },
+  "dg0159": {
+    "name": "Watch Dogs: Legion",
+    "path": "assets/stratus-covers/dg0159.jpg",
+    "source": "steamgriddb"
+  },
+  "dg0154": {
+    "name": "God of War 4",
+    "path": "assets/stratus-covers/dg0154.jpg",
+    "source": "steamgriddb"
+  },
+  "dg0145": {
+    "name": "Cooking Simulator",
+    "path": "assets/stratus-covers/dg0145.jpg",
+    "source": "steamgriddb"
+  },
+  "dg0139": {
+    "name": "FIFA19",
+    "path": "assets/stratus-covers/dg0139.jpg",
+    "source": "steamgriddb"
+  },
+  "dg0129": {
+    "name": "Grand Theft Auto: Vice City",
+    "path": "assets/stratus-covers/dg0129.jpg",
+    "source": "steamgriddb"
+  },
+  "dg0128": {
+    "name": "Grand Theft Auto: San Andreas",
+    "path": "assets/stratus-covers/dg0128.jpg",
+    "source": "steamgriddb"
+  },
+  "dg0127": {
+    "name": "Grand Theft Auto III",
+    "path": "assets/stratus-covers/dg0127.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0408": {
+    "name": "The Legend of Zelda: Breath of the Wild",
+    "path": "assets/stratus-covers/jy0408.jpg",
+    "source": "steamgriddb"
+  },
+  "dg0109": {
+    "name": "ARK: Survival Evolved",
+    "path": "assets/stratus-covers/dg0109.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0185": {
+    "name": "Cities: Skylines",
+    "path": "assets/stratus-covers/kj0185.jpg",
+    "source": "steamgriddb"
+  },
+  "dg0054": {
+    "name": "Arma 3",
+    "path": "assets/stratus-covers/dg0054.jpg",
+    "source": "steamgriddb"
+  },
+  "dg0062": {
+    "name": "Assassin's Creed: Brotherhood",
+    "path": "assets/stratus-covers/dg0062.jpg",
+    "source": "steamgriddb"
+  },
+  "dg0063": {
+    "name": "Assassin's Creed: Revelations",
+    "path": "assets/stratus-covers/dg0063.jpg",
+    "source": "steamgriddb"
+  },
+  "dg0064": {
+    "name": "Assassin's Creed: Black Flag",
+    "path": "assets/stratus-covers/dg0064.jpg",
+    "source": "steamgriddb"
+  },
+  "dg0065": {
+    "name": "Assassin's Creed: Syndicate",
+    "path": "assets/stratus-covers/dg0065.jpg",
+    "source": "steamgriddb"
+  },
+  "dg0024": {
+    "name": "Football：PES 2021",
+    "path": "assets/stratus-covers/dg0024.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0190": {
+    "name": "Mount & Blade II: Bannerlord",
+    "path": "assets/stratus-covers/kj0190.jpg",
+    "source": "steamgriddb"
+  },
+  "dg0022": {
+    "name": "Fling to Finish",
+    "path": "assets/stratus-covers/dg0022.jpg",
+    "source": "steamgriddb"
+  },
+  "dg0021": {
+    "name": "A Way Out",
+    "path": "assets/stratus-covers/dg0021.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0559": {
+    "name": "Slime Rancher",
+    "path": "assets/stratus-covers/jy0559.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0532": {
+    "name": "GTA V MOD version",
+    "path": "assets/stratus-covers/jy0532.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0362": {
+    "name": "Alba: A Wildlife Adventure",
+    "path": "assets/stratus-covers/jy0362.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0487": {
+    "name": "Days Gone",
+    "path": "assets/stratus-covers/jy0487.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0238": {
+    "name": "Assassin’s Creed Odyssey: The Fate of Atlantis",
+    "path": "assets/stratus-covers/jy0238.jpg",
+    "source": "steamgriddb"
+  },
+  "dg0020": {
+    "name": "Euro Truck Simulator 2",
+    "path": "assets/stratus-covers/dg0020.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0541": {
+    "name": "Forza Horizon 4",
+    "path": "assets/stratus-covers/jy0541.jpg",
+    "source": "steamgriddb"
+  },
+  "dg0017": {
+    "name": "Tokyo 2020 Olympics",
+    "path": "assets/stratus-covers/dg0017.jpg",
+    "source": "stratus-vendored-fallback"
+  },
+  "jy0482": {
+    "name": "SUPERHOT: Mind Control Delete",
+    "path": "assets/stratus-covers/jy0482.jpg",
+    "source": "steamgriddb"
+  },
+  "kp0175": {
+    "name": "Resident Evil Village",
+    "path": "assets/stratus-covers/kp0175.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0473": {
+    "name": "My Friend Pedro",
+    "path": "assets/stratus-covers/jy0473.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0488": {
+    "name": "Doom Eternal",
+    "path": "assets/stratus-covers/jy0488.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0470": {
+    "name": "Party Hard2",
+    "path": "assets/stratus-covers/jy0470.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0186": {
+    "name": "The Amazing Spider-Man 2",
+    "path": "assets/stratus-covers/jy0186.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0435": {
+    "name": "Transformers: Devastation",
+    "path": "assets/stratus-covers/jy0435.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0417": {
+    "name": "Control",
+    "path": "assets/stratus-covers/jy0417.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0371": {
+    "name": "Halo: Reach",
+    "path": "assets/stratus-covers/jy0371.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0459": {
+    "name": "The Amazing Spider-Man",
+    "path": "assets/stratus-covers/jy0459.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0310": {
+    "name": "Fallout 4",
+    "path": "assets/stratus-covers/jy0310.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0440": {
+    "name": "It Takes Two",
+    "path": "assets/stratus-covers/jy0440.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0402": {
+    "name": "Minecraft:Dungeons",
+    "path": "assets/stratus-covers/jy0402.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0361": {
+    "name": "Call of Duty: WWII",
+    "path": "assets/stratus-covers/jy0361.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0416": {
+    "name": "Little Nightmares II",
+    "path": "assets/stratus-covers/jy0416.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0172": {
+    "name": "Hand of Fate 2",
+    "path": "assets/stratus-covers/jy0172.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0324": {
+    "name": "The Past Room",
+    "path": "assets/stratus-covers/jy0324.jpg",
+    "source": "stratus-vendored-fallback"
+  },
+  "jy0325": {
+    "name": "Little Nightmares",
+    "path": "assets/stratus-covers/jy0325.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0108": {
+    "name": "Grand Theft Auto V",
+    "path": "assets/stratus-covers/jy0108.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0307": {
+    "name": "Mafia: Definitive Edition",
+    "path": "assets/stratus-covers/jy0307.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0183": {
+    "name": "ONE PIECE: PIRATE WARRIORS 4",
+    "path": "assets/stratus-covers/jy0183.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0281": {
+    "name": "Overcooked 2",
+    "path": "assets/stratus-covers/jy0281.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0244": {
+    "name": "Boomerang Fu",
+    "path": "assets/stratus-covers/jy0244.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0112": {
+    "name": "Off-Road Heroes 4",
+    "path": "assets/stratus-covers/jy0112.jpg",
+    "source": "stratus-vendored-fallback"
+  },
+  "jy0154": {
+    "name": "Far Cry Primal",
+    "path": "assets/stratus-covers/jy0154.jpg",
+    "source": "steamgriddb"
+  },
+  "dg0090": {
+    "name": "Mirror's Edge Catalyst",
+    "path": "assets/stratus-covers/dg0090.jpg",
+    "source": "steamgriddb"
+  },
+  "md0483": {
+    "name": "Far Cry 3",
+    "path": "assets/stratus-covers/md0483.jpg",
+    "source": "steamgriddb"
+  },
+  "md0176": {
+    "name": "COD6 Modern Warfare",
+    "path": "assets/stratus-covers/md0176.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0354": {
+    "name": "Cyberpunk 2077",
+    "path": "assets/stratus-covers/jy0354.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0273": {
+    "name": "Batman™: Arkham Origins",
+    "path": "assets/stratus-covers/jy0273.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0272": {
+    "name": "Batman™: Arkham Knight",
+    "path": "assets/stratus-covers/jy0272.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0252": {
+    "name": "Far Cry New Dawn",
+    "path": "assets/stratus-covers/jy0252.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0214": {
+    "name": "Tom Clancy's Ghost Recon® Wildlands",
+    "path": "assets/stratus-covers/jy0214.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0235": {
+    "name": "Resident Evil: Revelations 2",
+    "path": "assets/stratus-covers/jy0235.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0229": {
+    "name": "Stardew Valley",
+    "path": "assets/stratus-covers/jy0229.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0038": {
+    "name": "Sekiro: Shadows Die Twice",
+    "path": "assets/stratus-covers/jy0038.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0208": {
+    "name": "Attack On Titan2",
+    "path": "assets/stratus-covers/jy0208.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0219": {
+    "name": "Curse of the Dead Gods",
+    "path": "assets/stratus-covers/jy0219.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0080": {
+    "name": "Bloodstained: Ritual of the Night",
+    "path": "assets/stratus-covers/jy0080.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0196": {
+    "name": "Forager",
+    "path": "assets/stratus-covers/jy0196.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0095": {
+    "name": "Resident Evil 7: Biohazard",
+    "path": "assets/stratus-covers/jy0095.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0185": {
+    "name": "Titanfall 2",
+    "path": "assets/stratus-covers/jy0185.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0147": {
+    "name": "Watch Dogs 2",
+    "path": "assets/stratus-covers/jy0147.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0146": {
+    "name": "Cuphead",
+    "path": "assets/stratus-covers/jy0146.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0157": {
+    "name": "What Remains of Edith Finch",
+    "path": "assets/stratus-covers/jy0157.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0124": {
+    "name": "Untitled Goose Game",
+    "path": "assets/stratus-covers/jy0124.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0121": {
+    "name": "Rise of the Tomb Raider",
+    "path": "assets/stratus-covers/jy0121.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0120": {
+    "name": "Katana ZERO",
+    "path": "assets/stratus-covers/jy0120.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0122": {
+    "name": "Wizard of Legend",
+    "path": "assets/stratus-covers/jy0122.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0059": {
+    "name": "One Piece: Burning Blood",
+    "path": "assets/stratus-covers/jy0059.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0126": {
+    "name": "Ori and the Will of the Wisps",
+    "path": "assets/stratus-covers/jy0126.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0118": {
+    "name": "Doraemon: Story of Seasons",
+    "path": "assets/stratus-covers/jy0118.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0123": {
+    "name": "Hades",
+    "path": "assets/stratus-covers/jy0123.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0109": {
+    "name": "Ace Combat 7: Skies Unknown",
+    "path": "assets/stratus-covers/jy0109.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0091": {
+    "name": "Witchers 3",
+    "path": "assets/stratus-covers/jy0091.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0105": {
+    "name": "Terminator: Resistance",
+    "path": "assets/stratus-covers/jy0105.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0103": {
+    "name": "NieR:Automata™",
+    "path": "assets/stratus-covers/jy0103.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0094": {
+    "name": "Ori and the Blind Forest",
+    "path": "assets/stratus-covers/jy0094.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0084": {
+    "name": "Dragon Ball Z: Kakarot",
+    "path": "assets/stratus-covers/jy0084.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0075": {
+    "name": "For The King",
+    "path": "assets/stratus-covers/jy0075.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0046": {
+    "name": "Assassin’s Creed: Odyssey",
+    "path": "assets/stratus-covers/jy0046.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0040": {
+    "name": "Resident Evil 2: Remake",
+    "path": "assets/stratus-covers/jy0040.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0039": {
+    "name": "Devil May Cry 5",
+    "path": "assets/stratus-covers/jy0039.jpg",
+    "source": "steamgriddb"
+  },
+  "dg0158": {
+    "name": "FINAL FANTASY VII REMAKE INTERGRADE",
+    "path": "assets/stratus-covers/dg0158.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0015": {
+    "name": "How to Train Your Dragon: Dawn of New Riders",
+    "path": "assets/stratus-covers/jy0015.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0012": {
+    "name": "American Fugitive",
+    "path": "assets/stratus-covers/jy0012.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0009": {
+    "name": "Naruto Shippuden: Ultimate Ninja Storm 4",
+    "path": "assets/stratus-covers/jy0009.jpg",
+    "source": "steamgriddb"
+  },
+  "kj0283": {
+    "name": "Baldur's Gate 3",
+    "path": "assets/stratus-covers/kj0283.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0008": {
+    "name": "Devil May Cry 4",
+    "path": "assets/stratus-covers/jy0008.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0013": {
+    "name": "Dead Cells",
+    "path": "assets/stratus-covers/jy0013.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0017": {
+    "name": "PES 2017",
+    "path": "assets/stratus-covers/jy0017.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0005": {
+    "name": "Final Fantasy XIII",
+    "path": "assets/stratus-covers/jy0005.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0018": {
+    "name": "Transformers: Rise of the Dark Spark",
+    "path": "assets/stratus-covers/jy0018.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0011": {
+    "name": "Hollow Knight",
+    "path": "assets/stratus-covers/jy0011.jpg",
+    "source": "steamgriddb"
+  }
+}
