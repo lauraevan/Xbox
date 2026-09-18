@@ -224,11 +224,7 @@ function showOutdatedBuild(currentSha){
   const mark = document.createElement('div');
   mark.className = 'xbox-outdated-mark';
   mark.setAttribute('aria-hidden', 'true');
-  mark.innerHTML = `
-    <svg viewBox="0 0 64 64" focusable="false">
-      <circle cx="32" cy="32" r="29" fill="#107c10"/>
-      <path fill="#fff" d="M17.2 16.7c4.9-3.1 9.9-3.2 14.8.3-3.6 2.5-7 5.6-10.2 9.4a47.8 47.8 0 0 0-4.6-9.7Zm29.6 0a47.8 47.8 0 0 0-4.6 9.7C39 22.6 35.6 19.5 32 17c4.9-3.5 9.9-3.4 14.8-.3ZM14.5 24c5 3.9 10.9 10.4 17.5 19.6C38.6 34.4 44.5 27.9 49.5 24c1.7 3.9 1.9 8.1.6 12.7A18.9 18.9 0 0 1 32 50.1a18.9 18.9 0 0 1-18.1-13.4A18 18 0 0 1 14.5 24Z"/>
-    </svg>`;
+  mark.innerHTML = '<img src="assets/pwa/xbox-logo.svg" alt="">';
 
   const title = document.createElement('h1');
   title.textContent = 'This version of XBOX is outdated';
@@ -282,11 +278,15 @@ function showOutdatedBuild(currentSha){
       width:64px;
       height:64px;
       margin:0 auto 22px;
+      overflow:hidden;
+      border-radius:50%;
+      background:#107c10;
     }
-    .xbox-outdated-mark svg{
+    .xbox-outdated-mark img{
       display:block;
       width:100%;
       height:100%;
+      object-fit:cover;
     }
     .xbox-outdated-panel h1{
       margin:0;
