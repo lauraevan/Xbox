@@ -172,6 +172,10 @@ function setView(name, opts = {}){
 
 function goBack(){
   if (detailGame){ closeDetail(); return; }
+  if (currentView === 'settings' && window.ConsolePages?.backSettings?.()){
+    window.Sound?.back();
+    return;
+  }
   if (currentView !== 'home'){ setView('home'); window.Sound?.back(); return; }
   window.Sound?.edge();
 }
@@ -1026,7 +1030,7 @@ window.App = {
   setView, goBack, openDetail, closeDetail, launch, quitGame,
   toast, modal, closeModal, promptGamertag, confirmReset, powerOff, screenshot,
   syncProfile, tickClock, updateLegend, setBackdrop, paintIcons, syncMicIcon,
-  applyNightMode, captureActions, promptNewProfile, manageProfiles, testRumble, rumble,
+  applyNightMode, applySettings, captureActions, promptNewProfile, manageProfiles, testRumble, rumble,
   promptArtworkKey, promptProfileLine, promptWallpaper, chooseWallpaperFile,
   isPlaying: () => !!playing,
   get view(){ return currentView; }
