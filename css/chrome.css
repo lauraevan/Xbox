@@ -276,20 +276,22 @@ body[data-theme="light"] .guide-panel{ background:rgba(240,241,243,.94); }
   position:fixed;
   z-index:121;
   left:50%;
-  bottom:max(12rem,calc(env(safe-area-inset-bottom) + 8.2rem));
-  min-height:3.8rem;
-  max-width:min(34rem,calc(100vw - 2.4rem));
+  bottom:max(12.6rem,calc(env(safe-area-inset-bottom) + 8.8rem));
+  min-width:23.5rem;
+  min-height:5.2rem;
+  max-width:min(42rem,calc(100vw - 2.4rem));
   display:flex;
   align-items:center;
-  gap:.7rem;
-  padding:.58rem 1.12rem .6rem .72rem;
-  border:0;
-  border-radius:.42rem;
+  justify-content:flex-start;
+  gap:1.05rem;
+  padding:.76rem 1.55rem .8rem 1rem;
+  border:.1rem solid rgba(255,255,255,.08);
+  border-radius:.78rem;
   background:rgba(0,0,0,.90);
-  box-shadow:0 .55rem 1.7rem rgba(0,0,0,.34);
+  box-shadow:0 .8rem 2.35rem rgba(0,0,0,.44);
   color:#fff;
   opacity:0;
-  transform:translate(-50%,.75rem) scale(.985);
+  transform:translate(-50%,.8rem) scale(.985);
   pointer-events:none;
   transition:
     opacity .2s var(--ease-decel),
@@ -307,27 +309,30 @@ body[data-theme="light"] .guide-panel{ background:rgba(240,241,243,.94); }
     transform .22s var(--ease-accel);
 }
 .boot-greeting-mark{
-  width:2.2rem;
-  height:2.2rem;
+  width:2.8rem;
+  height:2.8rem;
   flex:none;
   display:grid;
   place-items:center;
   overflow:hidden;
+  border-radius:50%;
 }
 .boot-greeting-mark img{
-  width:2.2rem;
-  height:2.2rem;
+  width:2.8rem;
+  height:2.8rem;
   display:block;
   object-fit:cover;
+  filter:saturate(1.32) contrast(1.06) brightness(1.03);
 }
 .boot-greeting-text{
   min-width:0;
   overflow:hidden;
   text-overflow:ellipsis;
   white-space:nowrap;
-  color:rgba(255,255,255,.94);
-  font:600 1.32rem/1.1 "Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;
+  color:#fff;
+  font:600 1.62rem/1.08 "Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;
   letter-spacing:.005rem;
+  text-shadow:0 .08rem .24rem rgba(0,0,0,.32);
 }
 
 html[data-motion="reduced"] .boot-greeting{
@@ -337,7 +342,7 @@ html[data-motion="reduced"] .boot-greeting{
 
 @media (hover:none), (pointer:coarse){
   .boot-greeting{
-    bottom:max(9.6rem,calc(env(safe-area-inset-bottom) + 6.2rem));
+    bottom:max(10.6rem,calc(env(safe-area-inset-bottom) + 7rem));
   }
 }
 
