@@ -69,6 +69,7 @@ function enhanceStore(){
     tabs.append(
       makeTab('Home', 'home', mode === 'home'),
       makeTab('Games', 'games', mode === 'games'),
+      makeTab('Deals', 'deals', mode === 'deals'),
       makeTab('Owned', 'owned', mode === 'owned'),
       makeTab('Wish list', 'wishlist', mode === 'wishlist'),
       makeTab('Search', 'search', mode === 'search')

@@ -382,3 +382,246 @@
   .xproduct-body{ padding-left:4.5rem!important; padding-right:4.5rem!important; }
   .xproduct-cover{ width:21.5rem!important; }
 }
+
+
+/* Deals & specials ----------------------------------------------------- */
+.xstore-deals{
+  margin:0 0 3.5rem;
+}
+.xstore-deals-head{
+  display:flex;
+  align-items:end;
+  justify-content:space-between;
+  gap:2rem;
+  margin:0 0 1.2rem;
+}
+.xstore-deals-kicker{
+  margin-bottom:.45rem;
+  color:#9bf00b;
+  font-size:1rem;
+  font-weight:800;
+  letter-spacing:.11rem;
+}
+.xstore-deals-head h2{
+  margin:0;
+  color:#fff;
+  font-size:2.45rem;
+  line-height:1;
+  font-weight:600;
+}
+.xstore-deals-head p{
+  margin:.55rem 0 0;
+  color:rgba(255,255,255,.56);
+  font-size:1.15rem;
+}
+.xstore-deals-callout{
+  flex:0 0 auto;
+  min-height:3rem;
+  display:flex;
+  align-items:center;
+  padding:0 1rem;
+  border-radius:.4rem;
+  background:#9bf00b;
+  color:#081006;
+  font-size:1.02rem;
+  font-weight:900;
+  letter-spacing:.04rem;
+}
+.xstore-deals-grid{
+  display:grid;
+  grid-template-columns:minmax(0,1.22fr) minmax(34rem,.78fr);
+  gap:1rem;
+  min-height:31rem;
+}
+.xstore-deals-side{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  grid-template-rows:1fr 1fr;
+  gap:1rem;
+  min-width:0;
+}
+.xstore-deal-promo{
+  position:relative;
+  min-width:0;
+  min-height:0;
+  overflow:hidden;
+  border:0;
+  border-radius:.75rem;
+  padding:0;
+  background:#171717;
+  color:#fff;
+  text-align:left;
+}
+.xstore-deal-promo-art{
+  position:absolute;
+  inset:0;
+  background-size:cover;
+  background-position:center;
+  transform:scale(1.015);
+  transition:transform .28s ease;
+}
+.xstore-deal-promo::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(180deg,rgba(0,0,0,.02) 16%,rgba(0,0,0,.18) 48%,rgba(0,0,0,.92) 100%),
+    linear-gradient(90deg,rgba(0,0,0,.42),transparent 58%);
+}
+.xstore-deal-promo.featured::after{
+  background:linear-gradient(90deg,rgba(0,0,0,.9) 0%,rgba(0,0,0,.54) 48%,rgba(0,0,0,.12) 100%);
+}
+.xstore-deal-promo-copy{
+  position:absolute;
+  z-index:2;
+  left:1.35rem;
+  right:1.35rem;
+  bottom:1.25rem;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+}
+.xstore-deal-promo.featured .xstore-deal-promo-copy{
+  left:2.5rem;
+  right:42%;
+  bottom:2.25rem;
+}
+.xstore-deal-save{
+  min-height:2.35rem;
+  display:inline-flex;
+  align-items:center;
+  padding:0 .7rem;
+  margin-bottom:.65rem;
+  border-radius:.32rem;
+  background:#9bf00b;
+  color:#081006;
+  font-size:.9rem;
+  font-weight:900;
+  letter-spacing:.035rem;
+}
+.xstore-deal-name{
+  max-width:100%;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  color:#fff;
+  font-size:1.42rem;
+  font-weight:700;
+}
+.xstore-deal-promo.featured .xstore-deal-name{
+  white-space:normal;
+  font-size:2.85rem;
+  line-height:1.03;
+}
+.xstore-deal-prices{
+  display:flex;
+  align-items:baseline;
+  gap:.7rem;
+  margin-top:.55rem;
+}
+.xstore-deal-prices del{
+  color:rgba(255,255,255,.56);
+  font-size:1rem;
+}
+.xstore-deal-prices strong{
+  color:#fff;
+  font-size:1.25rem;
+  font-weight:750;
+}
+.xstore-deal-promo.featured .xstore-deal-prices strong{ font-size:1.8rem; }
+.xstore-deal-note{
+  margin-top:.5rem;
+  color:rgba(255,255,255,.66);
+  font-size:1.08rem;
+}
+.xstore-deal-promo[data-focused]{
+  outline:.35rem solid #fff;
+  outline-offset:.24rem;
+  z-index:3;
+}
+.xstore-deal-promo[data-focused] .xstore-deal-promo-art{
+  transform:scale(1.045);
+}
+
+.store-deal-badge{
+  position:absolute;
+  z-index:4;
+  left:.65rem;
+  top:.65rem;
+  min-height:2.35rem;
+  display:flex;
+  align-items:center;
+  padding:0 .62rem;
+  border-radius:.35rem;
+  background:#9bf00b;
+  color:#071006;
+  font-size:.88rem;
+  font-weight:900;
+  letter-spacing:.025rem;
+}
+.store-price-deal{
+  display:flex!important;
+  align-items:baseline;
+  gap:.55rem;
+}
+.store-price-old{
+  color:rgba(255,255,255,.42);
+  font-size:.98rem;
+  font-weight:500;
+  text-decoration:line-through;
+}
+.store-price-new{
+  color:#d4f20c;
+  font-size:1.2rem;
+  font-weight:750;
+}
+.xproduct-deal-strip{
+  width:max-content;
+  max-width:100%;
+  min-height:3.4rem;
+  display:flex;
+  align-items:center;
+  gap:.85rem;
+  margin:0 0 1.25rem;
+  padding:0 .95rem;
+  border-radius:.45rem;
+  background:rgba(155,240,11,.12);
+  border:.1rem solid rgba(155,240,11,.3);
+}
+.xproduct-deal-strip b{
+  color:#9bf00b;
+  font-size:1.1rem;
+  font-weight:900;
+}
+.xproduct-deal-strip span{
+  color:rgba(255,255,255,.72);
+  font-size:1.05rem;
+}
+.xproduct-price{
+  display:flex;
+  align-items:baseline;
+  gap:.9rem;
+}
+.xproduct-price-old{
+  color:rgba(255,255,255,.42);
+  font-size:1.35rem;
+  font-weight:500;
+}
+.xproduct-price-now{
+  color:#fff;
+  font-size:2.15rem;
+  font-weight:700;
+}
+
+@media (max-aspect-ratio:16/10){
+  .xstore-deals-grid{
+    grid-template-columns:minmax(0,1.18fr) minmax(29rem,.82fr);
+    min-height:28rem;
+  }
+  .xstore-deal-promo.featured .xstore-deal-promo-copy{
+    right:34%;
+  }
+  .xstore-deal-promo.featured .xstore-deal-name{
+    font-size:2.45rem;
+  }
+}

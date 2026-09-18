@@ -73,6 +73,7 @@ function matching(){
     const keys = new Set(readWish());
     list = list.filter(g => keys.has(String(g.gameKey)));
   }
+  if (mode === 'deals') list = list.filter(g => !!dealFor(g));
   if (mode === 'owned') list = list.filter(g => Cloud.owns(g));
   if (!q) return list;
   return list.filter(game => lower(`${game.name} ${game.description} ${game.tags.join(' ')}`).includes(q));
@@ -97,10 +98,32 @@ function starsFor(game){
   return { rating, reviews:reviews >= 1000 ? `${Math.round(reviews / 100) / 10}K` : String(reviews) };
 }
 
+function dealFor(game){
+  const key = String(game?.gameKey || game?.name || '');
+  let hash = 2166136261;
+  for (const ch of key){
+    hash ^= ch.charCodeAt(0);
+    hash = Math.imul(hash, 16777619) >>> 0;
+  }
+  if (hash % 5 === 0) return null;
+
+  const discounts = [20, 30, 40, 50, 60, 70];
+  const bases = [19.99, 29.99, 39.99, 49.99, 59.99, 69.99];
+  const discount = discounts[hash % discounts.length];
+  const was = bases[(hash >>> 3) % bases.length];
+  const raw = was * (1 - discount / 100);
+  const now = Math.max(4.99, Math.floor(raw) + .99);
+  return { discount, was, now };
+}
+
+const money = value => `${Number(value).toFixed(2)}`;
+
 function cardImage(game, wide){ return wide ? (game.image || game.cover) : (game.cover || game.image); }
 
-function storeCard(game, { compact=false, wide=false } = {}){
-  const cls = compact ? 'store-game store-compact' : wide ? 'store-game store-wide' : 'store-game store-grid-card';
+function storeCard(game, { compact=false, wide=false, deal=false } = {}){
+  const offer = deal ? dealFor(game) : null;
+  const cls = (compact ? 'store-game store-compact' : wide ? 'store-game store-wide' : 'store-game store-grid-card')
+    + (offer ? ' store-deal-card' : '');
   const btn = el('button', cls);
   btn.dataset.nav = '';
   btn.dataset.storeKey = game.gameKey;
@@ -115,16 +138,26 @@ function storeCard(game, { compact=false, wide=false } = {}){
   img.decoding = 'async';
   art.append(img);
 
+  if (offer && !Cloud.owns(game)) art.append(el('span', 'store-deal-badge', `SAVE ${offer.discount}%`));
   if (Cloud.owns(game)) art.append(el('span', 'store-owned-badge', 'OWNED'));
   const cloud = el('span', 'store-cloud-mark', CLOUD_ICON);
   cloud.title = 'Cloud playable';
   art.append(cloud);
 
   const meta = el('span', 'store-game-meta');
-  meta.append(
-    el('span', 'store-game-title', escapeHtml(game.name)),
-    el('span', 'store-game-price', Cloud.owns(game) ? 'Owned' : 'Free')
-  );
+  meta.append(el('span', 'store-game-title', escapeHtml(game.name)));
+
+  if (offer && !Cloud.owns(game)){
+    const price = el('span', 'store-game-price store-price-deal');
+    price.append(
+      el('span', 'store-price-old', money(offer.was)),
+      el('strong', 'store-price-new', money(offer.now))
+    );
+    meta.append(price);
+  } else {
+    meta.append(el('span', 'store-game-price', Cloud.owns(game) ? 'Owned' : 'Free'));
+  }
+
   if (!compact) meta.append(el('span', 'store-game-sub', escapeHtml(game.tags.slice(0, 2).join(' • ') || 'Cloud gaming')));
   btn.append(art, meta);
   btn._navActivate = () => openProduct(game);
@@ -164,6 +197,7 @@ function buildRail(root){
     { id:'search', icon:'search', label:'Search' },
     { id:'home', icon:'store', label:'Store home', activeMode:'home' },
     { id:'games', icon:'games', label:'Games' },
+    { id:'deals', icon:'store', label:'Deals & specials' },
     { id:'owned', icon:'library', label:'Owned games' },
     { id:'wishlist', icon:'pin', label:'Wish list', split:true },
     { id:'settings', icon:'gear', label:'Settings', external:true }
@@ -253,6 +287,60 @@ function shelf(title, list, { wide=false, subtitle='' } = {}){
   return section;
 }
 
+function dealPromo(game, featured=false){
+  const offer = dealFor(game);
+  if (!offer) return null;
+
+  const btn = el('button', `xstore-deal-promo${featured ? ' featured' : ''}`);
+  btn.dataset.nav = '';
+  btn.dataset.storeKey = game.gameKey;
+  btn.dataset.ringRadius = '.7rem';
+  btn.setAttribute('aria-label', `${game.name}, save ${offer.discount} percent`);
+
+  const art = el('span', 'xstore-deal-promo-art');
+  art.style.backgroundImage = `url("${game.image || game.cover || ''}")`;
+
+  const copy = el('span', 'xstore-deal-promo-copy');
+  copy.innerHTML = `
+    <span class="xstore-deal-save">SAVE ${offer.discount}%</span>
+    <span class="xstore-deal-name">${escapeHtml(game.name)}</span>
+    <span class="xstore-deal-prices"><del>${money(offer.was)}</del><strong>${money(offer.now)}</strong></span>
+    ${featured ? '<span class="xstore-deal-note">Featured Store deal</span>' : ''}`;
+
+  btn.append(art, copy);
+  btn._navActivate = () => openProduct(game);
+  return btn;
+}
+
+function buildDeals(list){
+  const section = el('section', 'xstore-deals');
+  const head = el('div', 'xstore-deals-head');
+  head.innerHTML = `
+    <div>
+      <div class="xstore-deals-kicker">MICROSOFT STORE</div>
+      <h2>Deals & specials</h2>
+      <p>Big savings on games picked for Xbox.</p>
+    </div>
+    <span class="xstore-deals-callout">SAVE UP TO 70%</span>`;
+  section.append(head);
+
+  const eligible = list.filter(game => dealFor(game)).slice(0, 5);
+  const grid = el('div', 'xstore-deals-grid');
+  if (eligible[0]){
+    const hero = dealPromo(eligible[0], true);
+    if (hero) grid.append(hero);
+  }
+
+  const side = el('div', 'xstore-deals-side');
+  eligible.slice(1).forEach(game => {
+    const tile = dealPromo(game, false);
+    if (tile) side.append(tile);
+  });
+  grid.append(side);
+  section.append(grid);
+  return section;
+}
+
 function renderHome(root){
   const content = el('div', 'xstore-content');
   root.querySelector('.xstore-main').append(content);
@@ -260,11 +348,13 @@ function renderHome(root){
   const featured = shuffled(37).slice(0, 6);
   buildHomeGallery(root, featured);
 
+  const deals = shuffled(211).filter(game => dealFor(game)).slice(0, 10);
   const coming = games.slice(0, 7);
   const newGames = shuffled(73).slice(0, 10);
   const actionGames = byTag('Action').slice(0, 10);
   const owned = games.filter(g => Cloud.owns(g)).slice(0, 10);
 
+  content.append(buildDeals(deals));
   content.append(shelf('Games coming soon', coming, { wide:true }));
   if (owned.length) content.append(shelf('From your library', owned, { subtitle:'Ready to play with cloud gaming' }));
   content.append(shelf('New games', newGames));
@@ -322,7 +412,7 @@ function renderBrowseGrid(content){
   const list = matching();
   if (count) count.textContent = `${list.length.toLocaleString()} games`;
   grid.innerHTML = '';
-  list.forEach(game => grid.append(storeCard(game)));
+  list.forEach(game => grid.append(storeCard(game, { deal:mode === 'deals' })));
   if (!list.length){
     const msg = mode === 'wishlist' ? 'Your wish list is empty.' : mode === 'owned' ? 'You do not own any cloud games yet.' : 'No games found.';
     grid.append(el('div', 'xstore-empty', msg));
@@ -332,6 +422,7 @@ function renderBrowseGrid(content){
 
 function modeLabel(){
   if (mode === 'games') return 'Games';
+  if (mode === 'deals') return 'Deals & specials';
   if (mode === 'search') return 'Search';
   if (mode === 'wishlist') return 'Wish list';
   if (mode === 'owned') return 'Owned games';
@@ -384,8 +475,19 @@ function refreshProductOwnership(node, game){
   const ownership = node.querySelector('.xproduct-ownership');
   const price = node.querySelector('.xproduct-price');
   const acquire = node.querySelector('[data-store-acquire]');
-  if (ownership) ownership.textContent = owned ? 'You own this' : 'Available to get';
-  if (price) price.textContent = owned ? 'Owned' : 'Free';
+  const offer = dealFor(game);
+  if (ownership) ownership.textContent = owned
+    ? 'You own this'
+    : offer ? `Store deal • Save ${offer.discount}%` : 'Available to get';
+  if (price){
+    if (owned){
+      price.textContent = 'Owned';
+    } else if (offer){
+      price.innerHTML = `<del class="xproduct-price-old">${money(offer.was)}</del><strong class="xproduct-price-now">${money(offer.now)}</strong>`;
+    } else {
+      price.textContent = 'Free';
+    }
+  }
   if (acquire){
     acquire.textContent = owned ? 'PLAY WITH CLOUD GAMING' : 'GET';
     acquire.classList.toggle('play', owned);
@@ -398,6 +500,7 @@ function openProduct(game){
   if (!root) return;
 
   const { rating, reviews } = starsFor(game);
+  const productDeal = dealFor(game);
   const node = el('div', 'xproduct');
   node.innerHTML = `
     <div class="xproduct-art" style="background-image:url('${escapeHtml(game.image || game.cover)}')"></div>
@@ -411,6 +514,7 @@ function openProduct(game){
         <div class="xproduct-publisher">Stratus Cloud • ${escapeHtml(game.tags[0] || 'Game')}</div>
         <div class="xproduct-rating"><span>★★★★★</span><b>${rating}</b><small>${reviews} ratings</small></div>
         <div class="xproduct-badges"><span>Cloud playable</span><span>Controller</span><span>Digital</span></div>
+        ${productDeal ? `<div class="xproduct-deal-strip"><b>SAVE ${productDeal.discount}%</b><span>Deals & specials</span></div>` : ''}
         <p class="xproduct-desc">${escapeHtml(game.description || 'Play instantly from the cloud.')}</p>
         <div class="xproduct-price"></div>
         <div class="xproduct-ownership"></div>
