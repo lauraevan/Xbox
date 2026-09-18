@@ -819,6 +819,13 @@ Do not treat either handoff file as more authoritative than an explicit newer us
 
 Newest first. Short notes only; detail belongs in the commit.
 
+### 2026-09-18 — real Xbox Series notification + game-select sounds
+
+Commit: `c276722ad8c9c51ac75a21d918259c3edd9d6ac6`
+
+User supplied two Xbox Series UI sounds. Added local assets at `assets/audio/xbox-series-select.mp3` and `assets/audio/xbox-series-notification.mp3`. `js/audio.js` now routes normal toast notifications and achievement notifications through the supplied notification clip, respecting the existing Sounds toggle and UI volume. Added `Sound.gameSelect()` using the supplied select clip. `js/home-row-custom.js` plays it immediately when a Home game is selected and the launcher/preview begins opening, before async catalogue/artwork work.
+
+
 ### 2026-09-18 — functional Share button in launcher preview
 
 Commit: `02ea690b1c1594db2e21e60577fbe9c50d7605fa`
