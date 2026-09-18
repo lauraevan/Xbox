@@ -152,7 +152,7 @@ async function openGamePreview(title){
   const cover = COVER[known] || game.cover || game.image || '';
   const hero = HERO[known] || game.image || game.cover || cover;
   const tags = Array.isArray(game.tags) ? game.tags.filter(Boolean).slice(0, 4) : [];
-  const provider = cloud ? 'Stratus Cloud' : (game.author || 'Xbox');
+  const provider = cloud ? 'Xbox Cloud' : (game.author || 'Xbox');
   const availability = cloud ? 'Cloud playable' : 'Ready to play';
   const description = String(game.description || game.desc || '').trim()
     || `${title} is ready to launch from your Xbox Home.`;
