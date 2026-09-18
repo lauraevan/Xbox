@@ -285,7 +285,7 @@ body[data-theme="light"] .guide-panel{ background:rgba(240,241,243,.94); }
   padding:.58rem 1.12rem .6rem .72rem;
   border:0;
   border-radius:.42rem;
-  background:#107c10;
+  background:rgba(0,0,0,.90);
   box-shadow:0 .55rem 1.7rem rgba(0,0,0,.34);
   color:#fff;
   opacity:0;
