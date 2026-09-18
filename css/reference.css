@@ -128,7 +128,8 @@ body[data-view="home"] .profile[data-focused]{ background:transparent !important
 .reference-home .hero{ display:none !important; }
 .ref-rail{ top:30rem; }
 .ref-strip{
-  gap:1.45rem;
+  /* User-requested breathing room: 17.5px at the 1920×1080 reference canvas. */
+  gap:1.75rem;
   padding-left:var(--safe-x);
   padding-right:var(--safe-x);
   overflow:visible;
@@ -338,6 +339,6 @@ body[data-view="home"] .legend{ display:none !important; }
 
 /* keep the same measured 1920x1080 geometry on taller tablet windows */
 @media (max-aspect-ratio:16/10){
-  .ref-strip{ gap:1.35rem; }
+  .ref-strip{ gap:1.65rem; }
   .ref-cards{ gap:1.55rem; }
 }
