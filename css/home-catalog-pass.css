@@ -322,9 +322,6 @@ body:has(#view-home .home-catalog-game[data-focused]) .focus-ring.on{
 #view-home .home-catalog-body::before{
   display:none;
 }
-#view-home .home-series-waves .waves-svg{transform:none!important}
-}
-
 /* Real app marks instead of typed approximations. */
 .home-app-card{
   padding:1.8rem 2rem;
@@ -414,4 +411,116 @@ body:has(#view-home .home-catalog-game[data-focused]) .focus-ring.on{
   height:3.6rem!important;
   max-width:none!important;
   max-height:none!important;
+}
+
+
+/* Final lower-Home viewport behavior: once snapped down, this section fully
+   covers the Home wallpaper/content behind it. The system top bar is left alone. */
+#view-home .home-catalog-drawer{
+  min-height:calc(100vh + 184rem)!important;
+  background:#001d07!important;
+  box-shadow:none!important;
+}
+#view-home .home-catalog-drawer::before{
+  display:none!important;
+}
+
+/* Essential apps: fixed Xbox tile geometry. Real logos are contained inside
+   the card instead of being allowed to expand to their intrinsic SVG size. */
+#view-home .home-apps-section{
+  overflow:hidden!important;
+}
+#view-home .home-apps-row{
+  display:flex!important;
+  align-items:center!important;
+  gap:1.15rem!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+}
+#view-home .home-app-card{
+  box-sizing:border-box!important;
+  flex:0 0 20rem!important;
+  width:20rem!important;
+  min-width:20rem!important;
+  max-width:20rem!important;
+  height:11.5rem!important;
+  min-height:11.5rem!important;
+  max-height:11.5rem!important;
+  padding:1.4rem 1.8rem!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:hidden!important;
+  border-radius:1rem!important;
+}
+#view-home .home-app-card .home-app-logo{
+  display:block!important;
+  flex:none!important;
+  width:68%!important;
+  max-width:68%!important;
+  height:55%!important;
+  max-height:55%!important;
+  margin:0!important;
+  object-fit:contain!important;
+  object-position:center!important;
+}
+#view-home .home-app-card.app-netflix .home-app-logo{
+  width:70%!important;
+  max-width:70%!important;
+  height:42%!important;
+  max-height:42%!important;
+}
+#view-home .home-app-card.app-prime .home-app-logo{
+  width:66%!important;
+  max-width:66%!important;
+  height:58%!important;
+  max-height:58%!important;
+  filter:brightness(0) invert(1)!important;
+}
+#view-home .home-app-card.app-youtube .home-app-logo{
+  width:72%!important;
+  max-width:72%!important;
+  height:46%!important;
+  max-height:46%!important;
+}
+#view-home .home-app-card.app-nitrado .home-app-logo{
+  width:64%!important;
+  max-width:64%!important;
+  height:48%!important;
+  max-height:48%!important;
+}
+#view-home .home-app-card.app-gallery{
+  background:#eef1f1!important;
+}
+#view-home .home-app-gallery-mark{
+  width:5.7rem!important;
+  height:5.7rem!important;
+}
+#view-home .home-app-card.app-gportal{
+  display:grid!important;
+  grid-template-columns:auto auto!important;
+  gap:1rem!important;
+  align-content:center!important;
+  justify-content:center!important;
+}
+#view-home .home-app-card.app-gportal .home-app-logo{
+  width:3.8rem!important;
+  max-width:3.8rem!important;
+  height:3.8rem!important;
+  max-height:3.8rem!important;
+}
+#view-home .home-app-wordmark{
+  font-size:2.1rem!important;
+}
+
+@media (max-aspect-ratio:16/10){
+  #view-home .home-app-card{
+    flex-basis:17rem!important;
+    width:17rem!important;
+    min-width:17rem!important;
+    max-width:17rem!important;
+    height:10rem!important;
+    min-height:10rem!important;
+    max-height:10rem!important;
+  }
 }
