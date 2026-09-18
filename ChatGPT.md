@@ -819,6 +819,21 @@ Do not treat either handoff file as more authoritative than an explicit newer us
 
 Newest first. Short notes only; detail belongs in the commit.
 
+### 2026-09-18 — Microsoft Store deals expansion
+
+Commits:
+- `1cf837212e3a97da7c843e9f2a82958544048930` adds Xbox-style Deals & specials UI.
+- `bbca93f2d0369c6d8e99f26ce5f0b2f54a1886ce` fixes deal currency formatting.
+
+Changes:
+- Store Home gets a featured Deals & specials mosaic with one large promo and four smaller deal tiles.
+- Deterministic replica sale metadata supplies SAVE 20–70% badges and crossed-out / discounted prices.
+- Dedicated Deals & specials rail mode added; cards in that mode show deal pricing.
+- Product pages reflect the same deal price and savings strip.
+- Existing Stratus catalogue, acquisition, wishlist and cloud launch behavior are unchanged.
+- This is replica Store presentation, not live Microsoft Store pricing.
+
+
 ### 2026-09-18 — My games & apps Home plus visibility fix
 
 Commit: `d8eb83e057062bc4a6efbf4fdec8dd93a1e68b13`
