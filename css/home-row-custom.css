@@ -212,6 +212,37 @@
   background:#17191b;
   box-shadow:0 3rem 9rem rgba(0,0,0,.68);
 }
+.home-game-preview-share{
+  position:absolute;
+  z-index:6;
+  top:2.2rem;
+  right:2.2rem;
+  min-width:10rem;
+  min-height:4.4rem;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:.7rem;
+  padding:0 1.25rem;
+  border:.1rem solid rgba(255,255,255,.16);
+  border-radius:.85rem;
+  background:rgba(8,10,12,.82);
+  color:#fff;
+  font:650 1.3rem/1 "Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;
+  box-shadow:0 .45rem 1.5rem rgba(0,0,0,.34);
+  backdrop-filter:blur(.65rem);
+  -webkit-backdrop-filter:blur(.65rem);
+}
+.home-game-preview-share svg{
+  width:2rem;
+  height:2rem;
+  flex:none;
+}
+.home-game-preview-share[data-focused]{
+  outline:.3rem solid #fff !important;
+  outline-offset:.2rem !important;
+  background:#107c10;
+}
 .home-game-preview-visual{
   position:absolute;
   inset:0 0 0 24rem;
@@ -407,6 +438,10 @@
     grid-template-columns:24rem minmax(0,1fr);
     overflow:hidden;
     border-radius:2.2rem;
+  }
+  .home-game-preview-share{
+    min-width:max(10rem,96px);
+    min-height:max(4.4rem,44px);
   }
   .home-game-preview-visual{
     inset:0 0 0 24rem;

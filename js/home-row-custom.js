@@ -154,6 +154,13 @@ async function openGamePreview(title){
   const tags = Array.isArray(game.tags) ? game.tags.filter(Boolean).slice(0, 4) : [];
   const provider = cloud ? 'Xbox Cloud' : (game.author || 'Xbox');
   const availability = cloud ? 'Cloud playable' : 'Ready to play';
+  const descriptionText = String(
+    game.description ||
+    game.desc ||
+    game.summary ||
+    game.overview ||
+    ''
+  ).trim();
   const layer = document.createElement('section');
   layer.className = 'home-game-preview';
   layer.setAttribute('role', 'dialog');
@@ -168,6 +175,40 @@ async function openGamePreview(title){
 
   const card = document.createElement('div');
   card.className = 'home-game-preview-card';
+
+  const share = document.createElement('button');
+  share.type = 'button';
+  share.className = 'home-game-preview-share';
+  share.dataset.nav = '';
+  share.dataset.ringRadius = '.8rem';
+  share.setAttribute('aria-label', `Share ${title}`);
+  share.innerHTML = `${window.Icons?.icon?.('share') || ''}<span>Share</span>`;
+  share._navActivate = async () => {
+    const url = location.href;
+    const text = descriptionText
+      ? descriptionText.replace(/\s+/g, ' ').slice(0, 180)
+      : `Check out ${title} on Xbox.`;
+    try {
+      if (navigator.share){
+        await navigator.share({ title, text, url });
+        return;
+      }
+      if (navigator.clipboard?.writeText){
+        await navigator.clipboard.writeText(url);
+        window.App?.toast?.('Share link copied', title);
+        return;
+      }
+      throw new Error('Share is not supported');
+    } catch (err){
+      if (err?.name === 'AbortError') return;
+      window.App?.toast?.('Share unavailable', 'Could not open sharing on this device.');
+    }
+  };
+  share.addEventListener('click', event => {
+    event.preventDefault();
+    event.stopPropagation();
+    share._navActivate();
+  });
 
   const visual = document.createElement('div');
   visual.className = 'home-game-preview-visual';
@@ -194,13 +235,6 @@ async function openGamePreview(title){
   const heading = document.createElement('h2');
   heading.textContent = title;
 
-  const descriptionText = String(
-    game.description ||
-    game.desc ||
-    game.summary ||
-    game.overview ||
-    ''
-  ).trim();
   const description = document.createElement('p');
   description.className = 'home-game-preview-description';
   description.textContent = descriptionText || `Play ${title} from your Xbox library.`;
@@ -256,7 +290,7 @@ async function openGamePreview(title){
 
   actions.append(start, close);
   info.append(kicker, heading, description, chips, facts, actions);
-  card.append(visual, coverWrap, info);
+  card.append(visual, coverWrap, info, share);
   layer.append(scrim, card);
   document.body.append(layer);
 
