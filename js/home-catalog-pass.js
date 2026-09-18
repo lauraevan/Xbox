@@ -29,6 +29,9 @@ const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({
 let list = null;
 let loading = null;
 let armed = false;
+let catalogSnapActive = false;
+let lastHomeScrollTop = 0;
+let catalogSnapTimer = null;
 
 function coverFor(game){
   return LOCAL_COVERS[norm(game?.name)] || game?.cover || game?.image || '';
@@ -359,11 +362,36 @@ async function renderCatalogue(){
 }
 
 function onHomeScroll(){
-  /* The catalogue remains entirely out of sight at scrollTop 0. The first
-     intentional downward motion starts loading it. */
-  if (HOME.scrollTop > 0) renderCatalogue();
+  /* Load immediately when the user starts moving toward the lower dashboard. */
+  const current = HOME.scrollTop;
+  if (current > 0) renderCatalogue();
+
   const wavesVideo = HOME.querySelector('.home-series-waves-video');
   if (wavesVideo && wavesVideo.paused) wavesVideo.play().catch(() => {});
+
+  /* Xbox-style section snap: do not leave a strip of the upper Home visible.
+     A downward gesture snaps the catalogue to the top of the viewport; an
+     upward gesture near the boundary snaps cleanly back to Home. */
+  const viewport = HOME.clientHeight;
+  const movingDown = current > lastHomeScrollTop;
+  const inTransition = current > 4 && current < viewport - 4;
+
+  if (!catalogSnapActive && inTransition){
+    catalogSnapActive = true;
+    clearTimeout(catalogSnapTimer);
+
+    HOME.scrollTo({
+      top:movingDown ? viewport : 0,
+      behavior:'smooth'
+    });
+
+    catalogSnapTimer = setTimeout(() => {
+      catalogSnapActive = false;
+      lastHomeScrollTop = HOME.scrollTop;
+    }, 520);
+  } else if (!catalogSnapActive){
+    lastHomeScrollTop = current;
+  }
 }
 
 function refreshOwnedState(game){
