@@ -6,6 +6,49 @@ const HOME = document.getElementById('view-home');
 if (!HOME) return;
 
 const Cloud = () => window.StratusCloud;
+const HOME_ORDER_KEY = 'xbox.home.played-order.v1';
+
+function savedPlayedOrder(){
+  try{
+    const value = JSON.parse(localStorage.getItem(HOME_ORDER_KEY) || '[]');
+    return Array.isArray(value) ? value.filter(Boolean) : [];
+  } catch { return []; }
+}
+
+function reorderHomeStrip(){
+  const strip = HOME.querySelector('.ref-strip');
+  if (!strip) return;
+
+  const games = [...strip.querySelectorAll('.ref-tile[data-ref-title]')]
+    .filter(tile => !tile.matches('.ref-friends,[data-home-library-mosaic="1"]'));
+  if (!games.length) return;
+
+  const order = savedPlayedOrder();
+  const rank = title => {
+    const canonical = canonicalTitle(title) || title;
+    const i = order.indexOf(canonical);
+    return i < 0 ? Number.MAX_SAFE_INTEGER : i;
+  };
+
+  const original = new Map(games.map((tile,index)=>[tile,index]));
+  games.sort((a,b) => {
+    const d = rank(a.dataset.refTitle) - rank(b.dataset.refTitle);
+    return d || original.get(a) - original.get(b);
+  });
+
+  const anchor = strip.querySelector('.ref-friends,[data-home-library-mosaic="1"]');
+  games.forEach(tile => strip.insertBefore(tile, anchor || null));
+}
+
+function markHomePlayed(title){
+  const canonical = canonicalTitle(title) || title;
+  if (!canonical) return;
+  const order = savedPlayedOrder().filter(item => item !== canonical);
+  order.unshift(canonical);
+  try { localStorage.setItem(HOME_ORDER_KEY, JSON.stringify(order.slice(0,12))); } catch {}
+  reorderHomeStrip();
+  requestAnimationFrame(() => window.Nav?.repaint?.());
+}
 
 /* These are real files committed into this repo. Home no longer depends on
    SteamGridDB / remote hotlinks for the seven games in the main row. */
@@ -104,6 +147,7 @@ async function activateTitle(title){
         window.App?.toast?.('Added to your library', cloud.name);
       }
       await Cloud()?.play?.(cloud);
+      markHomePlayed(title);
       return;
     } catch (err){
       window.App?.toast?.('Cloud gaming', err?.message || 'Could not start game.');
@@ -112,7 +156,10 @@ async function activateTitle(title){
   }
 
   const local = localGame(title);
-  if (launchLocal(local)) return;
+  if (launchLocal(local)){
+    markHomePlayed(title);
+    return;
+  }
   window.App?.toast?.('Game unavailable', `${title} is not currently available in the connected catalogue.`);
 }
 
@@ -185,7 +232,10 @@ function ownedCard(game){
       <img src="${esc(cover)}" alt="" loading="lazy" decoding="async">
     </span>`;
   btn._navActivate = async () => {
-    try { await Cloud()?.play?.(game); }
+    try {
+      await Cloud()?.play?.(game);
+      markHomePlayed(game.name);
+    }
     catch (err){ window.App?.toast?.('Cloud gaming', err?.message || 'Could not start game.'); }
   };
   return btn;
@@ -285,6 +335,7 @@ function patchHome(){
   SWAPS.forEach(patchTile);
   wireAllGameTiles();
   ensureLibraryTile();
+  reorderHomeStrip();
   pinInitialBackdrop();
 }
 
@@ -311,6 +362,22 @@ document.addEventListener('click', event => {
     event.preventDefault();
     owned._navActivate(owned);
   }
+});
+
+window.XboxHomeRecents = {
+  mark: markHomePlayed,
+  reorder: reorderHomeStrip
+};
+
+/* Local App.launch sessions already report into State.recents. Mirror the
+   newest compatible title back into the Home rail so launches from detail or
+   My games & apps also move that game to the first position. */
+window.State?.on?.(evt => {
+  if (evt.type !== 'recents') return;
+  const id = window.State?.recentIds?.()[0];
+  const game = id ? window.Catalog?.get?.(id) : null;
+  const title = canonicalTitle(game?.name);
+  if (title) markHomePlayed(title);
 });
 
 let homeFocusResizeTimer = null;
