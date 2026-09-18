@@ -1,0 +1,77 @@
+/* Xbox idle time/status HUD seen after extended inactivity. */
+.xbox-idle-hud{
+  position:fixed;
+  z-index:260;
+  left:4.2rem;
+  bottom:3.4rem;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:.45rem;
+  color:#fff;
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transform:translateY(.8rem);
+  transition:
+    opacity .28s ease,
+    transform .32s cubic-bezier(.2,.8,.2,1),
+    top .42s cubic-bezier(.2,.8,.2,1),
+    bottom .42s cubic-bezier(.2,.8,.2,1);
+  text-shadow:0 .18rem .5rem rgba(0,0,0,.72);
+  filter:drop-shadow(0 .16rem .32rem rgba(0,0,0,.48));
+}
+.xbox-idle-hud.visible{
+  opacity:1;
+  visibility:visible;
+  transform:none;
+}
+.xbox-idle-hud.upper-left{
+  top:3.4rem;
+  bottom:auto;
+}
+.xbox-idle-icons{
+  display:flex;
+  align-items:center;
+  gap:1.15rem;
+  height:2rem;
+  color:rgba(255,255,255,.96);
+}
+.xbox-idle-icons svg{
+  display:block;
+  flex:none;
+}
+.xbox-idle-mic,
+.idle-mic{
+  width:1.8rem;
+  height:1.8rem;
+}
+.xbox-idle-battery,
+.idle-battery{
+  width:2.3rem;
+  height:1.4rem;
+}
+.xbox-idle-time{
+  font-family:"Segoe UI",system-ui,sans-serif;
+  font-size:4.4rem;
+  font-weight:300;
+  line-height:.98;
+  letter-spacing:-.08rem;
+  white-space:nowrap;
+}
+@media (max-aspect-ratio:16/10){
+  .xbox-idle-hud{
+    left:3.2rem;
+    bottom:2.8rem;
+  }
+  .xbox-idle-hud.upper-left{ top:2.8rem; }
+  .xbox-idle-time{font-size:3.9rem}
+}
+@media (max-width:760px){
+  .xbox-idle-hud{
+    left:1.8rem;
+    bottom:1.8rem;
+  }
+  .xbox-idle-hud.upper-left{ top:1.8rem; }
+  .xbox-idle-time{font-size:3.25rem}
+}
