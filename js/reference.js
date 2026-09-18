@@ -292,11 +292,40 @@ if (guideTabs){
 const GUIDE_REFERENCE_ROWS = [
   { name:'Home', glyph:true },
   { name:'My games & apps', glyph:true },
-  { name:'Forza Horizon 5', art:'Forza Horizon 5' },
-  { name:'Subnautica 2 (Game Preview)', art:'Subnautica 2' },
-  { name:'Hollow Knight: Silksong', art:'Hollow Knight: Silksong' },
-  { name:'Microsoft Edge', art:'Microsoft Edge' }
+  { name:'Forza Horizon 5', game:'Forza Horizon 5', cover:'assets/game-art/forza-horizon-5-cover.jpg' },
+  { name:'Grand Theft Auto V', game:'Grand Theft Auto V', cover:'assets/game-art/gta-v-cover.jpg' },
+  { name:'Hollow Knight: Silksong', game:'Hollow Knight: Silksong', cover:'assets/game-art/silksong-cover.png' },
+  { name:'Elden Ring', game:'Elden Ring', cover:'assets/game-art/elden-ring-cover.jpg' }
 ];
+
+const guideNorm = value => String(value || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+
+function launchGuideGame(title){
+  const target = guideNorm(title);
+  const homeTile = [...document.querySelectorAll('#view-home .ref-tile[data-ref-title]')]
+    .find(tile => guideNorm(tile.dataset.refTitle) === target);
+
+  if (typeof homeTile?._navActivate === 'function'){
+    window.Guide?.close?.();
+    setTimeout(() => homeTile._navActivate(homeTile), 210);
+    return;
+  }
+
+  const game = window.Catalog?.all?.().find(item => guideNorm(item.name) === target);
+  if (!game){
+    window.App?.toast?.('Game unavailable', `${title} is not currently available.`);
+    return;
+  }
+
+  window.Guide?.close?.();
+  setTimeout(() => {
+    window.App?.openDetail?.(game);
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      const play = document.querySelector('#detail .btn.primary');
+      if (typeof play?._navActivate === 'function') play._navActivate(play);
+    }));
+  }, 210);
+}
 
 function tuneGuideBody(){
   const body = document.getElementById('guideBody');
@@ -314,14 +343,23 @@ function tuneGuideBody(){
     const meta = row.querySelector('.grow-meta');
     if (name) name.textContent = def.name;
     if (meta) meta.remove();
-    if (def.art){
+    if (def.game){
+      row.dataset.guideGame = def.game;
+      row.setAttribute('aria-label', def.game);
+      row._navActivate = () => launchGuideGame(def.game);
+    }
+
+    if (def.cover){
       const box = row.querySelector('.grow-icon');
       if (box){
         box.classList.remove('glyph');
         box.innerHTML = '';
         const img = el('img', 'cover loaded');
+        img.alt = '';
+        img.loading = 'eager';
+        img.decoding = 'async';
         img.style.cssText = 'width:100%;height:100%;object-fit:cover';
-        loadArt(img, def.art, 'cover');
+        img.src = def.cover;
         box.append(img);
       }
     }
