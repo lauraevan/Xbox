@@ -885,6 +885,36 @@ function applyNightMode(){
   document.documentElement.style.setProperty('--night', on ? s.nightStrength : 0);
 }
 
+function showBootGreeting(){
+  document.querySelector('.boot-greeting')?.remove();
+
+  const storedName=String(window.State?.data?.gamertag || '').trim();
+  const name=!storedName || storedName === 'NewSasquatch' ? 'Xboxtest' : storedName;
+
+  const node=document.createElement('div');
+  node.className='boot-greeting';
+  node.setAttribute('role','status');
+  node.setAttribute('aria-live','polite');
+  node.innerHTML=`
+    <span class="boot-greeting-mark" aria-hidden="true">
+      <svg viewBox="0 0 32 32" focusable="false">
+        <circle cx="16" cy="16" r="15" fill="currentColor"/>
+        <path fill="#fff" d="M8.3 8.7c2.4-1.5 5-1.6 7.7.1-1.9 1.3-3.7 3-5.4 5A25 25 0 0 0 8.3 8.7Zm15.4 0a25 25 0 0 0-2.3 5.1c-1.7-2-3.5-3.7-5.4-5 2.7-1.7 5.3-1.6 7.7-.1ZM6.9 12.5c2.6 2 5.6 5.4 9.1 10.2 3.5-4.8 6.5-8.2 9.1-10.2.9 2 .9 4.2.3 6.6A9.8 9.8 0 0 1 16 26a9.8 9.8 0 0 1-9.4-6.9 9.2 9.2 0 0 1 .3-6.6Z"/>
+      </svg>
+    </span>
+    <span class="boot-greeting-text">Hello, ${escapeHtml(name)}</span>`;
+
+  document.body.append(node);
+  requestAnimationFrame(()=>node.classList.add('show'));
+
+  const hide=()=>{
+    if(!node.isConnected) return;
+    node.classList.add('out');
+    setTimeout(()=>node.remove(),260);
+  };
+  setTimeout(hide,2300);
+}
+
 function applySettings(){
   const s = window.State.settings;
   document.body.dataset.theme = s.theme;
@@ -941,8 +971,13 @@ async function boot(){
   restoreWallpaper();
   window.State.unlock('boot');
 
+  /* The real console gives the signed-in profile a tiny post-boot greeting.
+     Wait until Home is visibly established so it floats over the dashboard,
+     not over the boot animation fade. */
+  setTimeout(showBootGreeting, 260);
+
   const count = window.Catalog.count();
-  setTimeout(() => toast('Ready to play', `${count.toLocaleString()} titles in your catalogue`, { icon: ICON.store }), 1200);
+  setTimeout(() => toast('Ready to play', `${count.toLocaleString()} titles in your catalogue`, { icon: ICON.store }), 3300);
 }
 
 /* ═══════════ captures, profiles, rumble ═══════════ */
@@ -1026,7 +1061,7 @@ window.App = {
   setView, goBack, openDetail, closeDetail, launch, quitGame,
   toast, modal, closeModal, promptGamertag, confirmReset, powerOff, screenshot,
   syncProfile, tickClock, updateLegend, setBackdrop, paintIcons, syncMicIcon,
-  applyNightMode, captureActions, promptNewProfile, manageProfiles, testRumble, rumble,
+  applyNightMode, showBootGreeting, captureActions, promptNewProfile, manageProfiles, testRumble, rumble,
   promptArtworkKey, promptProfileLine, promptWallpaper, chooseWallpaperFile,
   isPlaying: () => !!playing,
   get view(){ return currentView; }
