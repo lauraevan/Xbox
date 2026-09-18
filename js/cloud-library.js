@@ -61,7 +61,7 @@ function buildSection(owned){
 }
 
 async function mount(){
-  if (!library || library.hidden || mounting) return;
+  if (!library || library.hidden || mounting || library.dataset.stratusOnlyLibrary === '1') return;
   mounting = true;
   const token = ++epoch;
 

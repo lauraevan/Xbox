@@ -42,6 +42,9 @@ function poster(game, opts = {}){
 
   const art = el('span', 'console-poster-art');
   if (opts.cloud){
+    btn.dataset.stratusGame = '1';
+    btn.dataset.cloudKey = String(game.gameKey || '');
+    btn.classList.add('stratus-poster');
     const img = document.createElement('img');
     img.src = game.cover || game.image || '';
     img.alt = '';
@@ -135,95 +138,41 @@ function sortGames(list){
 
 async function renderLibrary(root){
   root.innerHTML = '';
-  root.classList.add('console-page-view');
+  root.classList.add('console-page-view', 'stratus-only-library');
+  root.dataset.stratusOnlyLibrary = '1';
+
   const shell = el('div', 'console-shell console-library');
-  const main = el('main', 'console-main');
-  const modeMeta = {
-    full:['Full library','Everything available on this console'],
-    owned:['Owned games','Games you can launch from this console'],
-    gamepass:['Xbox Game Pass','Included with your membership'],
-    apps:['Apps','System and entertainment apps'],
-    groups:['Groups','Pinned collections and favorites'],
-    history:['Play history','Your recent games across this console'],
-    manage:['Manage','Storage, queues, updates and library options']
-  }[libraryMode];
+  const main = el('main', 'console-main stratus-library-main');
+  main.append(topBar('My games & apps', 'Stratus Cloud'));
 
-  shell.append(sidebar(LIB_ITEMS, libraryMode, id => {
-    libraryMode = id;
-    renderLibrary(root);
-  }, 'My games & apps'));
-  main.append(topBar(modeMeta[0], modeMeta[1]));
+  const row = el('section', 'console-poster-grid stratus-library-row');
+  row.setAttribute('aria-label', 'Stratus games');
 
-  if (libraryMode === 'manage'){
-    const manage = el('section', 'console-manage-grid');
-    [
-      ['Queue','No active installs','apps'],
-      ['Updates','Everything is up to date','clock'],
-      ['Free up space','Cloud titles use no local storage','storage'],
-      ['Subscriptions','Game Pass Ultimate','person'],
-      ['Remote access','Cloud play enabled','link'],
-      ['Library options','Poster artwork and status icons','gear']
-    ].forEach(([title, sub, icon]) => {
-      const card = nav(el('button','console-manage-card'), () => window.App?.toast?.(title, sub));
-      card.innerHTML = `<span>${ICON[icon] || ICON.grid}</span><strong>${safe(title)}</strong><small>${safe(sub)}</small>`;
-      manage.append(card);
-    });
-    main.append(manage);
-    shell.append(main); root.append(shell); focusAfter(root, '.console-manage-card'); return;
+  let owned = [];
+  try { owned = await Cloud()?.ownedGames?.() || []; }
+  catch (err){
+    window.App?.toast?.('My games & apps', err?.message || 'Could not load Stratus games.');
   }
 
-  const toolbar = el('div', 'console-library-toolbar');
-  const sort = nav(el('button','console-tool-btn', `${ICON.column_triple || ICON.grid}<span>${safe(librarySort)}</span>`), () => {
-    const vals = ['A–Z','Z–A','Recently used'];
-    librarySort = vals[(vals.indexOf(librarySort) + 1) % vals.length];
-    renderLibrary(root);
-  });
-  const search = nav(el('button','console-tool-btn', `${ICON.search}<span>Search library</span>`), () => window.App?.setView?.('search'));
-  toolbar.append(sort, search);
-  main.append(toolbar);
+  if (!root.isConnected) return;
 
-  let items = sortGames(catalogForLibrary(libraryMode));
-  const grid = el('section','console-poster-grid');
-
-  if (libraryMode === 'history'){
-    const groups = [
-      ['Today', items.slice(0,8)],
-      ['Earlier', items.slice(8,24)]
-    ].filter(([,arr]) => arr.length);
-    if (!groups.length){
-      main.append(el('div','console-empty',`${ICON.clock}<h2>No play history yet</h2><p>Your recently played games will appear here.</p>`));
-    } else {
-      groups.forEach(([name, arr]) => {
-        const sec = el('section','console-history-group');
-        sec.append(el('h2','console-section-title',safe(name)));
-        const row = el('div','console-horizontal-row');
-        arr.forEach(g => row.append(poster(g, { meta:'Played recently' })));
-        sec.append(row); main.append(sec);
-      });
-    }
+  if (owned.length){
+    owned.forEach(game => row.append(poster(game, {
+      cloud:true,
+      meta:'Stratus Cloud'
+    })));
+    main.append(row);
   } else {
-    const head = el('div','console-grid-head');
-    head.innerHTML = `<h2>${items.length.toLocaleString()} games</h2><span>Poster view</span>`;
-    main.append(head);
-    items.slice(0, 140).forEach(g => grid.append(poster(g)));
-    main.append(grid);
+    const empty = el('div', 'console-empty stratus-library-empty',
+      `${ICON.games}<h2>No Stratus games yet</h2><p>Games added from Stratus will appear here.</p>`);
+    main.append(empty);
   }
-
-  try {
-    const ownedCloud = await Cloud()?.ownedGames?.();
-    if (ownedCloud?.length && root.isConnected && libraryMode !== 'history'){
-      const sec = el('section','console-cloud-library');
-      sec.append(el('div','console-grid-head','<h2>Cloud games you own</h2><span>Ready to stream</span>'));
-      const row = el('div','console-horizontal-row');
-      ownedCloud.slice(0,18).forEach(g => row.append(poster(g,{ cloud:true, meta:'Cloud • Ready to play' })));
-      sec.append(row);
-      main.insertBefore(sec, grid || null);
-    }
-  } catch {}
 
   shell.append(main);
   root.append(shell);
-  focusAfter(root, '.console-side-item.active');
+
+  window.Nav?.repaint?.();
+  if (owned.length) focusAfter(root, '.stratus-poster');
 }
 
 /* ───────────────────────── GAME PASS ───────────────────────── */

@@ -151,13 +151,13 @@ function patchLibrary(){
   const title = root.querySelector('.console-page-head h1');
   if (title) title.textContent = 'My games & apps';
 
-  const cards = [...root.querySelectorAll('.console-poster')];
+  const cards = [...root.querySelectorAll('.console-poster[data-stratus-game="1"]')];
   cards.forEach(patchCard);
 
-  if (cards.length && !root.querySelector('.console-poster[data-focused]') && !menu){
+  if (cards.length && !root.querySelector('.console-poster[data-stratus-game="1"][data-focused]') && !menu){
     requestAnimationFrame(() => {
       if (!root.hidden && !menu){
-        try { window.Nav?.focusIn?.(root, '.console-poster'); } catch {}
+        try { window.Nav?.focusIn?.(root, '.console-poster[data-stratus-game="1"]'); } catch {}
       }
     });
   }
@@ -183,7 +183,7 @@ new MutationObserver(queuePatch).observe(root, {
 document.addEventListener('click', event => {
   if (menu?.contains(event.target)) return;
 
-  const card = event.target.closest?.('#view-library .console-poster');
+  const card = event.target.closest?.('#view-library .console-poster[data-stratus-game="1"]');
   if (card){
     event.preventDefault();
     event.stopImmediatePropagation();
