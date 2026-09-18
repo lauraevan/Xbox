@@ -819,6 +819,27 @@ Do not treat either handoff file as more authoritative than an explicit newer us
 
 Newest first. Short notes only; detail belongs in the commit.
 
+### 2026-09-18 — Settings app functional rework
+
+Commit: `950076a5ec3b90e12c26811a1a4c4b31d58a7f24`
+
+Reworked the console Settings renderer instead of adding another pass.
+
+Major changes:
+- Removed fake/dead rows whose only behavior was firing informational toasts.
+- Sidebar is now General, Account, Personalization, Display & sound, Network, Controller & devices, Cloud gaming, Accessibility, System.
+- Read-only device/network/system information now renders as non-interactive rows/status cards instead of fake buttons.
+- Functional controls are wired to existing persistent State settings: startup animation, 24-hour clock, navigation sounds, UI volume, mic state, theme, accent, dynamic backgrounds, wallpaper, saturation, Home details, tile badges, text scale, safe area, night mode/strength, scanlines, controller button mapping/deadzone/vibration, high contrast, motion, transparency and color filters.
+- Account actions use the existing real profile/gamertag/avatar flows.
+- Network test now updates inline status rather than spraying toasts.
+- Controller page detects the live Gamepad and can attempt a real vibration test.
+- Cloud page exposes actual library/session actions only; user-facing provider label is Xbox Cloud.
+- System page shows viewport/display mode/browser storage and has real reload/reset actions.
+- Settings CSS now distinguishes live controls, read-only information, section headings and status cards.
+
+Source syntax was checked after commit.
+
+
 ### 2026-09-18 — outdated pinned-build warning
 
 Commit: `8f39578f06a49c1a4c20fe38c73a49aac7d0d191`
