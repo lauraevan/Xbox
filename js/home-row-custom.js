@@ -192,38 +192,19 @@ function ownedCard(game){
 }
 
 async function openOwnedLibrary(){
-  let owned = [];
-  try { owned = await Cloud()?.ownedGames?.() || []; }
-  catch (err){ window.App?.toast?.('My games & apps', err?.message || 'Could not load your library.'); }
-
+  /* Use the real My games & apps renderer instead of replacing the page with
+     a Stratus-only list. The normal library already receives cloud ownership
+     from cloud-library.js, so this keeps one source of truth. */
   window.App?.setView?.('library');
-  await Promise.resolve();
   await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 
   const root = document.getElementById('view-library');
   if (!root || root.hidden) return;
-  root.innerHTML = '';
-  root.classList.add('console-page-view', 'owned-only-library');
-  root.dataset.storeOwnedLibrary = '1';
-
-  const main = document.createElement('main');
-  main.className = 'console-main owned-only-main';
-
-  const header = document.createElement('header');
-  header.className = 'console-page-head owned-only-head';
-  header.innerHTML = '<h1>My games & apps</h1>';
-  main.append(header);
-
-  const row = document.createElement('section');
-  row.className = 'console-poster-grid owned-only-row';
-  row.setAttribute('aria-label', 'Owned games');
-  owned.forEach(game => row.append(ownedCard(game)));
-  main.append(row);
-
-  root.append(main);
+  root.classList.remove('owned-only-library');
+  delete root.dataset.storeOwnedLibrary;
 
   window.Nav?.repaint?.();
-  if (owned.length) window.Nav?.focusIn?.(root, '.console-poster');
+  try { window.Nav?.focusIn?.(root, '.console-poster'); } catch {}
 }
 
 function makeLibraryTile(){

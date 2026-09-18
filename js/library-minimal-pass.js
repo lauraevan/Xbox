@@ -57,17 +57,19 @@ function closeMenu({ restoreFocus = true } = {}){
 
 function placeMenu(card, flyout){
   const r = card.getBoundingClientRect();
-  const width = Math.min(290, Math.max(250, window.innerWidth * .24));
-  const height = 224;
+  const width = Math.min(280, Math.max(244, window.innerWidth * .22));
   let left = r.left;
-  let top = r.bottom + 14;
+  const top = r.bottom + 10;
 
   if (left + width > window.innerWidth - 18) left = window.innerWidth - width - 18;
   if (left < 18) left = 18;
-  if (top + height > window.innerHeight - 18) top = Math.max(18, r.top - height - 14);
 
+  /* The Xbox action flyout always grows downward from the selected cover.
+     Never flip it above the game. On short screens it becomes scrollable. */
+  flyout.style.width = `${Math.round(width)}px`;
   flyout.style.left = `${Math.round(left)}px`;
   flyout.style.top = `${Math.round(top)}px`;
+  flyout.style.maxHeight = `${Math.max(150, window.innerHeight - top - 18)}px`;
 }
 
 function makeAction(label, run){

@@ -205,27 +205,30 @@ body:has(#view-library .console-poster[data-focused]) .focus-ring.on{
 .library-game-menu{
   position:fixed;
   z-index:180;
-  width:29rem;
-  padding:.75rem;
-  background:#27292c;
-  border:0;
-  border-radius:.65rem;
-  box-shadow:0 1.5rem 4rem rgba(0,0,0,.72);
+  padding:.55rem;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  background:#202225;
+  border:.1rem solid rgba(255,255,255,.11);
+  border-radius:.48rem;
+  box-shadow:0 1.2rem 3.2rem rgba(0,0,0,.7);
+  scrollbar-width:none;
 }
+.library-game-menu::-webkit-scrollbar{ display:none; }
 
 .library-game-menu button{
   width:100%;
-  min-height:5rem;
+  min-height:4.6rem;
   display:flex;
   align-items:center;
-  padding:0 1.25rem;
+  padding:0 1.15rem;
   margin:0;
   border:0;
-  border-radius:.35rem;
+  border-radius:.28rem;
   background:transparent;
   color:#f3f3f3;
   text-align:left;
-  font:500 1.45rem/1.2 'Segoe UI',system-ui,sans-serif;
+  font:500 1.38rem/1.2 'Segoe UI',system-ui,sans-serif;
 }
 
 .library-game-menu button + button{
