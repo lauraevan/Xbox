@@ -313,5 +313,14 @@ document.addEventListener('click', event => {
   }
 });
 
+let homeFocusResizeTimer = null;
+window.addEventListener('nav:focus', event => {
+  const tile = event.detail?.el?.closest?.('#view-home .ref-tile');
+  if (!tile) return;
+  clearTimeout(homeFocusResizeTimer);
+  requestAnimationFrame(() => window.Nav?.repaint?.());
+  homeFocusResizeTimer = setTimeout(() => window.Nav?.repaint?.(), 190);
+});
+
 patchHome();
 })();
