@@ -819,6 +819,24 @@ Do not treat either handoff file as more authoritative than an explicit newer us
 
 Newest first. Short notes only; detail belongs in the commit.
 
+### 2026-09-18 — tiny post-boot Xbox profile greeting
+
+Commit: `3e4a09b9cca95d0b951fcdbd7ff7f90355516b29`
+
+After a successful boot, Home now shows a small floating Xbox-style greeting about 260 ms after the dashboard appears. It reads “Hello, Xboxtest” for the project’s default profile name; if the user has replaced the old default gamertag with a custom one, the custom name is used instead.
+
+UI details:
+- compact dark translucent pill,
+- thin Xbox-green left edge,
+- small green Xbox mark,
+- centered near the top of Home,
+- non-interactive and auto-dismisses after ~2.3 seconds,
+- reduced-motion mode skips the slide transform,
+- touch uses safe-area-aware top positioning.
+
+The existing “Ready to play” catalogue toast was moved later (3.3 s) so it does not collide with the greeting.
+
+
 ### 2026-09-18 — Settings app functional rework
 
 Commit: `950076a5ec3b90e12c26811a1a4c4b31d58a7f24`
