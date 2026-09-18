@@ -819,6 +819,13 @@ Do not treat either handoff file as more authoritative than an explicit newer us
 
 Newest first. Short notes only; detail belongs in the commit.
 
+### 2026-09-18 — My games & apps Home plus visibility fix
+
+Commit: `d8eb83e057062bc4a6efbf4fdec8dd93a1e68b13`
+
+The Home My games & apps tile still created the plus element, but the two nested bar spans were not reliably visible through later Home styling. Replaced them with a self-contained CSS `::after` plus glyph and raised the overlay stacking level above the mosaic/tint. Tile geometry is unchanged.
+
+
 ### 2026-09-18 — local Xbox PWA icon + stronger Xbox controller support
 
 Commits:
