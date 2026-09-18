@@ -819,6 +819,15 @@ Do not treat either handoff file as more authoritative than an explicit newer us
 
 Newest first. Short notes only; detail belongs in the commit.
 
+### 2026-09-18 — outdated pinned-build warning
+
+Commit: `8f39578f06a49c1a4c20fe38c73a49aac7d0d191`
+
+Pinned RawGitHack builds now parse their own 40-character commit SHA and compare it against the current branch head through the GitHub commits API. If the pinned SHA is no longer latest, a full-screen Xbox-style dialog says “This version of XBOX is outdated” with a Continue button. The current/latest SHA does not show the dialog. Branch/live URLs without a pinned SHA are ignored. If GitHub is unreachable, the check fails open and never blocks the dashboard.
+
+Important limitation: historical commit hashes created before this code are immutable and cannot be retroactively changed to contain the warning. Every pinned build containing this check will self-mark outdated once a newer commit lands.
+
+
 ### 2026-09-18 — Microsoft Store deals expansion
 
 Commits:
