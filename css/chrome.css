@@ -113,7 +113,7 @@ body[data-mic="muted"] #micBtn{ color:rgba(255,255,255,.85); }
 }
 /* home shows no button legend */
 body[data-view="home"] .legend{ display:none; }
-.legend-item{ display:flex; align-items:center; gap:.7rem; }
+.legend-item{ display:flex; align-items:center; gap:.76rem; }
 .pad{
   width:2.4rem; height:2.4rem; border-radius:50%; display:grid; place-items:center;
   font-size:1.35rem; font-weight:800; color:#0b0d0f;
@@ -276,13 +276,13 @@ body[data-theme="light"] .guide-panel{ background:rgba(240,241,243,.94); }
   position:fixed;
   z-index:121;
   left:50%;
-  bottom:max(10.8rem,calc(env(safe-area-inset-bottom) + 7.2rem));
-  min-height:3.5rem;
+  bottom:max(12rem,calc(env(safe-area-inset-bottom) + 8.2rem));
+  min-height:3.8rem;
   max-width:min(34rem,calc(100vw - 2.4rem));
   display:flex;
   align-items:center;
   gap:.7rem;
-  padding:.5rem 1rem .52rem .65rem;
+  padding:.58rem 1.12rem .6rem .72rem;
   border:0;
   border-radius:.42rem;
   background:#107c10;
@@ -307,16 +307,16 @@ body[data-theme="light"] .guide-panel{ background:rgba(240,241,243,.94); }
     transform .22s var(--ease-accel);
 }
 .boot-greeting-mark{
-  width:2rem;
-  height:2rem;
+  width:2.2rem;
+  height:2.2rem;
   flex:none;
   display:grid;
   place-items:center;
   overflow:hidden;
 }
 .boot-greeting-mark img{
-  width:2rem;
-  height:2rem;
+  width:2.2rem;
+  height:2.2rem;
   display:block;
   object-fit:cover;
 }
@@ -326,7 +326,7 @@ body[data-theme="light"] .guide-panel{ background:rgba(240,241,243,.94); }
   text-overflow:ellipsis;
   white-space:nowrap;
   color:rgba(255,255,255,.94);
-  font:600 1.22rem/1.1 "Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;
+  font:600 1.32rem/1.1 "Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;
   letter-spacing:.005rem;
 }
 
@@ -337,7 +337,7 @@ html[data-motion="reduced"] .boot-greeting{
 
 @media (hover:none), (pointer:coarse){
   .boot-greeting{
-    bottom:max(8.6rem,calc(env(safe-area-inset-bottom) + 5.4rem));
+    bottom:max(9.6rem,calc(env(safe-area-inset-bottom) + 6.2rem));
   }
 }
 
