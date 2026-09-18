@@ -317,134 +317,303 @@ const SETTINGS_ITEMS=[
   {id:'general',label:'General',icon:'gear'},
   {id:'account',label:'Account',icon:'person'},
   {id:'personalization',label:'Personalization',icon:'brush'},
-  {id:'network',label:'Network settings',icon:'link'},
-  {id:'devices',label:'Devices & connections',icon:'pad'},
-  {id:'cloud',label:'Cloud settings',icon:'play'},
+  {id:'display',label:'Display & sound',icon:'apps'},
+  {id:'network',label:'Network',icon:'link'},
+  {id:'devices',label:'Controller & devices',icon:'games'},
+  {id:'cloud',label:'Cloud gaming',icon:'play'},
   {id:'accessibility',label:'Accessibility',icon:'person'},
   {id:'system',label:'System',icon:'apps'}
 ];
 
-function pref(key, fallback){
-  try { const v=localStorage.getItem('xbox.pref.'+key); return v==null?fallback:JSON.parse(v); } catch { return fallback; }
-}
-function setPref(key,val){ try { localStorage.setItem('xbox.pref.'+key,JSON.stringify(val)); } catch {} }
+let networkTestState='Not run';
 
-function settingsRow(title,sub,value,action,kind='value'){
-  const b=nav(el('button','console-settings-row'),action||(()=>{}));
+function settingsRow(title,sub,value,action,kind='value',id=''){
+  const b=el('button','console-settings-row');
+  if(action) nav(b,action);
+  else {
+    b.disabled=true;
+    b.classList.add('console-settings-info');
+  }
+  if(id) b.dataset.settingKey=id;
   b.innerHTML=`<span class="console-settings-copy"><strong>${safe(title)}</strong><small>${safe(sub)}</small></span><span class="console-settings-value ${kind}">${safe(value)}</span>`;
   return b;
 }
-function toggleRow(title,sub,on,action){
-  const b=settingsRow(title,sub,'',action,'toggle');
-  const v=b.querySelector('.console-settings-value'); v.innerHTML=`<i class="console-toggle ${on?'on':''}"><span></span></i>`; return b;
+function toggleRow(title,sub,on,action,id=''){
+  const b=settingsRow(title,sub,'',action,'toggle',id);
+  const v=b.querySelector('.console-settings-value');
+  v.innerHTML=`<i class="console-toggle ${on?'on':''}"><span></span></i>`;
+  return b;
+}
+function groupTitle(title,sub=''){
+  const node=el('div','console-settings-group-title');
+  node.innerHTML=`<strong>${safe(title)}</strong>${sub?`<span>${safe(sub)}</span>`:''}`;
+  return node;
+}
+function statusCard(title,value,sub='',tone=''){
+  const node=el('div','console-settings-status'+(tone?` ${tone}`:''));
+  node.innerHTML=`<span><small>${safe(title)}</small><strong>${safe(value)}</strong></span>${sub?`<p>${safe(sub)}</p>`:''}`;
+  return node;
+}
+function rerenderSettings(root,id){
+  renderSettings(root);
+  focusAfter(root,id ? `[data-setting-key="${id}"]` : '.console-side-item.active');
+}
+function setConsoleSetting(root,key,value,id=key){
+  const state=S();
+  state.setSetting(key,value);
+
+  const set=state.settings;
+  switch(key){
+    case 'theme': document.body.dataset.theme=value; break;
+    case 'accent':
+      document.documentElement.style.setProperty('--accent',value);
+      state.unlock?.('theme');
+      break;
+    case 'background': document.body.dataset.bg=value; break;
+    case 'motion': document.documentElement.dataset.motion=value; break;
+    case 'volume': window.Sound?.setVolume?.(value); break;
+    case 'clock24': window.App?.tickClock?.(); break;
+    case 'micMuted':
+      document.body.dataset.mic=value?'muted':'live';
+      window.App?.syncMicIcon?.();
+      break;
+    case 'textScale': document.documentElement.style.setProperty('--text-scale',value); break;
+    case 'highContrast': document.body.dataset.contrast=value?'high':'normal'; break;
+    case 'colorFilter': document.body.dataset.cvd=value||'none'; break;
+    case 'reduceTransparency': document.body.dataset.transparency=value?'reduced':'normal'; break;
+    case 'nightMode':
+    case 'nightStrength': window.App?.applyNightMode?.(); break;
+    case 'safeArea': document.documentElement.style.setProperty('--overscan',value||0); break;
+    case 'saturation': document.documentElement.style.setProperty('--sat',value); break;
+    case 'scanline': {
+      const scan=document.getElementById('scanline');
+      if(scan) scan.hidden=!value;
+      break;
+    }
+  }
+  rerenderSettings(root,id);
+}
+
+function cycle(current,values){
+  const index=values.findIndex(value=>Object.is(value,current));
+  return values[(index<0?0:index+1)%values.length];
+}
+function formatBytes(bytes){
+  const n=Number(bytes)||0;
+  if(n<1024) return `${n} B`;
+  if(n<1024*1024) return `${(n/1024).toFixed(1)} KB`;
+  if(n<1024*1024*1024) return `${(n/(1024*1024)).toFixed(1)} MB`;
+  return `${(n/(1024*1024*1024)).toFixed(2)} GB`;
+}
+function currentPad(){
+  try { return (navigator.getGamepads?.()||[]).find(Boolean)||null; }
+  catch { return null; }
+}
+function xboxPadName(pad){
+  if(!pad) return 'Not connected';
+  return /xbox|xinput|microsoft|045e/i.test(String(pad.id||'')) ? 'Xbox controller' : (pad.id||'Controller');
+}
+async function testControllerVibration(pad){
+  if(!pad) return false;
+  const actuator=pad.vibrationActuator || pad.hapticActuators?.[0];
+  try{
+    if(actuator?.playEffect){
+      await actuator.playEffect('dual-rumble',{duration:180,strongMagnitude:.65,weakMagnitude:.35});
+      return true;
+    }
+    if(actuator?.pulse){
+      await actuator.pulse(.6,180);
+      return true;
+    }
+  }catch{}
+  return false;
 }
 
 function renderSettings(root){
-  root.innerHTML=''; root.classList.add('console-page-view');
+  root.innerHTML='';
+  root.classList.add('console-page-view');
+
   const shell=el('div','console-shell console-settings');
   const main=el('main','console-main console-settings-main');
   shell.append(sidebar(SETTINGS_ITEMS,settingsMode,id=>{settingsMode=id;renderSettings(root);},'Settings'));
+
   const labels=Object.fromEntries(SETTINGS_ITEMS.map(x=>[x.id,x.label]));
   main.append(topBar(labels[settingsMode],'Xbox console settings'));
+
   const panel=el('section','console-settings-panel');
-  const state=S(); const set=state.settings;
+  const state=S();
+  const set=state.settings;
 
   if(settingsMode==='general'){
     panel.append(
-      settingsRow('Online safety & family','Manage privacy, family and content settings','Open',()=>{settingsMode='account';renderSettings(root);}),
-      settingsRow('Power options','Sleep, shutdown and energy settings',pref('power','Sleep'),()=>{const next=pref('power','Sleep')==='Sleep'?'Shutdown (energy saving)':'Sleep';setPref('power',next);renderSettings(root);}),
-      settingsRow('TV & display options','Resolution, video modes and calibration',pref('display','Auto detect'),()=>window.App?.toast?.('TV & display options','Using browser display settings')),
-      settingsRow('Volume & audio output','Speaker, headset and chat mixer',`${set.volume ?? 70}%`,()=>window.App?.toast?.('Audio','Use Display & sound for detailed audio controls')),
-      settingsRow('Personalization','Background, color, Home and guide','Open',()=>{settingsMode='personalization';renderSettings(root);}),
-      settingsRow('Network settings','Connection status and advanced settings','Open',()=>{settingsMode='network';renderSettings(root);})
+      statusCard('Console','Xbox','Settings save automatically on this device.','ok'),
+      groupTitle('Console preferences','These controls change the dashboard immediately.'),
+      toggleRow('Startup animation','Play the Xbox startup video when the dashboard opens',set.bootVideo!==false,()=>setConsoleSetting(root,'bootVideo',set.bootVideo===false,'bootVideo'),'bootVideo'),
+      toggleRow('24-hour clock','Use 24-hour time in the system clock',!!set.clock24,()=>setConsoleSetting(root,'clock24',!set.clock24),'clock24'),
+      toggleRow('Navigation sounds','Play Xbox UI movement and selection sounds',!!set.sounds,()=>setConsoleSetting(root,'sounds',!set.sounds),'sounds'),
+      settingsRow('Interface volume','Volume for dashboard sounds',`${set.volume??70}%`,()=>setConsoleSetting(root,'volume',cycle(set.volume??70,[0,25,50,70,85,100]),'volume'),'value','volume'),
+      toggleRow('Microphone','Show the microphone as active in the system bar',!set.micMuted,()=>setConsoleSetting(root,'micMuted',!set.micMuted,'micMuted'),'micMuted')
     );
   }
 
   if(settingsMode==='account'){
+    const profiles=state.profiles?.()||[];
     panel.append(
-      settingsRow('Sign-in, security & PIN','Control sign-in preferences','No barriers',()=>window.App?.toast?.('Sign-in','xboxtest is signed in')),
-      settingsRow('Linked social accounts','Connect supported social services','Manage',()=>window.App?.toast?.('Linked accounts','No linked accounts')),
-      settingsRow('Subscriptions','View active memberships',state.data?.tier || 'Ultimate',()=>window.App?.toast?.('Subscriptions',state.data?.tier || 'Ultimate')),
-      settingsRow('Payment & billing','Payment methods and order history','Manage',()=>window.App?.toast?.('Billing','No payment required in this replica')),
-      settingsRow('Privacy & online safety','Communication and multiplayer permissions','Adult defaults',()=>window.App?.toast?.('Privacy','Default privacy settings')),
-      settingsRow('Gamertag','Name shown across Xbox','xboxtest',()=>window.App?.promptGamertag?.())
+      statusCard('Signed in as',state.data?.gamertag||'xboxtest',`${(state.gamerscore||0).toLocaleString()} Gamerscore · ${state.data?.tier||'ULTIMATE'}`,'ok'),
+      groupTitle('Profile','Changes here are saved to this browser.'),
+      settingsRow('Gamertag','Name shown across the dashboard',state.data?.gamertag||'xboxtest',()=>window.App?.promptGamertag?.(),'value','gamertag'),
+      settingsRow('Profile picture','Generate a new local Xbox profile mark','Shuffle',()=>{state.rerollAvatar?.();window.App?.syncProfile?.();rerenderSettings(root,'avatar');},'value','avatar'),
+      settingsRow('Home profile line','Text displayed under your gamertag',set.profileLine||'Gamerscore and membership',()=>window.App?.promptProfileLine?.(),'value','profileLine'),
+      groupTitle('Profiles on this console',`${profiles.length} profile${profiles.length===1?'':'s'} stored locally.`),
+      settingsRow('Add profile','Create another local Xbox profile','Add',()=>window.App?.promptNewProfile?.(),'value','addProfile'),
+      profiles.length>1
+        ? settingsRow('Manage profiles','Switch or remove signed-out local profiles','Manage',()=>window.App?.manageProfiles?.(),'value','manageProfiles')
+        : settingsRow('Manage profiles','Add another profile before profile management is available','1 profile',null,'value','manageProfiles')
     );
   }
 
   if(settingsMode==='personalization'){
+    const accentOptions=['#4ade4a','#107c10','#2d7dff','#8c52ff','#e96b2c','#f2f2f2'];
+    const saturationOptions=[1,1.2,1.35,1.6];
     panel.append(
-      settingsRow('My background','Dynamic game art or custom image',set.wallpaper?'Custom':'Game art',()=>window.App?.promptWallpaper?.()),
-      settingsRow('My color','Accent color used by Xbox',set.accent || '#4ade4a',()=>window.App?.toast?.('My color','Use the color options in the original settings panel')),
-      toggleRow('Dynamic backgrounds','Change background with the selected game',set.background==='dynamic',()=>{state.setSetting('background',set.background==='dynamic'?'plain':'dynamic');renderSettings(root);}),
-      toggleRow('Navigation sounds','Play UI sounds while moving around',!!set.sounds,()=>{state.setSetting('sounds',!set.sounds);renderSettings(root);}),
-      settingsRow('Home','Customize games, apps and groups on Home','Customize',()=>window.App?.setView?.('home')),
-      settingsRow('My games & apps','Poster artwork, status icons and filters','Customize',()=>window.App?.setView?.('library')),
-      settingsRow('Customize the guide','Accent and guide preferences','Open',()=>window.App?.toast?.('Guide','Guide customization is available from the Xbox button'))
+      groupTitle('Look & feel','These settings directly change Home and system chrome.'),
+      settingsRow('Theme','System chrome appearance',set.theme==='light'?'Light':'Dark',()=>setConsoleSetting(root,'theme',set.theme==='dark'?'light':'dark','theme'),'value','theme'),
+      settingsRow('My color','Accent used for focus and highlights',set.accent||'#4ade4a',()=>setConsoleSetting(root,'accent',cycle(set.accent||'#4ade4a',accentOptions),'accent'),'value','accent'),
+      toggleRow('Dynamic backgrounds','Change Home artwork with the selected game',set.background==='dynamic',()=>setConsoleSetting(root,'background',set.background==='dynamic'?'plain':'dynamic','background'),'background'),
+      settingsRow('Home wallpaper',set.wallpaper?'A custom wallpaper is set':'Use a fixed image instead of selected-game art',set.wallpaper?'Change':'Choose',()=>window.App?.promptWallpaper?.(),'value','wallpaper'),
+      settingsRow('Artwork saturation','How vivid Home artwork appears',`${Math.round((set.saturation??1.35)*100)}%`,()=>setConsoleSetting(root,'saturation',cycle(set.saturation??1.35,saturationOptions),'saturation'),'value','saturation'),
+      toggleRow('Game details on Home','Show focused-title details above the Home row',!!set.heroText,()=>setConsoleSetting(root,'heroText',!set.heroText,'heroText'),'heroText'),
+      toggleRow('Tile badges','Show PORT, FLASH and emulator badges where available',!!set.tileBadges,()=>setConsoleSetting(root,'tileBadges',!set.tileBadges,'tileBadges'),'tileBadges')
+    );
+  }
+
+  if(settingsMode==='display'){
+    const scaleOptions=[.9,1,1.1,1.2,1.3];
+    const safeOptions=[0,1,2,3,4];
+    const nightOptions=[20,35,45,60,75];
+    panel.append(
+      statusCard('Display',`${window.innerWidth} × ${window.innerHeight}`,`${Math.round(window.devicePixelRatio||1)}× device pixel ratio`),
+      groupTitle('Display','Adjust the browser-rendered Xbox interface.'),
+      settingsRow('Text size','Scale dashboard text and rem-based UI',`${Math.round((set.textScale||1)*100)}%`,()=>setConsoleSetting(root,'textScale',cycle(set.textScale||1,scaleOptions),'textScale'),'value','textScale'),
+      settingsRow('Safe area','Move important UI inward for overscan',set.safeArea? `Level ${set.safeArea}`:'Off',()=>setConsoleSetting(root,'safeArea',cycle(set.safeArea||0,safeOptions),'safeArea'),'value','safeArea'),
+      toggleRow('Night mode','Apply a warm display filter',!!set.nightMode,()=>setConsoleSetting(root,'nightMode',!set.nightMode,'nightMode'),'nightMode'),
+      settingsRow('Night mode strength','Warm filter intensity',`${set.nightStrength??45}%`,()=>setConsoleSetting(root,'nightStrength',cycle(set.nightStrength??45,nightOptions),'nightStrength'),'value','nightStrength'),
+      toggleRow('CRT scanline overlay','Add the optional scanline effect',!!set.scanline,()=>setConsoleSetting(root,'scanline',!set.scanline,'scanline'),'scanline')
     );
   }
 
   if(settingsMode==='network'){
-    const info=window.Features?.Network?.info?.() || {online:navigator.onLine,type:'Unknown',rtt:'—',downlink:'—'};
+    const info=window.Features?.Network?.info?.() || {
+      online:navigator.onLine,
+      type:navigator.connection?.effectiveType||'Unknown',
+      rtt:navigator.connection?.rtt||'—',
+      downlink:navigator.connection?.downlink||'—'
+    };
     panel.append(
-      settingsRow('Network status','Current console connection',info.online?'Connected':'Offline'),
-      settingsRow('Connection type',`Round trip ${info.rtt || '—'} • ${info.downlink || '—'}`,info.type || 'Unknown'),
-      settingsRow('Test network connection','Run connectivity checks','Test',async()=>{window.App?.toast?.('Network test','Checking connection…');try{await window.Features?.Network?.test?.();window.App?.toast?.('Network test','Connection looks good');}catch{window.App?.toast?.('Network test','Could not complete test');}}),
-      settingsRow('Test remote play','Check streaming readiness','Test',()=>window.App?.toast?.('Remote play','Browser streaming path is available')),
-      settingsRow('Advanced settings','IP, DNS, port and alternate MAC address','Open',()=>window.App?.toast?.('Advanced network','Managed by your browser and device'))
+      statusCard('Network status',info.online?'Connected':'Offline',info.online?'The browser reports an active network connection.':'Cloud gaming requires a network connection.',info.online?'ok':'warn'),
+      groupTitle('Connection','Live information from your browser/device.'),
+      settingsRow('Connection type','Reported effective network type',String(info.type||'Unknown'),null,'value','networkType'),
+      settingsRow('Round-trip time','Browser-reported network latency',info.rtt==='—'?'Unavailable':`${info.rtt} ms`,null,'value','rtt'),
+      settingsRow('Downlink estimate','Browser-reported connection estimate',info.downlink==='—'?'Unavailable':`${info.downlink} Mbps`,null,'value','downlink'),
+      settingsRow('Test network connection','Run the project network connectivity check',networkTestState,async()=>{
+        networkTestState='Testing…';
+        rerenderSettings(root,'networkTest');
+        try{
+          const result=await window.Features?.Network?.test?.();
+          networkTestState=result===false?'Failed':'Connected';
+        }catch{ networkTestState='Failed'; }
+        rerenderSettings(root,'networkTest');
+      },'value','networkTest')
     );
   }
 
   if(settingsMode==='devices'){
-    const vibration=pref('vibration',true);
+    const pad=currentPad();
+    const deadzones=[20,30,40,55,65,75];
+    const swapped=set.buttonMap?.a==='b';
     panel.append(
-      settingsRow('Controllers & headsets','Configure connected Xbox accessories','Configure',()=>window.App?.toast?.('Accessories','Controller input is enabled')),
-      toggleRow('Controller vibration','Allow controller vibration in supported games',vibration,()=>{setPref('vibration',!vibration);renderSettings(root);}),
-      settingsRow('Remote features','Allow remote play and device connections',pref('remote',true)?'Enabled':'Disabled',()=>{setPref('remote',!pref('remote',true));renderSettings(root);}),
-      settingsRow('Digital assistants','Voice and assistant integrations','Not connected',()=>{}),
-      settingsRow('Media remote','Button mapping and media controls','Default',()=>{})
+      statusCard('Controller',xboxPadName(pad),pad?'Gamepad input is active on the dashboard.':'Connect or pair an Xbox controller, then press a button.',pad?'ok':''),
+      groupTitle('Xbox controller','Dashboard navigation reads these settings live.'),
+      settingsRow('Button layout','Which face button selects items',swapped?'Swapped (B selects)':'Standard (A selects)',()=>{
+        const next=swapped
+          ? {a:'a',b:'b',x:'x',y:'y'}
+          : {a:'b',b:'a',x:'x',y:'y'};
+        setConsoleSetting(root,'buttonMap',next,'buttonMap');
+      },'value','buttonMap'),
+      settingsRow('Left stick deadzone','How far the stick moves before dashboard navigation starts',`${set.stickDeadzone??55}%`,()=>setConsoleSetting(root,'stickDeadzone',cycle(set.stickDeadzone??55,deadzones),'stickDeadzone'),'value','stickDeadzone'),
+      toggleRow('Controller vibration','Allow haptics where the browser/controller supports them',set.vibration!==false,()=>setConsoleSetting(root,'vibration',set.vibration===false,'vibration'),'vibration'),
+      settingsRow('Test vibration',pad?'Send a short rumble to the connected controller':'Connect a controller first',pad?'Test':'Unavailable',pad?async()=>{
+        const row=root.querySelector('[data-setting-key="rumble"] .console-settings-value');
+        if(row) row.textContent='Testing…';
+        const ok=await testControllerVibration(currentPad());
+        if(row) row.textContent=ok?'Working':'Not supported';
+      }:null,'value','rumble'),
+      toggleRow('Microphone','System microphone status',!set.micMuted,()=>setConsoleSetting(root,'micMuted',!set.micMuted,'deviceMic'),'deviceMic')
     );
   }
 
   if(settingsMode==='cloud'){
-    const resolution=pref('cloudResolution','Auto');
-    const nqi=pref('nqi',true);
-    const opts=['Auto','720p','1080p'];
+    const cloud=Cloud();
     panel.append(
-      settingsRow('Cloud gaming resolution','Preferred stream resolution before a session starts',resolution,()=>{setPref('cloudResolution',opts[(opts.indexOf(resolution)+1)%opts.length]);renderSettings(root);}),
-      toggleRow('Network Quality Indicator','Show lightweight stream health information',nqi,()=>{setPref('nqi',!nqi);renderSettings(root);}),
-      settingsRow('Cloud gaming provider','Streaming backend used by this project','Stratus Cloud',()=>{}),
-      settingsRow('Session length','Maximum cloud play session','15 minutes',()=>{}),
-      settingsRow('Streaming status','Current session',Cloud()?.active?'Playing':'Ready',()=>{})
+      statusCard('Xbox Cloud',cloud?.active?'Playing':'Ready',cloud?.active?'A cloud session is currently active.':'Cloud games can be launched from Home or My games & apps.',cloud?.active?'ok':''),
+      groupTitle('Cloud gaming','Actions here connect to the project’s actual cloud flow.'),
+      settingsRow('Cloud library','Open your Xbox Cloud games in My games & apps','Open',()=>window.App?.setView?.('library'),'value','cloudLibrary'),
+      settingsRow('Streaming session',cloud?.active?'A cloud session is active':'No cloud session is running',cloud?.active?'Exit game':'Ready',cloud?.active?()=>cloud.quit?.():null,'value','cloudSession'),
+      settingsRow('Controller passthrough','Game iframe is allowed to receive Gamepad API input','Enabled',null,'value','cloudController'),
+      settingsRow('Player mode','Cloud games open in the full-screen Xbox player','Full screen',null,'value','cloudPlayer')
     );
   }
 
   if(settingsMode==='accessibility'){
-    const motion=set.motion==='reduced';
+    const filters=[
+      {v:'none',label:'Off'},
+      {v:'protanopia',label:'Protanopia'},
+      {v:'deuteranopia',label:'Deuteranopia'},
+      {v:'tritanopia',label:'Tritanopia'},
+      {v:'mono',label:'Monochrome'}
+    ];
+    const currentFilter=filters.find(x=>x.v===(set.colorFilter||'none'))||filters[0];
     panel.append(
-      settingsRow('Narrator','Read screen text aloud','Off',()=>window.App?.toast?.('Narrator','Browser accessibility APIs remain available')),
-      settingsRow('Magnifier','Zoom parts of the screen','Off',()=>{}),
-      settingsRow('High contrast','Increase visual separation',pref('contrast',false)?'On':'Off',()=>{setPref('contrast',!pref('contrast',false));document.body.classList.toggle('console-high-contrast',pref('contrast',false));renderSettings(root);}),
-      toggleRow('Reduce motion','Shorten dashboard animation',motion,()=>{state.setSetting('motion',motion?'full':'reduced');document.documentElement.dataset.motion=motion?'full':'reduced';renderSettings(root);}),
-      toggleRow('Mono output','Combine stereo audio channels',pref('mono',false),()=>{setPref('mono',!pref('mono',false));renderSettings(root);})
+      groupTitle('Accessibility','These settings apply immediately across the dashboard.'),
+      toggleRow('High contrast','Increase separation between interface surfaces',!!set.highContrast,()=>setConsoleSetting(root,'highContrast',!set.highContrast,'highContrast'),'highContrast'),
+      toggleRow('Reduce motion','Shorten or skip dashboard animations',set.motion==='reduced',()=>setConsoleSetting(root,'motion',set.motion==='reduced'?'full':'reduced','motion'),'motion'),
+      toggleRow('Reduce transparency','Replace translucent surfaces with more solid backgrounds',!!set.reduceTransparency,()=>setConsoleSetting(root,'reduceTransparency',!set.reduceTransparency,'reduceTransparency'),'reduceTransparency'),
+      settingsRow('Color filter','Apply a color-vision filter to the dashboard',currentFilter.label,()=>{
+        const next=cycle(currentFilter.v,filters.map(x=>x.v));
+        setConsoleSetting(root,'colorFilter',next,'colorFilter');
+      },'value','colorFilter'),
+      settingsRow('Text size','Scale dashboard text',`${Math.round((set.textScale||1)*100)}%`,()=>setConsoleSetting(root,'textScale',cycle(set.textScale||1,[.9,1,1.1,1.2,1.3]),'accessTextScale'),'value','accessTextScale')
     );
   }
 
   if(settingsMode==='system'){
-    const starts=['Xbox Series','Xbox One','Modern Xbox'];
-    const startup=pref('startup','Modern Xbox');
+    const storageRow=settingsRow('Browser storage','Local profiles, preferences and cached assets','Checking…',null,'value','storage');
     panel.append(
-      settingsRow('Console info','Name, OS and device information','Xbox',()=>window.App?.toast?.('Console info','Xbox browser replica')),
-      settingsRow('Updates','Keep console software current','Up to date',()=>{}),
-      settingsRow('Language & location','System language and regional format','English (United States)',()=>{}),
-      settingsRow('Time','Clock and time zone','Automatic',()=>{}),
-      settingsRow('Startup animation','Choose the Xbox startup experience',startup,()=>{setPref('startup',starts[(starts.indexOf(startup)+1)%starts.length]);renderSettings(root);}),
-      settingsRow('Backup & transfer','Network transfer and backup options','Open',()=>{}),
-      settingsRow('Storage devices','Manage browser storage and captures','Manage',()=>window.App?.toast?.('Storage','Game streams do not require local installs')),
-      settingsRow('Reset console','Reset local profile and console settings','Reset',()=>window.App?.confirmReset?.())
+      statusCard('System','Xbox Web Dashboard','Runs entirely in this browser.','ok'),
+      groupTitle('Console information','Useful device and maintenance controls.'),
+      settingsRow('Viewport', 'Current rendered dashboard size',`${window.innerWidth} × ${window.innerHeight}`,null,'value','viewport'),
+      settingsRow('Browser mode','How the dashboard is currently running',window.matchMedia?.('(display-mode: standalone)')?.matches?'Installed app':'Browser tab',null,'value','displayMode'),
+      storageRow,
+      settingsRow('Restart dashboard','Reload the current Xbox build','Restart',()=>location.reload(),'value','restart'),
+      settingsRow('Reset local console','Clear profiles, achievements and settings stored by this build','Reset',()=>window.App?.confirmReset?.(),'value','reset')
     );
+
+    navigator.storage?.estimate?.().then(info=>{
+      const value=storageRow.querySelector('.console-settings-value');
+      if(!value) return;
+      const usage=formatBytes(info.usage||0);
+      const quota=info.quota?formatBytes(info.quota):'unknown';
+      value.textContent=`${usage} / ${quota}`;
+    }).catch(()=>{
+      const value=storageRow.querySelector('.console-settings-value');
+      if(value) value.textContent='Unavailable';
+    });
   }
 
-  main.append(panel); shell.append(main); root.append(shell); focusAfter(root,'.console-side-item.active');
+  main.append(panel);
+  shell.append(main);
+  root.append(shell);
+  focusAfter(root,'.console-side-item.active');
 }
 
 V.renderLibrary = renderLibrary;

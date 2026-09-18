@@ -106,20 +106,181 @@
 .console-search-grid .console-poster-name{ font-size:1.2rem; }
 
 /* Settings */
-.console-settings-main{ background:#0b0b0b; }
-.console-settings-panel{ max-width:112rem; display:flex; flex-direction:column; gap:.65rem; padding-top:.6rem; }
-.console-settings-row{ width:100%; min-height:7.2rem; display:flex; align-items:center; gap:2rem; padding:1.25rem 1.5rem; border:0; border-radius:.38rem; background:#181818; color:#fff; text-align:left; }
-.console-settings-row[data-focused]{ background:#f2f2f2; color:#111; outline:.32rem solid #107c10; outline-offset:.18rem; }
-.console-settings-copy{ flex:1; min-width:0; display:flex; flex-direction:column; }
-.console-settings-copy strong{ font-size:1.58rem; font-weight:600; }
-.console-settings-copy small{ margin-top:.32rem; font-size:1.15rem; color:rgba(255,255,255,.48); }
-.console-settings-row[data-focused] .console-settings-copy small{ color:rgba(0,0,0,.58); }
-.console-settings-value{ flex:none; max-width:32rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:rgba(255,255,255,.7); font-size:1.3rem; font-weight:600; }
-.console-settings-row[data-focused] .console-settings-value{ color:#111; }
-.console-toggle{ position:relative; width:4.9rem; height:2.7rem; display:block; border-radius:2rem; background:#555; }
-.console-toggle span{ position:absolute; width:2.05rem; height:2.05rem; left:.34rem; top:.32rem; border-radius:50%; background:#fff; transition:transform .15s ease; }
+.console-settings-main{
+  background:
+    radial-gradient(80rem 48rem at 86% -12%,rgba(16,124,16,.09),transparent 60%),
+    #0b0b0b;
+}
+.console-settings-panel{
+  max-width:116rem;
+  display:flex;
+  flex-direction:column;
+  gap:.62rem;
+  padding:.6rem 0 7rem;
+}
+.console-settings-group-title{
+  display:flex;
+  flex-direction:column;
+  gap:.28rem;
+  margin:2.25rem 0 .45rem;
+  padding:0 .25rem;
+}
+.console-settings-group-title:first-child{ margin-top:.35rem; }
+.console-settings-group-title strong{
+  color:#fff;
+  font-size:1.8rem;
+  line-height:1.1;
+  font-weight:650;
+}
+.console-settings-group-title span{
+  color:rgba(255,255,255,.46);
+  font-size:1.08rem;
+}
+.console-settings-status{
+  min-height:9rem;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:2rem;
+  margin:.3rem 0 1rem;
+  padding:1.6rem 1.8rem;
+  border:.1rem solid rgba(255,255,255,.07);
+  border-radius:.65rem;
+  background:#151515;
+}
+.console-settings-status.ok{
+  border-left:.42rem solid #107c10;
+}
+.console-settings-status.warn{
+  border-left:.42rem solid #d98c10;
+}
+.console-settings-status>span{
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+}
+.console-settings-status small{
+  color:rgba(255,255,255,.46);
+  font-size:1rem;
+  font-weight:700;
+  letter-spacing:.08rem;
+  text-transform:uppercase;
+}
+.console-settings-status strong{
+  margin-top:.35rem;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:#fff;
+  font-size:2.2rem;
+  font-weight:600;
+}
+.console-settings-status p{
+  max-width:48rem;
+  margin:0;
+  color:rgba(255,255,255,.52);
+  font-size:1.18rem;
+  line-height:1.35;
+  text-align:right;
+}
+.console-settings-row{
+  width:100%;
+  min-height:7.35rem;
+  display:flex;
+  align-items:center;
+  gap:2rem;
+  padding:1.2rem 1.55rem;
+  border:0;
+  border-left:.28rem solid transparent;
+  border-radius:.45rem;
+  background:#181818;
+  color:#fff;
+  text-align:left;
+  transition:background .12s ease,border-color .12s ease;
+}
+.console-settings-row:not(.console-settings-info)::after{
+  content:'›';
+  flex:none;
+  margin-left:.1rem;
+  color:rgba(255,255,255,.34);
+  font-size:2.25rem;
+  line-height:1;
+}
+.console-settings-row[data-focused]{
+  background:#f2f2f2;
+  color:#111;
+  border-left-color:#107c10;
+  outline:.3rem solid #107c10;
+  outline-offset:.17rem;
+}
+.console-settings-row[data-focused]::after{ color:rgba(0,0,0,.5); }
+.console-settings-row.console-settings-info{
+  cursor:default;
+  background:#141414;
+  opacity:.86;
+}
+.console-settings-row:disabled{
+  -webkit-text-fill-color:inherit;
+}
+.console-settings-copy{
+  flex:1;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+}
+.console-settings-copy strong{
+  font-size:1.55rem;
+  font-weight:600;
+}
+.console-settings-copy small{
+  margin-top:.34rem;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:rgba(255,255,255,.48);
+  font-size:1.13rem;
+}
+.console-settings-row[data-focused] .console-settings-copy small{
+  color:rgba(0,0,0,.58);
+}
+.console-settings-value{
+  flex:none;
+  max-width:34rem;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:rgba(255,255,255,.7);
+  font-size:1.28rem;
+  font-weight:600;
+}
+.console-settings-row[data-focused] .console-settings-value{
+  color:#111;
+}
+.console-toggle{
+  position:relative;
+  width:4.9rem;
+  height:2.7rem;
+  display:block;
+  border-radius:2rem;
+  background:#555;
+  box-shadow:inset 0 0 0 .1rem rgba(255,255,255,.08);
+}
+.console-toggle span{
+  position:absolute;
+  width:2.05rem;
+  height:2.05rem;
+  left:.34rem;
+  top:.32rem;
+  border-radius:50%;
+  background:#fff;
+  transition:transform .15s ease;
+}
 .console-toggle.on{ background:#107c10; }
 .console-toggle.on span{ transform:translateX(2.15rem); }
+.console-settings-row[data-focused] .console-toggle{
+  box-shadow:inset 0 0 0 .1rem rgba(0,0,0,.16);
+}
+
 
 /* Existing detail page receives the same Xbox 10-foot geometry. */
 .detail{ background:#070707!important; }
