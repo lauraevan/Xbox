@@ -8,6 +8,32 @@
 let ctx = null;
 let bus = null;
 
+const SAMPLE_URLS = {
+  gameSelect:'assets/audio/xbox-series-select.mp3',
+  notification:'assets/audio/xbox-series-notification.mp3'
+};
+const samples = new Map();
+
+function sample(name, gain = .55){
+  if (!enabled()) return;
+  const src = SAMPLE_URLS[name];
+  if (!src) return;
+
+  let base = samples.get(name);
+  if (!base){
+    base = new Audio(src);
+    base.preload = 'auto';
+    base.playsInline = true;
+    samples.set(name, base);
+  }
+
+  const node = base.paused || base.ended ? base : base.cloneNode(true);
+  const volume = Math.max(0, Math.min(100, window.State?.settings.volume ?? 70));
+  node.volume = Math.min(1, (volume / 100) * gain);
+  try { node.currentTime = 0; } catch {}
+  node.play().catch(() => {});
+}
+
 function ensure(){
   if (ctx) return ctx;
   const AC = window.AudioContext || window.webkitAudioContext;
@@ -76,6 +102,14 @@ const Sound = {
   unlock(){
     const c = ensure();
     if (c && c.state === 'suspended') c.resume();
+    Object.entries(SAMPLE_URLS).forEach(([name, src]) => {
+      if (samples.has(name)) return;
+      const node = new Audio(src);
+      node.preload = 'auto';
+      node.playsInline = true;
+      node.load();
+      samples.set(name, node);
+    });
   },
 
   move(){ if (enabled()) tone({ freq: 1180, dur: .045, type: 'triangle', gain: .28 }); },
@@ -106,11 +140,9 @@ const Sound = {
     noise({ dur: .9, gain: .12, from: 200, to: 1600, q: 1.2 });
   },
 
-  achievement(){
-    if (!enabled()) return;
-    [659, 784, 988, 1319].forEach((f, i) =>
-      tone({ freq: f, dur: .5, type: 'triangle', gain: .34, delay: i * .1 }));
-  },
+  achievement(){ sample('notification', .62); },
+
+  gameSelect(){ sample('gameSelect', .58); },
 
   boot(){
     if (!enabled()) return;
@@ -126,7 +158,7 @@ const Sound = {
     tone({ freq: 165, dur: .24, type: 'square', gain: .22, delay: .13 });
   },
 
-  toast(){ if (enabled()) tone({ freq: 880, dur: .12, type: 'sine', gain: .3, slideTo: 1320 }); }
+  toast(){ sample('notification', .62); }
 };
 
 /* browsers only allow audio after a gesture */

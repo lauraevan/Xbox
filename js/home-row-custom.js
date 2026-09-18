@@ -141,6 +141,7 @@ function previewFact(icon, label, value){
 
 async function openGamePreview(title){
   closeGamePreview();
+  window.Sound?.gameSelect?.();
 
   const [cloud, local] = await Promise.all([
     cloudGame(title),
