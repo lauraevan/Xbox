@@ -6,14 +6,14 @@
 
 const ROOT = 'games/minecraft-launcher';
 const LAUNCHER = `${ROOT}/index.html`;
-const COVER = 'assets/game-art/minecraft-cover-user.jpg?v=2';
-const HERO = 'assets/game-art/minecraft-hero-user.jpg';
+const COVER = 'https://store-images.s-microsoft.com/image/apps.53095.13850085746326678.06e2dc5c-7997-46e9-a8e6-0e48b57cb13b.419e3c9d-9dd3-4a28-a9f3-a12350215871?h=1024&q=95&w=1024';
+const HERO = 'https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/key-art/NewKeyArt_Header.jpg';
 const COVER_SENTINEL = '__xbox_local_minecraft_cover__';
 const HOME = document.getElementById('view-home');
 
 const isMinecraft = value => String(value || '').trim().toLowerCase() === 'minecraft';
 
-/* Use the user-supplied Minecraft artwork everywhere Xbox presents the game. */
+/* Use official high-resolution Minecraft artwork everywhere Xbox presents the game. */
 if (window.Artwork?.hero && !window.Artwork.__minecraftLocalHero){
   const originalHero = window.Artwork.hero.bind(window.Artwork);
   window.Artwork.hero = name => isMinecraft(name)
