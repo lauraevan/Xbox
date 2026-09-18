@@ -312,12 +312,13 @@ body[data-theme="light"] .guide-panel{ background:rgba(240,241,243,.94); }
   flex:none;
   display:grid;
   place-items:center;
-  color:#107c10;
+  overflow:hidden;
 }
-.boot-greeting-mark svg{
+.boot-greeting-mark img{
   width:2rem;
   height:2rem;
   display:block;
+  object-fit:cover;
 }
 .boot-greeting-text{
   min-width:0;
