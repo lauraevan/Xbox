@@ -380,3 +380,38 @@ body:has(#view-home .home-catalog-game[data-focused]) .focus-ring.on{
 .home-app-card.app-youtube{background:#f4f4f4}
 .home-app-card.app-prime{background:#146fe8}
 .home-app-card.app-nitrado{background:#070808}
+
+/* Correct brand proportions for Essential apps. */
+.home-app-card{
+  padding:1.5rem 2rem!important;
+}
+.home-app-logo{
+  width:auto!important;
+  max-width:72%!important;
+  height:auto!important;
+  max-height:44%!important;
+  object-fit:contain!important;
+}
+.home-app-card.app-netflix .home-app-logo{
+  max-width:70%!important;
+  max-height:34%!important;
+}
+.home-app-card.app-prime .home-app-logo{
+  max-width:64%!important;
+  max-height:48%!important;
+  filter:brightness(0) invert(1)!important;
+}
+.home-app-card.app-youtube .home-app-logo{
+  max-width:72%!important;
+  max-height:38%!important;
+}
+.home-app-card.app-nitrado .home-app-logo{
+  max-width:68%!important;
+  max-height:42%!important;
+}
+.home-app-card.app-gportal .home-app-logo{
+  width:3.6rem!important;
+  height:3.6rem!important;
+  max-width:none!important;
+  max-height:none!important;
+}
