@@ -154,8 +154,10 @@ async function openGamePreview(title){
   const tags = Array.isArray(game.tags) ? game.tags.filter(Boolean).slice(0, 4) : [];
   const provider = cloud ? 'Xbox Cloud' : (game.author || 'Xbox');
   const availability = cloud ? 'Cloud playable' : 'Ready to play';
-  const description = String(game.description || game.desc || '').trim()
-    || `${title} is ready to launch from your Xbox Home.`;
+  /* The Note area is sourced from the Stratus GitHub catalogue specifically.
+     Do not substitute local catalogue marketing copy when Stratus has no row. */
+  const description = String(cloud?.description || '').trim()
+    || 'No Xbox Cloud note is available for this title.';
 
   const layer = document.createElement('section');
   layer.className = 'home-game-preview';
@@ -205,9 +207,19 @@ async function openGamePreview(title){
     chips.append(chip);
   });
 
+  const note = document.createElement('section');
+  note.className = 'home-game-preview-note';
+  note.setAttribute('aria-label', 'Game note');
+
+  const noteLabel = document.createElement('div');
+  noteLabel.className = 'home-game-preview-note-label';
+  noteLabel.textContent = 'Note';
+
   const desc = document.createElement('p');
   desc.className = 'home-game-preview-description';
   desc.textContent = description;
+
+  note.append(noteLabel, desc);
 
   const facts = document.createElement('div');
   facts.className = 'home-game-preview-facts';
@@ -251,7 +263,7 @@ async function openGamePreview(title){
   });
 
   actions.append(start, close);
-  info.append(kicker, heading, chips, desc, facts, actions);
+  info.append(kicker, heading, chips, note, facts, actions);
   card.append(visual, coverWrap, info);
   layer.append(scrim, card);
   document.body.append(layer);
