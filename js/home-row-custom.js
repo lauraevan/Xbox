@@ -116,6 +116,154 @@ async function activateTitle(title){
   window.App?.toast?.('Game unavailable', `${title} is not currently available in the connected catalogue.`);
 }
 
+let preview = null;
+let previewTitle = null;
+
+function closeGamePreview(){
+  if (!preview) return;
+  const node = preview;
+  preview = null;
+  previewTitle = null;
+  node.classList.add('out');
+  setTimeout(() => node.remove(), 180);
+  try { window.Nav?.popLayer?.(); } catch {}
+  requestAnimationFrame(() => window.Nav?.repaint?.());
+}
+
+function previewFact(icon, label, value){
+  const row = document.createElement('div');
+  row.className = 'home-game-preview-fact';
+  row.innerHTML = `
+    <span class="home-game-preview-fact-icon">${icon || ''}</span>
+    <span><small>${esc(label)}</small><strong>${esc(value)}</strong></span>`;
+  return row;
+}
+
+async function openGamePreview(title){
+  closeGamePreview();
+
+  const [cloud, local] = await Promise.all([
+    cloudGame(title),
+    Promise.resolve(localGame(title))
+  ]);
+
+  const game = cloud || local || { name:title };
+  const known = canonicalTitle(title) || title;
+  const cover = COVER[known] || game.cover || game.image || '';
+  const hero = HERO[known] || game.image || game.cover || cover;
+  const tags = Array.isArray(game.tags) ? game.tags.filter(Boolean).slice(0, 4) : [];
+  const provider = cloud ? 'Stratus Cloud' : (game.author || 'Xbox');
+  const availability = cloud ? 'Cloud playable' : 'Ready to play';
+  const description = String(game.description || game.desc || '').trim()
+    || `${title} is ready to launch from your Xbox Home.`;
+
+  const layer = document.createElement('section');
+  layer.className = 'home-game-preview';
+  layer.setAttribute('role', 'dialog');
+  layer.setAttribute('aria-modal', 'true');
+  layer.setAttribute('aria-label', `${title} game information`);
+
+  const scrim = document.createElement('button');
+  scrim.type = 'button';
+  scrim.className = 'home-game-preview-scrim';
+  scrim.setAttribute('aria-label', 'Close game information');
+  scrim.addEventListener('click', closeGamePreview);
+
+  const card = document.createElement('div');
+  card.className = 'home-game-preview-card';
+
+  const visual = document.createElement('div');
+  visual.className = 'home-game-preview-visual';
+  visual.style.backgroundImage = hero ? `url("${hero}")` : '';
+  visual.innerHTML = '<span class="home-game-preview-visual-shade"></span>';
+
+  const coverWrap = document.createElement('div');
+  coverWrap.className = 'home-game-preview-cover';
+  if (cover){
+    const img = document.createElement('img');
+    img.src = cover;
+    img.alt = '';
+    img.decoding = 'async';
+    coverWrap.append(img);
+  }
+
+  const info = document.createElement('div');
+  info.className = 'home-game-preview-info';
+
+  const kicker = document.createElement('div');
+  kicker.className = 'home-game-preview-kicker';
+  kicker.textContent = provider;
+
+  const heading = document.createElement('h2');
+  heading.textContent = title;
+
+  const chips = document.createElement('div');
+  chips.className = 'home-game-preview-chips';
+  [availability, ...tags].slice(0, 5).forEach(text => {
+    const chip = document.createElement('span');
+    chip.textContent = text;
+    chips.append(chip);
+  });
+
+  const desc = document.createElement('p');
+  desc.className = 'home-game-preview-description';
+  desc.textContent = description;
+
+  const facts = document.createElement('div');
+  facts.className = 'home-game-preview-facts';
+  facts.append(
+    previewFact(window.Views?.ICON?.play || '', 'Play', cloud ? 'Stream instantly' : 'Launch locally'),
+    previewFact(window.Views?.ICON?.games || '', 'Type', cloud ? 'Cloud game' : 'Game'),
+    previewFact(window.Views?.ICON?.person || '', 'Provider', provider)
+  );
+
+  const actions = document.createElement('div');
+  actions.className = 'home-game-preview-actions';
+
+  const start = document.createElement('button');
+  start.type = 'button';
+  start.className = 'home-game-preview-start';
+  start.dataset.nav = '';
+  start.dataset.ringRadius = '.9rem';
+  start.innerHTML = `${window.Views?.ICON?.play || ''}<span>Start</span>`;
+  start._navActivate = async () => {
+    const selected = previewTitle;
+    closeGamePreview();
+    if (selected) await activateTitle(selected);
+  };
+  start.addEventListener('click', event => {
+    event.preventDefault();
+    event.stopPropagation();
+    start._navActivate();
+  });
+
+  const close = document.createElement('button');
+  close.type = 'button';
+  close.className = 'home-game-preview-close';
+  close.dataset.nav = '';
+  close.dataset.ringRadius = '.9rem';
+  close.innerHTML = `${window.Views?.ICON?.close || window.Views?.ICON?.back || ''}<span>Close</span>`;
+  close._navActivate = closeGamePreview;
+  close.addEventListener('click', event => {
+    event.preventDefault();
+    event.stopPropagation();
+    closeGamePreview();
+  });
+
+  actions.append(start, close);
+  info.append(kicker, heading, chips, desc, facts, actions);
+  card.append(visual, coverWrap, info);
+  layer.append(scrim, card);
+  document.body.append(layer);
+
+  preview = layer;
+  previewTitle = title;
+  window.Nav?.pushLayer?.(layer);
+  requestAnimationFrame(() => {
+    window.Nav?.focusIn?.(layer, '.home-game-preview-start');
+  });
+}
+
 function ensureBadge(face, text){
   let badge = face.querySelector('.ref-platform');
   if (!text){ badge?.remove(); return; }
@@ -153,7 +301,7 @@ function patchTile(def){
   const face = tile.querySelector('.tile-face');
   setTileArtwork(tile, def.to);
   if (face) ensureBadge(face, def.badge);
-  tile._navActivate = () => activateTitle(def.to);
+  tile._navActivate = () => openGamePreview(def.to);
 }
 
 function wireAllGameTiles(){
@@ -165,7 +313,7 @@ function wireAllGameTiles(){
 
     if (tile.dataset.homeDirectLaunch !== title){
       tile.dataset.homeDirectLaunch = title;
-      tile._navActivate = () => activateTitle(title);
+      tile._navActivate = () => openGamePreview(title);
     }
   });
 }
@@ -302,6 +450,14 @@ window.addEventListener('nav:focus', event => {
   requestAnimationFrame(() => window.Nav?.repaint?.());
   homeFocusResizeTimer = setTimeout(() => window.Nav?.repaint?.(), 190);
 });
+
+/* Preview is a real navigation layer. Capture B before App.goBack so it closes
+   this panel instead of changing the underlying Home route. */
+window.addEventListener('nav:button', event => {
+  if (!preview || event.detail?.button !== 'b') return;
+  event.stopImmediatePropagation?.();
+  closeGamePreview();
+}, true);
 
 patchHome();
 })();
