@@ -819,6 +819,15 @@ Do not treat either handoff file as more authoritative than an explicit newer us
 
 Newest first. Short notes only; detail belongs in the commit.
 
+### 2026-09-18 — My games & apps now uses the real library renderer
+
+Commit: `0d4626dc33ce1ef44768e0c3e50a4264811845d6`
+
+Root cause: `home-row-custom.js` was wiping `#view-library` and rebuilding a Stratus-only owned list whenever the Home My games & apps tile was opened. I removed that replacement path. The tile now opens the normal library renderer, which can still receive cloud ownership through `cloud-library.js`.
+
+Also changed `library-minimal-pass.js` so the game action flyout never flips above the selected cover. It always opens downward; short viewports scroll the menu instead. CSS was tightened slightly to keep the menu compact.
+
+
 ### 2026-09-18 — first Guide sidebar game rows updated
 
 User asked for the games in the first Guide/sidebar to be updated and made launchable.
