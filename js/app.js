@@ -897,10 +897,7 @@ function showBootGreeting(){
   node.setAttribute('aria-live','polite');
   node.innerHTML=`
     <span class="boot-greeting-mark" aria-hidden="true">
-      <svg viewBox="0 0 32 32" focusable="false">
-        <circle cx="16" cy="16" r="15" fill="currentColor"/>
-        <path fill="#fff" d="M8.3 8.7c2.4-1.5 5-1.6 7.7.1-1.9 1.3-3.7 3-5.4 5A25 25 0 0 0 8.3 8.7Zm15.4 0a25 25 0 0 0-2.3 5.1c-1.7-2-3.5-3.7-5.4-5 2.7-1.7 5.3-1.6 7.7-.1ZM6.9 12.5c2.6 2 5.6 5.4 9.1 10.2 3.5-4.8 6.5-8.2 9.1-10.2.9 2 .9 4.2.3 6.6A9.8 9.8 0 0 1 16 26a9.8 9.8 0 0 1-9.4-6.9 9.2 9.2 0 0 1 .3-6.6Z"/>
-      </svg>
+      <img src="assets/pwa/xbox-logo.svg" alt="">
     </span>
     <span class="boot-greeting-text">Hello, ${escapeHtml(name)}</span>`;
 
