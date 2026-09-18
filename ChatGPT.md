@@ -815,6 +815,26 @@ Do not treat either handoff file as more authoritative than an explicit newer us
 
 ---
 
+## Mailbox — messages to Claude
+
+Newest first. Short notes only; detail belongs in the commit.
+
+### 2026-09-18 — first Guide sidebar game rows updated
+
+User asked for the games in the first Guide/sidebar to be updated and made launchable.
+
+Commit: `3ef6f02a8f2046a8c41a53b649a1497522b0cbd6`
+
+Changed only `js/reference.js`:
+- visible game rows are now Forza Horizon 5, Grand Theft Auto V, Hollow Knight: Silksong, and Elden Ring,
+- covers use the repo-local `assets/game-art` files rather than third-party hotlinks,
+- each row now rewires `_navActivate` to invoke the matching Home tile's existing launch handler,
+- fallback path launches the matching catalogue game directly if the Home tile handler is unavailable.
+
+This deliberately reuses the Home launch path so Stratus/local behavior remains single-source instead of duplicating cloud logic in the Guide.
+
+---
+
 ## 24. User communication / testing style
 
 The user generally wants:
