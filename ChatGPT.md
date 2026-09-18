@@ -819,6 +819,23 @@ Do not treat either handoff file as more authoritative than an explicit newer us
 
 Newest first. Short notes only; detail belongs in the commit.
 
+### 2026-09-18 — Home row now opens a game preview before launch
+
+Commits:
+- `66143b89ff82ad925493d447de3dc9049ac93e9d` adds the centered Xbox-style game preview panel.
+- `3c7a940e8897aaa2843287b5b1c99a7633564b84` moves Minecraft preview art to existing local repo assets.
+
+Behavior:
+- first Home-row game tiles no longer instantly launch,
+- selecting one opens a centered rounded panel inspired by the user's Xbox Store/game-info photo,
+- panel shows local cover/hero art, title, Stratus/local provider info, tags, short description, and facts,
+- Start calls the existing `activateTitle()` path, so cloud/local launch behavior remains single-source,
+- Close, backdrop tap, and controller B dismiss the preview,
+- panel is a Nav layer and has coarse-pointer/mobile layout rules.
+
+Guide/sidebar game rows are unchanged by this request.
+
+
 ### 2026-09-18 — touch navigation/mobile support pass
 
 Commit: `f1074061f4e04d46cc0fb33ebb3bafa6e042c48e`
