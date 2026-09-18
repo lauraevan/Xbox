@@ -63,6 +63,7 @@
 .sysnav-btn{
   width:5.05rem;
   height:5.05rem;
+  color:rgba(255,255,255,.55) !important;
   background:rgba(28,30,32,.62);
   backdrop-filter:none !important;
   box-shadow:none !important;
@@ -70,6 +71,7 @@
 .sysnav-btn:hover,
 .sysnav-btn.active,
 .sysnav-btn[data-focused]{
+  color:#fff !important;
   background:rgba(38,40,42,.76);
   transform:none !important;
 }
