@@ -294,3 +294,152 @@ body[data-transparency="reduced"] .backdrop-layer{ filter:none; opacity:.18; }
 
 /* safe-area calibration for panels that overscan */
 .stage{ padding:calc(var(--overscan, 0) * 1rem); }
+
+
+/* ═══════════════════════════════════════════════════════════
+   COARSE POINTER / TOUCH
+   Keeps the TV composition unchanged for mouse/controller while making the
+   same surfaces comfortable to tap and swipe on iPad/phones.
+   ═══════════════════════════════════════════════════════════ */
+@media (hover:none), (pointer:coarse){
+  html,body{
+    -webkit-text-size-adjust:100%;
+  }
+
+  button,
+  [data-nav]{
+    touch-action:manipulation;
+    -webkit-tap-highlight-color:transparent;
+    -webkit-touch-callout:none;
+  }
+
+  input,
+  textarea{
+    touch-action:manipulation;
+    user-select:text;
+    -webkit-user-select:text;
+  }
+
+  /* Native momentum scrolling for Xbox horizontal shelves. */
+  .ref-strip,
+  .console-horizontal-row,
+  .console-poster-grid,
+  .stratus-library-row,
+  .xstore-console-tabs,
+  .xstore-nav,
+  .xstore-row,
+  .store-row{
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior-x:contain;
+    scrollbar-width:none;
+  }
+
+  .ref-strip{
+    overflow-x:auto !important;
+    overflow-y:visible !important;
+    scroll-snap-type:x proximity;
+    touch-action:pan-x pinch-zoom;
+  }
+  .ref-strip::-webkit-scrollbar,
+  .console-horizontal-row::-webkit-scrollbar,
+  .console-poster-grid::-webkit-scrollbar,
+  .stratus-library-row::-webkit-scrollbar,
+  .xstore-console-tabs::-webkit-scrollbar{
+    display:none;
+  }
+  .ref-strip > *,
+  .console-horizontal-row > *,
+  .stratus-library-row > *{
+    scroll-snap-align:start;
+  }
+
+  /* 44px is the physical minimum only for touch. The TV-derived rem geometry
+     still controls desktop/controller mode. */
+  .sysnav-btn,
+  .status-btn,
+  .global-home-return{
+    min-width:44px !important;
+    min-height:44px !important;
+  }
+  .sysnav-btn svg{
+    width:max(2.42rem,22px) !important;
+    height:max(2.42rem,22px) !important;
+  }
+
+  .global-home-return{
+    left:max(10px,env(safe-area-inset-left)) !important;
+    top:max(10px,env(safe-area-inset-top)) !important;
+  }
+
+  /* The Guide is a true touch drawer instead of a TV-scaled postage stamp. */
+  .guide-panel{
+    left:max(8px,env(safe-area-inset-left)) !important;
+    top:max(8px,env(safe-area-inset-top)) !important;
+    bottom:max(8px,env(safe-area-inset-bottom)) !important;
+    width:min(92vw,480px) !important;
+  }
+  .guide-tabs{
+    gap:4px !important;
+    padding:10px 10px 0 !important;
+    overflow-x:auto;
+    overscroll-behavior-x:contain;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  .guide-tabs::-webkit-scrollbar{ display:none; }
+  .guide-tab{
+    flex:0 0 52px !important;
+    min-width:52px !important;
+    min-height:48px !important;
+  }
+  .guide-tab svg{
+    width:max(2.35rem,24px) !important;
+    height:max(2.35rem,24px) !important;
+  }
+  .guide-body{
+    padding:10px !important;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior-y:contain;
+  }
+  .grow{
+    min-height:54px !important;
+    padding:8px 10px !important;
+    gap:10px !important;
+  }
+  .grow-icon{
+    width:42px !important;
+    height:42px !important;
+  }
+  .grow-name{ font-size:max(1.7rem,16px) !important; }
+  .grow-meta{ font-size:max(1.2rem,12px) !important; }
+  .guide-quick{
+    gap:6px !important;
+    padding:8px 10px 10px !important;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+  .quick-btn{
+    min-width:56px !important;
+    min-height:48px !important;
+  }
+  .guide-hints{ display:none !important; }
+
+  /* Secondary-page controls should never require pixel-perfect finger taps. */
+  .console-side-item,
+  .console-tool-btn,
+  .console-top-tab,
+  .console-chip,
+  .console-key,
+  .console-settings-row,
+  .detail-actions .btn,
+  .library-game-menu button,
+  .xstore-console-tab,
+  .xstore-nav-btn{
+    min-height:48px !important;
+  }
+
+  .library-game-menu{
+    max-width:calc(100vw - 20px) !important;
+    touch-action:pan-y;
+  }
+}

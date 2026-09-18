@@ -261,16 +261,68 @@ function pollPads(){
   requestAnimationFrame(pollPads);
 }
 
-/* ───────── pointer support ─────────
-   A mouse should still work; hovering focuses, clicking activates. */
-document.addEventListener('pointermove', e => {
+/* ───────── pointer / touch support ─────────
+   Mouse hover follows focus. Touch and pen do not, because pointermove fires
+   continuously while a finger is swiping a horizontal Xbox rail. A clean tap
+   directly activates the controller-style item instead of requiring a second
+   tap after focus. */
+let touchTap = null;
+
+document.addEventListener('pointerdown', e => {
+  if (e.pointerType !== 'touch' && e.pointerType !== 'pen') return;
   const el = e.target.closest?.('[data-nav]');
-  if (el && el !== current && visible(el) && rootEl().contains(el)) setFocus(el, { silent:true });
+  touchTap = el && rootEl().contains(el)
+    ? { pointerId:e.pointerId, el, x:e.clientX, y:e.clientY, moved:false, at:performance.now() }
+    : null;
+}, { passive:true });
+
+document.addEventListener('pointermove', e => {
+  if (e.pointerType === 'touch' || e.pointerType === 'pen'){
+    if (touchTap && touchTap.pointerId === e.pointerId){
+      const dx = e.clientX - touchTap.x;
+      const dy = e.clientY - touchTap.y;
+      if (Math.hypot(dx, dy) > 11) touchTap.moved = true;
+    }
+    return;
+  }
+
+  const el = e.target.closest?.('[data-nav]');
+  if (el && el !== current && visible(el) && rootEl().contains(el))
+    setFocus(el, { silent:true });
+}, { passive:true });
+
+document.addEventListener('pointercancel', e => {
+  if (touchTap?.pointerId === e.pointerId) touchTap = null;
 }, { passive:true });
 
 document.addEventListener('click', e => {
   const el = e.target.closest?.('[data-nav]');
   if (!el || !rootEl().contains(el)) return;
+
+  const tapped = touchTap &&
+    touchTap.el === el &&
+    !touchTap.moved &&
+    performance.now() - touchTap.at < 1400;
+
+  if (tapped){
+    touchTap = null;
+    if (el !== current) setFocus(el, { silent:true });
+
+    /* A direct element click handler may already have handled the tap. Those
+       handlers call preventDefault(), so do not invoke the nav action twice. */
+    if (e.defaultPrevented) return;
+
+    e.preventDefault();
+    e.stopImmediatePropagation();
+
+    ring.classList.add('pop');
+    setTimeout(() => ring.classList.remove('pop'), 240);
+    window.Sound?.select();
+    el.dispatchEvent(new CustomEvent('nav:activate', { bubbles:true, detail:{ el } }));
+    if (typeof el._navActivate === 'function') el._navActivate(el);
+    return;
+  }
+
   if (el !== current) setFocus(el, { silent:true });
 });
 
