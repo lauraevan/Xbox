@@ -58,7 +58,7 @@ const COVER = {
   'Hollow Knight: Silksong': 'assets/game-art/silksong-cover.png',
   'Elden Ring': 'assets/game-art/elden-ring-cover.jpg',
   'Red Dead Redemption 2': 'assets/game-art/rdr2-cover.jpg',
-  'Minecraft': 'https://store-images.s-microsoft.com/image/apps.53095.13850085746326678.06e2dc5c-7997-46e9-a8e6-0e48b57cb13b.419e3c9d-9dd3-4a28-a9f3-a12350215871?h=1024&q=95&w=1024',
+  'Minecraft': 'assets/game-art/minecraft-cover.webp',
   'Fortnite': 'assets/game-art/fortnite-cover.jpg'
 };
 
@@ -68,7 +68,7 @@ const HERO = {
   'Hollow Knight: Silksong': 'assets/game-art/silksong-hero.jpg',
   'Elden Ring': 'assets/game-art/elden-ring-hero.jpg',
   'Red Dead Redemption 2': 'assets/game-art/rdr2-hero.jpg',
-  'Minecraft': 'https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/key-art/NewKeyArt_Header.jpg',
+  'Minecraft': 'assets/game-art/minecraft-hero.png',
   'Fortnite': 'assets/game-art/fortnite-hero.jpg'
 };
 
@@ -177,14 +177,41 @@ function ensureBadge(face, text){
 function setTileArtwork(tile, title){
   const src = COVER[title];
   if (!src) return;
-  const img = tile.querySelector('.ref-art img');
-  if (!img) return;
-  if (img.getAttribute('src') !== src) img.src = src;
+
+  const face = tile.querySelector('.tile-face');
+  if (!face) return;
+
+  let art = face.querySelector('.ref-art');
+  if (!art){
+    art = document.createElement('span');
+    art.className = 'ref-art';
+    face.prepend(art);
+  }
+
+  let img = art.querySelector('img');
+  if (!img){
+    img = document.createElement('img');
+    art.append(img);
+  }
+
   img.alt = '';
   img.loading = 'eager';
   img.decoding = 'async';
-  img.classList.add('loaded');
+  img.className = 'cover loaded home-row-cover';
   img.style.objectFit = 'cover';
+  img.style.display = 'block';
+  img.style.width = '100%';
+  img.style.height = '100%';
+  img.style.opacity = '1';
+  img.style.visibility = 'visible';
+
+  const resolved = new URL(src, document.baseURI).href;
+  if (img.src !== resolved) img.src = resolved;
+
+  requestAnimationFrame(() => {
+    if (!img.isConnected) return;
+    if (!img.src || img.naturalWidth === 0) img.src = resolved;
+  });
 }
 
 function patchTile(def){
