@@ -1,34 +1,63 @@
-/* Final Stratus transport pass.
-   This intentionally mirrors the working Synapse/Lovable Ember architecture:
-   browser -> Synapse backend proxy -> Stratus API, with direct Stratus embed
-   only after startGame succeeds. */
+/* Stratus transport pass for the Xbox replica.
+   Direct API target: https://stratus-api-2.onrender.com
+   Uses the official Stratus v1 session flow first, with the existing
+   Synapse/Lovable proxy routes retained only as a browser-CORS fallback. */
 (() => {
 'use strict';
 
 const original = window.StratusCloud;
 if (!original) return;
 
-const API_BASE = String(window.STRATUS_BASE || original.BASE || 'https://stratus-api-2.onrender.com').replace(/\/$/, '');
-const BACKENDS = [
+const API_BASE = String(
+  window.STRATUS_BASE ||
+  original.BASE ||
+  'https://stratus-api-2.onrender.com'
+).replace(/\/$/, '');
+
+// Stratus publishes this site key in its public API repository. It can be
+// overridden before this script loads with window.STRATUS_API_KEY.
+const API_KEY = String(
+  window.STRATUS_API_KEY ||
+  'stratus-api-synapsium'
+).trim();
+
+const PROXY_BACKENDS = [
   window.STRATUS_BACKEND,
   'https://synapse.educationcatlearningandtutoring.com/api/public/ember',
   'https://id-preview--6191b4a9-2b1b-4a95-95d1-3b21d04824e6.lovable.app/api/public/ember'
-].filter(Boolean).map(v => String(v).replace(/\?$/, ''))
-  .filter((v,i,a) => a.indexOf(v) === i);
+].filter(Boolean)
+  .map(v => String(v).replace(/\?$/, ''))
+  .filter((v, i, a) => a.indexOf(v) === i);
+
+const DIRECT_PATHS = {
+  create: '/cloud/v1/createSession',
+  queue:  '/cloud/v1/getQueue',
+  start:  '/cloud/v1/startGame',
+  ping:   '/cloud/v1/pingSession',
+  quit:   '/cloud/v1/quitSession'
+};
 
 let active = null;
 let pending = null;
 let starting = false;
 let heartbeat = null;
 let startedUuid = null;
-let activeBackend = null;
+let activeTransport = null;
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 const aborted = err => err?.name === 'AbortError';
 const log = (...args) => console.log('[Stratus/Xbox]', ...args);
 const warn = (...args) => console.warn('[Stratus/Xbox]', ...args);
 
-function endpoint(base, action, uuid){
+function directEndpoint(action, uuid){
+  const path = DIRECT_PATHS[action];
+  if (!path) throw new Error(`Unknown Stratus action: ${action}`);
+  const url = new URL(path, API_BASE);
+  if (action === 'queue' && uuid) url.searchParams.set('uuid', uuid);
+  return url.toString();
+}
+
+function proxyEndpoint(base, action, uuid){
   const url = new URL(base);
   url.searchParams.set('action', action);
   if (uuid) url.searchParams.set('uuid', uuid);
@@ -36,55 +65,95 @@ function endpoint(base, action, uuid){
 }
 
 async function readError(res){
-  let message = `Cloud backend returned ${res.status}`;
+  let message = `Stratus returned ${res.status}`;
   try {
     const text = await res.text();
     try {
       const json = JSON.parse(text);
       message = String(json?.error || json?.message || text || message);
-    } catch { if (text) message = text.slice(0,260); }
+    } catch {
+      if (text) message = text.slice(0, 260);
+    }
   } catch {}
   return message;
 }
 
-async function request(action, { method='POST', body, uuid, signal, backendOnly } = {}){
-  const list = backendOnly ? [backendOnly] : (activeBackend ? [activeBackend, ...BACKENDS.filter(b => b !== activeBackend)] : BACKENDS);
+function requestOptions(method, body, signal, direct){
+  const headers = {
+    'Accept':'application/json, application/x-ndjson, text/plain, */*'
+  };
+  if (direct && API_KEY) headers['x-api-key'] = API_KEY;
+  if (method !== 'GET') headers['Content-Type'] = 'application/json';
+
+  return {
+    method,
+    signal,
+    cache:'no-store',
+    headers,
+    ...(method === 'GET' ? {} : { body:JSON.stringify(body || {}) })
+  };
+}
+
+async function requestDirect(action, { method='POST', body, uuid, signal } = {}){
+  const url = directEndpoint(action, uuid);
+  log(`direct ${method} ${action}`, url);
+  const res = await fetch(url, requestOptions(method, body, signal, true));
+  if (!res.ok) throw new Error(await readError(res));
+  activeTransport = { type:'direct', base:API_BASE };
+  window.dispatchEvent(new CustomEvent('stratus:backend', {
+    detail:{ backend:API_BASE, transport:'direct', action }
+  }));
+  return res;
+}
+
+async function requestProxy(base, action, { method='POST', body, uuid, signal } = {}){
+  const url = proxyEndpoint(base, action, uuid);
+  log(`proxy ${method} ${action}`, base);
+  const res = await fetch(url, requestOptions(method, body, signal, false));
+  if (!res.ok) throw new Error(await readError(res));
+  activeTransport = { type:'proxy', base };
+  window.dispatchEvent(new CustomEvent('stratus:backend', {
+    detail:{ backend:base, transport:'proxy', action }
+  }));
+  return res;
+}
+
+async function request(action, options = {}){
+  // Once a session is created, keep all control traffic on the same
+  // transport so the UUID remains tied to the same Stratus session store.
+  if (activeTransport?.type === 'direct'){
+    return requestDirect(action, options);
+  }
+  if (activeTransport?.type === 'proxy'){
+    return requestProxy(activeTransport.base, action, options);
+  }
+
   let lastError = null;
 
-  for (const base of list){
+  // Prefer the actual Render deployment the user requested.
+  try {
+    return await requestDirect(action, options);
+  } catch (err){
+    if (aborted(err) && options.signal?.aborted) throw err;
+    lastError = err;
+    warn('direct API unavailable, trying compatibility proxy', err?.message || err);
+  }
+
+  // Static GitHub/RawGitHack deployments can be subject to browser CORS.
+  // Keep the known proxy paths as a fallback rather than breaking launch.
+  for (const base of PROXY_BACKENDS){
     try {
-      log(`${method} ${action}`, base, uuid || body?.game_key || '');
-      const res = await fetch(endpoint(base, action, uuid), {
-        method,
-        signal,
-        cache:'no-store',
-        headers:{
-          'Accept':'application/json, application/x-ndjson, text/plain, */*',
-          ...(method === 'GET' ? {} : {'Content-Type':'application/json'})
-        },
-        ...(method === 'GET' ? {} : { body:JSON.stringify(body || {}) })
-      });
-
-      if (!res.ok){
-        const message = await readError(res);
-        lastError = new Error(message);
-        warn(action, base, res.status, message);
-        // If this host clearly is not serving the proxy route, try the next one.
-        if ([404,405,500,502,503,504].includes(res.status)) continue;
-        throw lastError;
-      }
-
-      activeBackend = base;
-      window.dispatchEvent(new CustomEvent('stratus:backend', { detail:{ backend:base, action } }));
-      return res;
+      return await requestProxy(base, action, options);
     } catch (err){
-      if (aborted(err) && signal?.aborted) throw err;
+      if (aborted(err) && options.signal?.aborted) throw err;
       lastError = err;
-      warn(action, base, err?.message || err);
+      warn('proxy failed', base, err?.message || err);
     }
   }
 
-  throw new Error(`Could not reach the Synapse cloud backend. ${lastError?.message || 'All backend routes failed.'}`);
+  throw new Error(
+    `Could not reach Stratus at ${API_BASE}. ${lastError?.message || 'All transports failed.'}`
+  );
 }
 
 function statusText(msg, game){
@@ -108,8 +177,7 @@ async function waitForQueue(uuid, controller, game, onStatus){
       res = await request('queue', {
         method:'GET',
         uuid,
-        signal:controller.signal,
-        backendOnly:activeBackend
+        signal:controller.signal
       });
     } catch (err){
       if (aborted(err)) throw err;
@@ -156,6 +224,7 @@ async function createSession(game, controller, onStatus){
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
     let buffer = '';
+
     while (!finished && !controller.signal.aborted){
       const { value, done } = await reader.read();
       buffer += decoder.decode(value || new Uint8Array(), { stream:!done });
@@ -164,6 +233,7 @@ async function createSession(game, controller, onStatus){
       for (const line of lines) consume(line);
       if (done) break;
     }
+
     if (buffer.trim()) consume(buffer);
     try { await reader.cancel(); } catch {}
   }
@@ -176,17 +246,19 @@ async function createSession(game, controller, onStatus){
 async function startGame(uuid, controller){
   if (startedUuid === uuid) return;
   startedUuid = uuid;
+
   try {
     const res = await request('start', {
       method:'POST',
       body:{ uuid },
-      signal:controller.signal,
-      backendOnly:activeBackend
+      signal:controller.signal
     });
     const payload = await res.json();
     log('start ok', payload);
-    if (!payload?.signaling_ws || !Array.isArray(payload?.ice_servers))
+
+    if (!payload?.signaling_ws || !Array.isArray(payload?.ice_servers)){
       throw new Error('Stratus returned incomplete WebRTC credentials.');
+    }
     return payload;
   } catch (err){
     startedUuid = null;
@@ -201,17 +273,19 @@ function stopHeartbeat(){
   }
 }
 
-function ping(uuid){
-  if (!activeBackend) return Promise.resolve();
-  return fetch(endpoint(activeBackend,'ping'), {
-    method:'POST',
-    cache:'no-store',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({ uuid })
-  }).then(res => {
-    if (!res.ok) throw new Error(`heartbeat ${res.status}`);
-    log('heartbeat ok', uuid);
-  }).catch(err => warn('heartbeat failed', err?.message || err));
+async function ping(uuid){
+  try {
+    const res = await request('ping', {
+      method:'POST',
+      body:{ uuid }
+    });
+    const data = await res.json().catch(() => ({}));
+    window.dispatchEvent(new CustomEvent('stratus:ping', { detail:data }));
+    return data;
+  } catch (err){
+    warn('heartbeat failed', err?.message || err);
+    return null;
+  }
 }
 
 function startHeartbeat(uuid){
@@ -225,7 +299,9 @@ function launchSurface(game){
   const art = document.getElementById('launchArt');
   const title = document.getElementById('launchTitle');
   const sub = splash?.querySelector('.launch-sub');
-  if (art) art.style.backgroundImage = (game.image || game.cover) ? `url("${game.image || game.cover}")` : '';
+
+  if (art) art.style.backgroundImage =
+    (game.image || game.cover) ? `url("${game.image || game.cover}")` : '';
   if (title) title.textContent = game.name;
   if (sub) sub.textContent = 'Connecting to Xbox Cloud Gaming…';
   if (splash) splash.hidden = false;
@@ -239,10 +315,15 @@ function showPlayer(game, uuid){
   const hint = document.getElementById('playerHint');
   if (!player || !frame) throw new Error('Player surface is missing.');
 
-  if (!frame.dataset.originalSandbox)
+  if (!frame.dataset.originalSandbox){
     frame.dataset.originalSandbox = frame.getAttribute('sandbox') || '';
+  }
+
   frame.removeAttribute('sandbox');
-  frame.setAttribute('allow','autoplay *; fullscreen *; gamepad *; encrypted-media *; clipboard-write *; clipboard-read *; pointer-lock *; microphone *; camera *');
+  frame.setAttribute(
+    'allow',
+    'autoplay *; fullscreen *; gamepad *; encrypted-media *; clipboard-write *; clipboard-read *; pointer-lock *; microphone *; camera *'
+  );
   frame.referrerPolicy = 'unsafe-url';
   frame.tabIndex = 0;
   frame.src = `${API_BASE}/cloud/v1/embed?id=${encodeURIComponent(uuid)}`;
@@ -250,6 +331,7 @@ function showPlayer(game, uuid){
 
   player.hidden = false;
   player.classList.add('cloud-player');
+
   if (hint){
     hint.textContent = 'Press Esc or B to return to Xbox';
     hint.classList.remove('hide');
@@ -258,24 +340,43 @@ function showPlayer(game, uuid){
 
   window.Nav?.pushLayer?.(player);
   window.Nav?.hideRing?.();
+
   const focus = () => {
     try { frame.contentWindow?.focus?.(); } catch {}
     try { frame.focus?.(); } catch {}
   };
-  [60,250,800,1600,3000].forEach(ms => setTimeout(focus,ms));
-  window.Guide?.notify?.({ title:'Cloud game started', text:game.name, icon:'' });
+  [60,250,800,1600,3000].forEach(ms => setTimeout(focus, ms));
+
+  window.Guide?.notify?.({
+    title:'Cloud game started',
+    text:game.name,
+    icon:''
+  });
 }
 
 function restoreSandbox(){
   const frame = document.getElementById('playerFrame');
   if (!frame) return;
   const value = frame.dataset.originalSandbox;
+
   if (value !== undefined){
-    if (value) frame.setAttribute('sandbox',value);
+    if (value) frame.setAttribute('sandbox', value);
     else frame.removeAttribute('sandbox');
     delete frame.dataset.originalSandbox;
   }
   frame.onload = null;
+}
+
+async function endRemoteSession(uuid){
+  if (!uuid || !activeTransport) return;
+  try {
+    await request('quit', {
+      method:'POST',
+      body:{ uuid }
+    });
+  } catch (err){
+    warn('quit failed', err?.message || err);
+  }
 }
 
 async function quit(){
@@ -285,28 +386,29 @@ async function quit(){
   active = null;
   starting = false;
   stopHeartbeat();
+
   try { p?.controller?.abort?.(); } catch {}
   try { a?.controller?.abort?.(); } catch {}
 
   const uuid = a?.uuid || p?.uuid || startedUuid;
   startedUuid = null;
-  if (uuid && activeBackend){
-    fetch(endpoint(activeBackend,'quit'), {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({ uuid }),
-      cache:'no-store',
-      keepalive:true
-    }).catch(() => {});
-  }
+
+  await endRemoteSession(uuid);
 
   const splash = document.getElementById('launch');
   const player = document.getElementById('player');
   const frame = document.getElementById('playerFrame');
+
   if (splash) splash.hidden = true;
   if (frame) frame.src = 'about:blank';
   restoreSandbox();
-  if (player){ player.hidden = true; player.classList.remove('cloud-player'); }
+
+  if (player){
+    player.hidden = true;
+    player.classList.remove('cloud-player');
+  }
+
+  activeTransport = null;
   try { window.Nav?.popLayer?.(); } catch {}
   window.Nav?.setRingVisible?.(true);
   window.Nav?.restore?.();
@@ -320,7 +422,8 @@ async function play(game){
 
   starting = true;
   startedUuid = null;
-  activeBackend = null;
+  activeTransport = null;
+
   const controller = new AbortController();
   pending = { game, controller, uuid:null };
   const { splash, sub } = launchSurface(game);
@@ -328,42 +431,43 @@ async function play(game){
   try {
     const uuid = await createSession(game, controller, msg => {
       if (typeof msg?.uuid === 'string' && pending) pending.uuid = msg.uuid;
-      if (sub) sub.textContent = statusText(msg,game);
+      if (sub) sub.textContent = statusText(msg, game);
     });
+
     if (!uuid) throw new Error('Cloud session did not return an ID.');
     if (pending) pending.uuid = uuid;
 
     if (sub) sub.textContent = 'Starting stream…';
-    const session = await startGame(uuid,controller);
+    const session = await startGame(uuid, controller);
     if (controller.signal.aborted) return;
 
     startHeartbeat(uuid);
     active = { uuid, game, controller, session };
     pending = null;
+
     if (splash) splash.hidden = true;
-    showPlayer(game,uuid);
+    showPlayer(game, uuid);
   } catch (err){
     if (aborted(err) || controller.signal.aborted) return;
+
     warn('launch failed', err);
     const uuid = pending?.uuid || startedUuid;
-    if (uuid && activeBackend){
-      fetch(endpoint(activeBackend,'quit'), {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({ uuid }),
-        cache:'no-store'
-      }).catch(() => {});
-    }
+    await endRemoteSession(uuid);
+
     pending = null;
     startedUuid = null;
     stopHeartbeat();
-    if (sub) sub.textContent = `Could not start cloud game: ${err?.message || 'Unknown error'}`;
+
+    if (sub){
+      sub.textContent = `Could not start cloud game: ${err?.message || 'Unknown error'}`;
+    }
+
     window.Sound?.error?.();
     setTimeout(() => {
       if (splash) splash.hidden = true;
       window.Nav?.setRingVisible?.(true);
       window.Nav?.repaint?.();
-    },6000);
+    }, 6000);
   } finally {
     starting = false;
   }
@@ -372,38 +476,61 @@ async function play(game){
 window.addEventListener('nav:button', event => {
   if ((active || pending) && event.detail?.button === 'b') void quit();
 });
+
 document.addEventListener('keydown', event => {
   if (event.key === 'Escape' && (active || pending)){
     event.preventDefault();
     void quit();
   }
 });
+
 addEventListener('pagehide', () => {
   const uuid = active?.uuid || pending?.uuid || startedUuid;
-  if (!uuid || !activeBackend) return;
+  if (!uuid || !activeTransport) return;
+
+  const body = JSON.stringify({ uuid });
   try {
-    fetch(endpoint(activeBackend,'quit'), {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({ uuid }),
-      keepalive:true
-    }).catch(() => {});
+    if (activeTransport.type === 'direct'){
+      fetch(directEndpoint('quit'), {
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json',
+          'x-api-key':API_KEY
+        },
+        body,
+        keepalive:true
+      }).catch(() => {});
+    } else {
+      fetch(proxyEndpoint(activeTransport.base, 'quit'), {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body,
+        keepalive:true
+      }).catch(() => {});
+    }
   } catch {}
 });
 
 const upgraded = {
   ...original,
   BASE:API_BASE,
-  BACKENDS,
+  BACKENDS:PROXY_BACKENDS,
+  API_MODE:'direct-first',
   play,
   quit,
-  warm:() => Promise.allSettled(BACKENDS.map(base => fetch(base,{mode:'no-cors',cache:'no-store'})))
+  warm:() => Promise.allSettled([
+    fetch(API_BASE, { mode:'no-cors', cache:'no-store' }),
+    ...PROXY_BACKENDS.map(base => fetch(base, { mode:'no-cors', cache:'no-store' }))
+  ])
 };
-Object.defineProperties(upgraded,{
+
+Object.defineProperties(upgraded, {
   active:{ get:() => active },
   starting:{ get:() => starting },
-  backend:{ get:() => activeBackend }
+  backend:{ get:() => activeTransport?.base || null },
+  transport:{ get:() => activeTransport?.type || null }
 });
+
 window.StratusCloud = upgraded;
-log('backend pass ready', BACKENDS);
+log('direct-first pass ready', API_BASE);
 })();
