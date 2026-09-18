@@ -126,3 +126,49 @@
   padding:0 .8rem!important;
   opacity:1!important;
 }
+
+
+/* Focused game owns the large Home slot.
+   The first tile is no longer permanently oversized. Any selected game grows
+   to the same hero size and shrinks back when focus moves away. */
+.reference-home .ref-strip{
+  align-items:flex-end!important;
+}
+.reference-home .ref-tile,
+.reference-home .ref-tile.ref-hero{
+  width:18rem!important;
+  margin-top:4.5rem!important;
+  transition:
+    width .17s var(--ease-decel),
+    margin-top .17s var(--ease-decel)!important;
+}
+.reference-home .ref-tile .tile-face,
+.reference-home .ref-tile.ref-hero .tile-face{
+  width:18rem!important;
+  height:18rem!important;
+  transition:
+    width .17s var(--ease-decel),
+    height .17s var(--ease-decel)!important;
+}
+.reference-home .ref-tile[data-focused],
+.reference-home .ref-tile:hover{
+  width:22.5rem!important;
+  margin-top:0!important;
+  z-index:12!important;
+}
+.reference-home .ref-tile[data-focused] .tile-face,
+.reference-home .ref-tile:hover .tile-face{
+  width:22.5rem!important;
+  height:22.5rem!important;
+}
+
+/* Keep system/friends tiles at their intended size unless they are actually
+   the currently selected tile. */
+.reference-home .ref-friends:not([data-focused]):not(:hover){
+  width:21.5rem!important;
+  margin-top:.5rem!important;
+}
+.reference-home .ref-friends:not([data-focused]):not(:hover) .tile-face{
+  width:21.5rem!important;
+  height:21.5rem!important;
+}
