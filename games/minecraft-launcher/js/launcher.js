@@ -268,7 +268,7 @@
   var copyBtn = $(".copy-btn");
   if (copyBtn) copyBtn.addEventListener("click", function (e) {
     e.stopPropagation();
-    var name = "EvanEnderDragon1";
+    var name = "guest";
     if (navigator.clipboard) navigator.clipboard.writeText(name).catch(function () {});
     copyBtn.classList.add("copied");
     copyBtn.title = "Copied!";
@@ -317,7 +317,7 @@
     accountBtn.addEventListener("click", function (e) {
       e.stopPropagation();
       openMenu(accountBtn, [
-        { label: "EvanEnderDragon1", onClick: function () {} },
+        { label: "guest", onClick: function () {} },
         { sep: true },
         { label: "Manage account", onClick: function () { window.open("https://account.microsoft.com", "_blank", "noopener"); } },
         { label: "Switch account", onClick: function () {} },
