@@ -1,4 +1,7 @@
-const { Readable } = require("node:stream");
+import { Readable } from "node:stream";
+import { createRequire } from "node:module";
+
+const require = createRequire(import.meta.url);
 
 /* Ported from synapseubg/src/routes/api/public/ember.ts. Keep the upstream
    and action map aligned with Synapse, but never copy its credential into
@@ -57,7 +60,7 @@ async function relay(res, upstream, type) {
   }
 }
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   applyHeaders(res);
   if (req.method === "OPTIONS") {
     res.statusCode = 204;
