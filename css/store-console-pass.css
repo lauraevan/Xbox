@@ -604,3 +604,92 @@
     font-size:2.45rem;
   }
 }
+
+
+/* Living Store discovery rows ------------------------------------------------ */
+.xstore-discovery-home{
+  padding-bottom:10rem!important;
+}
+.xstore-shelf{
+  position:relative;
+}
+.xstore-shelf-head{
+  align-items:flex-end!important;
+}
+.xstore-shelf-kicker{
+  margin-bottom:.5rem;
+  color:#9bf00b;
+  font-size:.92rem;
+  line-height:1;
+  font-weight:850;
+  letter-spacing:.12rem;
+}
+.xstore-shelf-motion{
+  display:inline-flex;
+  align-items:center;
+  gap:.65rem;
+  margin-bottom:.15rem;
+  color:rgba(255,255,255,.38);
+  font-size:.9rem;
+  font-weight:750;
+  letter-spacing:.08rem;
+}
+.xstore-shelf-motion > span:first-child{
+  width:2.7rem;
+  height:.2rem;
+  overflow:hidden;
+  border-radius:1rem;
+  background:rgba(255,255,255,.12);
+  position:relative;
+}
+.xstore-shelf-motion > span:first-child::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  width:45%;
+  border-radius:inherit;
+  background:#9bf00b;
+  animation:xstoreAutoIndicator 2.2s ease-in-out infinite;
+}
+@keyframes xstoreAutoIndicator{
+  0%{ transform:translateX(-110%); }
+  55%,100%{ transform:translateX(240%); }
+}
+.xstore-row[data-auto-rotate="1"]{
+  scroll-behavior:smooth;
+  scroll-snap-type:x proximity;
+  overscroll-behavior-inline:contain;
+  -webkit-overflow-scrolling:touch;
+  mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 4rem),transparent 100%);
+  -webkit-mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 4rem),transparent 100%);
+}
+.xstore-row[data-auto-rotate="1"] .store-game{
+  scroll-snap-align:start;
+}
+.xstore-row.xstore-row-auto-moving .store-cover{
+  transition:transform .7s cubic-bezier(.2,.8,.2,1);
+}
+.xstore-row.xstore-row-auto-moving .store-game:not([data-focused]) .store-cover{
+  transform:translateZ(0) scale(.992);
+}
+.xstore-row[data-auto-rotate="1"]:hover,
+.xstore-row[data-auto-rotate="1"]:focus-within{
+  mask-image:none;
+  -webkit-mask-image:none;
+}
+.xstore-shelf:nth-of-type(odd) .xstore-shelf-title{
+  letter-spacing:-.025em;
+}
+.xstore-shelf-title{
+  font-size:2.35rem!important;
+  font-weight:650!important;
+}
+.xstore-shelf-sub{
+  max-width:60rem;
+  color:rgba(255,255,255,.5)!important;
+}
+@media (prefers-reduced-motion: reduce){
+  .xstore-shelf-motion{ display:none; }
+  .xstore-row[data-auto-rotate="1"]{ scroll-behavior:auto; }
+  .xstore-shelf-motion > span:first-child::after{ animation:none; }
+}

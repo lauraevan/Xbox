@@ -8,6 +8,7 @@ const root = path.resolve(here, '..');
 const out = path.join(root, 'dist');
 
 const protectedFiles = new Set([
+  'js/store.js',
   'js/nav.js',
   'js/stratus.js',
   'js/stratus-backend-pass.js',

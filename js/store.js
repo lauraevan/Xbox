@@ -34,6 +34,8 @@ let query = '';
 let product = null;
 let lastRoot = null;
 let selectedHomeGame = null;
+let autoRotateTimer = null;
+let autoRotateCursor = 0;
 
 const lower = value => String(value || '').toLowerCase();
 const profileId = () => String(window.State?.data?.profileId || 'p1');
@@ -273,15 +275,89 @@ function buildHomeGallery(root, list){
   paintHomeSelection(root, first);
 }
 
-function shelf(title, list, { wide=false, subtitle='' } = {}){
+function hasAnyTag(game, tags){
+  const set = new Set((game?.tags || []).map(lower));
+  return tags.some(tag => set.has(lower(tag)));
+}
+
+function mixByTags(seed, tags, fallbackSeed=seed){
+  const pool = games.filter(game => hasAnyTag(game, tags));
+  return shuffled(seed, pool.length >= 6 ? pool : shuffled(fallbackSeed)).slice(0, 12);
+}
+
+function dailySeed(){
+  const now = new Date();
+  return Number(`${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}`);
+}
+
+function stopAutoRows(){
+  if (autoRotateTimer !== null){
+    clearInterval(autoRotateTimer);
+    autoRotateTimer = null;
+  }
+}
+
+function startAutoRows(root){
+  stopAutoRows();
+  if (!root || window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches) return;
+
+  const rows = [...root.querySelectorAll('.xstore-row[data-auto-rotate="1"]')]
+    .filter(row => row.scrollWidth > row.clientWidth + 8);
+  if (!rows.length) return;
+
+  const pauseRow = row => {
+    if (!row) return;
+    row.dataset.autoPauseUntil = String(Date.now() + 7000);
+  };
+
+  root.querySelectorAll('.xstore-row[data-auto-rotate="1"]').forEach(row => {
+    row.addEventListener('pointerdown', () => pauseRow(row), { passive:true });
+    row.addEventListener('wheel', () => pauseRow(row), { passive:true });
+    row.addEventListener('touchstart', () => pauseRow(row), { passive:true });
+  });
+
+  autoRotateCursor = 0;
+  autoRotateTimer = setInterval(() => {
+    if (root.hidden || mode !== 'home' || product || !rows.length) return;
+
+    const row = rows[autoRotateCursor % rows.length];
+    autoRotateCursor++;
+
+    if (!row?.isConnected) return;
+    if (row.contains(document.activeElement)) return;
+    if (row.matches(':hover')) return;
+    if (Number(row.dataset.autoPauseUntil || 0) > Date.now()) return;
+
+    const card = row.querySelector('.store-game');
+    if (!card) return;
+
+    const styles = getComputedStyle(row);
+    const gap = parseFloat(styles.columnGap || styles.gap || '0') || 0;
+    const step = card.getBoundingClientRect().width + gap;
+    const max = Math.max(0, row.scrollWidth - row.clientWidth);
+    const atEnd = row.scrollLeft >= max - Math.max(8, step * .35);
+    const next = atEnd ? 0 : Math.min(max, row.scrollLeft + step * 2);
+
+    row.classList.add('xstore-row-auto-moving');
+    row.scrollTo({ left:next, behavior:'smooth' });
+    setTimeout(() => row.classList.remove('xstore-row-auto-moving'), 900);
+  }, 2200);
+}
+
+function shelf(title, list, { wide=false, subtitle='', auto=true, kicker='DISCOVER' } = {}){
   const section = el('section', 'xstore-shelf');
   const head = el('div', 'xstore-shelf-head');
   const copy = el('div');
+  copy.append(el('div', 'xstore-shelf-kicker', escapeHtml(kicker)));
   copy.append(el('h2', 'xstore-shelf-title', escapeHtml(title)));
   if (subtitle) copy.append(el('div', 'xstore-shelf-sub', escapeHtml(subtitle)));
+  const motion = el('span', 'xstore-shelf-motion');
+  motion.innerHTML = '<span></span><span>AUTO</span>';
   head.append(copy);
+  if (auto) head.append(motion);
   section.append(head);
   const row = el('div', `xstore-row${wide ? ' wide' : ''}`);
+  if (auto) row.dataset.autoRotate = '1';
   list.forEach(game => row.append(storeCard(game, { compact:!wide, wide })));
   section.append(row);
   return section;
@@ -342,23 +418,50 @@ function buildDeals(list){
 }
 
 function renderHome(root){
-  const content = el('div', 'xstore-content');
+  const content = el('div', 'xstore-content xstore-discovery-home');
   root.querySelector('.xstore-main').append(content);
 
   const featured = shuffled(37).slice(0, 6);
   buildHomeGallery(root, featured);
 
   const deals = shuffled(211).filter(game => dealFor(game)).slice(0, 10);
-  const coming = games.slice(0, 7);
-  const newGames = shuffled(73).slice(0, 10);
-  const actionGames = byTag('Action').slice(0, 10);
-  const owned = games.filter(g => Cloud.owns(g)).slice(0, 10);
+  const recommended = shuffled(401).slice(0, 12);
+  const quickPlay = mixByTags(509, ['Easy','Casual','Arcade','Indie'], 510);
+  const actionShooter = mixByTags(613, ['Action','Shooting','Fighting'], 614);
+  const racingDriving = mixByTags(719, ['Racing','Sports','Simulation'], 720);
+  const puzzleStrategy = mixByTags(823, ['Puzzle','Strategy','Challenge'], 824);
+  const daily = shuffled(dailySeed()).slice(0, 12);
+  const trending = mixByTags(929, ['Multiplayer','Online','3A'], 930);
+  const classics = mixByTags(1031, ['3A','Adventure','RPG'], 1032);
+  const owned = games.filter(g => Cloud.owns(g)).slice(0, 12);
 
   content.append(buildDeals(deals));
-  content.append(shelf('Games coming soon', coming, { wide:true }));
-  if (owned.length) content.append(shelf('From your library', owned, { subtitle:'Ready to play with cloud gaming' }));
-  content.append(shelf('New games', newGames));
-  content.append(shelf('Most played', actionGames));
+  content.append(shelf('Games we recommend', recommended, {
+    subtitle:'Hand-picked from the cloud catalogue',
+    kicker:'FOR YOU'
+  }));
+  content.append(shelf('Quick play', quickPlay, {
+    subtitle:'Jump in fast without overthinking it',
+    kicker:'PLAY NOW'
+  }));
+  if (owned.length) content.append(shelf('Continue from your library', owned, {
+    subtitle:'Ready to stream',
+    kicker:'YOUR GAMES'
+  }));
+  content.append(shelf('Action & shooter', actionShooter, { kicker:'HIGH ENERGY' }));
+  content.append(shelf('Racing & driving', racingDriving, { wide:true, kicker:'FULL SPEED' }));
+  content.append(shelf('Puzzle & strategy', puzzleStrategy, { kicker:'THINK AHEAD' }));
+  content.append(shelf('Daily picks', daily, {
+    subtitle:'A fresh mix every day',
+    kicker:'TODAY'
+  }));
+  content.append(shelf('Trending now', trending, { kicker:'POPULAR' }));
+  content.append(shelf('All-time favorites', classics, {
+    subtitle:'Big games worth coming back to',
+    kicker:'CLASSICS'
+  }));
+
+  requestAnimationFrame(() => startAutoRows(root));
 }
 
 function renderBrowse(root, label){
@@ -431,6 +534,7 @@ function modeLabel(){
 
 function renderShell(root){
   if (!root) return;
+  stopAutoRows();
   lastRoot = root;
   closeProduct();
   root.classList.add('reference-store');
