@@ -326,9 +326,9 @@ async function applyHome(){
 }
 
 function confirmRemove(game){
-  const message = 'Are you sure you want to remove this game from your homescreen';
+  const fallbackMessage = `Remove ${game.name} from Home?`;
   if (!window.App?.modal){
-    if (confirm(message + '?')){
+    if (confirm(fallbackMessage)){
       removeFromHome(game);
       void applyHome();
     }
@@ -336,18 +336,18 @@ function confirmRemove(game){
   }
 
   window.App.modal({
-    title: message,
-    text: game.name + ' will stay in your library and can be added back anytime.',
+    title:'Remove from Home?',
+    text:`${game.name} will stay in My games & apps. You can add it back to Home anytime.`,
     actions:[
       {
-        label:'Yes',
+        label:'Remove',
         onSelect:() => {
           removeFromHome(game);
-          window.App?.toast?.('Removed from Home Screen', game.name);
+          window.App?.toast?.('Removed from Home', game.name);
           void applyHome();
         }
       },
-      { label:'No' }
+      { label:'Cancel' }
     ]
   });
 }
