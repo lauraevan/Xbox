@@ -17,6 +17,24 @@ const LOCAL_ART_MANIFEST = 'assets/stratus-covers/manifest.json';
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 const isAbort = err => err?.name === 'AbortError';
 
+function errorText(value, fallback='Cloud backend error'){
+  if (typeof value === 'string' && value.trim()) return value.trim();
+  if (value instanceof Error && value.message) return value.message;
+  if (value && typeof value === 'object'){
+    for (const key of ['message','error','detail','reason','statusText']){
+      if (value[key] === value) continue;
+      const nested = errorText(value[key], '');
+      if (nested) return nested;
+    }
+    try {
+      const json = JSON.stringify(value);
+      if (json && json !== '{}') return json;
+    } catch {}
+  }
+  if (value != null && String(value) !== '[object Object]') return String(value);
+  return fallback;
+}
+
 let catalogue = null;
 let cataloguePromise = null;
 let localArtwork = null;
@@ -177,7 +195,7 @@ async function backend(action, { method='POST', body, uuid, signal } = {}){
       const text = await res.text();
       try {
         const json = JSON.parse(text);
-        message = json?.error || json?.message || text || message;
+        message = errorText(json?.error ?? json?.message ?? json, text || message);
       } catch { if (text) message = text.slice(0, 240); }
     } catch {}
     throw new Error(message);
@@ -225,7 +243,7 @@ async function waitForQueue(uuid, controller, game, onStatus){
     }
 
     onStatus?.(msg);
-    if (msg.status === 'error') throw new Error(msg.error || 'Cloud session failed');
+    if (msg.status === 'error') throw new Error(errorText(msg.error ?? msg.message ?? msg, 'Cloud session failed'));
     if (msg.status === 'finished_queue') return msg.uuid || uuid;
     if (msg.status === 'queue') continue;
   }
@@ -247,7 +265,7 @@ async function createSession(game, controller, onStatus){
       let msg; try { msg = JSON.parse(line); } catch { continue; }
       if (typeof msg.uuid === 'string') uuid = msg.uuid;
       onStatus?.(msg);
-      if (msg.status === 'error') throw new Error(msg.error || 'Cloud session failed');
+      if (msg.status === 'error') throw new Error(errorText(msg.error ?? msg.message ?? msg, 'Cloud session failed'));
       if (msg.status === 'finished_queue') finished = true;
     }
     if (!uuid) throw new Error('Stratus did not return a session ID.');
@@ -272,7 +290,7 @@ async function createSession(game, controller, onStatus){
       let msg; try { msg = JSON.parse(line); } catch { continue; }
       if (typeof msg.uuid === 'string') uuid = msg.uuid;
       onStatus?.(msg);
-      if (msg.status === 'error') throw new Error(msg.error || 'Cloud session failed');
+      if (msg.status === 'error') throw new Error(errorText(msg.error ?? msg.message ?? msg, 'Cloud session failed'));
       if (msg.status === 'finished_queue'){
         finished = true;
         break;
@@ -285,7 +303,7 @@ async function createSession(game, controller, onStatus){
       const msg = JSON.parse(buffer);
       if (typeof msg.uuid === 'string') uuid = msg.uuid;
       onStatus?.(msg);
-      if (msg.status === 'error') throw new Error(msg.error || 'Cloud session failed');
+      if (msg.status === 'error') throw new Error(errorText(msg.error ?? msg.message ?? msg, 'Cloud session failed'));
       if (msg.status === 'finished_queue') finished = true;
     } catch (err){
       if (err instanceof SyntaxError) {} else throw err;
