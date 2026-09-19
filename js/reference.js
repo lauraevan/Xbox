@@ -168,13 +168,11 @@ const FRIENDS_MARK = `
 </svg>`;
 
 function friendsTile(){
-  const btn = el('button', 'tile tile-sm ref-tile ref-friends');
-  btn.dataset.nav = '';
-  btn.dataset.ringRadius = '.08rem';
-  btn.setAttribute('aria-label', 'Friends & community');
-  const face = el('span', 'tile-face');
-  face.innerHTML = `<span class="ref-friends-icon">${FRIENDS_MARK}</span>`;
-  btn.append(face, el('span', 'tile-label', 'Friends & community'));
+  const btn = refTile({ name:'Friends & community' });
+  btn.classList.add('ref-friends');
+  btn.removeAttribute('data-ref-title');
+  const face = btn.querySelector('.tile-face');
+  if (face) face.innerHTML = `<span class="ref-friends-icon">${FRIENDS_MARK}</span>`;
   btn._navActivate = () => window.Guide?.open?.('people');
   return btn;
 }

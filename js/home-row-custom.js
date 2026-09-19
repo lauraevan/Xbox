@@ -15,7 +15,7 @@ const COVER = {
   'Hollow Knight: Silksong': 'assets/game-art/silksong-cover.png',
   'Elden Ring': 'assets/game-art/elden-ring-cover.jpg',
   'Red Dead Redemption 2': 'assets/game-art/rdr2-cover.jpg',
-  'Minecraft': 'assets/game-art/minecraft-cover.webp',
+  'Minecraft': 'assets/game-art/minecraft-cover-user.jpg',
   'Fortnite': 'assets/game-art/fortnite-cover.jpg'
 };
 
@@ -25,7 +25,7 @@ const HERO = {
   'Hollow Knight: Silksong': 'assets/game-art/silksong-hero.jpg',
   'Elden Ring': 'assets/game-art/elden-ring-hero.jpg',
   'Red Dead Redemption 2': 'assets/game-art/rdr2-hero.jpg',
-  'Minecraft': 'assets/game-art/minecraft-hero.png',
+  'Minecraft': 'assets/game-art/minecraft-hero-user.jpg',
   'Fortnite': 'assets/game-art/fortnite-hero.jpg'
 };
 
