@@ -146,7 +146,7 @@ async function ownedGames(){
 }
 
 function backendUrl(action, uuid){
-  const url = new URL(BACKEND);
+  const url = new URL(BACKEND, window.location.href);
   url.searchParams.set('action', action);
   if (uuid) url.searchParams.set('uuid', uuid);
   return url.toString();
