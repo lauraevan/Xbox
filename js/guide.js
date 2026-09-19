@@ -28,6 +28,8 @@ const TABS = [
 let activeTab = 'profile';
 let open = false;
 let notifications = [];
+let peopleView = 'list';
+let peopleSearchQuery = '';
 
 const guide = $('#guide');
 const tabs  = $('#guideTabs');
@@ -196,6 +198,56 @@ function drawBody(){
 
 
   if (activeTab === 'people'){
+    if (peopleView === 'search'){
+      body.append(header('Find someone', 'Search by Xbox gamertag'));
+
+      const back = peopleAction(
+        ICON.back,
+        'Back to People',
+        '',
+        '',
+        () => { peopleView = 'list'; peopleSearchQuery = ''; drawBody(); window.Nav.restore(); }
+      );
+      body.append(back);
+
+      const wrap = el('div', 'people-search-wrap');
+      wrap.innerHTML = `<span class="people-search-icon">${ICON.search}</span>`;
+      const input = document.createElement('input');
+      input.className = 'people-search-input';
+      input.type = 'search';
+      input.placeholder = 'Search for a gamertag';
+      input.autocomplete = 'off';
+      input.spellcheck = false;
+      input.setAttribute('aria-label','Search for a gamertag');
+      wrap.append(input);
+      body.append(wrap);
+
+      const results = el('div', 'people-search-results');
+      body.append(results);
+
+      const paint = () => {
+        peopleSearchQuery = input.value.trim().toLowerCase();
+        results.innerHTML = '';
+        if (!peopleSearchQuery){
+          results.append(el('p','guide-sub','Start typing a gamertag.'));
+          return;
+        }
+        const pool = [...PEOPLE_FRIENDS, ...PEOPLE_SUGGESTIONS]
+          .filter(person => person.name.toLowerCase().includes(peopleSearchQuery));
+        if (!pool.length){
+          results.append(el('p','guide-sub','No players found.'));
+          return;
+        }
+        pool.forEach(person => results.append(peopleRow(person, { suggestion:true })));
+        window.Nav?.repaint?.();
+      };
+
+      input.addEventListener('input', paint);
+      paint();
+      window.Nav.restore();
+      return;
+    }
+
     const online = PEOPLE_FRIENDS.filter(friend => friend.online);
     body.append(header('People', `${online.length} friends online`));
 
@@ -221,9 +273,10 @@ function drawBody(){
       'Search by Xbox gamertag',
       '',
       () => {
-        const query = prompt('Find someone on Xbox by gamertag');
-        if (!query) return;
-        window.App?.toast?.('Find someone', `Searching for ${query}`);
+        peopleView = 'search';
+        peopleSearchQuery = '';
+        drawBody();
+        requestAnimationFrame(() => body.querySelector('.people-search-input')?.focus?.());
       }
     ));
 
@@ -413,6 +466,7 @@ function drawHints(){
 function selectTab(id){
   if (id === activeTab) return;
   activeTab = id;
+  if (id === 'people'){ peopleView = 'list'; peopleSearchQuery = ''; }
   drawRail(); drawBody();
   window.Nav.focusFirst('.guide-tab.active');
 }
@@ -432,6 +486,7 @@ function open_(tab){
   open = true;
   document.body.classList.add('guide-open');
   if (tab) activeTab = tab;
+  if (tab === 'people'){ peopleView = 'list'; peopleSearchQuery = ''; }
   guide.hidden = false;
   guide.classList.remove('out');
   window.Nav.pushLayer(guide);
