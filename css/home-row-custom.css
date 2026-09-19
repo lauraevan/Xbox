@@ -542,3 +542,9 @@
    it. Measured since: the outer tile already lands on the row baseline, so
    the nudge was pushing the face 7px low and past the row's bottom edge.
    The face shares .ref-tile geometry and needs no offset. */
+
+
+/* Barely-there edge on first-row game covers so they separate from bright art. */
+.reference-home .ref-strip .ref-tile[data-ref-title]:not(.ref-friends) .tile-face{
+  box-shadow:inset 0 0 0 .08rem rgba(0,0,0,.48)!important;
+}
