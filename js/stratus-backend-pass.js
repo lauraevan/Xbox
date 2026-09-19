@@ -11,8 +11,7 @@ if (!original) return;
 const API_BASE = String(window.STRATUS_BASE || original.BASE || 'https://stratus-api-2.onrender.com').replace(/\/$/, '');
 const BACKENDS = [
   window.STRATUS_BACKEND,
-  'https://synapse.educationcatlearningandtutoring.com/api/public/ember',
-  'https://id-preview--6191b4a9-2b1b-4a95-95d1-3b21d04824e6.lovable.app/api/public/ember'
+  '/api/stratus'
 ].filter(Boolean).map(v => String(v).replace(/\?$/, ''))
   .filter((v,i,a) => a.indexOf(v) === i);
 
@@ -84,7 +83,7 @@ async function request(action, { method='POST', body, uuid, signal, backendOnly 
     }
   }
 
-  throw new Error(`Could not reach the Synapse cloud backend. ${lastError?.message || 'All backend routes failed.'}`);
+  throw new Error(`Could not reach the Xbox Stratus backend. ${lastError?.message || 'All backend routes failed.'}`);
 }
 
 function statusText(msg, game){
