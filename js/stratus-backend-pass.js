@@ -8,9 +8,15 @@ const original = window.StratusCloud;
 if (!original) return;
 
 const API_BASE = String(window.STRATUS_BASE || original.BASE || 'https://stratus-api-2.onrender.com').replace(/\/$/, '');
+const SYNAPSE_BACKEND = String(
+  window.STRATUS_SYNAPSE_BACKEND ||
+  'https://synapse.educationcatlearningandtutoring.com/api/public/ember'
+).replace(/\?$/, '');
+
 const BACKENDS = [
   window.STRATUS_BACKEND,
-  '/api/stratus'
+  '/api/stratus',
+  SYNAPSE_BACKEND
 ].filter(Boolean).map(v => String(v).replace(/\?$/, ''))
   .filter((v,i,a) => a.indexOf(v) === i);
 
