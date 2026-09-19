@@ -379,7 +379,6 @@ function confirmRemove(game, sourceTile){
   const copy = document.createElement('div');
   copy.className = 'home-remove-confirm-copy';
   copy.innerHTML = `
-    <span class="home-remove-confirm-kicker">HOME</span>
     <h2 id="home-remove-confirm-title">Remove ${String(game.name || 'this game')} from Home?</h2>
     <p>This only removes the tile from Home. The game stays in My games &amp; apps, so you can add it back anytime.</p>
   `;
