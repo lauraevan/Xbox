@@ -330,14 +330,19 @@ was 400×400 at **7,513 bytes**, an order of magnitude below every sibling cover
 in that row (52KB–660KB), so it fell apart into JPEG smear at tile size. Its
 hero was worse: 419×196 for a 1920-wide backdrop.
 
-Both now come from `games/minecraft-launcher/assets/hero.webp`, the clean
-official Java Edition render already vendored for the launcher — no logo burned
-in, no play-button overlay, no UI bar, unlike `minecraft-hero.png`, which is a
-video thumbnail and is what I reached for first. The cover is a square crop at
-the render's native 500px height (no upscaling) with
-`assets/ui/minecraft-logo.png`, the official lockup, composited over a soft top
-scrim so it reads against the sky. `minecraft-cover-keyart.jpg` 500×500,
-`minecraft-hero-keyart.jpg` 1170×500.
+**The owner has since put the original cover back, and that decision stands.**
+`COVER['Minecraft']` is `minecraft-cover-user.jpg` again — the 400×400 file.
+Do not "fix" it again on file-size grounds; it is a deliberate choice, and I
+had already replaced it twice against their wishes. Only the backdrop moved:
+`HERO['Minecraft']` is `minecraft-hero-keyart.jpg`, 1170×500, taken from
+`games/minecraft-launcher/assets/hero.webp` — the clean official Java Edition
+render vendored for the launcher, with no logo burned in, no play-button
+overlay and no UI bar, unlike `assets/game-art/minecraft-hero.png`, which is a
+video thumbnail and is what I reached for first.
+
+`minecraft-cover-keyart.jpg` (500×500, the render cropped square with the
+official logo lockup over a scrim) is still in the repo, unreferenced, if the
+owner ever wants it.
 
 Worth knowing: `games/minecraft-launcher/assets/` has better Minecraft source
 art than `assets/game-art/` does. `hero-art.png` there is byte-identical to
