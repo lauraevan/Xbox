@@ -7,7 +7,7 @@ const HEADERS = {
 
 function decodeHtml(value = ''){
   return String(value)
-    .replace(/&#(\\d+);/g, (_, n) => String.fromCodePoint(Number(n)))
+    .replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Number(n)))
     .replace(/&#x([0-9a-f]+);/gi, (_, n) => String.fromCodePoint(parseInt(n, 16)))
     .replace(/&amp;/g, '&')
     .replace(/&quot;/g, '"')
@@ -17,13 +17,14 @@ function decodeHtml(value = ''){
 }
 
 function meta(html, key){
-  const patterns = [
-    new RegExp('<meta[^>]+(?:property|name)=["\\\']' + key + '["\\\'][^>]+content=["\\\']([^"\\\']+)["\\\'][^>]*>', 'i'),
-    new RegExp('<meta[^>]+content=["\\\']([^"\\\']+)["\\\'][^>]+(?:property|name)=["\\\']' + key + '["\\\'][^>]*>', 'i')
-  ];
-  for (const pattern of patterns){
-    const match = html.match(pattern);
-    if (match?.[1]) return decodeHtml(match[1].trim());
+  const keyPattern = new RegExp("(?:property|name)=[\"']" + key + "[\"']", 'i');
+  const contentPattern = /content=["']([^"']+)["']/i;
+
+  for (const match of html.matchAll(/<meta\b[^>]*>/gi)){
+    const tag = match[0];
+    if (!keyPattern.test(tag)) continue;
+    const content = tag.match(contentPattern);
+    if (content?.[1]) return decodeHtml(content[1].trim());
   }
   return '';
 }
@@ -31,15 +32,14 @@ function meta(html, key){
 function collectArticleUrls(html){
   const out = [];
   const seen = new Set();
-  const hrefs = html.matchAll(/href=["']([^"']+)["']/gi);
 
-  for (const match of hrefs){
+  for (const match of html.matchAll(/href=["']([^"']+)["']/gi)){
     let url;
     try { url = new URL(match[1], SOURCE); }
     catch { continue; }
 
     if (url.hostname !== 'news.xbox.com') continue;
-    if (!/^\\/en-us\\/20\\d{2}\\/\\d{2}\\/\\d{2}\\/[a-z0-9][^?#]*\\/?$/i.test(url.pathname)) continue;
+    if (!/^\/en-us\/20\d{2}\/\d{2}\/\d{2}\/[a-z0-9][^?#]*\/?$/i.test(url.pathname)) continue;
 
     url.hash = '';
     url.search = '';
@@ -55,15 +55,15 @@ function collectArticleUrls(html){
 
 async function loadStory(url){
   const response = await fetch(url, {
-    headers: HEADERS,
-    cache: 'no-store',
-    signal: AbortSignal.timeout(8000)
+    headers:HEADERS,
+    cache:'no-store',
+    signal:AbortSignal.timeout(8000)
   });
   if (!response.ok) throw new Error('Xbox Wire article returned ' + response.status);
 
   const html = await response.text();
   const title = meta(html, 'og:title')
-    .replace(/\\s*-\\s*XBOX Wire\\s*$/i, '')
+    .replace(/\s*-\s*XBOX Wire\s*$/i, '')
     .trim();
   const image = meta(html, 'og:image');
   const description = meta(html, 'og:description');
@@ -84,9 +84,9 @@ export default async function handler(req, res){
 
   try {
     const page = await fetch(SOURCE, {
-      headers: HEADERS,
-      cache: 'no-store',
-      signal: AbortSignal.timeout(8000)
+      headers:HEADERS,
+      cache:'no-store',
+      signal:AbortSignal.timeout(8000)
     });
     if (!page.ok) throw new Error('Xbox Wire returned ' + page.status);
 
