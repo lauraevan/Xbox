@@ -492,6 +492,21 @@ document.addEventListener('click', event => {
   });
 }, true);
 
+window.addEventListener('nav:button', event => {
+  if (removePrompt && event.detail?.button === 'b'){
+    event.stopImmediatePropagation?.();
+    closeRemovePrompt();
+  }
+}, true);
+
+document.addEventListener('keydown', event => {
+  if (removePrompt && event.key === 'Escape'){
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    closeRemovePrompt();
+  }
+}, true);
+
 window.addEventListener('xbox:home-change', () => void applyHome());
 window.addEventListener('stratus:library-change', () => {
   window.CloudLibrary?.refresh?.();
