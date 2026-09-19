@@ -328,10 +328,20 @@ pixel at every one of them.
 **Minecraft, same row.** Not a layout bug — the asset. `minecraft-cover-user.jpg`
 was 400×400 at **7,513 bytes**, an order of magnitude below every sibling cover
 in that row (52KB–660KB), so it fell apart into JPEG smear at tile size. Its
-hero was worse: 419×196 for a 1920-wide backdrop. Both now derive from
-`minecraft-hero.png`, the real Java Edition key art already in the repo —
-`minecraft-cover-keyart.jpg` 750×750 (crop anchored right so the whole
-MINECRAFT lockup is inside) and `minecraft-hero-keyart.jpg` 1304×750.
+hero was worse: 419×196 for a 1920-wide backdrop.
+
+Both now come from `games/minecraft-launcher/assets/hero.webp`, the clean
+official Java Edition render already vendored for the launcher — no logo burned
+in, no play-button overlay, no UI bar, unlike `minecraft-hero.png`, which is a
+video thumbnail and is what I reached for first. The cover is a square crop at
+the render's native 500px height (no upscaling) with
+`assets/ui/minecraft-logo.png`, the official lockup, composited over a soft top
+scrim so it reads against the sky. `minecraft-cover-keyart.jpg` 500×500,
+`minecraft-hero-keyart.jpg` 1170×500.
+
+Worth knowing: `games/minecraft-launcher/assets/` has better Minecraft source
+art than `assets/game-art/` does. `hero-art.png` there is byte-identical to
+`assets/game-art/minecraft-hero.png`, so that pair is one image, not two.
 
 **Two things for you.** If you set a size on a `.ref-*` tile, put width on the
 tile and height on `.tile-face`, never both on a grouped selector — the tile is
