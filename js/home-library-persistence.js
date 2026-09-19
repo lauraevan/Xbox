@@ -325,30 +325,101 @@ async function applyHome(){
   }
 }
 
-function confirmRemove(game){
-  const fallbackMessage = `Remove ${game.name} from Home?`;
-  if (!window.App?.modal){
-    if (confirm(fallbackMessage)){
-      removeFromHome(game);
-      void applyHome();
-    }
-    return;
-  }
+let removePrompt = null;
 
-  window.App.modal({
-    title:'Remove from Home?',
-    text:`${game.name} will stay in My games & apps. You can add it back to Home anytime.`,
-    actions:[
-      {
-        label:'Remove',
-        onSelect:() => {
-          removeFromHome(game);
-          window.App?.toast?.('Removed from Home', game.name);
-          void applyHome();
-        }
-      },
-      { label:'Cancel' }
-    ]
+function closeRemovePrompt({ restoreFocus=true } = {}){
+  if (!removePrompt) return;
+  const layer = removePrompt;
+  const source = layer._sourceTile;
+  removePrompt = null;
+  try { window.Nav?.popLayer?.(); } catch {}
+  layer.classList.add('out');
+  setTimeout(() => layer.remove(), 150);
+  if (restoreFocus && source?.isConnected){
+    requestAnimationFrame(() => {
+      try { window.Nav?.focus?.(source); }
+      catch { try { source.focus?.(); } catch {} }
+    });
+  }
+}
+
+function confirmRemove(game, sourceTile){
+  closeRemovePrompt({ restoreFocus:false });
+
+  const layer = document.createElement('div');
+  layer.className = 'home-remove-confirm';
+  layer.setAttribute('role','presentation');
+  layer._sourceTile = sourceTile || null;
+
+  const scrim = document.createElement('button');
+  scrim.type = 'button';
+  scrim.className = 'home-remove-confirm-scrim';
+  scrim.setAttribute('aria-label','Cancel');
+  scrim.addEventListener('click', () => closeRemovePrompt());
+
+  const panel = document.createElement('section');
+  panel.className = 'home-remove-confirm-panel';
+  panel.setAttribute('role','dialog');
+  panel.setAttribute('aria-modal','true');
+  panel.setAttribute('aria-labelledby','home-remove-confirm-title');
+
+  const art = document.createElement('div');
+  art.className = 'home-remove-confirm-art';
+  const image = game?.cover || game?.image || '';
+  if (image) art.style.backgroundImage = `url("${String(image).replace(/"/g, '%22')}")`;
+
+  const copy = document.createElement('div');
+  copy.className = 'home-remove-confirm-copy';
+  copy.innerHTML = `
+    <span class="home-remove-confirm-kicker">HOME</span>
+    <h2 id="home-remove-confirm-title">Remove ${String(game.name || 'this game')} from Home?</h2>
+    <p>This only removes the tile from Home. The game stays in My games &amp; apps, so you can add it back anytime.</p>
+  `;
+
+  const actions = document.createElement('div');
+  actions.className = 'home-remove-confirm-actions';
+
+  const remove = document.createElement('button');
+  remove.type = 'button';
+  remove.dataset.nav = '';
+  remove.className = 'home-remove-confirm-remove';
+  remove.textContent = 'Remove from Home';
+  remove._navActivate = () => {
+    removeFromHome(game);
+    window.App?.toast?.('Removed from Home', game.name);
+    closeRemovePrompt({ restoreFocus:false });
+    void applyHome();
+  };
+  remove.addEventListener('click', event => {
+    event.preventDefault();
+    event.stopPropagation();
+    remove._navActivate();
+  });
+
+  const cancel = document.createElement('button');
+  cancel.type = 'button';
+  cancel.dataset.nav = '';
+  cancel.className = 'home-remove-confirm-cancel';
+  cancel.textContent = 'Cancel';
+  cancel._navActivate = () => closeRemovePrompt();
+  cancel.addEventListener('click', event => {
+    event.preventDefault();
+    event.stopPropagation();
+    closeRemovePrompt();
+  });
+
+  actions.append(remove, cancel);
+  copy.append(actions);
+  panel.append(art, copy);
+  layer.append(scrim, panel);
+  document.body.append(layer);
+  removePrompt = layer;
+
+  try { window.Nav?.pushLayer?.(layer); } catch {}
+  requestAnimationFrame(() => {
+    layer.classList.add('in');
+    try { window.Nav?.focusIn?.(layer, '.home-remove-confirm-remove'); }
+    catch { remove.focus?.(); }
   });
 }
 
@@ -403,8 +474,9 @@ document.addEventListener('click', event => {
   if (remove){
     event.preventDefault();
     event.stopImmediatePropagation();
+    const sourceTile = remove.closest?.('.ref-tile');
     void gameForRemoveNode(remove).then(game => {
-      if (game) confirmRemove(game);
+      if (game) confirmRemove(game, sourceTile);
     });
     return;
   }
