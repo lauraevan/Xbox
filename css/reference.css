@@ -377,86 +377,44 @@ body[data-view="home"] .legend{ display:none !important; }
 }
 
 
+
+
 /* Xbox Guide: People -------------------------------------------------------- */
-.people-row{
-  min-height:6.35rem!important;
-}
-.people-avatar{
-  --people-tint:166 68% 42%;
-  position:relative;
-  width:4.15rem;
-  height:4.15rem;
-  flex:0 0 4.15rem;
-  display:grid;
-  place-items:center;
-  border-radius:50%;
-  background:
-    radial-gradient(circle at 34% 28%,rgba(255,255,255,.22),transparent 30%),
-    hsl(var(--people-tint));
-  color:#fff;
-  box-shadow:
-    0 0 0 .12rem rgba(255,255,255,.12),
-    0 .25rem .7rem rgba(0,0,0,.24);
-  font-size:1.32rem;
-  font-weight:700;
-  letter-spacing:.02rem;
-}
-.people-presence{
-  position:absolute;
-  right:-.04rem;
-  bottom:-.02rem;
-  width:1.12rem;
-  height:1.12rem;
-  border-radius:50%;
-  background:#53d64b;
-  box-shadow:0 0 0 .24rem rgba(72,75,79,.98);
-}
-.people-row .grow-meta{
-  color:rgba(255,255,255,.58)!important;
-}
-.people-row[data-focused] .people-presence{
-  box-shadow:0 0 0 .24rem rgba(83,214,75,.14);
-}
-
-
-.people-search-wrap{
-  min-height:5.2rem;
+.people-empty{
   display:flex;
   align-items:center;
-  gap:1rem;
-  margin:.4rem .6rem 1.2rem;
-  padding:0 1.2rem;
-  background:rgba(25,27,29,.72);
-  border:.3rem solid transparent;
+  gap:1.35rem;
+  margin:.35rem .6rem 1rem;
+  padding:1.35rem 1.2rem;
+  background:rgba(20,22,24,.42);
 }
-.people-search-wrap:focus-within{
-  border-color:#53d64b;
-  background:rgba(255,255,255,.1);
-}
-.people-search-icon{
+.people-empty-icon{
+  width:4.2rem;
+  height:4.2rem;
+  flex:0 0 4.2rem;
   display:grid;
   place-items:center;
-  width:2.4rem;
-  height:2.4rem;
-  color:rgba(255,255,255,.75);
+  color:rgba(255,255,255,.78);
 }
-.people-search-icon svg{
-  width:2.1rem;
-  height:2.1rem;
+.people-empty-icon svg{
+  width:3rem;
+  height:3rem;
   fill:currentColor;
 }
-.people-search-input{
-  flex:1;
+.people-empty-copy{
   min-width:0;
-  border:0;
-  outline:0;
-  background:transparent;
+  display:flex;
+  flex-direction:column;
+  gap:.3rem;
+}
+.people-empty-copy strong{
   color:#fff;
-  font:400 1.65rem/1 "Segoe UI",system-ui,sans-serif;
+  font-size:1.55rem;
+  font-weight:500;
 }
-.people-search-input::placeholder{
-  color:rgba(255,255,255,.4);
-}
-.people-search-results{
-  padding:.2rem 0 1rem;
+.people-empty-copy span{
+  max-width:31rem;
+  color:rgba(255,255,255,.56);
+  font-size:1.16rem;
+  line-height:1.35;
 }

@@ -28,8 +28,6 @@ const TABS = [
 let activeTab = 'profile';
 let open = false;
 let notifications = [];
-let peopleView = 'list';
-let peopleSearchQuery = '';
 
 const guide = $('#guide');
 const tabs  = $('#guideTabs');
@@ -92,52 +90,15 @@ const timeAgo = ts => {
 };
 
 
-const PEOPLE_FRIENDS = [
-  { name:'NightVector', status:'Forza Horizon 5', online:true, tint:'166 78% 42%' },
-  { name:'ArcadePilot', status:'Minecraft', online:true, tint:'205 78% 46%' },
-  { name:'VelocityFox', status:'Online', online:true, tint:'24 80% 49%' },
-  { name:'PixelRacer', status:'Last seen 18m ago', online:false, tint:'276 52% 48%' },
-  { name:'NovaByte', status:'Last seen 1h ago', online:false, tint:'336 60% 47%' }
-];
-
-const PEOPLE_SUGGESTIONS = [
-  { name:'OrbitKnight', status:'2 mutual friends', online:false, tint:'194 64% 44%' },
-  { name:'EchoCircuit', status:'1 mutual friend', online:false, tint:'46 68% 46%' }
-];
-
-function peopleInitials(name){
-  return String(name || '?').split(/\s+/).filter(Boolean).slice(0,2)
-    .map(part => part[0]?.toUpperCase() || '').join('') || '?';
+function peopleAction(icon, name, meta, onActivate){
+  return row({ icon, name, meta, chevron:true, onActivate });
 }
 
-function peopleRow(person, { suggestion=false } = {}){
-  const btn = el('button', 'grow people-row');
-  btn.dataset.nav = '';
-  btn.dataset.ringRadius = '.1rem';
-  btn.setAttribute('aria-label', person.name);
-
-  const avatar = el('span', 'people-avatar', escapeHtml(peopleInitials(person.name)));
-  avatar.style.setProperty('--people-tint', person.tint || '166 68% 42%');
-  if (person.online) avatar.append(el('span', 'people-presence'));
-  btn.append(avatar);
-
-  const text = el('div', 'grow-text');
-  text.append(el('div', 'grow-name', escapeHtml(person.name)));
-  text.append(el('div', 'grow-meta', escapeHtml(person.status || (person.online ? 'Online' : 'Offline'))));
-  btn.append(text);
-  btn.insertAdjacentHTML('beforeend', chevronMark());
-
-  btn._navActivate = () => {
-    window.App?.toast?.(
-      suggestion ? 'Suggested player' : person.name,
-      suggestion ? 'Open this profile to send a friend request.' : (person.online ? 'Online now' : person.status)
-    );
-  };
-  return btn;
-}
-
-function peopleAction(icon, name, meta, right, onActivate){
-  return row({ icon, name, meta, right, chevron:true, onActivate });
+function peopleNeedsXbox(){
+  window.App?.toast?.(
+    'Xbox account required',
+    'Connect a real Xbox account before loading friends, requests, recent players, or gamertag search.'
+  );
 }
 
 /* ───────── tab bodies ───────── */
@@ -198,113 +159,54 @@ function drawBody(){
 
 
   if (activeTab === 'people'){
-    if (peopleView === 'search'){
-      body.append(header('Find someone', 'Search by Xbox gamertag'));
-
-      const back = peopleAction(
-        ICON.back,
-        'Back to People',
-        '',
-        '',
-        () => { peopleView = 'list'; peopleSearchQuery = ''; drawBody(); window.Nav.restore(); }
-      );
-      body.append(back);
-
-      const wrap = el('div', 'people-search-wrap');
-      wrap.innerHTML = `<span class="people-search-icon">${ICON.search}</span>`;
-      const input = document.createElement('input');
-      input.className = 'people-search-input';
-      input.type = 'search';
-      input.placeholder = 'Search for a gamertag';
-      input.autocomplete = 'off';
-      input.spellcheck = false;
-      input.setAttribute('aria-label','Search for a gamertag');
-      wrap.append(input);
-      body.append(wrap);
-
-      const results = el('div', 'people-search-results');
-      body.append(results);
-
-      const paint = () => {
-        peopleSearchQuery = input.value.trim().toLowerCase();
-        results.innerHTML = '';
-        if (!peopleSearchQuery){
-          results.append(el('p','guide-sub','Start typing a gamertag.'));
-          return;
-        }
-        const pool = [...PEOPLE_FRIENDS, ...PEOPLE_SUGGESTIONS]
-          .filter(person => person.name.toLowerCase().includes(peopleSearchQuery));
-        if (!pool.length){
-          results.append(el('p','guide-sub','No players found.'));
-          return;
-        }
-        pool.forEach(person => results.append(peopleRow(person, { suggestion:true })));
-        window.Nav?.repaint?.();
-      };
-
-      input.addEventListener('input', paint);
-      paint();
-      window.Nav.restore();
-      return;
-    }
-
-    const online = PEOPLE_FRIENDS.filter(friend => friend.online);
-    body.append(header('People', `${online.length} friends online`));
+    body.append(header('People', 'Xbox account not connected'));
 
     body.append(el('div', 'guide-section', 'Friends'));
-    online.slice(0,3).forEach(friend => body.append(peopleRow(friend)));
 
-    const offline = PEOPLE_FRIENDS.filter(friend => !friend.online);
-    offline.slice(0,2).forEach(friend => body.append(peopleRow(friend)));
+    const empty = el('div', 'people-empty');
+    empty.innerHTML = `
+      <div class="people-empty-icon">${ICON.party}</div>
+      <div class="people-empty-copy">
+        <strong>No Xbox friends loaded</strong>
+        <span>This replica is not connected to an Xbox account, so no friend names, presence, requests, or suggestions are invented.</span>
+      </div>`;
+    body.append(empty);
 
     body.append(el('div', 'guide-divider'));
 
     body.append(peopleAction(
       ICON.person,
       'Friend requests',
-      'Manage received and sent requests',
-      '0',
-      () => window.App?.toast?.('Friend requests', 'You have no new friend requests.')
+      'Requires a connected Xbox account',
+      peopleNeedsXbox
     ));
 
     body.append(peopleAction(
       ICON.search,
       'Find someone',
-      'Search by Xbox gamertag',
-      '',
-      () => {
-        peopleView = 'search';
-        peopleSearchQuery = '';
-        drawBody();
-        requestAnimationFrame(() => body.querySelector('.people-search-input')?.focus?.());
-      }
+      'Search real Xbox gamertags after account connection',
+      peopleNeedsXbox
     ));
 
     body.append(peopleAction(
       ICON.clock,
       'Recent players',
-      'People you recently played with',
-      '',
-      () => window.App?.toast?.('Recent players', 'No recent players to show yet.')
+      'Requires Xbox multiplayer history',
+      peopleNeedsXbox
     ));
-
-    body.append(el('div', 'guide-section', 'Suggested friends'));
-    PEOPLE_SUGGESTIONS.forEach(person => body.append(peopleRow(person, { suggestion:true })));
 
     body.append(peopleAction(
       ICON.party,
       'Looking for Group',
-      'Find players for the games you play',
-      '',
-      () => window.App?.toast?.('Looking for Group', 'Choose a game to find a group.')
+      'Requires Xbox network data',
+      peopleNeedsXbox
     ));
 
     body.append(peopleAction(
       ICON.grid,
       'Clubs on Xbox',
-      'Discover official and community clubs',
-      '',
-      () => window.App?.toast?.('Clubs on Xbox', 'Club discovery is coming to this replica.')
+      'Requires Xbox network data',
+      peopleNeedsXbox
     ));
   }
 
@@ -466,7 +368,6 @@ function drawHints(){
 function selectTab(id){
   if (id === activeTab) return;
   activeTab = id;
-  if (id === 'people'){ peopleView = 'list'; peopleSearchQuery = ''; }
   drawRail(); drawBody();
   window.Nav.focusFirst('.guide-tab.active');
 }
@@ -486,7 +387,6 @@ function open_(tab){
   open = true;
   document.body.classList.add('guide-open');
   if (tab) activeTab = tab;
-  if (tab === 'people'){ peopleView = 'list'; peopleSearchQuery = ''; }
   guide.hidden = false;
   guide.classList.remove('out');
   window.Nav.pushLayer(guide);
