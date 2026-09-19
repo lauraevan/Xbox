@@ -4,13 +4,15 @@ The Stratus code vendored in this directory comes from:
 
 `evanjeffrey1212-eng/stratus-api`
 
-Xbox does not use Ember Cloud.
+Xbox does **not** depend on `lauraevan/stratus-api`.
 
 ## Runtime
 
 - The Xbox browser talks only to `/api/stratus`.
-- `/api/stratus` can use a separately deployed copy of this vendored Stratus backend through `STRATUS_PRIMARY_API_BASE`.
+- `/api/stratus` can use a separately deployed copy of the vendored Stratus backend through `STRATUS_PRIMARY_API_BASE`.
 - If the primary source fails, the gateway falls back to `https://stratus-api-2.onrender.com`.
+- Existing `EMBER_CLOUD_API_KEY` deployments are accepted as a server-side alias for the Stratus API credential.
+- This alias does not add an Ember repo dependency or send browser traffic to an Ember repository.
 - The client pins queue/start/ping/quit and the embed to the upstream that created the session.
 - API credentials remain server-side.
 

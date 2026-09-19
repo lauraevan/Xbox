@@ -18,12 +18,14 @@ const PRIMARY_BASE = String(
 const PRIMARY_KEY =
   process.env.STRATUS_PRIMARY_API_KEY ||
   process.env.STRATUS_API_KEY ||
+  process.env.EMBER_CLOUD_API_KEY ||
   "";
 
 const RENDER_KEY =
   process.env.STRATUS_RENDER_API_KEY ||
   process.env.STRATUS_FALLBACK_API_KEY ||
   process.env.STRATUS_API_KEY ||
+  process.env.EMBER_CLOUD_API_KEY ||
   "";
 
 const UPSTREAMS = [
