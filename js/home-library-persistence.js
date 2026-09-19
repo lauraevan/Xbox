@@ -7,7 +7,8 @@
 const Cloud = window.StratusCloud;
 if (!Cloud) return;
 
-const HOME_KEY = 'xbox.home.screen.v1';
+const HOME_KEY = 'xbox.home.screen.v2';
+const LEGACY_HOME_KEYS = ['xbox.home.screen.v1','xbox.home.pins'];
 const DEFAULT_TITLES = [
   'Forza Horizon 5',
   'Grand Theft Auto V',
@@ -56,7 +57,14 @@ function defaultHomeIds(){
 function readHomeIds(){
   try {
     const raw = localStorage.getItem(HOME_KEY);
-    if (raw === null) return defaultHomeIds();
+    if (raw === null){
+      const defaults = defaultHomeIds();
+      try {
+        LEGACY_HOME_KEYS.forEach(key => localStorage.removeItem(key));
+        localStorage.setItem(HOME_KEY, JSON.stringify(defaults));
+      } catch {}
+      return defaults;
+    }
     const parsed = JSON.parse(raw);
     return Array.isArray(parsed) ? parsed.map(String).filter(Boolean) : defaultHomeIds();
   } catch {
