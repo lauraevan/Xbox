@@ -159,9 +159,6 @@ function refTile(def){
   face.append(art);
 
   if (def.badge){
-    if (def.badge.includes('GAME PASS')){
-      face.append(el('span', 'ref-gamepass-badge', 'GAME PASS'));
-    }
     if (def.badge.includes('X|S')){
       const badge = el('span', 'ref-platform ref-platform-xs');
       const badgeImg = el('img', 'ref-platform-xs-img');
