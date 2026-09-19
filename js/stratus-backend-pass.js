@@ -11,11 +11,7 @@ if (!original) return;
 const API_BASE = String(window.STRATUS_BASE || original.BASE || 'https://stratus-api-2.onrender.com').replace(/\/$/, '');
 const BACKENDS = [
   window.STRATUS_BACKEND,
-  '/api/stratus',
-  // The existing Synapse server already owns the Stratus credential. Keep it
-  // as a cross-origin fallback so static/Vercel builds still launch cloud
-  // games when their local function has not been given STRATUS_API_KEY yet.
-  'https://v2.educationcatlearningandtutoring.com/api/public/ember'
+  '/api/stratus'
 ].filter(Boolean).map(v => String(v).replace(/\?$/, ''))
   .filter((v,i,a) => a.indexOf(v) === i);
 
@@ -25,6 +21,8 @@ let starting = false;
 let heartbeat = null;
 let startedUuid = null;
 let activeBackend = null;
+let activeUpstream = null;
+let activeEmbedBase = API_BASE;
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 const aborted = err => err?.name === 'AbortError';
@@ -35,6 +33,11 @@ function endpoint(base, action, uuid){
   const url = new URL(base, window.location.href);
   url.searchParams.set('action', action);
   if (uuid) url.searchParams.set('uuid', uuid);
+  if (
+    activeUpstream &&
+    url.origin === window.location.origin &&
+    url.pathname === '/api/stratus'
+  ) url.searchParams.set('upstream', activeUpstream);
   return url.toString();
 }
 
@@ -78,7 +81,18 @@ async function request(action, { method='POST', body, uuid, signal, backendOnly 
       }
 
       activeBackend = base;
-      window.dispatchEvent(new CustomEvent('stratus:backend', { detail:{ backend:base, action } }));
+      const upstream = res.headers.get('x-stratus-upstream');
+      const embedBase = res.headers.get('x-stratus-embed-base');
+      if (upstream) activeUpstream = upstream;
+      if (embedBase) activeEmbedBase = embedBase.replace(/\/$/, '');
+      window.dispatchEvent(new CustomEvent('stratus:backend', {
+        detail:{
+          backend:base,
+          upstream:activeUpstream,
+          embedBase:activeEmbedBase,
+          action
+        }
+      }));
       return res;
     } catch (err){
       if (aborted(err) && signal?.aborted) throw err;
@@ -248,7 +262,7 @@ function showPlayer(game, uuid){
   frame.setAttribute('allow','autoplay *; fullscreen *; gamepad *; encrypted-media *; clipboard-write *; clipboard-read *; pointer-lock *; microphone *; camera *');
   frame.referrerPolicy = 'unsafe-url';
   frame.tabIndex = 0;
-  frame.src = `${API_BASE}/cloud/v1/embed?id=${encodeURIComponent(uuid)}`;
+  frame.src = `${activeEmbedBase || API_BASE}/cloud/v1/embed?id=${encodeURIComponent(uuid)}`;
   frame.onload = () => log('embed loaded', frame.src);
 
   player.hidden = false;
@@ -320,6 +334,8 @@ async function play(game){
   starting = true;
   startedUuid = null;
   activeBackend = null;
+  activeUpstream = null;
+  activeEmbedBase = API_BASE;
   const controller = new AbortController();
   pending = { game, controller, uuid:null };
   const { splash, sub } = launchSurface(game);
@@ -401,7 +417,9 @@ const upgraded = {
 Object.defineProperties(upgraded,{
   active:{ get:() => active },
   starting:{ get:() => starting },
-  backend:{ get:() => activeBackend }
+  backend:{ get:() => activeBackend },
+  upstream:{ get:() => activeUpstream },
+  embedBase:{ get:() => activeEmbedBase }
 });
 window.StratusCloud = upgraded;
 log('backend pass ready', BACKENDS);

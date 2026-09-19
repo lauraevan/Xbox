@@ -9,6 +9,7 @@ const BASE = String(window.STRATUS_BASE || 'https://stratus-api-2.onrender.com')
 const BACKEND = String(window.STRATUS_BACKEND || '/api/stratus').replace(/\?$/, '');
 const OWNERSHIP_KEY = 'xbox.stratus.owned.v2';
 const CATALOG_SOURCES = [
+  'stratus/cloud.json',
   'https://raw.githubusercontent.com/evanjeffrey1212-eng/stratus-api/main/cloud.json',
   'https://cdn.jsdelivr.net/gh/evanjeffrey1212-eng/stratus-api@main/cloud.json'
 ];
