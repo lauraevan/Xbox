@@ -275,17 +275,13 @@ body[data-view="home"] .profile[data-focused]{ background:transparent !important
   font-size:.98rem;
 }
 .ref-card.card-store{
-  /* Xbox Home's Store tile is a flat purple system tile, not a promo image.
-     Keep the existing card geometry exactly as authored. */
-  background:#5b2fb7 !important;
+  background:#4b3a82 !important;
 }
 .ref-card.card-store::after{ display:none; }
-.ref-card.card-store::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(0,0,0,.08));
+.ref-card.card-store::before{ display:none; }
+.ref-card.card-store .ref-store-art img{
+  object-fit:fill;
+  object-position:center;
 }
 .ref-store-icon{
   position:absolute;
