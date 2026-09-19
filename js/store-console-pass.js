@@ -146,7 +146,6 @@ function ensurePlayerHud(){
   exit.className = 'cloud-player-exit';
   exit.type = 'button';
   exit.setAttribute('aria-label', 'Exit game');
-  exit.title = 'Exit game';
   exit.innerHTML = window.Icons?.icon?.('close') || '<span aria-hidden="true">×</span>';
   exit.addEventListener('click', event => {
     event.preventDefault();
