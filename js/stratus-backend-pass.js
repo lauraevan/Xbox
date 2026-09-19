@@ -26,6 +26,24 @@ const aborted = err => err?.name === 'AbortError';
 const log = (...args) => console.log('[Stratus/Xbox]', ...args);
 const warn = (...args) => console.warn('[Stratus/Xbox]', ...args);
 
+function errorText(value, fallback='Cloud backend error'){
+  if (typeof value === 'string' && value.trim()) return value.trim();
+  if (value instanceof Error && value.message) return value.message;
+  if (value && typeof value === 'object'){
+    for (const key of ['message','error','detail','reason','statusText']){
+      if (value[key] === value) continue;
+      const nested = errorText(value[key], '');
+      if (nested) return nested;
+    }
+    try {
+      const json = JSON.stringify(value);
+      if (json && json !== '{}') return json;
+    } catch {}
+  }
+  if (value != null && String(value) !== '[object Object]') return String(value);
+  return fallback;
+}
+
 function endpoint(base, action, uuid){
   const url = new URL(base, window.location.href);
   url.searchParams.set('action', action);
@@ -39,7 +57,7 @@ async function readError(res){
     const text = await res.text();
     try {
       const json = JSON.parse(text);
-      message = String(json?.error || json?.message || text || message);
+      message = errorText(json?.error ?? json?.message ?? json, text || message);
     } catch { if (text) message = text.slice(0,260); }
   } catch {}
   return message;
@@ -121,7 +139,7 @@ async function waitForQueue(uuid, controller, game, onStatus){
     log('queue', msg);
     onStatus?.(msg);
 
-    if (msg.status === 'error') throw new Error(msg.error || 'Cloud session failed.');
+    if (msg.status === 'error') throw new Error(errorText(msg.error ?? msg.message ?? msg, 'Cloud session failed.'));
     if (msg.status === 'finished_queue') return msg.uuid || uuid;
   }
 }
@@ -143,7 +161,7 @@ async function createSession(game, controller, onStatus){
     log('create status', msg);
     if (typeof msg.uuid === 'string') uuid = msg.uuid;
     onStatus?.(msg);
-    if (msg.status === 'error') throw new Error(msg.error || 'Cloud session failed.');
+    if (msg.status === 'error') throw new Error(errorText(msg.error ?? msg.message ?? msg, 'Cloud session failed.'));
     if (msg.status === 'finished_queue') finished = true;
   };
 
