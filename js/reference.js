@@ -177,11 +177,12 @@ function friendsTile(){
   return btn;
 }
 
-function refCard({ label, sub, artName, chip, cls }){
+function refCard({ label, sub, artName, chip, cls, imageUrl, url }){
   const btn = el('button', `card ref-card ${cls || ''}`);
   btn.dataset.nav = '';
   btn.dataset.ringRadius = '.08rem';
   if (artName) btn.dataset.artName = artName;
+  if (url) btn.dataset.newsUrl = url;
   btn.setAttribute('aria-label', label);
 
   if (cls === 'card-store'){
@@ -196,7 +197,12 @@ function refCard({ label, sub, artName, chip, cls }){
   } else {
     const wrap = el('div', 'ref-card-art');
     const img = el('img', 'cover loaded');
-    loadArt(img, artName || label, 'landscape');
+    if (imageUrl){
+      img.src = imageUrl;
+      img.referrerPolicy = 'no-referrer';
+    } else {
+      loadArt(img, artName || label, 'landscape');
+    }
     if (artName === 'Onimusha: Way of the Sword') img.style.objectPosition = 'center 22%';
     if (artName === 'BlizzCon 2026') img.style.objectPosition = 'center 29%';
     wrap.append(img);
@@ -208,8 +214,118 @@ function refCard({ label, sub, artName, chip, cls }){
     btn.append(el('div', 'card-label',
       escapeHtml(label) + (sub ? `<span class="sub">${escapeHtml(sub)}</span>` : '')));
   }
-  btn._navActivate = () => artName ? activate(artName) : window.App.setView('pass');
+
+  btn._navActivate = () => {
+    if (cls === 'card-store'){
+      window.App.setView('store');
+      return;
+    }
+    if (url){
+      window.open(url, '_blank', 'noopener,noreferrer');
+      return;
+    }
+    if (artName){
+      activate(artName);
+      return;
+    }
+    window.App.setView('pass');
+  };
   return btn;
+}
+
+const LIVE_NEWS_CACHE = 'xbox.home.live-news.v1';
+const LIVE_NEWS_MAX_AGE = 60 * 60 * 1000;
+let liveNewsTimer = null;
+
+function newsSubline(story){
+  const when = story?.published ? new Date(story.published) : null;
+  const date = when && !Number.isNaN(when.getTime())
+    ? when.toLocaleDateString([], { month:'short', day:'numeric' })
+    : 'Latest';
+  return `Xbox Wire • ${date}`;
+}
+
+function readNewsCache(){
+  try {
+    const row = JSON.parse(localStorage.getItem(LIVE_NEWS_CACHE) || 'null');
+    if (!row || !Array.isArray(row.stories)) return null;
+    if (Date.now() - Number(row.savedAt || 0) > LIVE_NEWS_MAX_AGE) return null;
+    return row.stories;
+  } catch {
+    return null;
+  }
+}
+
+function writeNewsCache(stories){
+  try {
+    localStorage.setItem(LIVE_NEWS_CACHE, JSON.stringify({
+      savedAt:Date.now(),
+      stories
+    }));
+  } catch {}
+}
+
+function paintLiveNews(cards, stories){
+  if (!cards?.isConnected || !Array.isArray(stories) || !stories.length) return;
+
+  const next = stories.slice(0, 3).filter(story =>
+    story?.title && story?.image && /^https:\/\//i.test(story?.url || '')
+  );
+  if (!next.length) return;
+
+  const currentUrls = [...cards.querySelectorAll('.ref-news-card')]
+    .map(node => node.dataset.newsUrl || '');
+  const nextUrls = next.map(story => story.url);
+  if (currentUrls.length === nextUrls.length &&
+      currentUrls.every((url, i) => url === nextUrls[i])) return;
+
+  const store = cards.querySelector('.card-store');
+  [...cards.children].forEach(node => {
+    if (node !== store) node.remove();
+  });
+
+  next.forEach(story => {
+    cards.append(refCard({
+      label:story.title,
+      sub:newsSubline(story),
+      imageUrl:story.image,
+      url:story.url,
+      chip:'XBOX WIRE',
+      cls:'ref-news-card'
+    }));
+  });
+
+  [...cards.children].forEach((node, i) => node.style.setProperty('--i', i));
+  window.Nav?.repaint?.();
+}
+
+async function refreshLiveNews(cards){
+  try {
+    const response = await fetch('/api/xbox-news', {
+      headers:{ accept:'application/json' },
+      cache:'no-store'
+    });
+    if (!response.ok) throw new Error('News endpoint returned ' + response.status);
+    const payload = await response.json();
+    if (!Array.isArray(payload?.stories) || !payload.stories.length) return;
+    writeNewsCache(payload.stories);
+    paintLiveNews(cards, payload.stories);
+  } catch {
+    /* Keep the authored fallback cards if live news is unavailable. */
+  }
+}
+
+function startLiveNews(cards){
+  const cached = readNewsCache();
+  if (cached) paintLiveNews(cards, cached);
+
+  void refreshLiveNews(cards);
+  clearInterval(liveNewsTimer);
+  liveNewsTimer = setInterval(() => {
+    if (document.visibilityState === 'visible' && cards?.isConnected){
+      void refreshLiveNews(cards);
+    }
+  }, 15 * 60 * 1000);
 }
 
 function setReferenceBackdrop(){
@@ -257,6 +373,7 @@ function renderReferenceHome(root){
     refCard({ label:'BlizzCon 2026', sub:'Watch the show', artName:'BlizzCon 2026' })
   );
   root.append(cards);
+  startLiveNews(cards);
 
   [...strip.children, ...cards.children].forEach((n, i) => n.style.setProperty('--i', i));
   setReferenceBackdrop();
