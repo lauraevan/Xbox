@@ -168,6 +168,34 @@ Eyeballing produced wrong conclusions here repeatedly. If a change claims a
 position, prove it with a number. The anchors in Part 1 were established this
 way and can be re-checked the same way.
 
+## Hosting
+
+Production is **Vercel**, not githack: <https://xbox-xi-gold.vercel.app>.
+
+githack could only serve the repository tree. It has nowhere to run
+`/api/stratus`, the serverless function that keeps the Stratus API key off the
+frontend, and it rate-limits a page that pulls more than twenty scripts — which
+is the throttling that caused the half-patched boot hang.
+
+Every push to `claude/xbox-web-replica-v4s0jk` is deployed by `vercel[bot]`
+through Vercel's GitHub integration. `vercel.json` points it at
+`npm run build` → `dist/`, and `scripts/protect-build.mjs` builds that: it
+copies `assets css games js`, `index.html` and `manifest.webmanifest`,
+obfuscates eight named JS files, and copies **only** `stratus/cloud.json` — the
+vendored backend source under `stratus/api` is deliberately not published.
+`api/` is picked up by Vercel independently of `outputDirectory`, so the
+function ships without the build touching it.
+
+Two things follow for anyone editing here:
+
+- **The link is stable.** One URL, always the newest commit. There is no
+  commit-pinned address to re-copy after a push, and the outdated-build gate in
+  `app-patch.js` is inert there by design (it needs a SHA in the path).
+- **A new top-level file does not automatically ship.** `protect-build.mjs`
+  copies a fixed list of directories. Add a file outside `assets css games js`
+  and it will work locally and 404 in production. Add it to `copyFiles` or
+  `copyDirs`.
+
 ## Known hazards
 
 **Script-order fragility.** 26 sequentially loaded scripts where later ones
@@ -265,6 +293,44 @@ Newest first. Post facts, open questions and things that change your plan.
 Add an entry when you need me to know something; delete one once it is
 settled. Keep it short — detail belongs in the commit message.
 
+### 2026-09-19 — we are on Vercel now, and its deploy workflow had never worked
+
+The owner moved hosting to Vercel because githack cannot host the backend.
+Live: <https://xbox-xi-gold.vercel.app>. Worth knowing before you write
+anything that assumes githack.
+
+**The finding.** `.github/workflows/deploy-vercel.yml` had failed **36 out of
+36 runs** — every push since it was added — because the repository has no
+`VERCEL_TOKEN` secret. It never reached the deploy step. Production was fine
+the whole time: `vercel[bot]` deploys through Vercel's GitHub integration and
+reported `success` on the same commits. So the red X on every push was a
+duplicate deploy path failing, not the site. I made the workflow
+`workflow_dispatch`-only rather than deleting it, so the noise stops and the
+manual path survives.
+
+**What changes for you.** `protect-build.mjs` publishes a fixed list of
+directories (`assets css games js` plus two files). If you add a top-level
+file, it works locally and 404s in production unless you add it to that list.
+
+Two smaller things I fixed while in there, both in the inline boot failsafe:
+its remedy line told everyone to switch to `rawcdn.githack.com`, which means
+nothing on Vercel, and its readiness test was `window.Catalog.count` — a
+method reference, so always truthy. A boot that reached the 13s ceiling with
+an empty catalogue therefore cleared to a dashboard with no games instead of
+naming what failed. It calls `count()` now.
+
+Also measured, because my last note claimed it: the Home row is uniform. Once
+the `xbox-item-enter` animation settles, all seven `.tile-sm` sit at y=685,
+bottom=865, h=180 and the hero at y=640, bottom=865. Friends included. Mid-
+animation they read 711/883, which is what a measurement taken too early
+shows — worth knowing before either of us "fixes" that again. The
+`My games & apps` tile does carry its `+`.
+
+I could not load the live URL to verify — outbound `vercel.app` is blocked
+from this sandbox. The build itself I did run: `dist/` comes out at 119M with
+`stratus/api` correctly excluded. If the deployed site looks wrong in a way
+the local build does not, that gap is mine, tell me.
+
 ### 2026-09-19 — removed two per-title corrections in the Home row
 
 Both were reported by the owner as bugs and both measured out, so I took
@@ -350,7 +416,8 @@ seams, the measured anchors and the failure modes. Where they overlap, prefer
 whichever was verified more recently and fix the other.
 
 One thing from `ChatGPT.md` §24 worth repeating because it is a correction to
-how I have been working: the owner wants the code changed, committed, and a
-fresh link — not a long explanation before they can test it. Lead with the
-link and the one-line result; keep the reasoning short and put the detail in
-the commit message.
+how I have been working: the owner wants the code changed, committed, and the
+link — not a long explanation before they can test it. Lead with the link and
+the one-line result; keep the reasoning short and put the detail in the commit
+message. Since the move to Vercel the link no longer changes per commit, so it
+is <https://xbox-xi-gold.vercel.app> every time; just say it is live.

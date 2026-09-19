@@ -1,9 +1,23 @@
-name: Deploy Xbox to Vercel
+# Manual Vercel deploy — NOT the normal path.
+#
+# Production deploys happen through Vercel's own GitHub integration: every
+# push to claude/xbox-web-replica-v4s0jk is picked up by vercel[bot], built
+# with `npm run build`, and published to https://xbox-xi-gold.vercel.app.
+# Nothing here is needed for that.
+#
+# This workflow used to also run on push. It failed on all 36 of its runs,
+# because the VERCEL_TOKEN secret has never been set on the repository, so
+# every push carried a red X next to a deployment that had in fact succeeded.
+# It is now manual-only: it does not run unless someone asks it to, and it
+# says what is missing rather than failing opaquely.
+#
+# To use it: add a repository secret VERCEL_TOKEN, then run it from the
+# Actions tab. Be aware it deploys a SECOND time on top of the integration's
+# deployment.
+
+name: Deploy Xbox to Vercel (manual)
 
 on:
-  push:
-    branches:
-      - claude/xbox-web-replica-v4s0jk
   workflow_dispatch:
 
 concurrency:
@@ -17,10 +31,10 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 22
 
@@ -29,7 +43,9 @@ jobs:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
           if [ -z "$VERCEL_TOKEN" ]; then
-            echo "::error::Missing GitHub Actions secret VERCEL_TOKEN."
+            echo "::error::Missing repository secret VERCEL_TOKEN. Production is" \
+                 "already deployed by Vercel's GitHub integration on every push;" \
+                 "this workflow is only needed to deploy by hand."
             exit 1
           fi
 

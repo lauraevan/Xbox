@@ -9,5 +9,9 @@
 !.env.example
 .vercel
 
+# installed dependencies (package-lock.json is committed so the Vercel
+# build resolves the same tree every time)
+node_modules
+
 # generated production artifact
 dist

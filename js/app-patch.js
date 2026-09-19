@@ -191,7 +191,13 @@ ensureHomeReturn();
    Git commit URLs are immutable, so historical hashes that predate this code
    cannot be changed retroactively. From this build onward, every pinned
    RawGitHack commit checks the branch head and marks itself outdated after a
-   newer commit lands. The current/latest commit never receives the overlay. */
+   newer commit lands. The current/latest commit never receives the overlay.
+
+   Inert on Vercel, which is now the production host: the gate needs a commit
+   SHA in the URL path, and xbox-xi-gold.vercel.app has none. That is correct
+   rather than a gap — that domain always serves the newest deployment, so a
+   stale pinned build is not reachable there. Kept for the githack links
+   already in circulation. */
 const VERSION_BRANCH = 'claude/xbox-web-replica-v4s0jk';
 const VERSION_API =
   'https://api.github.com/repos/lauraevan/Xbox/commits?sha=' +

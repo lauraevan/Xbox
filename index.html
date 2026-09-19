@@ -75,7 +75,14 @@
     var stage = document.getElementById('stage');
     if (!boot || !stage || !stage.hidden) return;
 
-    var ok = window.App && window.Catalog && window.Catalog.count;
+    /* Catalog.count is a method, not a number. Testing the bare reference was
+       always truthy, so a boot that reached this point with an empty catalogue
+       cleared to a dashboard with no games instead of saying what failed.
+       Call it, and treat a throw as not-ready. */
+    var ok = false;
+    try {
+      ok = !!(window.App && window.Catalog && window.Catalog.count() > 0);
+    } catch (e) { ok = false; }
     if (ok){
       boot.parentNode.removeChild(boot);
       stage.hidden = false;
@@ -86,16 +93,26 @@
                    'Sound','Nav','Views','Guide','App']
       .filter(function(n){ return !window[n]; });
 
+    /* The remedy depends on where this is being served from. Production is
+       Vercel, where there is no cached-vs-development address to switch to,
+       so the old "try rawcdn instead of raw" advice is only correct on the
+       legacy githack hosts. Kept inline and dependency-free: this runs when
+       a script has already failed to arrive. */
+    var host = (location.hostname || '').toLowerCase();
+    var remedy = host === 'raw.githack.com'
+      ? 'Try the cached address: <span style="color:#6dfc6d">rawcdn.githack.com</span>' +
+        ' in place of <span style="color:#6dfc6d">raw.githack.com</span>, or reload.'
+      : 'Reload the page. If it keeps stopping here, the deployment is ' +
+        'incomplete rather than slow \u2014 say which module is named below.';
+
     boot.innerHTML =
       '<div style="max-width:78rem;padding:4rem;text-align:center;font:400 2rem/1.5 ' +
       '\'Segoe UI\',system-ui,sans-serif;color:#fff">' +
       '<div style="font-size:3rem;font-weight:600;margin-bottom:1.4rem">' +
         'Could not finish starting</div>' +
       '<div style="opacity:.75">Some files did not load. This is usually the host ' +
-        'rate-limiting, not the console itself.</div>' +
-      '<div style="opacity:.75;margin-top:1.2rem">Try the cached address: ' +
-        '<span style="color:#6dfc6d">rawcdn.githack.com</span> in place of ' +
-        '<span style="color:#6dfc6d">raw.githack.com</span>, or reload.</div>' +
+        'or the network, not the console itself.</div>' +
+      '<div style="opacity:.75;margin-top:1.2rem">' + remedy + '</div>' +
       '<div style="margin-top:2rem;font-size:1.5rem;opacity:.5">Missing: ' +
         (missing.join(', ') || 'unknown') + '</div>' +
       '</div>';

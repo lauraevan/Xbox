@@ -65,8 +65,8 @@
      PLAY is pressed. GAME_URL is a LOCAL, bundled file: drop your
      82 MB build in at game/index.html (replacing the placeholder) and
      it loads same-origin — no external host, no CORS, no frame limits.
-     See README ("The game") for how to add the large file + host on
-     GitHub Pages (githack is unreliable for files this large).
+     See README ("The game") for how to add the large file. It ships as
+     part of the Vercel static build like every other file under games/.
      ------------------------------------------------------------ */
   var GAME_URL = "game/index.html";
 

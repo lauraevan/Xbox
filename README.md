@@ -4,33 +4,43 @@ A console dashboard rebuilt for the browser: the system bar, the tile rail,
 the guide overlay, spatial focus, controller input, achievements, and a
 743-title catalogue streamed straight from the CDN.
 
-No build step, no dependencies. Open `index.html` and it runs.
+Runs from static files in development — open `index.html` and it works. Production
+goes out through a build step (`npm run build`) that Vercel runs for you.
 
 ## Play it now
 
-**[▶ Launch the dashboard](https://rawcdn.githack.com/lauraevan/Xbox/claude/xbox-web-replica-v4s0jk/index.html)**
+**[▶ Launch the dashboard](https://xbox-xi-gold.vercel.app)**
 
 ```
-https://rawcdn.githack.com/lauraevan/Xbox/claude/xbox-web-replica-v4s0jk/index.html
+https://xbox-xi-gold.vercel.app
 ```
 
-Use **rawcdn**, not **raw**. The `raw.githack.com` address is githack's
-development URL and is rate-limited; this page pulls eleven scripts, four
-stylesheets and a video, and once the host starts throttling those requests a
-script fails to arrive and the boot screen never clears. `rawcdn` is the cached
-production address and does not throttle. It pins to the commit, so re-copy the
-link after a push to pick up changes.
+That address always serves the newest commit on
+`claude/xbox-web-replica-v4s0jk`: Vercel's GitHub integration picks up every
+push, runs `npm run build`, and publishes `dist/`. Nothing to re-copy after a
+push — reload the same link.
 
-- **Live branch** (always current, but rate-limited — expect the boot screen to
-  stall on a cold load):
-  `https://raw.githack.com/lauraevan/Xbox/claude/xbox-web-replica-v4s0jk/index.html`
-- **Pinned to a commit**, if the branch URL ever gets confused by the slash in
-  the branch name:
-  `https://raw.githack.com/lauraevan/Xbox/1ce51c26916e63219e6a957ea6b634fb0e0a6f84/index.html`
+### Why not githack any more
 
-githack serves GitHub files with real content types, which is what makes the
-CSS and JS load — `raw.githubusercontent.com` hands everything back as
-`text/plain` and the page renders as source.
+githack served the repository tree directly, which was fine while this was a
+pile of static files. It cannot host the backend. `/api/stratus` is a
+serverless function that keeps the Stratus API key server-side, and a static
+file host has nowhere to run it. githack also rate-limits: this page pulls
+more than twenty scripts, and once the host started throttling, one script
+failed to arrive and the boot screen never cleared.
+
+### Deployment shape
+
+| Piece | Where it runs |
+| --- | --- |
+| Dashboard | Vercel static, built from `dist/` by `scripts/protect-build.mjs` |
+| `/api/stratus` | Vercel serverless function (`api/stratus.js`) |
+| Stratus backend | a persistent host — Vercel functions are too short-lived |
+| Catalogue and covers | jsDelivr at runtime, nothing vendored |
+
+`vercel.json` sets `buildCommand: npm run build` and `outputDirectory: dist`.
+`api/` is picked up by Vercel independently of the static output, so the
+function ships even though the build never copies it into `dist/`.
 
 ---
 

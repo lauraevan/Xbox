@@ -2,7 +2,7 @@
    news.js — real Minecraft "mail": news + patch notes
    Pulls live from Mojang's official launcher content API.
    These endpoints are public and CORS-enabled, so they load
-   directly in the visitor's browser (e.g. when hosted on githack).
+   directly in the visitor's browser, with no proxy of our own.
    ============================================================ */
 (function () {
   "use strict";
