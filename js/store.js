@@ -281,7 +281,7 @@ function hasAnyTag(game, tags){
 
 function mixByTags(seed, tags, fallbackSeed=seed){
   const pool = games.filter(game => hasAnyTag(game, tags));
-  return shuffled(seed, pool.length >= 6 ? pool : shuffled(fallbackSeed)).slice(0, 12);
+  return shuffled(seed, pool.length >= 6 ? pool : shuffled(fallbackSeed)).slice(0, 9);
 }
 
 function dailySeed(){
@@ -328,7 +328,7 @@ function startAutoRows(root){
     });
 
     row.dataset.carouselLoopWidth = String(before);
-    row.dataset.carouselSpeed = String(10 + (index % 4) * 2.25);
+    row.dataset.carouselSpeed = String(5.5 + (index % 3) * 1.15);
     row.dataset.carouselLast = '0';
 
     row.addEventListener('pointerdown', () => pauseRow(row), { passive:true });
@@ -374,10 +374,7 @@ function shelf(title, list, { wide=false, subtitle='', auto=true, kicker='DISCOV
   copy.append(el('div', 'xstore-shelf-kicker', escapeHtml(kicker)));
   copy.append(el('h2', 'xstore-shelf-title', escapeHtml(title)));
   if (subtitle) copy.append(el('div', 'xstore-shelf-sub', escapeHtml(subtitle)));
-  const motion = el('span', 'xstore-shelf-motion');
-  motion.innerHTML = '<span></span><span>AUTO</span>';
   head.append(copy);
-  if (auto) head.append(motion);
   section.append(head);
   const row = el('div', `xstore-row${wide ? ' wide' : ''}`);
   if (auto) row.dataset.autoRotate = '1';
@@ -448,40 +445,45 @@ function renderHome(root){
   buildHomeGallery(root, featured);
 
   const deals = shuffled(211).filter(game => dealFor(game)).slice(0, 10);
-  const recommended = shuffled(401).slice(0, 12);
+  const recommended = shuffled(401).slice(0, 9);
   const quickPlay = mixByTags(509, ['Easy','Casual','Arcade','Indie'], 510);
   const actionShooter = mixByTags(613, ['Action','Shooting','Fighting'], 614);
   const racingDriving = mixByTags(719, ['Racing','Sports','Simulation'], 720);
   const puzzleStrategy = mixByTags(823, ['Puzzle','Strategy','Challenge'], 824);
-  const daily = shuffled(dailySeed()).slice(0, 12);
+  const daily = shuffled(dailySeed()).slice(0, 9);
   const trending = mixByTags(929, ['Multiplayer','Online','3A'], 930);
   const classics = mixByTags(1031, ['3A','Adventure','RPG'], 1032);
-  const owned = games.filter(g => Cloud.owns(g)).slice(0, 12);
+  const owned = games.filter(g => Cloud.owns(g)).slice(0, 9);
 
   content.append(buildDeals(deals));
   content.append(shelf('Games we recommend', recommended, {
     subtitle:'Hand-picked from the cloud catalogue',
-    kicker:'FOR YOU'
+    kicker:'FOR YOU',
+    wide:true
   }));
   content.append(shelf('Quick play', quickPlay, {
     subtitle:'Jump in fast without overthinking it',
-    kicker:'PLAY NOW'
+    kicker:'PLAY NOW',
+    wide:true
   }));
   if (owned.length) content.append(shelf('Continue from your library', owned, {
     subtitle:'Ready to stream',
-    kicker:'YOUR GAMES'
+    kicker:'YOUR GAMES',
+    wide:true
   }));
-  content.append(shelf('Action & shooter', actionShooter, { kicker:'HIGH ENERGY' }));
+  content.append(shelf('Action & shooter', actionShooter, { kicker:'HIGH ENERGY', wide:true }));
   content.append(shelf('Racing & driving', racingDriving, { wide:true, kicker:'FULL SPEED' }));
-  content.append(shelf('Puzzle & strategy', puzzleStrategy, { kicker:'THINK AHEAD' }));
+  content.append(shelf('Puzzle & strategy', puzzleStrategy, { kicker:'THINK AHEAD', wide:true }));
   content.append(shelf('Daily picks', daily, {
     subtitle:'A fresh mix every day',
-    kicker:'TODAY'
+    kicker:'TODAY',
+    wide:true
   }));
-  content.append(shelf('Trending now', trending, { kicker:'POPULAR' }));
+  content.append(shelf('Trending now', trending, { kicker:'POPULAR', wide:true }));
   content.append(shelf('All-time favorites', classics, {
     subtitle:'Big games worth coming back to',
-    kicker:'CLASSICS'
+    kicker:'CLASSICS',
+    wide:true
   }));
 
   requestAnimationFrame(() => startAutoRows(root));

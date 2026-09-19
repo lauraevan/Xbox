@@ -497,3 +497,9 @@
     touch-action:manipulation;
   }
 }
+
+
+/* Slightly more Home game-row breathing room. */
+.reference-home .ref-strip{
+  gap:1.95rem!important;
+}
