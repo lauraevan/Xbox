@@ -1,0 +1,59 @@
+name: Xbox iOS IPA
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - claude/xbox-web-replica-v4s0jk
+    paths:
+      - "ios/XboxNative/**"
+      - ".github/workflows/xbox-ios-ipa.yml"
+
+jobs:
+  build-ipa:
+    runs-on: macos-15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        working-directory: ios/XboxNative
+        run: xcodegen generate
+
+      - name: Build unsigned device app
+        working-directory: ios/XboxNative
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project XboxNative.xcodeproj \
+            -scheme XboxNative \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination "generic/platform=iOS" \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            build
+
+      - name: Package IPA
+        working-directory: ios/XboxNative
+        run: |
+          APP="build/Build/Products/Release-iphoneos/XboxNative.app"
+          test -d "$APP"
+          rm -rf Payload XboxNative-unsigned.ipa
+          mkdir Payload
+          cp -R "$APP" Payload/
+          ditto -c -k --sequesterRsrc --keepParent Payload XboxNative-unsigned.ipa
+
+      - name: Upload sideloadable IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: XboxNative-unsigned-ipa
+          path: ios/XboxNative/XboxNative-unsigned.ipa
+          if-no-files-found: error
+          retention-days: 30
