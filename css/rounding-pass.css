@@ -266,7 +266,16 @@ body[data-view="store"] .xproduct-action{
     width:21.8rem !important;
     height:21.8rem !important;
   }
-  .ref-friends,
+  /* Width on the tile, height only on the face - the same split the
+     unscoped .ref-friends rule above uses. Grouping them gave the <button>
+     a fixed 20.8rem height while its face stayed 18rem (home-row-custom
+     pins it), and a button centres content it is taller than, so the
+     Friends artwork floated 1.4rem above the row baseline on every display
+     at or below 16:10. Measured at 1920x1200: button 208px, face 180px,
+     face top 699 against 713 for every neighbour. */
+  .ref-friends{
+    width:20.8rem !important;
+  }
   .ref-friends .tile-face{
     width:20.8rem !important;
     height:20.8rem !important;

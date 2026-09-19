@@ -293,6 +293,52 @@ Newest first. Post facts, open questions and things that change your plan.
 Add an entry when you need me to know something; delete one once it is
 settled. Keep it short — detail belongs in the commit message.
 
+### 2026-09-19 — the Friends tile: found it, and it was never a nudge
+
+The owner reported this twice and I "fixed" it once by deleting a `+.7rem`
+nudge. That was treating the symptom, and my verification missed it because I
+only measured at 1920×1080 — the one aspect ratio where the bug does not
+appear. Sorry for the round trip.
+
+**The actual cause, in `rounding-pass.css`.** Inside
+`@media (max-aspect-ratio:16/10)` the selector was grouped:
+
+```css
+.ref-friends,
+.ref-friends .tile-face{ width:20.8rem !important; height:20.8rem !important; }
+```
+
+That puts `height:20.8rem` on the `<button>` as well as on the face. The
+unscoped `.ref-friends` rule higher up in the same file does it correctly —
+width on the tile, height only on the face — so the grouping looks like an
+oversight rather than intent. `home-row-custom.css` pins the face to 18rem but
+never touches the button's height, so the button stayed 20.8rem, and a
+`<button>` centres content it is taller than. Measured at 1920×1200: button
+208px, face 180px, face top 699 against 713 for every neighbour. The artwork
+floated 1.4rem above the row baseline on **every display at or below 16:10** —
+16:10 laptops, iPads, any browser window taller than 16:9 — and sat perfectly
+at exactly 16:9.
+
+Split the selector to match the rule above it. Re-measured across thirteen
+viewports — 1920×1080, 1920×1200, 1920×1216, 1920×1440, 2560×1440, 2560×1080,
+3840×2160, 1600×900, 1500×1000, 1440×1080, 1366×768, 1280×1024 and 1280×720,
+so 21:9 through 5:4: Friends and its neighbours share top and bottom to the
+pixel at every one of them.
+
+**Minecraft, same row.** Not a layout bug — the asset. `minecraft-cover-user.jpg`
+was 400×400 at **7,513 bytes**, an order of magnitude below every sibling cover
+in that row (52KB–660KB), so it fell apart into JPEG smear at tile size. Its
+hero was worse: 419×196 for a 1920-wide backdrop. Both now derive from
+`minecraft-hero.png`, the real Java Edition key art already in the repo —
+`minecraft-cover-keyart.jpg` 750×750 (crop anchored right so the whole
+MINECRAFT lockup is inside) and `minecraft-hero-keyart.jpg` 1304×750.
+
+**Two things for you.** If you set a size on a `.ref-*` tile, put width on the
+tile and height on `.tile-face`, never both on a grouped selector — the tile is
+a `<button>` and it will centre its face rather than hug it. And when you add
+art, check the file: anything under ~30KB for a cover is going to look like
+this one did.
+
 ### 2026-09-19 — we are on Vercel now, and its deploy workflow had never worked
 
 The owner moved hosting to Vercel because githack cannot host the backend.
@@ -319,12 +365,13 @@ method reference, so always truthy. A boot that reached the 13s ceiling with
 an empty catalogue therefore cleared to a dashboard with no games instead of
 naming what failed. It calls `count()` now.
 
-Also measured, because my last note claimed it: the Home row is uniform. Once
-the `xbox-item-enter` animation settles, all seven `.tile-sm` sit at y=685,
-bottom=865, h=180 and the hero at y=640, bottom=865. Friends included. Mid-
-animation they read 711/883, which is what a measurement taken too early
-shows — worth knowing before either of us "fixes" that again. The
+Also measured: mid-animation the row reads 711/883 and settled it reads
+685/865, so a measurement taken before `xbox-item-enter` finishes is simply
+wrong — worth knowing before either of us "fixes" that again. The
 `My games & apps` tile does carry its `+`.
+
+Correcting myself on the rest of that claim: I measured the row only at
+1920×1080 and said it was uniform. It was not. See the entry below.
 
 I could not load the live URL to verify — outbound `vercel.app` is blocked
 from this sandbox. The build itself I did run: `dist/` comes out at 119M with
