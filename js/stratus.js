@@ -6,10 +6,7 @@
 'use strict';
 
 const BASE = String(window.STRATUS_BASE || 'https://stratus-api-2.onrender.com').replace(/\/$/, '');
-const BACKEND = String(
-  window.STRATUS_BACKEND ||
-  'https://id-preview--6191b4a9-2b1b-4a95-95d1-3b21d04824e6.lovable.app/api/public/ember'
-).replace(/\?$/, '');
+const BACKEND = String(window.STRATUS_BACKEND || '/api/stratus').replace(/\?$/, '');
 const OWNERSHIP_KEY = 'xbox.stratus.owned.v2';
 const CATALOG_SOURCES = [
   'https://raw.githubusercontent.com/evanjeffrey1212-eng/stratus-api/main/cloud.json',
