@@ -16,7 +16,8 @@ const COVER = {
   'Elden Ring': 'assets/game-art/elden-ring-cover.jpg',
   'Red Dead Redemption 2': 'assets/game-art/rdr2-cover.jpg',
   'Minecraft': 'assets/game-art/minecraft-cover-user.jpg',
-  'Fortnite': 'assets/game-art/fortnite-cover.jpg'
+  'Fortnite': 'assets/game-art/fortnite-cover.jpg',
+  'Cyberpunk 2077': 'https://store-images.s-microsoft.com/image/apps.47379.63407868131364914.bcaa868c-407e-42c2-baeb-48a3c9f29b54.89bb995b-b066-4a53-9fe4-0260ce07e894?h=900&q=95&w=600'
 };
 
 const HERO = {
@@ -26,7 +27,8 @@ const HERO = {
   'Elden Ring': 'assets/game-art/elden-ring-hero.jpg',
   'Red Dead Redemption 2': 'assets/game-art/rdr2-hero.jpg',
   'Minecraft': 'assets/game-art/minecraft-hero-keyart.jpg',
-  'Fortnite': 'assets/game-art/fortnite-hero.jpg'
+  'Fortnite': 'assets/game-art/fortnite-hero.jpg',
+  'Cyberpunk 2077': 'https://store-images.s-microsoft.com/image/apps.34838.63407868131364914.bcaa868c-407e-42c2-baeb-48a3c9f29b54.1463028d-79fa-46e5-9fc2-63203992a4dc?h=1080&q=95&w=1920'
 };
 
 const SWAPS = [
@@ -43,7 +45,8 @@ const CLOUD_ALIASES = {
   'Elden Ring': ['elden ring'],
   'Red Dead Redemption 2': ['red dead redemption 2','rdr2'],
   'Minecraft': ['minecraft'],
-  'Fortnite': ['fortnite']
+  'Fortnite': ['fortnite'],
+  'Cyberpunk 2077': ['cyberpunk 2077','cyberpunk2077']
 };
 
 const norm = value => String(value || '').toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -449,9 +452,15 @@ function makeLibraryTile(){
 
 function ensureLibraryTile(){
   const strip = HOME.querySelector('.ref-strip');
-  const friends = strip?.querySelector('.ref-friends');
-  if (!strip || !friends || strip.querySelector('[data-home-library-mosaic="1"]')) return;
-  friends.insertAdjacentElement('afterend', makeLibraryTile());
+  if (!strip || strip.querySelector('[data-home-library-mosaic="1"]')) return;
+
+  const anchor =
+    strip.querySelector('.ref-tile[data-ref-title="Cyberpunk 2077"]') ||
+    strip.querySelector('.ref-friends') ||
+    [...strip.querySelectorAll('.ref-tile[data-ref-title]')].at(-1);
+
+  if (anchor) anchor.insertAdjacentElement('afterend', makeLibraryTile());
+  else strip.append(makeLibraryTile());
 }
 
 function removeFortniteFromHome(){
