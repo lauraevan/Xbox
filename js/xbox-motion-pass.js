@@ -95,6 +95,12 @@ observer.observe(document.body, {
 window.addEventListener('nav:focus', event => {
   const node = event.detail?.el;
   if (!node) return;
+
+  /* Home's first row already grows the selected tile from 18rem to 22.5rem.
+     Do not stack the generic spring scale kick on top of that size transition,
+     otherwise a single selection reads as a double bounce. */
+  if (node.matches?.('.reference-home .ref-strip .ref-tile')) return;
+
   restart(node, 'xbox-focus-kick', 430);
 });
 })();
