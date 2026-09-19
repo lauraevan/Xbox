@@ -6,6 +6,7 @@ const HOME = document.getElementById('view-home');
 if (!HOME) return;
 
 const Cloud = () => window.StratusCloud;
+const SERIES_XS_BADGE = 'https://cms-assets.xboxservices.com/assets/fc/80/fc801b4c-fd95-4a10-8f03-da193e5792df.svg?n=Xbox-Series-X_Icons_768_Optimized_96x42_01.svg';
 
 /* These are real files committed into this repo. Home no longer depends on
    SteamGridDB / remote hotlinks for the seven games in the main row. */
@@ -318,14 +319,30 @@ async function openGamePreview(title){
 }
 
 function ensureBadge(face, text){
-  let badge = face.querySelector('.ref-platform');
-  if (!text){ badge?.remove(); return; }
-  if (!badge){
-    badge = document.createElement('span');
-    badge.className = 'ref-platform';
+  face.querySelectorAll('.ref-platform, .ref-gamepass-badge').forEach(node => node.remove());
+  if (!text) return;
+
+  if (text.includes('GAME PASS')){
+    const gamePass = document.createElement('span');
+    gamePass.className = 'ref-gamepass-badge';
+    gamePass.textContent = 'GAME PASS';
+    face.append(gamePass);
+  }
+
+  if (text.includes('X|S')){
+    const badge = document.createElement('span');
+    badge.className = 'ref-platform ref-platform-xs';
+
+    const img = document.createElement('img');
+    img.className = 'ref-platform-xs-img';
+    img.src = SERIES_XS_BADGE;
+    img.alt = '';
+    img.loading = 'eager';
+    img.decoding = 'async';
+
+    badge.append(img);
     face.append(badge);
   }
-  badge.textContent = text;
 }
 
 function setTileArtwork(tile, title){
