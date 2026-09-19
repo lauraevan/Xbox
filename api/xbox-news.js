@@ -1,19 +1,54 @@
-const SOURCE = 'https://news.xbox.com/en-us/recent-news/';
+const SOURCE = 'https://news.xbox.com/en-us/feed/';
 
 const HEADERS = {
   'user-agent': 'Mozilla/5.0 (compatible; XboxDashboard/1.0)',
-  'accept': 'text/html,application/xhtml+xml'
+  'accept': 'application/rss+xml,application/xml,text/xml,text/html;q=0.8'
 };
 
 function decodeHtml(value = ''){
   return String(value)
+    .replace(/^<!\[CDATA\[|\]\]>$/g, '')
     .replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Number(n)))
     .replace(/&#x([0-9a-f]+);/gi, (_, n) => String.fromCodePoint(parseInt(n, 16)))
     .replace(/&amp;/g, '&')
     .replace(/&quot;/g, '"')
     .replace(/&#39;|&apos;/g, "'")
     .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>');
+    .replace(/&gt;/g, '>')
+    .trim();
+}
+
+function xmlTag(block, tag){
+  const pattern = new RegExp('<' + tag + '(?:\\s[^>]*)?>([\\s\\S]*?)<\\/' + tag + '>', 'i');
+  const match = block.match(pattern);
+  return match?.[1] ? decodeHtml(match[1]) : '';
+}
+
+function mediaUrl(block){
+  const media = block.match(/<(?:media:content|media:thumbnail)\b[^>]+url=["']([^"']+)["']/i);
+  if (media?.[1]) return decodeHtml(media[1]);
+
+  const image = block.match(/<img\b[^>]+src=["']([^"']+)["']/i);
+  return image?.[1] ? decodeHtml(image[1]) : '';
+}
+
+function collectFeedItems(xml){
+  const rows = [];
+  for (const match of xml.matchAll(/<item\b[^>]*>([\s\S]*?)<\/item>/gi)){
+    const block = match[1];
+    const url = xmlTag(block, 'link');
+    const title = xmlTag(block, 'title');
+    if (!url || !title) continue;
+    rows.push({
+      url,
+      title,
+      image:mediaUrl(block),
+      description:xmlTag(block, 'description').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim(),
+      published:xmlTag(block, 'pubDate')
+    });
+    if (rows.length >= 8) break;
+  }
+  return rows;
 }
 
 function meta(html, key){
@@ -24,53 +59,41 @@ function meta(html, key){
     const tag = match[0];
     if (!keyPattern.test(tag)) continue;
     const content = tag.match(contentPattern);
-    if (content?.[1]) return decodeHtml(content[1].trim());
+    if (content?.[1]) return decodeHtml(content[1]);
   }
   return '';
 }
 
-function collectArticleUrls(html){
-  const out = [];
-  const seen = new Set();
+async function enrichStory(story){
+  let parsed;
+  try { parsed = new URL(story.url); }
+  catch { return story.image ? story : null; }
 
-  for (const match of html.matchAll(/href=["']([^"']+)["']/gi)){
-    let url;
-    try { url = new URL(match[1], SOURCE); }
-    catch { continue; }
+  if (parsed.hostname !== 'news.xbox.com') return story.image ? story : null;
 
-    if (url.hostname !== 'news.xbox.com') continue;
-    if (!/^\/en-us\/20\d{2}\/\d{2}\/\d{2}\/[a-z0-9][^?#]*\/?$/i.test(url.pathname)) continue;
+  try {
+    const response = await fetch(story.url, {
+      headers:HEADERS,
+      cache:'no-store',
+      signal:AbortSignal.timeout(8000)
+    });
+    if (!response.ok) throw new Error('article ' + response.status);
 
-    url.hash = '';
-    url.search = '';
-    const normalized = url.toString();
-    if (seen.has(normalized)) continue;
-    seen.add(normalized);
-    out.push(normalized);
-    if (out.length >= 8) break;
+    const html = await response.text();
+    const title = meta(html, 'og:title')
+      .replace(/\s*-\s*XBOX Wire\s*$/i, '')
+      .trim();
+
+    return {
+      title:title || story.title,
+      image:meta(html, 'og:image') || story.image,
+      description:meta(html, 'og:description') || story.description,
+      published:meta(html, 'article:published_time') || story.published,
+      url:story.url
+    };
+  } catch {
+    return story.image ? story : null;
   }
-
-  return out;
-}
-
-async function loadStory(url){
-  const response = await fetch(url, {
-    headers:HEADERS,
-    cache:'no-store',
-    signal:AbortSignal.timeout(8000)
-  });
-  if (!response.ok) throw new Error('Xbox Wire article returned ' + response.status);
-
-  const html = await response.text();
-  const title = meta(html, 'og:title')
-    .replace(/\s*-\s*XBOX Wire\s*$/i, '')
-    .trim();
-  const image = meta(html, 'og:image');
-  const description = meta(html, 'og:description');
-  const published = meta(html, 'article:published_time');
-
-  if (!title || !image) return null;
-  return { title, image, description, published, url };
 }
 
 export default async function handler(req, res){
@@ -83,17 +106,17 @@ export default async function handler(req, res){
   res.setHeader('Cache-Control', 'public, s-maxage=900, stale-while-revalidate=86400');
 
   try {
-    const page = await fetch(SOURCE, {
+    const feed = await fetch(SOURCE, {
       headers:HEADERS,
       cache:'no-store',
       signal:AbortSignal.timeout(8000)
     });
-    if (!page.ok) throw new Error('Xbox Wire returned ' + page.status);
+    if (!feed.ok) throw new Error('Xbox Wire feed returned ' + feed.status);
 
-    const urls = collectArticleUrls(await page.text());
-    const settled = await Promise.allSettled(urls.slice(0, 6).map(loadStory));
+    const items = collectFeedItems(await feed.text());
+    const settled = await Promise.allSettled(items.slice(0, 6).map(enrichStory));
     const stories = settled
-      .filter(row => row.status === 'fulfilled' && row.value)
+      .filter(row => row.status === 'fulfilled' && row.value?.title && row.value?.image && row.value?.url)
       .map(row => row.value)
       .slice(0, 3);
 
