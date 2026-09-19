@@ -266,16 +266,26 @@ async function openGamePreview(title){
   start.dataset.nav = '';
   start.dataset.ringRadius = '.9rem';
   start.innerHTML = `${window.Views?.ICON?.play || ''}<span>Start</span>`;
-  start._navActivate = async () => {
+  let startHandled = false;
+  start._navActivate = async event => {
+    event?.preventDefault?.();
+    event?.stopPropagation?.();
+    if (startHandled) return;
+    startHandled = true;
+    start.disabled = true;
+    start.setAttribute('aria-busy', 'true');
     const selected = previewTitle;
     closeGamePreview();
     if (selected) await activateTitle(selected);
   };
-  start.addEventListener('click', event => {
-    event.preventDefault();
-    event.stopPropagation();
-    start._navActivate();
+  /* iOS/iPadOS can lose the delayed synthetic click when this modal removes
+     itself during activation. Handle the primary touch pointer directly and
+     keep click for mouse, keyboard, accessibility, and older browsers. */
+  start.addEventListener('pointerup', event => {
+    if (event.isPrimary !== false && (event.pointerType === 'touch' || event.pointerType === 'pen'))
+      void start._navActivate(event);
   });
+  start.addEventListener('click', event => void start._navActivate(event));
 
   const close = document.createElement('button');
   close.type = 'button';

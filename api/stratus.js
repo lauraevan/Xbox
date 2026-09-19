@@ -1,6 +1,13 @@
 const { Readable } = require("node:stream");
 
-const API_BASE = (process.env.STRATUS_API_BASE || "https://stratus-api-2.onrender.com").replace(/\/$/, "");
+/* Ported from synapseubg/src/routes/api/public/ember.ts. Keep the upstream
+   and action map aligned with Synapse, but never copy its credential into
+   this public repository. Vercel supplies that value at runtime. */
+const SYNAPSE_STRATUS_BASE = "https://stratus-api-2.onrender.com";
+const configuredBase = process.env.EMBER_CLOUD_API_URL || process.env.STRATUS_API_BASE || "";
+const API_BASE = configuredBase.includes("stratus-api-2.onrender.com")
+  ? configuredBase.replace(/\/$/, "")
+  : SYNAPSE_STRATUS_BASE;
 const API_KEY = process.env.STRATUS_API_KEY || process.env.EMBER_CLOUD_API_KEY || "";
 
 const CORS = {
