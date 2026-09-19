@@ -233,16 +233,14 @@ function refCard({ label, sub, artName, chip, cls, imageUrl, url }){
   return btn;
 }
 
-const LIVE_NEWS_CACHE = 'xbox.home.live-news.v1';
+const LIVE_NEWS_CACHE = 'xbox.home.live-news.v2';
 const LIVE_NEWS_MAX_AGE = 60 * 60 * 1000;
 let liveNewsTimer = null;
 
 function newsSubline(story){
-  const when = story?.published ? new Date(story.published) : null;
-  const date = when && !Number.isNaN(when.getTime())
-    ? when.toLocaleDateString([], { month:'short', day:'numeric' })
-    : 'Latest';
-  return `Xbox Wire • ${date}`;
+  const text = String(story?.description || '').replace(/\s+/g, ' ').trim();
+  if (!text) return '';
+  return text.length > 72 ? text.slice(0, 69).trimEnd() + '…' : text;
 }
 
 function readNewsCache(){
@@ -268,7 +266,7 @@ function writeNewsCache(stories){
 function paintLiveNews(cards, stories){
   if (!cards?.isConnected || !Array.isArray(stories) || !stories.length) return;
 
-  const next = stories.slice(0, 3).filter(story =>
+  const next = stories.slice(0, 2).filter(story =>
     story?.title && story?.image && /^https:\/\//i.test(story?.url || '')
   );
   if (!next.length) return;
@@ -279,10 +277,8 @@ function paintLiveNews(cards, stories){
   if (currentUrls.length === nextUrls.length &&
       currentUrls.every((url, i) => url === nextUrls[i])) return;
 
-  const store = cards.querySelector('.card-store');
-  [...cards.children].forEach(node => {
-    if (node !== store) node.remove();
-  });
+  cards.querySelectorAll('.ref-news-card, .ref-live-slot-fallback')
+    .forEach(node => node.remove());
 
   next.forEach(story => {
     cards.append(refCard({
@@ -290,7 +286,6 @@ function paintLiveNews(cards, stories){
       sub:newsSubline(story),
       imageUrl:story.image,
       url:story.url,
-      chip:'XBOX WIRE',
       cls:'ref-news-card'
     }));
   });
@@ -368,9 +363,9 @@ function renderReferenceHome(root){
   const cards = el('div', 'cards ref-cards');
   cards.append(
     refCard({ label:'Browse the store', cls:'card-store' }),
-    refCard({ label:'Minecraft Dungeons II', sub:'Add to Play Later', artName:'Minecraft Dungeons II', chip:'GAME PASS' }),
-    refCard({ label:'Onimusha: Way of the Sword', sub:'Available now', artName:'Onimusha: Way of the Sword' }),
-    refCard({ label:'BlizzCon 2026', sub:'Watch the show', artName:'BlizzCon 2026' })
+    refCard({ label:'Minecraft Dungeons II', sub:'Add to Play Later', artName:'Minecraft Dungeons II', chip:'GAME PASS', cls:'ref-static-minecraft' }),
+    refCard({ label:'Onimusha: Way of the Sword', sub:'Available now', artName:'Onimusha: Way of the Sword', cls:'ref-live-slot-fallback' }),
+    refCard({ label:'BlizzCon 2026', sub:'Watch the show', artName:'BlizzCon 2026', cls:'ref-live-slot-fallback' })
   );
   root.append(cards);
   startLiveNews(cards);
