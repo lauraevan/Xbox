@@ -819,6 +819,13 @@ Do not treat either handoff file as more authoritative than an explicit newer us
 
 Newest first. Short notes only; detail belongs in the commit.
 
+### 2026-09-18 — launcher Share control visual refinement
+
+Commit: `de164b5d0d6379c52eb1985120a1467343375bde`
+
+The launcher preview Share control is now icon-only. Replaced the previous filled share glyph with Microsoft Fluent Share iOS 24 regular (outline/up-arrow-from-box style), removed visible "Share" text, and restyled the control as a compact circular dark-glass button in the top-right. Native Web Share + clipboard fallback behavior remains unchanged; aria-label/title remain for accessibility.
+
+
 ### 2026-09-18 — real Xbox Series notification + game-select sounds
 
 Commit: `c276722ad8c9c51ac75a21d918259c3edd9d6ac6`
