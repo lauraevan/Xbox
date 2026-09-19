@@ -524,3 +524,11 @@
   bottom:0!important;
   width:100%!important;
 }
+
+
+/* Pixel correction from the actual rendered Home row: Friends artwork sat
+   slightly above its neighboring game faces. Move only the face down. */
+.reference-home .ref-friends .tile-face{
+  position:relative!important;
+  top:.7rem!important;
+}

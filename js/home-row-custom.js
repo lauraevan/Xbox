@@ -335,7 +335,13 @@ function setTileArtwork(tile, title){
   img.loading = 'eager';
   img.decoding = 'async';
   img.classList.add('loaded');
-  img.style.objectFit = 'cover';
+  img.style.objectFit = title === 'Minecraft' ? 'contain' : 'cover';
+  img.style.objectPosition = 'center center';
+  if (title === 'Minecraft') {
+    img.style.background = '#111';
+  } else {
+    img.style.background = '';
+  }
 }
 
 function patchTile(def){
