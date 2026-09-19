@@ -175,7 +175,7 @@ function friendsTile(){
   const face = el('span', 'tile-face');
   face.innerHTML = `<span class="ref-friends-icon">${FRIENDS_MARK}</span>`;
   btn.append(face, el('span', 'tile-label', 'Friends & community'));
-  btn._navActivate = () => window.App.setView('library');
+  btn._navActivate = () => window.Guide?.open?.('people');
   return btn;
 }
 
