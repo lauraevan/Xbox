@@ -322,13 +322,6 @@ function ensureBadge(face, text){
   face.querySelectorAll('.ref-platform, .ref-gamepass-badge').forEach(node => node.remove());
   if (!text) return;
 
-  if (text.includes('GAME PASS')){
-    const gamePass = document.createElement('span');
-    gamePass.className = 'ref-gamepass-badge';
-    gamePass.textContent = 'GAME PASS';
-    face.append(gamePass);
-  }
-
   if (text.includes('X|S')){
     const badge = document.createElement('span');
     badge.className = 'ref-platform ref-platform-xs';
