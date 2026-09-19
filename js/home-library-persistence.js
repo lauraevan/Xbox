@@ -221,16 +221,44 @@ function promoteFirstGame(strip){
 }
 
 let applying = false;
+
+/* applyHome() edits #view-home, and the observer at the bottom of this file
+   watches #view-home for childList changes. Without this the pass re-entered
+   itself every animation frame. The `applying` flag alone does not stop that:
+   it is already false again by the time the observer's queued frame runs, so
+   the guard below has to be the observer itself, disconnected across the
+   edits and drained of its own records before it is reconnected. */
+let homeObserver = null;
+function pauseHomeObserver(){ homeObserver?.disconnect(); }
+function resumeHomeObserver(){
+  if (!homeObserver) return;
+  const home = document.getElementById('view-home');
+  if (!home) return;
+  homeObserver.takeRecords();
+  homeObserver.observe(home, { childList:true, subtree:true });
+}
+
 async function applyHome(){
   if (applying) return;
   const root = document.getElementById('view-home');
   const strip = root?.querySelector('.ref-strip');
   if (!strip) return;
 
-  applying = true;
+  let games;
   try {
-    const games = await resolveHomeGames();
+    games = await resolveHomeGames();
+  } catch {
+    /* House rule 5: a pass that cannot do its job leaves the app working.
+       If the backend is unreachable, leave the row exactly as rendered. */
+    return;
+  }
+  if (!games.length) return;
+
+  applying = true;
+  pauseHomeObserver();
+  try {
     const desired = new Map(games.map(game => [itemId(game), game]));
+    const wanted = new Set(readHomeIds());
 
     /* Remove static/default tiles that the user has removed from Home, plus
        stale managed tiles from previous renders. */
@@ -240,6 +268,11 @@ async function applyHome(){
       const defaultTitle = canonicalDefault(title);
       const staticId = defaultTitle ? 'default:' + norm(defaultTitle) : null;
       const managedId = tile.dataset.homeManagedId || staticId;
+      /* A default title the user still wants on Home stays even when the
+         cloud cannot describe it. Minecraft is the live case: it is the
+         locally vendored launcher, so it never appears in ownedGames() and
+         this loop was deleting its tile on every render. */
+      if (staticId && wanted.has(staticId)) return;
       if (!managedId || !desired.has(managedId)){
         tile.remove();
       }
@@ -266,20 +299,29 @@ async function applyHome(){
       addRemoveControl(tile, game);
     }
 
-    /* Match saved Home order without disturbing Friends / My games & apps. */
+    /* Match saved Home order without disturbing Friends / My games & apps.
+       insertBefore() on a node that is already in place still counts as a
+       remove plus an insert, so doing this unconditionally churned the row
+       every frame and restarted each tile's entry animation, which holds
+       opacity at 0 - the tiles were present and their art loaded, they were
+       simply never allowed to finish fading in. Only move when the order is
+       actually wrong. */
     const friends = strip.querySelector('.ref-friends');
-    games.forEach(game => {
-      const id = itemId(game);
-      const tile = [...strip.querySelectorAll('.ref-tile[data-ref-title]')]
-        .find(node => node.dataset.homeManagedId === id);
-      if (tile) strip.insertBefore(tile, friends || null);
-    });
+    const ordered = games
+      .map(game => [...strip.querySelectorAll('.ref-tile[data-ref-title]')]
+        .find(node => node.dataset.homeManagedId === itemId(game)))
+      .filter(Boolean);
+    const current = [...strip.querySelectorAll('.ref-tile[data-home-managed-id]')];
+    const inOrder = ordered.length === current.length &&
+      ordered.every((tile, index) => tile === current[index]);
+    if (!inOrder) ordered.forEach(tile => strip.insertBefore(tile, friends || null));
 
     promoteFirstGame(strip);
     [...strip.children].forEach((node, i) => node.style.setProperty('--i', i));
     window.Nav?.repaint?.();
   } finally {
     applying = false;
+    resumeHomeObserver();
   }
 }
 
@@ -387,14 +429,15 @@ window.addEventListener('stratus:library-change', () => {
 const home = document.getElementById('view-home');
 if (home){
   let queued = false;
-  new MutationObserver(() => {
+  homeObserver = new MutationObserver(() => {
     if (queued || applying) return;
     queued = true;
     requestAnimationFrame(() => {
       queued = false;
       void applyHome();
     });
-  }).observe(home, { childList:true, subtree:true });
+  });
+  homeObserver.observe(home, { childList:true, subtree:true });
 }
 
 /* Expose a small shared surface for Store/Library/Home integrations. */

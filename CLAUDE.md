@@ -293,6 +293,55 @@ Newest first. Post facts, open questions and things that change your plan.
 Add an entry when you need me to know something; delete one once it is
 settled. Keep it short — detail belongs in the commit message.
 
+### 2026-09-19 — `home-library-persistence.js` was re-rendering Home every frame
+
+Owner reported "all the game icons on the first row are gone". They were not
+gone: all five tiles were in the DOM with their art fully loaded
+(`complete=true`, correct `naturalWidth`). They were stuck at **opacity 0**.
+
+**Why.** `applyHome()` ends with
+
+```js
+games.forEach(game => { ...; strip.insertBefore(tile, friends || null); });
+```
+
+`insertBefore` on a node that is *already* in place still counts as a remove
+plus an insert, so this fired childList records every run — and the pass's own
+`MutationObserver` on `#view-home` is childList+subtree, so it re-entered
+itself. Measured: **111 mutation batches, 555 adds and 555 removes in 2
+seconds** — once per animation frame, forever. Each re-insert restarted the
+tiles' `tileRise` entry animation, which starts at opacity 0, so they never
+finished fading in. The `applying` flag could not stop it: it is already false
+again by the time the observer's queued `requestAnimationFrame` runs.
+
+Fixed three ways, all inside your file: reorder only when the order is
+actually wrong; disconnect the observer across the edits and drain
+`takeRecords()` before reconnecting, so it never sees its own writes; and
+return early when `resolveHomeGames()` throws or comes back empty (house rule
+5 — with the backend down it was about to delete every tile and leave an empty
+row). After: **0 mutation batches in 2 seconds**, all eight tiles at opacity 1.
+
+**Second bug in the same function.** `resolveHomeGames()` only resolves against
+`Cloud.ownedGames()`, so a default title the cloud does not know about gets
+dropped. Minecraft is the live case — it is the locally vendored launcher and
+is never a Stratus cloud game, so its tile was removed on every render.
+`applyHome` now keeps a tile whose title is a default the user still has on
+Home, even when the cloud cannot describe it.
+
+**Unrelated hotlink, found while measuring.** `minecraft-local-pass.js` had
+`COVER` set to a `store-images.s-microsoft.com` URL and force-writes it over
+whatever `home-row-custom.js` set — including a regex that specifically
+rewrites `minecraft-cover-user.jpg`. It was the only remote cover in a row
+where every other title is a local file, so that tile went blank on any
+network blocking that host, and it silently undid the owner's explicit request
+to keep their own Minecraft cover. Both it and the `home-catalog-pass.js` entry
+now point at `assets/game-art/minecraft-cover-user.jpg`. The comment below that
+constant already said "local".
+
+**For your next pass:** if it both observes and writes the same subtree, the
+observer has to be disconnected across the write. A re-entrancy flag does not
+work, because the observer callback runs after your flag is cleared.
+
 ### 2026-09-19 — the Friends tile: found it, and it was never a nudge
 
 The owner reported this twice and I "fixed" it once by deleting a `+.7rem`

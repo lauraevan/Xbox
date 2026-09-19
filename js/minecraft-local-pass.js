@@ -6,7 +6,12 @@
 
 const ROOT = 'games/minecraft-launcher';
 const LAUNCHER = `${ROOT}/index.html`;
-const COVER = 'https://store-images.s-microsoft.com/image/apps.53095.13850085746326678.06e2dc5c-7997-46e9-a8e6-0e48b57cb13b.419e3c9d-9dd3-4a28-a9f3-a12350215871?h=1024&q=95&w=1024';
+/* The owner's Minecraft cover, committed in this repo. This used to be a
+   store-images.s-microsoft.com hotlink - the only remote cover in a row
+   where every other title is a local file - and this pass force-writes it
+   over whatever home-row-custom set, so the tile went blank on any network
+   that blocks that host. The comment further down already said "local". */
+const COVER = 'assets/game-art/minecraft-cover-user.jpg';
 const HERO = 'https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/key-art/NewKeyArt_Header.jpg';
 const COVER_SENTINEL = '__xbox_local_minecraft_cover__';
 const HOME = document.getElementById('view-home');
