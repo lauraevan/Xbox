@@ -200,8 +200,8 @@ function addRemoveControl(tile, game){
     remove.className = 'home-remove-x';
     remove.setAttribute('role','button');
     remove.setAttribute('tabindex','-1');
-    remove.setAttribute('aria-label', 'Remove ' + game.name + ' from Home screen');
-    remove.title = 'Remove from Home screen';
+    remove.setAttribute('aria-label', 'Remove ' + game.name + ' from Home Screen');
+    remove.title = 'Remove from Home Screen';
     remove.textContent = '×';
     const face = tile.querySelector('.tile-face') || tile;
     face.append(remove);
@@ -301,7 +301,7 @@ function confirmRemove(game){
         label:'Yes',
         onSelect:() => {
           removeFromHome(game);
-          window.App?.toast?.('Removed from Home screen', game.name);
+          window.App?.toast?.('Removed from Home Screen', game.name);
           void applyHome();
         }
       },
@@ -318,13 +318,13 @@ async function gameForRemoveNode(node){
 }
 
 /* Clicking a Library game opens actions instead of immediately starting it.
-   This gives every owned title a real Add to Home screen action. */
+   This gives every owned title a real Add to Home Screen action. */
 async function openLibraryGame(game){
   const onHome = isOnHome(game);
   window.App?.modal?.({
     title:game.name,
     text:onHome
-      ? 'Owned • Cloud ready • On your Home screen'
+      ? 'Owned • Cloud ready • On your Home Screen'
       : 'Owned • Cloud ready',
     actions:[
       {
@@ -338,14 +338,14 @@ async function openLibraryGame(game){
         }
       },
       {
-        label:onHome ? 'Remove from Home screen' : 'Add to Home screen',
+        label:onHome ? 'Remove from Home Screen' : 'Add to Home Screen',
         onSelect:() => {
           if (onHome){
             removeFromHome(game);
-            window.App?.toast?.('Removed from Home screen', game.name);
+            window.App?.toast?.('Removed from Home Screen', game.name);
           } else {
             addToHome(game);
-            window.App?.toast?.('Added to Home screen', game.name);
+            window.App?.toast?.('Added to Home Screen', game.name);
           }
           void applyHome();
         }
