@@ -514,3 +514,9 @@
   width:18rem!important;
   height:18rem!important;
 }
+
+
+/* Keep the Home promo row clear of expanded game tiles. */
+.reference-home .ref-cards{
+  top:58rem!important;
+}
