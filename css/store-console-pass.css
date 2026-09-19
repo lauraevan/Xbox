@@ -606,90 +606,125 @@
 }
 
 
+
+
 /* Living Store discovery rows ------------------------------------------------ */
 .xstore-discovery-home{
-  padding-bottom:10rem!important;
+  padding-bottom:7rem!important;
 }
 .xstore-shelf{
   position:relative;
+  margin-bottom:2.15rem!important;
+  background:transparent!important;
+  box-shadow:none!important;
 }
 .xstore-shelf-head{
+  min-height:3.15rem!important;
+  margin-bottom:.62rem!important;
   align-items:flex-end!important;
 }
 .xstore-shelf-kicker{
-  margin-bottom:.5rem;
+  margin-bottom:.36rem;
   color:#9bf00b;
-  font-size:.92rem;
+  font-size:.86rem;
   line-height:1;
   font-weight:850;
-  letter-spacing:.12rem;
+  letter-spacing:.11rem;
+}
+.xstore-shelf-title{
+  font-size:2.12rem!important;
+  font-weight:650!important;
+  letter-spacing:-.025em;
+}
+.xstore-shelf-sub{
+  margin-top:.32rem!important;
+  max-width:60rem;
+  color:rgba(255,255,255,.46)!important;
 }
 .xstore-shelf-motion{
   display:inline-flex;
   align-items:center;
-  gap:.65rem;
-  margin-bottom:.15rem;
-  color:rgba(255,255,255,.38);
-  font-size:.9rem;
+  gap:.55rem;
+  margin-bottom:.08rem;
+  color:rgba(255,255,255,.30);
+  font-size:.82rem;
   font-weight:750;
-  letter-spacing:.08rem;
+  letter-spacing:.075rem;
 }
 .xstore-shelf-motion > span:first-child{
-  width:2.7rem;
-  height:.2rem;
+  width:2.3rem;
+  height:.16rem;
   overflow:hidden;
   border-radius:1rem;
-  background:rgba(255,255,255,.12);
+  background:rgba(255,255,255,.1);
   position:relative;
 }
 .xstore-shelf-motion > span:first-child::after{
   content:'';
   position:absolute;
   inset:0;
-  width:45%;
+  width:42%;
   border-radius:inherit;
   background:#9bf00b;
-  animation:xstoreAutoIndicator 2.2s ease-in-out infinite;
+  animation:xstoreAutoIndicator 2.8s linear infinite;
 }
 @keyframes xstoreAutoIndicator{
-  0%{ transform:translateX(-110%); }
-  55%,100%{ transform:translateX(240%); }
+  from{ transform:translateX(-120%); }
+  to{ transform:translateX(310%); }
+}
+.xstore-row{
+  grid-auto-columns:15.75rem!important;
+  gap:.62rem!important;
+  padding:.18rem .18rem .58rem!important;
+  margin-left:-.18rem!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.xstore-row.wide{
+  grid-auto-columns:24rem!important;
 }
 .xstore-row[data-auto-rotate="1"]{
-  scroll-behavior:smooth;
-  scroll-snap-type:x proximity;
+  scroll-behavior:auto!important;
+  scroll-snap-type:none!important;
   overscroll-behavior-inline:contain;
   -webkit-overflow-scrolling:touch;
-  mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 4rem),transparent 100%);
-  -webkit-mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 4rem),transparent 100%);
-}
-.xstore-row[data-auto-rotate="1"] .store-game{
-  scroll-snap-align:start;
-}
-.xstore-row.xstore-row-auto-moving .store-cover{
-  transition:transform .7s cubic-bezier(.2,.8,.2,1);
-}
-.xstore-row.xstore-row-auto-moving .store-game:not([data-focused]) .store-cover{
-  transform:translateZ(0) scale(.992);
+  mask-image:linear-gradient(90deg,transparent 0,#000 1.25rem,#000 calc(100% - 2.25rem),transparent 100%);
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 1.25rem,#000 calc(100% - 2.25rem),transparent 100%);
 }
 .xstore-row[data-auto-rotate="1"]:hover,
 .xstore-row[data-auto-rotate="1"]:focus-within{
   mask-image:none;
   -webkit-mask-image:none;
 }
-.xstore-shelf:nth-of-type(odd) .xstore-shelf-title{
-  letter-spacing:-.025em;
+.xstore-row .store-game,
+.xstore-row .store-game-meta,
+.xstore-row .store-cover{
+  background:transparent!important;
+  box-shadow:none!important;
 }
-.xstore-shelf-title{
-  font-size:2.35rem!important;
-  font-weight:650!important;
+.xstore-row .store-cover{
+  border-radius:.5rem!important;
 }
-.xstore-shelf-sub{
-  max-width:60rem;
-  color:rgba(255,255,255,.5)!important;
+.xstore-row .store-game-meta{
+  padding:.48rem .02rem 0!important;
+}
+.xstore-row .store-game-title{
+  font-size:1.28rem!important;
+}
+.xstore-row .store-game-price{
+  margin-top:.18rem!important;
+}
+.xstore-row .store-game-sub{
+  margin-top:.12rem!important;
+}
+.xstore-carousel-clone{
+  pointer-events:none!important;
 }
 @media (prefers-reduced-motion: reduce){
   .xstore-shelf-motion{ display:none; }
-  .xstore-row[data-auto-rotate="1"]{ scroll-behavior:auto; }
-  .xstore-shelf-motion > span:first-child::after{ animation:none; }
+  .xstore-row[data-auto-rotate="1"]{
+    scroll-behavior:auto!important;
+    mask-image:none;
+    -webkit-mask-image:none;
+  }
 }

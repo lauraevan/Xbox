@@ -35,7 +35,6 @@ let product = null;
 let lastRoot = null;
 let selectedHomeGame = null;
 let autoRotateTimer = null;
-let autoRotateCursor = 0;
 
 const lower = value => String(value || '').toLowerCase();
 const profileId = () => String(window.State?.data?.profileId || 'p1');
@@ -292,7 +291,7 @@ function dailySeed(){
 
 function stopAutoRows(){
   if (autoRotateTimer !== null){
-    clearInterval(autoRotateTimer);
+    cancelAnimationFrame(autoRotateTimer);
     autoRotateTimer = null;
   }
 }
@@ -307,41 +306,65 @@ function startAutoRows(root){
 
   const pauseRow = row => {
     if (!row) return;
-    row.dataset.autoPauseUntil = String(Date.now() + 7000);
+    row.dataset.autoPauseUntil = String(Date.now() + 5500);
   };
 
-  root.querySelectorAll('.xstore-row[data-auto-rotate="1"]').forEach(row => {
+  rows.forEach((row, index) => {
+    row.querySelectorAll('.xstore-carousel-clone').forEach(node => node.remove());
+
+    const originals = [...row.children];
+    if (!originals.length) return;
+
+    const before = row.scrollWidth;
+    originals.forEach(card => {
+      const clone = card.cloneNode(true);
+      clone.classList.add('xstore-carousel-clone');
+      clone.removeAttribute('data-nav');
+      clone.removeAttribute('data-focused');
+      clone.setAttribute('aria-hidden','true');
+      clone.tabIndex = -1;
+      clone._navActivate = null;
+      row.append(clone);
+    });
+
+    row.dataset.carouselLoopWidth = String(before);
+    row.dataset.carouselSpeed = String(10 + (index % 4) * 2.25);
+    row.dataset.carouselLast = '0';
+
     row.addEventListener('pointerdown', () => pauseRow(row), { passive:true });
     row.addEventListener('wheel', () => pauseRow(row), { passive:true });
     row.addEventListener('touchstart', () => pauseRow(row), { passive:true });
   });
 
-  autoRotateCursor = 0;
-  autoRotateTimer = setInterval(() => {
-    if (root.hidden || mode !== 'home' || product || !rows.length) return;
+  let last = performance.now();
 
-    const row = rows[autoRotateCursor % rows.length];
-    autoRotateCursor++;
+  const frame = now => {
+    const dt = Math.min(48, Math.max(0, now - last));
+    last = now;
 
-    if (!row?.isConnected) return;
-    if (row.contains(document.activeElement)) return;
-    if (row.matches(':hover')) return;
-    if (Number(row.dataset.autoPauseUntil || 0) > Date.now()) return;
+    if (!root.hidden && mode === 'home' && !product){
+      rows.forEach(row => {
+        if (!row?.isConnected) return;
+        if (row.contains(document.activeElement)) return;
+        if (row.matches(':hover')) return;
+        if (Number(row.dataset.autoPauseUntil || 0) > Date.now()) return;
 
-    const card = row.querySelector('.store-game');
-    if (!card) return;
+        const loopWidth = Number(row.dataset.carouselLoopWidth || 0);
+        const speed = Number(row.dataset.carouselSpeed || 11);
+        if (!loopWidth) return;
 
-    const styles = getComputedStyle(row);
-    const gap = parseFloat(styles.columnGap || styles.gap || '0') || 0;
-    const step = card.getBoundingClientRect().width + gap;
-    const max = Math.max(0, row.scrollWidth - row.clientWidth);
-    const atEnd = row.scrollLeft >= max - Math.max(8, step * .35);
-    const next = atEnd ? 0 : Math.min(max, row.scrollLeft + step * 2);
+        row.scrollLeft += speed * (dt / 1000);
 
-    row.classList.add('xstore-row-auto-moving');
-    row.scrollTo({ left:next, behavior:'smooth' });
-    setTimeout(() => row.classList.remove('xstore-row-auto-moving'), 900);
-  }, 2200);
+        if (row.scrollLeft >= loopWidth){
+          row.scrollLeft -= loopWidth;
+        }
+      });
+    }
+
+    autoRotateTimer = requestAnimationFrame(frame);
+  };
+
+  autoRotateTimer = requestAnimationFrame(frame);
 }
 
 function shelf(title, list, { wide=false, subtitle='', auto=true, kicker='DISCOVER' } = {}){
