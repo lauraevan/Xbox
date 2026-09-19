@@ -8,7 +8,16 @@ const configuredBase = process.env.EMBER_CLOUD_API_URL || process.env.STRATUS_AP
 const API_BASE = configuredBase.includes("stratus-api-2.onrender.com")
   ? configuredBase.replace(/\/$/, "")
   : SYNAPSE_STRATUS_BASE;
-const API_KEY = process.env.STRATUS_API_KEY || process.env.EMBER_CLOUD_API_KEY || "";
+let bundledApiKey = "";
+try {
+  const bundledSites = require("../stratus/api/sites.json");
+  bundledApiKey = String(bundledSites?.sites?.main?.api_key || "");
+} catch {}
+
+const API_KEY =
+  process.env.STRATUS_API_KEY ||
+  process.env.EMBER_CLOUD_API_KEY ||
+  bundledApiKey;
 
 const CORS = {
   "access-control-allow-origin": "*",
