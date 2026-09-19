@@ -185,9 +185,14 @@ function refCard({ label, sub, artName, chip, cls }){
   btn.setAttribute('aria-label', label);
 
   if (cls === 'card-store'){
-    const icon = el('div', 'ref-store-icon', ICON.store);
-    const word = el('div', 'ref-store-wordmark', 'Microsoft Store');
-    btn.append(icon, word);
+    const wrap = el('div', 'ref-card-art ref-store-art');
+    const img = el('img', 'cover loaded');
+    img.src = 'assets/store-tile.jpg';
+    img.alt = '';
+    img.loading = 'eager';
+    img.decoding = 'async';
+    wrap.append(img);
+    btn.append(wrap);
   } else {
     const wrap = el('div', 'ref-card-art');
     const img = el('img', 'cover loaded');
@@ -199,8 +204,10 @@ function refCard({ label, sub, artName, chip, cls }){
   }
 
   if (chip) btn.append(el('div', 'card-chip', escapeHtml(chip)));
-  btn.append(el('div', 'card-label',
-    escapeHtml(label) + (sub ? `<span class="sub">${escapeHtml(sub)}</span>` : '')));
+  if (cls !== 'card-store'){
+    btn.append(el('div', 'card-label',
+      escapeHtml(label) + (sub ? `<span class="sub">${escapeHtml(sub)}</span>` : '')));
+  }
   btn._navActivate = () => artName ? activate(artName) : window.App.setView('pass');
   return btn;
 }
