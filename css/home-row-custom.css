@@ -503,3 +503,14 @@
 .reference-home .ref-strip{
   gap:1.95rem!important;
 }
+
+
+/* Keep Friends the same resting size as the other Home tiles. */
+.reference-home .ref-friends:not([data-focused]):not(:hover){
+  width:18rem!important;
+  margin-top:4.5rem!important;
+}
+.reference-home .ref-friends:not([data-focused]):not(:hover) .tile-face{
+  width:18rem!important;
+  height:18rem!important;
+}

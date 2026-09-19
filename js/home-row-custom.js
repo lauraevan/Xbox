@@ -450,6 +450,12 @@ function ensureLibraryTile(){
   friends.insertAdjacentElement('afterend', makeLibraryTile());
 }
 
+function removeFortniteFromHome(){
+  HOME.querySelectorAll('.ref-tile[data-ref-title]').forEach(tile => {
+    if (norm(tile.dataset.refTitle) === norm('Fortnite')) tile.remove();
+  });
+}
+
 function pinInitialBackdrop(){
   if (document.body.dataset.view && document.body.dataset.view !== 'home') return;
   const layers = [...document.querySelectorAll('.backdrop-layer')];
@@ -462,6 +468,7 @@ function pinInitialBackdrop(){
 function patchHome(){
   if (!HOME.querySelector('.ref-strip')) return;
   SWAPS.forEach(patchTile);
+  removeFortniteFromHome();
   wireAllGameTiles();
   ensureLibraryTile();
   pinInitialBackdrop();
