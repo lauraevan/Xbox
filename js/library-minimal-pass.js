@@ -18,6 +18,21 @@ const keyFor = card => String(
   'game'
 );
 
+async function cloudGameForCard(card){
+  const cloudKey = String(card?.dataset?.cloudKey || card?.dataset?.ownedStoreGame || '');
+  const title = String(card?.getAttribute?.('aria-label') || '');
+  try {
+    const owned = await window.StratusCloud?.ownedGames?.();
+    if (!Array.isArray(owned)) return null;
+    return owned.find(game =>
+      (cloudKey && String(game?.gameKey || '') === cloudKey) ||
+      (!cloudKey && String(game?.name || '') === title)
+    ) || null;
+  } catch {
+    return null;
+  }
+}
+
 function readList(key){
   try {
     const value = JSON.parse(localStorage.getItem(key) || '[]');
@@ -120,11 +135,35 @@ function openMenu(card){
       window.App?.toast?.('Manage game and add-ons', title);
       closeMenu();
     }),
-    makeAction('Add to Home', () => {
-      const added = toggleSaved('xbox.home.pins', gameKey);
-      window.App?.toast?.(added ? 'Added to Home' : 'Removed from Home', title);
-      closeMenu();
-    })
+    (() => {
+      const action = makeAction('Add to Home', async () => {
+        const game = await cloudGameForCard(card);
+        if (!game || !window.XboxHome){
+          window.App?.toast?.('Home', 'Could not update this game on Home.');
+          closeMenu();
+          return;
+        }
+
+        if (window.XboxHome.isOnHome(game)){
+          window.XboxHome.remove(game);
+          window.App?.toast?.('Removed from Home', game.name);
+        } else {
+          window.XboxHome.add(game);
+          window.App?.toast?.('Added to Home', game.name);
+        }
+
+        closeMenu();
+      });
+
+      void cloudGameForCard(card).then(game => {
+        if (!game || !action.isConnected && !flyout.contains(action)) return;
+        action.textContent = window.XboxHome?.isOnHome?.(game)
+          ? 'Remove from Home'
+          : 'Add to Home';
+      });
+
+      return action;
+    })()
   );
 
   document.body.append(flyout);
