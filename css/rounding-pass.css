@@ -122,13 +122,21 @@
 
 /* Home profile: solid black capsule, black avatar, fixed test label. */
 body[data-view="home"] .profile{
-  background:#000 !important;
   padding:.42rem 1.35rem .42rem .42rem !important;
   gap:1rem !important;
-  box-shadow:0 .24rem 1rem rgba(0,0,0,.30) !important;
+  background:transparent !important;
+  box-shadow:none !important;
 }
 body[data-view="home"] .profile:hover,
 body[data-view="home"] .profile[data-focused]{
+  background:transparent !important;
+}
+body[data-view="home"][data-profile-capsule="on"] .profile{
+  background:#000 !important;
+  box-shadow:0 .24rem 1rem rgba(0,0,0,.30) !important;
+}
+body[data-view="home"][data-profile-capsule="on"] .profile:hover,
+body[data-view="home"][data-profile-capsule="on"] .profile[data-focused]{
   background:#000 !important;
 }
 body[data-view="home"] .profile .avatar{
