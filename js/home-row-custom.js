@@ -183,7 +183,8 @@ async function openGamePreview(title){
   share.dataset.nav = '';
   share.dataset.ringRadius = '.8rem';
   share.setAttribute('aria-label', `Share ${title}`);
-  share.innerHTML = `${window.Icons?.icon?.('share') || ''}<span>Share</span>`;
+  share.title = 'Share';
+  share.innerHTML = window.Icons?.icon?.('share') || '';
   share._navActivate = async () => {
     const url = location.href;
     const text = descriptionText
