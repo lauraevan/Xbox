@@ -1,0 +1,47 @@
+/* Persistent Home screen controls */
+#view-home .ref-tile[data-ref-title] .tile-face{
+  position:relative;
+}
+
+.home-remove-x{
+  position:absolute;
+  z-index:8;
+  top:.55rem;
+  right:.55rem;
+  width:2.65rem;
+  height:2.65rem;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:rgba(0,0,0,.82);
+  border:.1rem solid rgba(255,255,255,.28);
+  color:#fff;
+  font:400 2.25rem/1 "Segoe UI",system-ui,sans-serif;
+  opacity:0;
+  transform:scale(.82);
+  pointer-events:none;
+  transition:opacity .12s ease,transform .16s cubic-bezier(.2,.8,.2,1),background .12s ease;
+  box-shadow:0 .3rem 1.1rem rgba(0,0,0,.34);
+}
+
+#view-home .ref-tile[data-ref-title]:hover .home-remove-x,
+#view-home .ref-tile[data-ref-title]:focus-visible .home-remove-x,
+#view-home .ref-tile[data-ref-title].nav-focus .home-remove-x{
+  opacity:1;
+  transform:scale(1);
+  pointer-events:auto;
+}
+
+.home-remove-x:hover,
+.home-remove-x:active{
+  background:rgba(35,35,35,.96);
+}
+
+@media (hover:none), (pointer:coarse){
+  #view-home .ref-tile[data-ref-title]:focus .home-remove-x,
+  #view-home .ref-tile[data-ref-title]:active .home-remove-x{
+    opacity:1;
+    transform:scale(1);
+    pointer-events:auto;
+  }
+}
