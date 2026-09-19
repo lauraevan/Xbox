@@ -520,3 +520,21 @@
 .reference-home .ref-cards{
   top:58rem!important;
 }
+
+
+/* Friends is a special tile class, so keep it locked to the same baseline
+   and resting geometry as the normal Home games in every interaction state. */
+.reference-home .ref-friends,
+.reference-home .ref-friends:hover,
+.reference-home .ref-friends[data-focused]{
+  width:18rem!important;
+  margin-top:4.5rem!important;
+  transform:none!important;
+  align-self:auto!important;
+}
+.reference-home .ref-friends .tile-face,
+.reference-home .ref-friends:hover .tile-face,
+.reference-home .ref-friends[data-focused] .tile-face{
+  width:18rem!important;
+  height:18rem!important;
+}
