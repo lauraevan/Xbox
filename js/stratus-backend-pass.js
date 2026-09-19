@@ -11,7 +11,11 @@ if (!original) return;
 const API_BASE = String(window.STRATUS_BASE || original.BASE || 'https://stratus-api-2.onrender.com').replace(/\/$/, '');
 const BACKENDS = [
   window.STRATUS_BACKEND,
-  '/api/stratus'
+  '/api/stratus',
+  // The existing Synapse server already owns the Stratus credential. Keep it
+  // as a cross-origin fallback so static/Vercel builds still launch cloud
+  // games when their local function has not been given STRATUS_API_KEY yet.
+  'https://v2.educationcatlearningandtutoring.com/api/public/ember'
 ].filter(Boolean).map(v => String(v).replace(/\?$/, ''))
   .filter((v,i,a) => a.indexOf(v) === i);
 
