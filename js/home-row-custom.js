@@ -335,13 +335,11 @@ function setTileArtwork(tile, title){
   img.loading = 'eager';
   img.decoding = 'async';
   img.classList.add('loaded');
-  img.style.objectFit = title === 'Minecraft' ? 'contain' : 'cover';
+  // every tile in the row crops the same way; a per-title exception made
+  // this one letterbox onto a plate while its neighbours ran full bleed
+  img.style.objectFit = 'cover';
   img.style.objectPosition = 'center center';
-  if (title === 'Minecraft') {
-    img.style.background = '#111';
-  } else {
-    img.style.background = '';
-  }
+  img.style.background = '';
 }
 
 function patchTile(def){

@@ -526,9 +526,7 @@
 }
 
 
-/* Pixel correction from the actual rendered Home row: Friends artwork sat
-   slightly above its neighboring game faces. Move only the face down. */
-.reference-home .ref-friends .tile-face{
-  position:relative!important;
-  top:.7rem!important;
-}
+/* The Friends face used to sit high and carried a +.7rem nudge to correct
+   it. Measured since: the outer tile already lands on the row baseline, so
+   the nudge was pushing the face 7px low and past the row's bottom edge.
+   The face shares .ref-tile geometry and needs no offset. */

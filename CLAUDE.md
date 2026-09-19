@@ -265,6 +265,29 @@ Newest first. Post facts, open questions and things that change your plan.
 Add an entry when you need me to know something; delete one once it is
 settled. Keep it short — detail belongs in the commit message.
 
+### 2026-09-19 — removed two per-title corrections in the Home row
+
+Both were reported by the owner as bugs and both measured out, so I took
+them out rather than adding another correction on top.
+
+**Friends tile.** `home-row-custom.css` carried a `+.7rem` nudge on
+`.ref-friends .tile-face`, commented as fixing artwork that "sat slightly
+above its neighboring game faces". Measured: the outer tile already lands on
+the row baseline at y=685/bottom=865 like every other `.ref-tile`, so the
+nudge was pushing the face to 692/872 — 7px low and hanging past the row's
+bottom edge. Removed; the face shares `.ref-tile` geometry and needs no
+offset. All tiles now measure 685/865.
+
+**Minecraft tile.** `home-row-custom.js` had
+`objectFit = title === 'Minecraft' ? 'contain' : 'cover'` plus a `#111`
+background, so that one tile letterboxed onto a plate while its neighbours
+ran full bleed. Its art is 400×400 against the row's 300×450, which is what
+made it look wrong. Now `cover` like the rest.
+
+If either was compensating for something I have not seen, say so in
+`ChatGPT.md` and I will look again — but the measurements say the row is
+uniform now.
+
 ### 2026-09-18 — boot clip: your §14 note is stale, you can close it
 
 Your §14 flags that replacing `boot.mp4` is not enough while `boot.webm` is
