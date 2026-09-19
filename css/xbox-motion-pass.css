@@ -1,0 +1,160 @@
+/* Xbox motion pass. Weight comes from momentum, stagger, and depth rather
+   than expensive layout animation. Transform and opacity keep it smooth. */
+:root{
+  --x-motion-spring:cubic-bezier(.16,1,.3,1);
+  --x-motion-heavy:cubic-bezier(.2,.88,.2,1);
+  --x-motion-snap:cubic-bezier(.34,1.56,.64,1);
+}
+
+html.xbox-motion-ready .stage.xbox-motion-stage{
+  animation:xboxStageIn .8s var(--x-motion-heavy) both;
+}
+@keyframes xboxStageIn{
+  from{ opacity:0; transform:scale(1.025) translateY(1.8rem); }
+  to{ opacity:1; transform:none; }
+}
+
+html.xbox-motion-ready .xbox-view-enter{
+  animation:xboxViewIn .62s var(--x-motion-spring) both;
+  transform-origin:50% 42%;
+}
+@keyframes xboxViewIn{
+  from{ opacity:0; transform:translate3d(0,3.2rem,0) scale(.982); }
+  58%{ opacity:1; }
+  to{ opacity:1; transform:none; }
+}
+
+html.xbox-motion-ready .xbox-item-enter{
+  animation:xboxItemIn .7s var(--x-motion-spring) both;
+  animation-delay:calc(var(--x-motion-index,0) * 27ms);
+}
+@keyframes xboxItemIn{
+  from{ opacity:0; transform:translate3d(0,4.2rem,0) scale(.91); }
+  68%{ opacity:1; transform:translate3d(0,-.35rem,0) scale(1.012); }
+  to{ opacity:1; transform:none; }
+}
+
+html.xbox-motion-ready [data-nav],
+html.xbox-motion-ready button,
+html.xbox-motion-ready .store-game,
+html.xbox-motion-ready .console-poster{
+  transition:
+    translate .42s var(--x-motion-spring),
+    scale .42s var(--x-motion-spring),
+    opacity .3s ease,
+    background-color .28s ease,
+    color .28s ease,
+    border-color .28s ease,
+    box-shadow .38s var(--x-motion-spring)!important;
+  transform-origin:center;
+  backface-visibility:hidden;
+}
+
+html.xbox-motion-ready [data-nav][data-focused]{
+  translate:0 -.28rem;
+  scale:1.025;
+}
+html.xbox-motion-ready [data-nav].xbox-focus-kick{
+  animation:xboxFocusKick .38s var(--x-motion-snap);
+}
+@keyframes xboxFocusKick{
+  0%{ scale:.965; }
+  58%{ scale:1.045; }
+  100%{ scale:1.025; }
+}
+html.xbox-motion-ready [data-nav]:active,
+html.xbox-motion-ready button:active{
+  scale:.955;
+  transition-duration:.1s!important;
+}
+
+html.xbox-motion-ready .focus-ring{
+  transition:
+    top .3s var(--x-motion-spring),
+    left .3s var(--x-motion-spring),
+    width .3s var(--x-motion-spring),
+    height .3s var(--x-motion-spring),
+    border-radius .3s var(--x-motion-spring),
+    opacity .15s linear!important;
+}
+
+html.xbox-motion-ready .backdrop-layer{
+  transition:opacity 1.05s ease,transform 13s linear!important;
+  will-change:opacity,transform;
+}
+html.xbox-motion-ready .backdrop-scrim{
+  transition:background .7s ease,opacity .7s ease;
+}
+
+html.xbox-motion-ready .home-game-preview-card,
+html.xbox-motion-ready .detail-card,
+html.xbox-motion-ready .modal-card,
+html.xbox-motion-ready .guide-panel,
+html.xbox-motion-ready .time-drawer{
+  animation:xboxPanelIn .58s var(--x-motion-spring) both!important;
+  transform-origin:50% 60%;
+}
+@keyframes xboxPanelIn{
+  from{ opacity:0; transform:translate3d(0,4.8rem,0) scale(.91); }
+  64%{ opacity:1; transform:translate3d(0,-.5rem,0) scale(1.008); }
+  to{ opacity:1; transform:none; }
+}
+
+html.xbox-motion-ready .guide:not([hidden]) .guide-panel{
+  transform-origin:left center;
+  animation-name:xboxGuideIn!important;
+}
+@keyframes xboxGuideIn{
+  from{ opacity:0; transform:translate3d(-7rem,0,0) scale(.975); }
+  to{ opacity:1; transform:none; }
+}
+
+html.xbox-motion-ready .launch:not([hidden]) .launch-center{
+  animation:xboxConnectIn .72s var(--x-motion-heavy) both;
+}
+@keyframes xboxConnectIn{
+  from{ opacity:0; transform:translate3d(0,2.8rem,0) scale(.94); }
+  to{ opacity:1; transform:none; }
+}
+
+html.xbox-motion-ready .player.cloud-player:not([hidden]){
+  animation:xboxPlayerIn .48s ease-out both;
+}
+@keyframes xboxPlayerIn{
+  from{ opacity:0; transform:scale(1.018); }
+  to{ opacity:1; transform:none; }
+}
+
+html.xbox-motion-ready .toast{
+  animation:xboxToastIn .48s var(--x-motion-spring) both!important;
+}
+@keyframes xboxToastIn{
+  from{ opacity:0; transform:translate3d(4rem,0,0) scale(.9); }
+  to{ opacity:1; transform:none; }
+}
+
+html.xbox-motion-ready .stage.xbox-motion-stage .sysnav-btn,
+html.xbox-motion-ready .stage.xbox-motion-stage .profile,
+html.xbox-motion-ready .stage.xbox-motion-stage .sysstatus > *{
+  animation:xboxChromeDrop .62s var(--x-motion-spring) both;
+  animation-delay:calc(var(--x-motion-index,0) * 34ms);
+}
+@keyframes xboxChromeDrop{
+  from{ opacity:0; transform:translate3d(0,-2.5rem,0) scale(.9); }
+  to{ opacity:1; transform:none; }
+}
+
+@media (hover:hover) and (pointer:fine){
+  html.xbox-motion-ready [data-nav]:hover{ translate:0 -.18rem; }
+}
+
+@media (prefers-reduced-motion:reduce){
+  html.xbox-motion-ready *,
+  html.xbox-motion-ready *::before,
+  html.xbox-motion-ready *::after{
+    animation-duration:.001ms!important;
+    animation-delay:0ms!important;
+    transition-duration:.001ms!important;
+    scroll-behavior:auto!important;
+  }
+}

@@ -142,27 +142,25 @@ function ensurePlayerHud(){
   const hud = document.createElement('div');
   hud.className = 'cloud-player-hud';
 
-  const identity = document.createElement('div');
-  identity.className = 'cloud-player-id';
-  identity.textContent = 'Xbox Cloud Gaming';
-
   const exit = document.createElement('button');
   exit.className = 'cloud-player-exit';
   exit.type = 'button';
-  exit.textContent = 'Exit game';
+  exit.setAttribute('aria-label', 'Exit game');
+  exit.title = 'Exit game';
+  exit.innerHTML = window.Icons?.icon?.('close') || '<span aria-hidden="true">×</span>';
   exit.addEventListener('click', event => {
     event.preventDefault();
     Cloud?.quit?.();
   });
 
-  hud.append(identity, exit);
+  hud.append(exit);
   player.append(hud);
 
   let timer = null;
   const reveal = () => {
     hud.classList.remove('hide');
     clearTimeout(timer);
-    timer = setTimeout(() => hud.classList.add('hide'), 4300);
+    timer = setTimeout(() => hud.classList.add('hide'), 1800);
   };
   player.addEventListener('pointermove', reveal, { passive:true });
   player.addEventListener('touchstart', reveal, { passive:true });
@@ -175,7 +173,7 @@ function refreshCloudChrome(){
   const hud = player?.querySelector('.cloud-player-hud');
   if (hud && player && !player.hidden){
     hud.classList.remove('hide');
-    setTimeout(() => hud.classList.add('hide'), 4300);
+    setTimeout(() => hud.classList.add('hide'), 1800);
   }
 }
 
@@ -203,13 +201,12 @@ document.addEventListener('keydown', event => {
   if (launch && !launch.hidden && Cloud?.starting) Cloud.quit?.();
 });
 
-// When a cloud game starts, update the HUD title from the launch title.
+// Keep a tiny exit affordance without putting identity or instructions over
+// the running game.
 if (Cloud?.play){
   const originalPlay = Cloud.play.bind(Cloud);
   Cloud.play = async game => {
     decorateLaunch();
-    const title = player?.querySelector('.cloud-player-id');
-    if (title) title.textContent = `${game?.name || 'Game'}  •  Xbox Cloud Gaming`;
     return originalPlay(game);
   };
 }

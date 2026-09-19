@@ -253,11 +253,7 @@ function showPlayer(game, uuid){
 
   player.hidden = false;
   player.classList.add('cloud-player');
-  if (hint){
-    hint.textContent = 'Press Esc or B to return to Xbox';
-    hint.classList.remove('hide');
-    setTimeout(() => hint.classList.add('hide'), 5000);
-  }
+  hint?.classList.add('hide');
 
   window.Nav?.pushLayer?.(player);
   window.Nav?.hideRing?.();
