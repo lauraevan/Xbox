@@ -37,3 +37,164 @@
   background:rgba(35,35,35,.96);
 }
 
+
+
+/* Xbox-style Home removal confirmation */
+.home-remove-confirm{
+  position:fixed;
+  inset:0;
+  z-index:260;
+  display:grid;
+  place-items:center;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .15s ease;
+}
+
+.home-remove-confirm.in{
+  opacity:1;
+  pointer-events:auto;
+}
+
+.home-remove-confirm.out{
+  opacity:0;
+  pointer-events:none;
+}
+
+.home-remove-confirm-scrim{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  border:0;
+  padding:0;
+  background:rgba(0,0,0,.7);
+  backdrop-filter:blur(8px);
+}
+
+.home-remove-confirm-panel{
+  position:relative;
+  z-index:1;
+  width:min(70rem,calc(100vw - 4rem));
+  min-height:24rem;
+  display:grid;
+  grid-template-columns:22rem 1fr;
+  overflow:hidden;
+  background:#111;
+  border:.1rem solid rgba(255,255,255,.16);
+  box-shadow:0 2rem 7rem rgba(0,0,0,.62);
+  transform:translateY(1.2rem) scale(.985);
+  transition:transform .18s cubic-bezier(.2,.8,.2,1);
+}
+
+.home-remove-confirm.in .home-remove-confirm-panel{
+  transform:translateY(0) scale(1);
+}
+
+.home-remove-confirm-art{
+  min-height:24rem;
+  background:#1a1a1a center/cover no-repeat;
+  position:relative;
+}
+
+.home-remove-confirm-art::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(90deg,transparent 58%,rgba(17,17,17,.72) 100%);
+}
+
+.home-remove-confirm-copy{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  padding:3.8rem 4.2rem;
+}
+
+.home-remove-confirm-kicker{
+  margin-bottom:1rem;
+  font-size:1.25rem;
+  font-weight:700;
+  letter-spacing:.18em;
+  color:#9f9f9f;
+}
+
+.home-remove-confirm-copy h2{
+  margin:0;
+  max-width:40rem;
+  color:#fff;
+  font-size:3rem;
+  line-height:1.08;
+  font-weight:600;
+}
+
+.home-remove-confirm-copy p{
+  margin:1.5rem 0 0;
+  max-width:40rem;
+  color:rgba(255,255,255,.68);
+  font-size:1.55rem;
+  line-height:1.45;
+}
+
+.home-remove-confirm-actions{
+  display:flex;
+  gap:1rem;
+  margin-top:3rem;
+}
+
+.home-remove-confirm-actions button{
+  min-height:5rem;
+  padding:0 2.2rem;
+  border:.1rem solid rgba(255,255,255,.22);
+  background:#242424;
+  color:#fff;
+  font:600 1.45rem/1 "Segoe UI",system-ui,sans-serif;
+  transition:transform .12s ease,background .12s ease,border-color .12s ease;
+}
+
+.home-remove-confirm-actions button:hover,
+.home-remove-confirm-actions button:focus-visible,
+.home-remove-confirm-actions button[data-focused]{
+  background:#fff;
+  color:#111;
+  border-color:#fff;
+  outline:none;
+  transform:scale(1.02);
+}
+
+.home-remove-confirm-remove{
+  background:#2b2b2b !important;
+}
+
+.home-remove-confirm-remove:hover,
+.home-remove-confirm-remove:focus-visible,
+.home-remove-confirm-remove[data-focused]{
+  background:#fff !important;
+}
+
+@media (max-width:700px){
+  .home-remove-confirm-panel{
+    width:min(94vw,56rem);
+    grid-template-columns:1fr;
+  }
+
+  .home-remove-confirm-art{
+    min-height:16rem;
+  }
+
+  .home-remove-confirm-art::after{
+    background:linear-gradient(180deg,transparent 55%,#111 100%);
+  }
+
+  .home-remove-confirm-copy{
+    padding:2.5rem;
+  }
+
+  .home-remove-confirm-copy h2{
+    font-size:2.35rem;
+  }
+
+  .home-remove-confirm-actions{
+    flex-direction:column;
+  }
+}
