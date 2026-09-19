@@ -155,3 +155,18 @@ them.
 
 To run it locally, use a static server (`python3 -m http.server`) rather than
 `file://`, so the catalogue fetch isn't blocked by CORS.
+
+
+## License and production protection
+
+The original Xbox project code is proprietary and covered by the root
+`LICENSE`. Third-party material keeps its own license or permission.
+
+Production deployments use `scripts/protect-build.mjs`. Vercel publishes a
+separate `dist/` artifact instead of serving the repository tree directly.
+Selected project-specific JavaScript is obfuscated with source maps disabled,
+and server-side Stratus source under `stratus/api` is not copied into the
+public static deployment.
+
+Obfuscation is a deterrent, not a substitute for keeping secrets and sensitive
+server logic off the client. API credentials remain server-side.
