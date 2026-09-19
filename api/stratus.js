@@ -105,7 +105,7 @@ async function callUpstream(req,action,path,options={}){
     const upstream=rows[i];
 
     if (!upstream.key){
-      lastError=new Error(\`Missing API key for \${upstream.id} Stratus upstream.\`);
+      lastError=new Error(`Missing API key for ${upstream.id} Stratus upstream.`);
       continue;
     }
 
@@ -122,7 +122,7 @@ async function callUpstream(req,action,path,options={}){
       const hasNext=i < rows.length-1;
       if (action === "create" && hasNext && retryable(response.status)){
         lastError=new Error(
-          \`\${upstream.id} Stratus upstream returned \${response.status}\`
+          `${upstream.id} Stratus upstream returned ${response.status}`
         );
         continue;
       }
@@ -155,7 +155,7 @@ module.exports=async function handler(req,res){
       const {response,upstream}=await callUpstream(
         req,
         action,
-        \`/cloud/v1/getQueue?uuid=\${encodeURIComponent(uuid)}\`,
+        `/cloud/v1/getQueue?uuid=${encodeURIComponent(uuid)}`,
         {headers:{"content-type":"application/json"}}
       );
       return relay(res,response,"application/json",upstream);
