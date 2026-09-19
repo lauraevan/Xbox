@@ -40,7 +40,7 @@ const CORS = {
   "access-control-allow-origin": "*",
   "access-control-allow-methods": "GET, POST, OPTIONS",
   "access-control-allow-headers": "content-type",
-  "access-control-expose-headers": "x-stratus-upstream, x-stratus-embed-base",
+  "access-control-expose-headers": "x-stratus-upstream, x-stratus-embed-base, x-stratus-fallback",
   "cache-control": "no-store"
 };
 
@@ -63,11 +63,12 @@ async function bodyOf(req){
   return raw ? JSON.parse(raw) : {};
 }
 
-async function relay(res,response,type,upstream){
+async function relay(res,response,type,upstream,fallback=false){
   applyHeaders(res);
   res.statusCode=response.status;
   res.setHeader("x-stratus-upstream",upstream.id);
   res.setHeader("x-stratus-embed-base",upstream.base);
+  res.setHeader("x-stratus-fallback",fallback ? "1" : "0");
   res.setHeader(
     "content-type",
     type || response.headers.get("content-type") || "application/json"
@@ -127,7 +128,7 @@ async function callUpstream(req,action,path,options={}){
         continue;
       }
 
-      return {response,upstream};
+      return {response,upstream,fallback:i > 0};
     }catch(error){
       lastError=error;
       if (action !== "create" || i === rows.length-1) throw error;
@@ -152,13 +153,13 @@ module.exports=async function handler(req,res){
       const uuid=String(req.query?.uuid || "");
       if (!uuid) return sendJson(res,400,{error:"Missing uuid."});
 
-      const {response,upstream}=await callUpstream(
+      const {response,upstream,fallback}=await callUpstream(
         req,
         action,
         `/cloud/v1/getQueue?uuid=${encodeURIComponent(uuid)}`,
         {headers:{"content-type":"application/json"}}
       );
-      return relay(res,response,"application/json",upstream);
+      return relay(res,response,"application/json",upstream,fallback);
     }
 
     const routes={
@@ -173,7 +174,7 @@ module.exports=async function handler(req,res){
     if (req.method !== "POST")
       return sendJson(res,405,{error:"POST required."});
 
-    const {response,upstream}=await callUpstream(req,action,path,{
+    const {response,upstream,fallback}=await callUpstream(req,action,path,{
       method:"POST",
       headers:{"content-type":"application/json"},
       body:JSON.stringify(await bodyOf(req))
@@ -183,7 +184,8 @@ module.exports=async function handler(req,res){
       res,
       response,
       action === "create" ? "application/x-ndjson" : "application/json",
-      upstream
+      upstream,
+      fallback
     );
   }catch(error){
     return sendJson(res,502,{

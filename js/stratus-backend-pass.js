@@ -29,6 +29,15 @@ const aborted = err => err?.name === 'AbortError';
 const log = (...args) => console.log('[Stratus/Xbox]', ...args);
 const warn = (...args) => console.warn('[Stratus/Xbox]', ...args);
 
+function fallbackStatus(){
+  return document.getElementById('launchSourceStatus');
+}
+
+function showFallbackStatus(show=true){
+  const node = fallbackStatus();
+  if (node) node.hidden = !show;
+}
+
 function endpoint(base, action, uuid){
   const url = new URL(base, window.location.href);
   url.searchParams.set('action', action);
@@ -83,8 +92,10 @@ async function request(action, { method='POST', body, uuid, signal, backendOnly 
       activeBackend = base;
       const upstream = res.headers.get('x-stratus-upstream');
       const embedBase = res.headers.get('x-stratus-embed-base');
+      const fellBack = res.headers.get('x-stratus-fallback') === '1';
       if (upstream) activeUpstream = upstream;
       if (embedBase) activeEmbedBase = embedBase.replace(/\/$/, '');
+      if (fellBack) showFallbackStatus(true);
       window.dispatchEvent(new CustomEvent('stratus:backend', {
         detail:{
           backend:base,
@@ -116,6 +127,7 @@ function statusText(msg, game){
 }
 
 async function waitForQueue(uuid, controller, game, onStatus){
+  let failures = 0;
   for (;;){
     await sleep(4000);
     if (controller.signal.aborted) throw new DOMException('Aborted','AbortError');
@@ -130,10 +142,13 @@ async function waitForQueue(uuid, controller, game, onStatus){
       });
     } catch (err){
       if (aborted(err)) throw err;
-      warn('queue poll failed, retrying', err?.message || err);
+      failures++;
+      warn('queue poll failed, retrying', failures, err?.message || err);
+      if (failures >= 3) throw err;
       continue;
     }
 
+    failures = 0;
     const text = await res.text();
     let msg = {};
     try { msg = JSON.parse(text); } catch {}
@@ -245,6 +260,7 @@ function launchSurface(game){
   if (art) art.style.backgroundImage = (game.image || game.cover) ? `url("${game.image || game.cover}")` : '';
   if (title) title.textContent = game.name;
   if (sub) sub.textContent = 'Connecting…';
+  showFallbackStatus(false);
   if (splash) splash.hidden = false;
   window.Nav?.hideRing?.();
   return { splash, sub };
@@ -317,6 +333,7 @@ async function quit(){
   const player = document.getElementById('player');
   const frame = document.getElementById('playerFrame');
   if (splash) splash.hidden = true;
+  showFallbackStatus(false);
   if (frame) frame.src = 'about:blank';
   restoreSandbox();
   if (player){ player.hidden = true; player.classList.remove('cloud-player'); }
@@ -341,21 +358,60 @@ async function play(game){
   const { splash, sub } = launchSurface(game);
 
   try {
-    const uuid = await createSession(game, controller, msg => {
-      if (typeof msg?.uuid === 'string' && pending) pending.uuid = msg.uuid;
-      if (sub) sub.textContent = statusText(msg,game);
-    });
-    if (!uuid) throw new Error('Cloud session did not return an ID.');
-    if (pending) pending.uuid = uuid;
+    const runAttempt = async () => {
+      const uuid = await createSession(game, controller, msg => {
+        if (typeof msg?.uuid === 'string' && pending) pending.uuid = msg.uuid;
+        if (sub) sub.textContent = statusText(msg,game);
+      });
+      if (!uuid) throw new Error('Cloud session did not return an ID.');
+      if (pending) pending.uuid = uuid;
 
-    if (sub) sub.textContent = 'Starting stream…';
-    const session = await startGame(uuid,controller);
-    if (controller.signal.aborted) return;
+      if (sub) sub.textContent = 'Starting stream…';
+      const session = await startGame(uuid,controller);
+      if (controller.signal.aborted) throw new DOMException('Aborted','AbortError');
+      return { uuid, session };
+    };
 
+    let result;
+    try {
+      result = await runAttempt();
+    } catch (firstError){
+      if (aborted(firstError) || controller.signal.aborted) throw firstError;
+
+      /* If a primary Stratus session dies after it was selected, its UUID is
+         tied to that backend. Close that attempt and create a brand-new Render
+         session instead of trying to reuse the dead UUID on another source. */
+      if (activeUpstream !== 'primary') throw firstError;
+
+      warn('primary source failed; retrying Render', firstError?.message || firstError);
+      const failedUuid = pending?.uuid || startedUuid;
+      if (failedUuid && activeBackend){
+        try {
+          await fetch(endpoint(activeBackend,'quit'), {
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({ uuid:failedUuid }),
+            cache:'no-store'
+          });
+        } catch {}
+      }
+
+      if (pending) pending.uuid = null;
+      startedUuid = null;
+      activeUpstream = 'render';
+      activeEmbedBase = API_BASE;
+      showFallbackStatus(true);
+      if (sub) sub.textContent = 'Connecting…';
+
+      result = await runAttempt();
+    }
+
+    const { uuid, session } = result;
     startHeartbeat(uuid);
     active = { uuid, game, controller, session };
     pending = null;
     if (splash) splash.hidden = true;
+    showFallbackStatus(false);
     showPlayer(game,uuid);
   } catch (err){
     if (aborted(err) || controller.signal.aborted) return;
@@ -372,6 +428,7 @@ async function play(game){
     pending = null;
     startedUuid = null;
     stopHeartbeat();
+    showFallbackStatus(false);
     if (sub) sub.textContent = `Could not start cloud game: ${err?.message || 'Unknown error'}`;
     window.Sound?.error?.();
     setTimeout(() => {
