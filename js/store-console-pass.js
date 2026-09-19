@@ -121,17 +121,15 @@ function decorateLaunch(){
   const center = launch.querySelector('.launch-center');
   if (!center) return;
 
-  if (!center.querySelector('.cloud-launch-brand')){
-    const brand = document.createElement('div');
-    brand.className = 'cloud-launch-brand';
-    brand.textContent = 'Xbox Cloud Gaming';
-    center.insertBefore(brand, center.firstChild);
-  }
+  /* Keep connection chrome quiet. Older builds added a second cloud brand
+     above the Xbox mark, which made this transient screen feel crowded. */
+  center.querySelector('.cloud-launch-brand')?.remove();
 
   if (!center.querySelector('.cloud-launch-cancel')){
     const cancel = document.createElement('button');
     cancel.className = 'cloud-launch-cancel';
     cancel.type = 'button';
+    cancel.setAttribute('aria-label', 'Cancel connection');
     cancel.textContent = 'Cancel';
     cancel.addEventListener('click', () => Cloud?.quit?.());
     center.append(cancel);

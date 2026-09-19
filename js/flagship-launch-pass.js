@@ -254,29 +254,11 @@ if (!document.getElementById('xbox-page-shell-fix')){
   document.head.append(style);
 }
 
-if (!center.querySelector('.launch-brand')){
-  const brand = document.createElement('div');
-  brand.className = 'launch-brand';
-  brand.setAttribute('aria-hidden','true');
-  brand.innerHTML = `
-    <img class="launch-xbox-logo" src="https://upload.wikimedia.org/wikipedia/commons/e/e5/Xbox_Logo.svg" alt="">
-    <span>XBOX</span>`;
-  center.prepend(brand);
-}
-
-if (!center.querySelector('.launch-status-rail')){
-  const rail = document.createElement('div');
-  rail.className = 'launch-status-rail';
-  rail.setAttribute('aria-hidden','true');
-  center.append(rail);
-}
-
-if (!center.querySelector('.launch-footnote')){
-  const note = document.createElement('div');
-  note.className = 'launch-footnote';
-  note.textContent = 'Xbox Cloud Gaming';
-  center.append(note);
-}
+/* This screen only lives between Start and the stream. Remove the stacked
+   branding and explanatory chrome from older builds; the title and changing
+   status already say everything useful. */
+center.querySelectorAll('.launch-brand, .launch-status-rail, .launch-footnote, .cloud-launch-brand')
+  .forEach(node => node.remove());
 
 function refreshState(){
   if (launch.hidden) return;

@@ -470,12 +470,24 @@
 .launch-center{
   position:relative!important;
   z-index:3!important;
-  width:min(72rem,78vw)!important;
+  width:min(54rem,78vw)!important;
   display:grid!important;
   justify-items:center!important;
-  gap:1.05rem!important;
-  padding:3.2rem 4rem 3.6rem!important;
+  gap:.9rem!important;
+  padding:2.4rem 3rem!important;
   text-align:center!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  backdrop-filter:none!important;
+}
+
+.launch-brand,
+.cloud-launch-brand,
+.launch-status-rail,
+.launch-footnote{
+  display:none!important;
 }
 
 .launch-brand{
@@ -498,8 +510,8 @@
 }
 
 .launch-title{
-  max-width:70rem!important;
-  font-size:4.65rem!important;
+  max-width:52rem!important;
+  font-size:3.6rem!important;
   line-height:1.02!important;
   font-weight:600!important;
   letter-spacing:-.085rem!important;
@@ -507,16 +519,16 @@
 }
 
 .launch-sub{
-  min-height:2.2rem!important;
-  color:rgba(255,255,255,.62)!important;
-  font-size:1.38rem!important;
+  min-height:2rem!important;
+  color:rgba(255,255,255,.58)!important;
+  font-size:1.25rem!important;
   letter-spacing:.01rem!important;
 }
 
 .launch-spinner{
-  width:4.6rem!important;
-  height:4.6rem!important;
-  margin:.85rem 0 .4rem!important;
+  width:3.8rem!important;
+  height:3.8rem!important;
+  margin:.4rem 0!important;
 }
 
 .launch-spinner span{

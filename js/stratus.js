@@ -187,12 +187,12 @@ async function backend(action, { method='POST', body, uuid, signal } = {}){
 
 function statusText(event, game){
   switch (event?.status){
-    case 'creating_account': return 'Provisioning a cloud rig…';
-    case 'account_ready': return 'Cloud rig ready…';
-    case 'requesting_game': return `Loading ${game?.name || 'game'}…`;
-    case 'queue': return `In queue${event.queue_pos != null ? ` • position ${event.queue_pos}` : '…'}`;
-    case 'finished_queue': return 'Cloud rig ready…';
-    default: return 'Connecting to Xbox Cloud Gaming…';
+    case 'creating_account': return 'Preparing…';
+    case 'account_ready': return 'Ready…';
+    case 'requesting_game': return 'Starting…';
+    case 'queue': return event.queue_pos != null ? `Queue ${event.queue_pos}` : 'In queue…';
+    case 'finished_queue': return 'Ready…';
+    default: return 'Connecting…';
   }
 }
 
@@ -346,7 +346,7 @@ function launchSurface(game){
   const sub = splash?.querySelector('.launch-sub');
   if (art) art.style.backgroundImage = (game.image || game.cover) ? `url("${game.image || game.cover}")` : '';
   if (title) title.textContent = game.name;
-  if (sub) sub.textContent = 'Connecting to Xbox Cloud Gaming…';
+  if (sub) sub.textContent = 'Connecting…';
   if (splash) splash.hidden = false;
   window.Nav?.hideRing?.();
   return { splash, sub };
