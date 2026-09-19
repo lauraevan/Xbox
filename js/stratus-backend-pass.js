@@ -1,7 +1,6 @@
 /* Final Stratus transport pass.
-   This intentionally mirrors the working Synapse/Lovable Ember architecture:
-   browser -> Synapse backend proxy -> Stratus API, with direct Stratus embed
-   only after startGame succeeds. */
+   Xbox browser -> Xbox /api/stratus proxy -> Stratus API, with the direct
+   Stratus embed only after startGame succeeds. No Ember Cloud dependency. */
 (() => {
 'use strict';
 

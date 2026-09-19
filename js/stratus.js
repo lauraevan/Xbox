@@ -1,7 +1,6 @@
 /* Stratus Cloud integration for the Xbox replica.
-   Mirrors the working Synapse/Lovable architecture:
-   browser -> trusted backend proxy -> Stratus API.
-   The API key never needs to be exposed to the static Xbox frontend. */
+   Uses the evanjeffrey1212-eng/stratus-api codebase through the Xbox
+   server-side proxy. API credentials never reach the browser. */
 (() => {
 'use strict';
 
@@ -359,9 +358,8 @@ function showPlayer(game, uuid){
   const hint = document.getElementById('playerHint');
   if (!player || !frame) throw new Error('Player surface is missing.');
 
-  // The working Lovable Ember client does not sandbox the Stratus iframe.
-  // Remove the browser-game sandbox for cloud sessions so WebRTC/gamepad/input
-  // behavior matches that known-good integration.
+  // Cloud sessions need the Stratus iframe unsandboxed so WebRTC, gamepad,
+  // pointer lock, and input behave like the upstream Stratus client.
   if (!frame.dataset.originalSandbox)
     frame.dataset.originalSandbox = frame.getAttribute('sandbox') || '';
   frame.removeAttribute('sandbox');
