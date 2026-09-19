@@ -920,6 +920,7 @@ function applySettings(){
   document.body.dataset.cvd = s.colorFilter || 'none';
   document.body.dataset.contrast = s.highContrast ? 'high' : 'normal';
   document.body.dataset.transparency = s.reduceTransparency ? 'reduced' : 'normal';
+  document.body.dataset.profileCapsule = s.profileCapsule ? 'on' : 'off';
   document.documentElement.dataset.motion = s.motion;
   document.documentElement.style.setProperty('--accent', s.accent);
   document.documentElement.style.setProperty('--text-scale', s.textScale || 1);
