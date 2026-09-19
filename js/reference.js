@@ -10,6 +10,7 @@ const { el, escapeHtml, ICON } = V;
 
 const EDGE_LOGO = 'https://upload.wikimedia.org/wikipedia/commons/9/98/Microsoft_Edge_logo_%282019%29.svg';
 const FORZA_CLEAN = 'https://gaming-cdn.com/images/news/articles/13710/cover/forza-horizon-5-hat-auf-ps5-schon-2-millionen-spielkopien-verkauft-cover687427dc70621.jpg';
+const SERIES_XS_BADGE = 'https://cms-assets.xboxservices.com/assets/fc/80/fc801b4c-fd95-4a10-8f03-da193e5792df.svg?n=Xbox-Series-X_Icons_768_Optimized_96x42_01.svg';
 
 /* The wallpaper is deliberately separate from the Forza tile art. The old
    build used the retail key art as the wallpaper, which baked an enormous
@@ -157,7 +158,21 @@ function refTile(def){
   art.append(img);
   face.append(art);
 
-  if (def.badge) face.append(el('span', 'ref-platform', def.badge));
+  if (def.badge){
+    if (def.badge.includes('GAME PASS')){
+      face.append(el('span', 'ref-gamepass-badge', 'GAME PASS'));
+    }
+    if (def.badge.includes('X|S')){
+      const badge = el('span', 'ref-platform ref-platform-xs');
+      const badgeImg = el('img', 'ref-platform-xs-img');
+      badgeImg.src = SERIES_XS_BADGE;
+      badgeImg.alt = '';
+      badgeImg.loading = 'eager';
+      badgeImg.decoding = 'async';
+      badge.append(badgeImg);
+      face.append(badge);
+    }
+  }
 
   btn.append(face, el('span', 'tile-label', escapeHtml(def.name)));
   btn._navActivate = () => activate(def.name);
