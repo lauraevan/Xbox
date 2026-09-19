@@ -9,13 +9,15 @@ if (!Cloud) return;
 
 const HOME_KEY = 'xbox.home.screen.v2';
 const LEGACY_HOME_KEYS = ['xbox.home.screen.v1','xbox.home.pins'];
+const CYBERPUNK_MIGRATION_KEY = 'xbox.home.cyberpunk.default.v1';
 const DEFAULT_TITLES = [
   'Forza Horizon 5',
   'Grand Theft Auto V',
   'Hollow Knight: Silksong',
   'Elden Ring',
   'Red Dead Redemption 2',
-  'Minecraft'
+  'Minecraft',
+  'Cyberpunk 2077'
 ];
 
 const ALIASES = {
@@ -24,7 +26,8 @@ const ALIASES = {
   'Hollow Knight: Silksong': ['hollow knight silksong','silksong'],
   'Elden Ring': ['elden ring'],
   'Red Dead Redemption 2': ['red dead redemption 2','rdr2'],
-  'Minecraft': ['minecraft']
+  'Minecraft': ['minecraft'],
+  'Cyberpunk 2077': ['cyberpunk 2077','cyberpunk2077']
 };
 
 const norm = value => String(value || '').toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -62,11 +65,25 @@ function readHomeIds(){
       try {
         LEGACY_HOME_KEYS.forEach(key => localStorage.removeItem(key));
         localStorage.setItem(HOME_KEY, JSON.stringify(defaults));
+        localStorage.setItem(CYBERPUNK_MIGRATION_KEY, '1');
       } catch {}
       return defaults;
     }
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed.map(String).filter(Boolean) : defaultHomeIds();
+    const ids = Array.isArray(parsed) ? parsed.map(String).filter(Boolean) : defaultHomeIds();
+
+    /* Friends used to occupy the final Home-row slot outside persistence.
+       Add Cyberpunk once for existing clients, then respect future removals. */
+    try {
+      if (!localStorage.getItem(CYBERPUNK_MIGRATION_KEY)){
+        const cyberpunkId = 'default:' + norm('Cyberpunk 2077');
+        if (!ids.includes(cyberpunkId)) ids.push(cyberpunkId);
+        localStorage.setItem(HOME_KEY, JSON.stringify(ids));
+        localStorage.setItem(CYBERPUNK_MIGRATION_KEY, '1');
+      }
+    } catch {}
+
+    return ids;
   } catch {
     return defaultHomeIds();
   }
@@ -299,8 +316,10 @@ async function applyHome(){
 
       if (!tile){
         tile = makeGameTile(game);
-        const friends = strip.querySelector('.ref-friends');
-        strip.insertBefore(tile, friends || null);
+        const anchor =
+          strip.querySelector('.ref-friends') ||
+          strip.querySelector('[data-home-library-mosaic="1"]');
+        strip.insertBefore(tile, anchor || null);
       }
 
       tile.dataset.homeManagedId = id;
@@ -314,7 +333,9 @@ async function applyHome(){
        opacity at 0 - the tiles were present and their art loaded, they were
        simply never allowed to finish fading in. Only move when the order is
        actually wrong. */
-    const friends = strip.querySelector('.ref-friends');
+    const anchor =
+      strip.querySelector('.ref-friends') ||
+      strip.querySelector('[data-home-library-mosaic="1"]');
     const ordered = games
       .map(game => [...strip.querySelectorAll('.ref-tile[data-ref-title]')]
         .find(node => node.dataset.homeManagedId === itemId(game)))
@@ -322,7 +343,7 @@ async function applyHome(){
     const current = [...strip.querySelectorAll('.ref-tile[data-home-managed-id]')];
     const inOrder = ordered.length === current.length &&
       ordered.every((tile, index) => tile === current[index]);
-    if (!inOrder) ordered.forEach(tile => strip.insertBefore(tile, friends || null));
+    if (!inOrder) ordered.forEach(tile => strip.insertBefore(tile, anchor || null));
 
     promoteFirstGame(strip);
     [...strip.children].forEach((node, i) => node.style.setProperty('--i', i));
