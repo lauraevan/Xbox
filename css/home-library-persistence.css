@@ -111,14 +111,6 @@
   padding:3.8rem 4.2rem;
 }
 
-.home-remove-confirm-kicker{
-  margin-bottom:1rem;
-  font-size:1.25rem;
-  font-weight:700;
-  letter-spacing:.18em;
-  color:#9f9f9f;
-}
-
 .home-remove-confirm-copy h2{
   margin:0;
   max-width:40rem;
@@ -148,6 +140,7 @@
   border:.1rem solid rgba(255,255,255,.22);
   background:#242424;
   color:#fff;
+  border-radius:1.15rem;
   font:600 1.45rem/1 "Segoe UI",system-ui,sans-serif;
   transition:transform .12s ease,background .12s ease,border-color .12s ease;
 }
