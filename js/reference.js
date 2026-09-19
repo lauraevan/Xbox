@@ -168,7 +168,7 @@ const FRIENDS_MARK = `
 </svg>`;
 
 function friendsTile(){
-  const btn = el('button', 'tile tile-wide ref-friends');
+  const btn = el('button', 'tile tile-sm ref-tile ref-friends');
   btn.dataset.nav = '';
   btn.dataset.ringRadius = '.08rem';
   btn.setAttribute('aria-label', 'Friends & community');

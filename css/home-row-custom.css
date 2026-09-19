@@ -155,18 +155,6 @@
   height:22.5rem!important;
 }
 
-/* Keep system/friends tiles at their intended size unless they are actually
-   the currently selected tile. */
-.reference-home .ref-friends:not([data-focused]):not(:hover){
-  width:21.5rem!important;
-  margin-top:.5rem!important;
-}
-.reference-home .ref-friends:not([data-focused]):not(:hover) .tile-face{
-  width:21.5rem!important;
-  height:21.5rem!important;
-}
-
-
 /* Home first-row game preview. Inspired by the console Store/game-info surface,
    but kept centered and compact so Home remains visibly underneath. */
 .home-game-preview{
@@ -505,36 +493,34 @@
 }
 
 
-/* Keep Friends the same resting size as the other Home tiles. */
-.reference-home .ref-friends:not([data-focused]):not(:hover){
-  width:18rem!important;
-  margin-top:4.5rem!important;
-}
-.reference-home .ref-friends:not([data-focused]):not(:hover) .tile-face{
-  width:18rem!important;
-  height:18rem!important;
-}
-
-
 /* Keep the Home promo row clear of expanded game tiles. */
 .reference-home .ref-cards{
   top:58rem!important;
 }
 
 
-/* Friends is a special tile class, so keep it locked to the same baseline
-   and resting geometry as the normal Home games in every interaction state. */
+
+
+/* Friends now uses the same ref-tile geometry as the game row.
+   Keep it fixed-size, but let ref-tile own the label positioning/baseline. */
 .reference-home .ref-friends,
 .reference-home .ref-friends:hover,
 .reference-home .ref-friends[data-focused]{
   width:18rem!important;
   margin-top:4.5rem!important;
   transform:none!important;
-  align-self:auto!important;
+  z-index:1!important;
 }
 .reference-home .ref-friends .tile-face,
 .reference-home .ref-friends:hover .tile-face,
 .reference-home .ref-friends[data-focused] .tile-face{
   width:18rem!important;
   height:18rem!important;
+}
+.reference-home .ref-friends .tile-label{
+  position:absolute!important;
+  left:0!important;
+  right:0!important;
+  bottom:0!important;
+  width:100%!important;
 }
