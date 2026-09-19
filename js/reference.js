@@ -233,6 +233,11 @@ function refCard({ label, sub, artName, chip, cls, imageUrl, url }){
   return btn;
 }
 
+function proxiedNewsImage(url){
+  const value = String(url || '');
+  return value ? '/api/xbox-news-image?url=' + encodeURIComponent(value) : '';
+}
+
 const LIVE_NEWS_CACHE = 'xbox.home.live-news.v2';
 const LIVE_NEWS_MAX_AGE = 60 * 60 * 1000;
 let liveNewsTimer = null;
@@ -284,7 +289,7 @@ function paintLiveNews(cards, stories){
     cards.append(refCard({
       label:story.title,
       sub:newsSubline(story),
-      imageUrl:story.image,
+      imageUrl:proxiedNewsImage(story.image),
       url:story.url,
       cls:'ref-news-card'
     }));
