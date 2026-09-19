@@ -2,3 +2,8 @@
 # local dev
 .DS_Store
 *.local
+
+# server credentials
+.env
+.env.*
+!.env.example
