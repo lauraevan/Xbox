@@ -28,7 +28,7 @@ const log = (...args) => console.log('[Stratus/Xbox]', ...args);
 const warn = (...args) => console.warn('[Stratus/Xbox]', ...args);
 
 function endpoint(base, action, uuid){
-  const url = new URL(base);
+  const url = new URL(base, window.location.href);
   url.searchParams.set('action', action);
   if (uuid) url.searchParams.set('uuid', uuid);
   return url.toString();
