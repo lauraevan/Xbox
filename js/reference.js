@@ -36,6 +36,11 @@ const ART = {
   'Fortnite': {
     cover: 'https://static.thcdn.com/productimg/1600/1600/11492349-4314494124984020.jpg'
   },
+  'Cyberpunk 2077': {
+    cover: 'https://store-images.s-microsoft.com/image/apps.47379.63407868131364914.bcaa868c-407e-42c2-baeb-48a3c9f29b54.89bb995b-b066-4a53-9fe4-0260ce07e894?h=900&q=95&w=600',
+    landscape: 'https://store-images.s-microsoft.com/image/apps.34838.63407868131364914.bcaa868c-407e-42c2-baeb-48a3c9f29b54.1463028d-79fa-46e5-9fc2-63203992a4dc?h=720&q=95&w=1280',
+    hero: 'https://store-images.s-microsoft.com/image/apps.34838.63407868131364914.bcaa868c-407e-42c2-baeb-48a3c9f29b54.1463028d-79fa-46e5-9fc2-63203992a4dc?h=1080&q=95&w=1920'
+  },
   'Minecraft Dungeons II': {
     landscape: 'https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/key-art/homepage_discover_our_games_mc_dungeons_ii_key_art_864x864.jpg',
     cover: 'https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/key-art/homepage_discover_our_games_mc_dungeons_ii_key_art_864x864.jpg'
@@ -245,7 +250,7 @@ function renderReferenceHome(root){
   const rail = el('div', 'rail ref-rail');
   const strip = el('div', 'rail-strip ref-strip');
   ROW.forEach(def => strip.append(refTile(def)));
-  strip.append(friendsTile());
+  strip.append(refTile({ name:'Cyberpunk 2077', badge:'X|S' }));
   rail.append(strip);
   root.append(rail);
 
