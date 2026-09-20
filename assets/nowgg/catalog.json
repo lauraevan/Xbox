@@ -1,5 +1,18 @@
 [
   {
+    "game_key": "nowgg:roblox",
+    "name": "Roblox",
+    "description": "Instant cloud play.",
+    "image": "/assets/nowgg/roblox.png",
+    "cover": "/assets/nowgg/roblox.png",
+    "tags": [
+      "Cloud",
+      "Multiplayer"
+    ],
+    "nowgg": true,
+    "launch_url": "/nowgg/apps/a/19900/b.html"
+  },
+  {
     "game_key": "nowgg:stumble-guys",
     "name": "Stumble Guys",
     "description": "Instant cloud play.",
@@ -14,6 +27,20 @@
     "launch_url": "/nowgg/apps/a/10011/b.html"
   },
   {
+    "game_key": "nowgg:fortnite",
+    "name": "Fortnite",
+    "description": "Instant cloud play.",
+    "image": "/assets/nowgg/fortnite.png",
+    "cover": "/assets/nowgg/fortnite.png",
+    "tags": [
+      "Cloud",
+      "Action",
+      "Multiplayer"
+    ],
+    "nowgg": true,
+    "launch_url": "/nowgg/apps/aptoide/5874/aptoide.html?deep_link=aptoidesearch://com.epicgames.fortnite"
+  },
+  {
     "game_key": "nowgg:call-of-duty",
     "name": "Call of Duty",
     "description": "Instant cloud play.",
@@ -26,6 +53,58 @@
     ],
     "nowgg": true,
     "launch_url": "/nowgg/apps/a/10008/b.html"
+  },
+  {
+    "game_key": "nowgg:melon-sandbox",
+    "name": "Melon Sandbox",
+    "description": "Instant cloud play.",
+    "image": "/assets/nowgg/melon-sandbox.png",
+    "cover": "/assets/nowgg/melon-sandbox.png",
+    "tags": [
+      "Cloud",
+      "Sandbox"
+    ],
+    "nowgg": true,
+    "launch_url": "/nowgg/apps/playducky/7199/melon-sandbox.html"
+  },
+  {
+    "game_key": "nowgg:aptoide",
+    "name": "Aptoide",
+    "description": "Cloud app launcher.",
+    "image": "/assets/nowgg/aptoide.png",
+    "cover": "/assets/nowgg/aptoide.png",
+    "tags": [
+      "Cloud",
+      "Apps"
+    ],
+    "nowgg": true,
+    "launch_url": "/nowgg/apps/aptoide/5874/aptoide.html"
+  },
+  {
+    "game_key": "nowgg:android",
+    "name": "Android",
+    "description": "Cloud Android environment.",
+    "image": "/assets/nowgg/android.jpg",
+    "cover": "/assets/nowgg/android.jpg",
+    "tags": [
+      "Cloud",
+      "Apps"
+    ],
+    "nowgg": true,
+    "launch_url": "/nowgg/apps/uncube/7074/now.html"
+  },
+  {
+    "game_key": "nowgg:cookierun",
+    "name": "CookieRun",
+    "description": "Instant cloud play.",
+    "image": "/assets/nowgg/cookierun.jpg",
+    "cover": "/assets/nowgg/cookierun.jpg",
+    "tags": [
+      "Cloud",
+      "Adventure"
+    ],
+    "nowgg": true,
+    "launch_url": "/nowgg/apps/a/10019/b.html"
   },
   {
     "game_key": "nowgg:geometry-dash",
@@ -54,5 +133,19 @@
     ],
     "nowgg": true,
     "launch_url": "/nowgg/apps/psyonix-studios/4656/rocket-league.html"
+  },
+  {
+    "game_key": "nowgg:minecraft",
+    "name": "Minecraft",
+    "description": "Instant cloud play.",
+    "image": "/assets/nowgg/minecraft.png",
+    "cover": "/assets/nowgg/minecraft.png",
+    "tags": [
+      "Cloud",
+      "Sandbox",
+      "Adventure"
+    ],
+    "nowgg": true,
+    "launch_url": "/nowgg/apps/aptoide/5874/aptoide.html?deep_link=aptoidesearch://com.mojang.minecrafttrialpe"
   }
 ]
