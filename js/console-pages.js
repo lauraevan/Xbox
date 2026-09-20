@@ -474,61 +474,175 @@ function renderSettings(root){
 
   if(settingsMode==='personalization'){
     const W=window.WallpaperSystem;
+    const P=window.Personalization;
     const accentOptions=['#4ade4a','#107c10','#2d7dff','#8c52ff','#e96b2c','#f2f2f2'];
-    const saturationOptions=[1,1.2,1.35,1.6];
     const wallpaperModes=['waves','black','game','custom','random'];
     const wallpaperBehaviors=['static','adaptive','dynamic'];
     const brightnessOptions=[25,42,55,70,85,100];
     const blurOptions=[0,2,4,8,12];
+    const counts=[5,6,7,8,99];
+    const sizes=['compact','standard','large'];
+    const seriesModes=['off','hover','always'];
+    const radii=['square','xbox','rounded'];
+    const scales=[.9,.95,1,1.05,1.1];
+    const surfaceModes=['black','graphite'];
+    const transparencyModes=['solid','normal','glass'];
+    const animationModes=['subtle','normal','expressive'];
+    const blurModes=['off','low','strong'];
 
-    const wset=(key,value,id=key)=>{
-      if(W?.set) W.set(key,value);
+    const pset=(key,value,id=key)=>{
+      if(P?.set) P.set(key,value);
+      else if(key.startsWith('wallpaper') && W?.set) W.set(key,value);
       else state.setSetting(key,value);
       rerenderSettings(root,id);
     };
 
     panel.append(
-      groupTitle('Look & feel','Keep the Xbox layout, but personalize the Home background.'),
-      settingsRow('Theme','System chrome appearance',set.theme==='light'?'Light':'Dark',()=>setConsoleSetting(root,'theme',set.theme==='dark'?'light':'dark','theme'),'value','theme'),
-      settingsRow('My color','Accent used for focus and highlights',set.accent||'#4ade4a',()=>setConsoleSetting(root,'accent',cycle(set.accent||'#4ade4a',accentOptions),'accent'),'value','accent'),
+      groupTitle('Presets','Start with a complete look, then change anything. Manual changes become Custom.'),
+      P?.makePreview?.() || statusCard('Personalization','Synapse','Changes save automatically on this device.','ok'),
+      settingsRow('Preset','Xbox keeps the replica feel. Minimal strips it back. Synapse is our custom identity.',
+        P?.presetLabel?.()||'Synapse',()=>{
+          const current=set.personalizationPreset||'synapse';
+          const next=cycle(current,['synapse','xbox','minimal']);
+          P?.applyPreset?.(next);
+          rerenderSettings(root,'preset');
+        },'value','preset'),
 
-      groupTitle('Wallpaper','Wallpapers are saved locally at their original uploaded quality.'),
+      groupTitle('Background','The wallpaper is the main visual identity of Home. Uploaded files stay at original quality.'),
       settingsRow('Wallpaper','Choose the resting Home background',
         W?.modeLabel?.(set.wallpaperMode)||'Waves',
-        ()=>wset('wallpaperMode',cycle(set.wallpaperMode||'waves',wallpaperModes),'wallpaperMode'),
+        ()=>pset('wallpaperMode',cycle(set.wallpaperMode||'waves',wallpaperModes),'wallpaperMode'),
         'value','wallpaperMode'),
-      settingsRow('Wallpaper behavior','Static keeps the wallpaper. Adaptive shows game art on focus. Dynamic also plays video wallpapers.',
+      settingsRow('Wallpaper behavior','Static keeps the wallpaper. Adaptive reveals game art on focus. Dynamic also animates video wallpapers.',
         W?.behaviorLabel?.(set.wallpaperBehavior)||'Dynamic',
-        ()=>wset('wallpaperBehavior',cycle(set.wallpaperBehavior||'dynamic',wallpaperBehaviors),'wallpaperBehavior'),
+        ()=>pset('wallpaperBehavior',cycle(set.wallpaperBehavior||'dynamic',wallpaperBehaviors),'wallpaperBehavior'),
         'value','wallpaperBehavior'),
-      settingsRow('Quality','Uploaded images and videos are stored without resizing, transcoding, or recompression',
+      settingsRow('Quality','Images and videos are stored without resizing, transcoding, or recompression',
         'Original / highest',null,'value','wallpaperQuality'),
-      settingsRow('Brightness','Adjust the wallpaper without changing the source file',
+      settingsRow('Brightness','Adjust the displayed background without touching the saved file',
         `${set.wallpaperBrightness??42}%`,
-        ()=>wset('wallpaperBrightness',cycle(set.wallpaperBrightness??42,brightnessOptions),'wallpaperBrightness'),
+        ()=>pset('wallpaperBrightness',cycle(set.wallpaperBrightness??42,brightnessOptions),'wallpaperBrightness'),
         'value','wallpaperBrightness'),
-      settingsRow('Blur','Optional display blur. The original saved file stays untouched.',
+      settingsRow('Background blur','Softens the background while keeping the interface sharp',
         set.wallpaperBlur?`${set.wallpaperBlur}px`:'Off',
-        ()=>wset('wallpaperBlur',cycle(set.wallpaperBlur||0,blurOptions),'wallpaperBlur'),
+        ()=>pset('wallpaperBlur',cycle(set.wallpaperBlur||0,blurOptions),'wallpaperBlur'),
         'value','wallpaperBlur'),
-      toggleRow('Wallpaper motion','Allow the full-quality Waves/video wallpaper to animate',
+      toggleRow('Wallpaper motion','Allow Waves and uploaded video wallpapers to animate',
         (set.wallpaperMotion||'normal')!=='off',
-        ()=>wset('wallpaperMotion',(set.wallpaperMotion||'normal')==='off'?'normal':'off','wallpaperMotion'),
+        ()=>pset('wallpaperMotion',(set.wallpaperMotion||'normal')==='off'?'normal':'off','wallpaperMotion'),
         'wallpaperMotion'),
-      settingsRow('Add image','Store the exact original image file on this device','Choose',
-        ()=>W?.upload?.('image',()=>rerenderSettings(root,'wallpaperMode')),
+      settingsRow('Add image','Save the exact original image on this device','Choose',
+        ()=>W?.upload?.('image',()=>{P?.markCustom?.();rerenderSettings(root,'wallpaperMode');}),
         'value','wallpaperImage'),
-      settingsRow('Add video','Store the exact original video file on this device','Choose',
-        ()=>W?.upload?.('video',()=>rerenderSettings(root,'wallpaperMode')),
+      settingsRow('Add video','Save the exact original video on this device','Choose',
+        ()=>W?.upload?.('video',()=>{P?.markCustom?.();rerenderSettings(root,'wallpaperMode');}),
         'value','wallpaperVideo'),
-      settingsRow('Manage wallpapers','Select, rename, or delete saved original files','Manage',
+      settingsRow('Manage wallpapers','Select, rename, or delete saved backgrounds','Manage',
         ()=>W?.openManager?.(()=>rerenderSettings(root,'wallpaperManage')),
         'value','wallpaperManage'),
-      settingsRow('Artwork saturation','How vivid focused-game artwork appears',`${Math.round((set.saturation??1.35)*100)}%`,()=>setConsoleSetting(root,'saturation',cycle(set.saturation??1.35,saturationOptions),'saturation'),'value','saturation'),
+      settingsRow('Artwork saturation','How vivid focused-game artwork appears',
+        `${Math.round((set.saturation??1.35)*100)}%`,
+        ()=>{P?.markCustom?.();setConsoleSetting(root,'saturation',cycle(set.saturation??1.35,[1,1.2,1.35,1.6]),'saturation');},
+        'value','saturation'),
 
-      groupTitle('Home details','The rest of the dashboard layout stays unchanged.'),
-      toggleRow('Game details on Home','Show focused-title details above the Home row',!!set.heroText,()=>setConsoleSetting(root,'heroText',!set.heroText,'heroText'),'heroText'),
-      toggleRow('Tile badges','Show PORT, FLASH and emulator badges where available',!!set.tileBadges,()=>setConsoleSetting(root,'tileBadges',!set.tileBadges,'tileBadges'),'tileBadges')
+      groupTitle('Home layout','Change the dashboard itself instead of only changing the wallpaper.'),
+      settingsRow('Customize Home','Drag games to reorder. X hides one. Y pins the current wallpaper for that game.',
+        'Edit',()=>P?.startHomeEditor?.(),'value','customizeHome'),
+      settingsRow('Games shown','Choose how many games stay visible in the first Home row',
+        (set.homeVisibleGames||8)>=90?'All':String(set.homeVisibleGames||8),
+        ()=>pset('homeVisibleGames',cycle(set.homeVisibleGames||8,counts),'homeVisibleGames'),
+        'value','homeVisibleGames'),
+      settingsRow('Tile size','Change the density of the first Home row',
+        P?.tileSizeLabel?.(set.homeTileSize)||'Standard',
+        ()=>pset('homeTileSize',cycle(set.homeTileSize||'standard',sizes),'homeTileSize'),
+        'value','homeTileSize'),
+      toggleRow('Promo row','Show Synapse Store and the lower Home cards',
+        set.homePromoRow!==false,
+        ()=>pset('homePromoRow',set.homePromoRow===false,'homePromoRow'),
+        'homePromoRow'),
+      settingsRow('Section order','Choose whether games or promo cards appear first',
+        set.homeSectionOrder==='promos-first'?'Promos first':'Games first',
+        ()=>pset('homeSectionOrder',set.homeSectionOrder==='promos-first'?'games-first':'promos-first','homeSectionOrder'),
+        'value','homeSectionOrder'),
+      settingsRow('Start focus','Choose what is selected when Home opens',
+        set.homeStartFocus==='first-game'?'First game':'Profile',
+        ()=>pset('homeStartFocus',set.homeStartFocus==='first-game'?'profile':'first-game','homeStartFocus'),
+        'value','homeStartFocus'),
+      toggleRow('Game labels','Show game names directly on the tiles',
+        !!set.homeTileLabels,
+        ()=>pset('homeTileLabels',!set.homeTileLabels,'homeTileLabels'),
+        'homeTileLabels'),
+      settingsRow('Series X|S badges','Choose when X|S appears on supported games',
+        P?.seriesLabel?.(set.homeSeriesBadges)||'On focus',
+        ()=>pset('homeSeriesBadges',cycle(set.homeSeriesBadges||'hover',seriesModes),'homeSeriesBadges'),
+        'value','homeSeriesBadges'),
+      settingsRow('Tile corners','Square, Xbox-like, or more rounded',
+        P?.radiusLabel?.(set.homeCornerRadius)||'Rounded',
+        ()=>pset('homeCornerRadius',cycle(set.homeCornerRadius||'rounded',radii),'homeCornerRadius'),
+        'value','homeCornerRadius'),
+      toggleRow('Extra tile badges','Show PORT, FLASH and emulator tags where available',
+        !!set.tileBadges,
+        ()=>{P?.markCustom?.();setConsoleSetting(root,'tileBadges',!set.tileBadges,'tileBadges');},
+        'tileBadges'),
+      toggleRow('Game details on Home','Show focused-title information above Home',
+        !!set.heroText,
+        ()=>{P?.markCustom?.();setConsoleSetting(root,'heroText',!set.heroText,'heroText');},
+        'heroText'),
+      settingsRow('Reset Home layout','Restore the default game order and Home layout controls',
+        'Reset',()=>{P?.resetHomeLayout?.();rerenderSettings(root,'customizeHome');},
+        'value','resetHome'),
+
+      groupTitle('Top bar','Reorder the connected capsule and hide buttons you do not use. Settings always stays available.'),
+      settingsRow('Customize top bar','Move or hide top-bar buttons',
+        P?.topbarLabel?.()||'Edit',
+        ()=>P?.openTopBarEditor?.(()=>rerenderSettings(root,'topBarEditor')),
+        'value','topBarEditor'),
+      toggleRow('Top bar labels','Show the tiny black popup under a hovered or selected button',
+        set.topBarTooltips!==false,
+        ()=>pset('topBarTooltips',set.topBarTooltips===false,'topBarTooltips'),
+        'topBarTooltips'),
+      settingsRow('Top bar size','Choose the control capsule size',
+        set.topBarSize==='compact'?'Compact':'Standard',
+        ()=>pset('topBarSize',set.topBarSize==='compact'?'standard':'compact','topBarSize'),
+        'value','topBarSize'),
+      settingsRow('Profile position','Place the Home profile on the left or right',
+        set.profilePosition==='right'?'Right':'Left',
+        ()=>pset('profilePosition',set.profilePosition==='right'?'left':'right','profilePosition'),
+        'value','profilePosition'),
+
+      groupTitle('Appearance','Fine tune the Synapse look without changing the page structure.'),
+      settingsRow('Theme','System chrome appearance',
+        set.theme==='light'?'Light':'Dark',
+        ()=>pset('theme',set.theme==='dark'?'light':'dark','theme'),
+        'value','theme'),
+      settingsRow('My color','Accent used for focus and highlights',
+        set.accent||'#4ade4a',
+        ()=>pset('accent',cycle(set.accent||'#4ade4a',accentOptions),'accent'),
+        'value','accent'),
+      settingsRow('Surface tone','Pure black or a softer graphite system surface',
+        set.surfaceTone==='graphite'?'Graphite':'Black',
+        ()=>pset('surfaceTone',cycle(set.surfaceTone||'black',surfaceModes),'surfaceTone'),
+        'value','surfaceTone'),
+      settingsRow('Transparency','Solid, balanced, or glassier system surfaces',
+        ({solid:'Solid',normal:'Balanced',glass:'Glass'})[set.transparencyStrength||'normal'],
+        ()=>pset('transparencyStrength',cycle(set.transparencyStrength||'normal',transparencyModes),'transparencyStrength'),
+        'value','transparencyStrength'),
+      settingsRow('UI scale','Scale the complete dashboard without changing browser zoom',
+        `${Math.round((set.uiScale||1)*100)}%`,
+        ()=>pset('uiScale',cycle(set.uiScale||1,scales),'uiScale'),
+        'value','uiScale'),
+      settingsRow('Animation strength','Tune the duration and weight of interface motion',
+        P?.animationLabel?.(set.animationStrength)||'Normal',
+        ()=>pset('animationStrength',cycle(set.animationStrength||'normal',animationModes),'animationStrength'),
+        'value','animationStrength'),
+      settingsRow('Motion blur','A very short blur only while focus lands, never continuously',
+        P?.blurLabel?.(set.motionBlurStrength)||'Off',
+        ()=>pset('motionBlurStrength',cycle(set.motionBlurStrength||'off',blurModes),'motionBlurStrength'),
+        'value','motionBlurStrength'),
+      toggleRow('Reduce motion','Skip most dashboard animation',
+        set.motion==='reduced',
+        ()=>pset('motion',set.motion==='reduced'?'full':'reduced','motion'),
+        'motion')
     );
 
     W?.mountLibrary?.(panel,()=>rerenderSettings(root,'wallpaperMode'));
