@@ -1,0 +1,52 @@
+name: Install Home background
+
+on:
+  push:
+    branches:
+      - claude/xbox-web-replica-v4s0jk
+    paths:
+      - .github/workflows/install-home-background.yml
+
+permissions:
+  contents: write
+
+jobs:
+  install:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: claude/xbox-web-replica-v4s0jk
+          fetch-depth: 1
+
+      - name: Rebuild optimized MP4
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p assets/backgrounds
+          {
+            cat .asset-staging/home-neutral/part-00-fixed
+            for i in $(seq -w 1 13); do
+              cat ".asset-staging/home-neutral/part-$i"
+            done
+          } | base64 -d > assets/backgrounds/home-neutral-waves.mp4
+
+          bytes=$(wc -c < assets/backgrounds/home-neutral-waves.mp4)
+          actual=$(sha256sum assets/backgrounds/home-neutral-waves.mp4 | awk '{print $1}')
+          echo "bytes=$bytes"
+          echo "sha256=$actual"
+          test "$bytes" -eq 93265
+          test "$actual" = "6c818db34120639f72fc9fdc40ab20f73c2dfc92a6c068460218e6164cb519fb"
+
+      - name: Commit optimized asset
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          rm -rf .asset-staging
+          rm -f .github/workflows/install-home-background.yml
+          git add -A
+          git commit -m "Add optimized animated Home background"
+          git push origin HEAD:claude/xbox-web-replica-v4s0jk
