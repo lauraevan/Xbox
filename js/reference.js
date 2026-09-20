@@ -230,24 +230,29 @@ function refCard({ label, sub, artName, chip, cls }){
 }
 
 function setReferenceBackdrop(){
-  const layer = document.getElementById('bgA');
-  const other = document.getElementById('bgB');
-  if (!layer) return;
-  const url = primaryArt('Forza Horizon 5', 'hero');
-  layer.style.backgroundImage = `url("${url}")`;
-  layer.style.backgroundPosition = 'center top';
-  layer.classList.add('on', 'wide', 'reference-wide');
-  other?.classList.remove('on');
+  const a = document.getElementById('bgA');
+  const b = document.getElementById('bgB');
+
+  [a, b].forEach(layer => {
+    if (!layer) return;
+    layer.style.backgroundImage = 'none';
+    layer.style.backgroundPosition = 'center center';
+    delete layer.dataset.dynamicTitle;
+    delete layer.dataset.wallpaper;
+    layer.classList.remove('on', 'wide', 'reference-wide');
+  });
+
+  document.body.style.background = '#000';
 }
 
 let focusEpoch = 0;
-function focusReferenceHero(root){
+function focusReferenceChrome(){
   const epoch = ++focusEpoch;
   const enforce = () => {
     if (epoch !== focusEpoch) return;
     if (document.body.dataset.view && document.body.dataset.view !== 'home') return;
-    const hero = root.querySelector('.ref-hero');
-    if (hero) window.Nav?.focus?.(hero, { silent:true });
+    const profile = document.querySelector('.profile[data-nav], .profile');
+    if (profile) window.Nav?.focus?.(profile, { silent:true });
   };
 
   requestAnimationFrame(() => requestAnimationFrame(enforce));
@@ -277,7 +282,7 @@ function renderReferenceHome(root){
 
   [...strip.children, ...cards.children].forEach((n, i) => n.style.setProperty('--i', i));
   setReferenceBackdrop();
-  focusReferenceHero(root);
+  focusReferenceChrome();
 }
 
 V.renderHome = renderReferenceHome;
@@ -288,7 +293,7 @@ if (stage){
   new MutationObserver(() => {
     if (!stage.hidden && document.body.dataset.view === 'home'){
       const home = document.getElementById('view-home');
-      if (home) focusReferenceHero(home);
+      if (home) focusReferenceChrome();
     }
   }).observe(stage, { attributes:true, attributeFilter:['hidden'] });
 }
