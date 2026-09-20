@@ -497,3 +497,22 @@ body[data-animation-strength="expressive"] .reference-home .ref-tile .tile-label
 body[data-animation-strength="expressive"] .sysnav-btn{
   transition-duration:.23s!important;
 }
+
+
+/* Built-in Xbox Waves colorways. Reuse the single optimized motion asset so
+   switching colors is instant and does not triple video decode/memory cost. */
+body[data-home-background-mode="waves-blue"] .home-neutral-video{
+  visibility:visible !important;
+  opacity:1 !important;
+  filter:brightness(.82) saturate(2.15) hue-rotate(160deg) contrast(1.08) blur(var(--personal-bg-blur)) !important;
+}
+body[data-home-background-mode="waves-red"] .home-neutral-video{
+  visibility:visible !important;
+  opacity:1 !important;
+  filter:brightness(.72) saturate(2.35) hue-rotate(305deg) contrast(1.1) blur(var(--personal-bg-blur)) !important;
+}
+body[data-home-background-mode="waves-gold"] .home-neutral-video{
+  visibility:visible !important;
+  opacity:1 !important;
+  filter:brightness(.78) saturate(2.15) sepia(.32) hue-rotate(350deg) contrast(1.08) blur(var(--personal-bg-blur)) !important;
+}
