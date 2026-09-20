@@ -32,8 +32,35 @@ const TAGS = {
   nds:      { label:'DS',        badge:'DS',    cls:'emu', shelf:'Emulators' },
   psx:      { label:'PS1',       badge:'PS1',   cls:'emu', shelf:'Emulators' },
   fnf:      { label:'Rhythm',    badge:'FNF',   cls:'', shelf:'Rhythm' },
-  tools:    { label:'App',       badge:'APP',   cls:'', shelf:'Apps & tools' }
+  tools:    { label:'App',       badge:'APP',   cls:'', shelf:'Apps & tools' },
+  source:   { label:'Source',    badge:'SOURCE',cls:'source', shelf:'Game sources' }
 };
+
+const SOURCES = [
+  {
+    id:'source-nowgg',
+    numericId:-1001,
+    name:'nowgg.fun',
+    sortName:'nowgg.fun',
+    author:'frogie',
+    authorLink:'https://nowgg.fun',
+    cover:'/nowgg/img/landscape.png',
+    coverAlt:'',
+    coverFile:'',
+    directCover:'/nowgg/img/landscape.png',
+    play:'/nowgg/',
+    playAlt:'',
+    external:false,
+    featured:false,
+    special:['source'],
+    tag:TAGS.source,
+    shelf:'Game sources',
+    sourceProvider:'nowgg.fun',
+    sourceOrigin:'https://nowgg.fun',
+    proxied:true,
+    index:-1
+  }
+];
 
 const state = {
   games: [],
@@ -121,6 +148,7 @@ async function load(){
     .filter(g => g && Number(g.id) >= 0 && g.url)
     .map(normalise);
 
+  state.games.push(...SOURCES.map(source => ({ ...source })));
   state.games.forEach(g => state.byId.set(g.id, g));
   state.featured = state.games.filter(g => g.featured);
   return state.games;
@@ -128,7 +156,7 @@ async function load(){
 
 /* ───────── query helpers used by the views ───────── */
 const Catalog = {
-  CDN, TAGS, state, load, seededShuffle,
+  CDN, TAGS, SOURCES, state, load, seededShuffle,
 
   /** Family settings withhold whole categories from the console. */
   visible(list){
@@ -143,6 +171,7 @@ const Catalog = {
   featured(){ return Catalog.visible(state.featured); },
 
   byTag(tag){ return Catalog.visible(state.games.filter(g => g.special.includes(tag))); },
+  sources(){ return Catalog.visible(state.games.filter(g => g.sourceProvider)); },
 
   /** Everything with no special tag — the "plain browser games" bulk. */
   standard(){ return Catalog.visible(state.games.filter(g => !g.special.length)); },
@@ -177,6 +206,7 @@ const Catalog = {
       { title:'Emulators',           items: this.byTag('emulator') },
       { title:'Rhythm & music',      items: this.byTag('fnf') },
       { title:'Apps & tools',        items: this.byTag('tools') },
+      { title:'Game sources',         items: this.sources() },
       { title:'Popular right now',   items: seededShuffle(this.standard(), seed).slice(0, 24) },
       { title:'Because you play browser games', items: seededShuffle(this.standard(), seed + 31).slice(0, 24) }
     ];
