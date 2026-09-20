@@ -1,0 +1,58 @@
+[
+  {
+    "game_key": "nowgg:stumble-guys",
+    "name": "Stumble Guys",
+    "description": "Instant cloud play.",
+    "image": "/assets/nowgg/stumble-guys.jpg",
+    "cover": "/assets/nowgg/stumble-guys.jpg",
+    "tags": [
+      "Cloud",
+      "Multiplayer",
+      "Party"
+    ],
+    "nowgg": true,
+    "launch_url": "/nowgg/apps/a/10011/b.html"
+  },
+  {
+    "game_key": "nowgg:call-of-duty",
+    "name": "Call of Duty",
+    "description": "Instant cloud play.",
+    "image": "/assets/nowgg/call-of-duty.jpg",
+    "cover": "/assets/nowgg/call-of-duty.jpg",
+    "tags": [
+      "Cloud",
+      "Action",
+      "Shooter"
+    ],
+    "nowgg": true,
+    "launch_url": "/nowgg/apps/a/10008/b.html"
+  },
+  {
+    "game_key": "nowgg:geometry-dash",
+    "name": "Geometry Dash",
+    "description": "Instant cloud play.",
+    "image": "/assets/nowgg/geometry-dash.jpg",
+    "cover": "/assets/nowgg/geometry-dash.jpg",
+    "tags": [
+      "Cloud",
+      "Arcade",
+      "Rhythm"
+    ],
+    "nowgg": true,
+    "launch_url": "/nowgg/apps/robtop-games/1400/geometry-dash.html"
+  },
+  {
+    "game_key": "nowgg:rocket-league",
+    "name": "Rocket League",
+    "description": "Instant cloud play.",
+    "image": "/assets/nowgg/rocket-league.jpg",
+    "cover": "/assets/nowgg/rocket-league.jpg",
+    "tags": [
+      "Cloud",
+      "Sports",
+      "Racing"
+    ],
+    "nowgg": true,
+    "launch_url": "/nowgg/apps/psyonix-studios/4656/rocket-league.html"
+  }
+]
