@@ -202,13 +202,11 @@ function refCard({ label, sub, artName, chip, cls }){
   btn.setAttribute('aria-label', label);
 
   if (cls === 'card-store'){
-    const wrap = el('div', 'ref-card-art ref-store-art');
-    const img = el('img', 'cover loaded');
-    img.src = 'assets/store-tile.jpg';
-    img.alt = '';
-    img.loading = 'eager';
-    img.decoding = 'async';
-    wrap.append(img);
+    const wrap = el('div', 'ref-card-art ref-store-art synapse-store-art');
+    const icon = el('span', 'synapse-store-icon');
+    icon.innerHTML = window.Icons?.icon?.('shopping_bag') || '';
+    const name = el('span', 'synapse-store-name', escapeHtml(label));
+    wrap.append(icon, name);
     btn.append(wrap);
   } else {
     const wrap = el('div', 'ref-card-art');
@@ -274,7 +272,7 @@ function renderReferenceHome(root){
 
   const cards = el('div', 'cards ref-cards');
   cards.append(
-    refCard({ label:'Browse the store', cls:'card-store' }),
+    refCard({ label:'Synapse Store', cls:'card-store' }),
     refCard({ label:'Minecraft Dungeons II', sub:'Add to Play Later', artName:'Minecraft Dungeons II', chip:'GAME PASS' }),
     refCard({ label:'Onimusha: Way of the Sword', sub:'Available now', artName:'Onimusha: Way of the Sword' }),
     refCard({ label:'BlizzCon 2026', sub:'Watch the show', artName:'BlizzCon 2026' })
