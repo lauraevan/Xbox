@@ -35,6 +35,8 @@ let product = null;
 let lastRoot = null;
 let selectedHomeGame = null;
 let autoRotateTimer = null;
+let browseVisible = 42;
+let searchTimer = null;
 
 const lower = value => String(value || '').toLowerCase();
 const profileId = () => String(window.State?.data?.profileId || 'p1');
@@ -137,6 +139,7 @@ function storeCard(game, { compact=false, wide=false, deal=false } = {}){
   img.alt = '';
   img.loading = 'lazy';
   img.decoding = 'async';
+  try { img.fetchPriority = 'low'; } catch {}
   art.append(img);
 
   if (offer && !Cloud.owns(game)) art.append(el('span', 'store-deal-badge', `SAVE ${offer.discount}%`));
@@ -175,7 +178,9 @@ function leadCard(game){
   const img = document.createElement('img');
   img.src = game.image || game.cover;
   img.alt = '';
+  img.loading = 'eager';
   img.decoding = 'async';
+  try { img.fetchPriority = 'high'; } catch {}
   art.append(img);
   if (Cloud.owns(game)) art.append(el('span', 'store-owned-badge', 'OWNED'));
   btn.append(art);
@@ -297,74 +302,10 @@ function stopAutoRows(){
 }
 
 function startAutoRows(root){
+  /* Static rows are deliberate. The old implementation cloned every card in
+     every shelf and ran a requestAnimationFrame loop forever, which doubled
+     Store DOM/image work and hurt low-end devices. */
   stopAutoRows();
-  if (!root || window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches) return;
-
-  const rows = [...root.querySelectorAll('.xstore-row[data-auto-rotate="1"]')]
-    .filter(row => row.scrollWidth > row.clientWidth + 8);
-  if (!rows.length) return;
-
-  const pauseRow = row => {
-    if (!row) return;
-    row.dataset.autoPauseUntil = String(Date.now() + 5500);
-  };
-
-  rows.forEach((row, index) => {
-    row.querySelectorAll('.xstore-carousel-clone').forEach(node => node.remove());
-
-    const originals = [...row.children];
-    if (!originals.length) return;
-
-    const before = row.scrollWidth;
-    originals.forEach(card => {
-      const clone = card.cloneNode(true);
-      clone.classList.add('xstore-carousel-clone');
-      clone.removeAttribute('data-nav');
-      clone.removeAttribute('data-focused');
-      clone.setAttribute('aria-hidden','true');
-      clone.tabIndex = -1;
-      clone._navActivate = null;
-      row.append(clone);
-    });
-
-    row.dataset.carouselLoopWidth = String(before);
-    row.dataset.carouselSpeed = String(5.5 + (index % 3) * 1.15);
-    row.dataset.carouselLast = '0';
-
-    row.addEventListener('pointerdown', () => pauseRow(row), { passive:true });
-    row.addEventListener('wheel', () => pauseRow(row), { passive:true });
-    row.addEventListener('touchstart', () => pauseRow(row), { passive:true });
-  });
-
-  let last = performance.now();
-
-  const frame = now => {
-    const dt = Math.min(48, Math.max(0, now - last));
-    last = now;
-
-    if (!root.hidden && mode === 'home' && !product){
-      rows.forEach(row => {
-        if (!row?.isConnected) return;
-        if (row.contains(document.activeElement)) return;
-        if (row.matches(':hover')) return;
-        if (Number(row.dataset.autoPauseUntil || 0) > Date.now()) return;
-
-        const loopWidth = Number(row.dataset.carouselLoopWidth || 0);
-        const speed = Number(row.dataset.carouselSpeed || 11);
-        if (!loopWidth) return;
-
-        row.scrollLeft += speed * (dt / 1000);
-
-        if (row.scrollLeft >= loopWidth){
-          row.scrollLeft -= loopWidth;
-        }
-      });
-    }
-
-    autoRotateTimer = requestAnimationFrame(frame);
-  };
-
-  autoRotateTimer = requestAnimationFrame(frame);
 }
 
 function shelf(title, list, { wide=false, subtitle='', auto=true, kicker='DISCOVER' } = {}){
@@ -377,7 +318,7 @@ function shelf(title, list, { wide=false, subtitle='', auto=true, kicker='DISCOV
   head.append(copy);
   section.append(head);
   const row = el('div', `xstore-row${wide ? ' wide' : ''}`);
-  if (auto) row.dataset.autoRotate = '1';
+  row.dataset.storeStatic = '1';
   list.forEach(game => row.append(storeCard(game, { compact:!wide, wide })));
   section.append(row);
   return section;
@@ -441,52 +382,49 @@ function renderHome(root){
   const content = el('div', 'xstore-content xstore-discovery-home');
   root.querySelector('.xstore-main').append(content);
 
-  const featured = shuffled(37).slice(0, 6);
+  const featured = shuffled(37).slice(0, 5);
   buildHomeGallery(root, featured);
 
-  const deals = shuffled(211).filter(game => dealFor(game)).slice(0, 10);
-  const recommended = shuffled(401).slice(0, 9);
-  const quickPlay = mixByTags(509, ['Easy','Casual','Arcade','Indie'], 510);
-  const actionShooter = mixByTags(613, ['Action','Shooting','Fighting'], 614);
-  const racingDriving = mixByTags(719, ['Racing','Sports','Simulation'], 720);
-  const puzzleStrategy = mixByTags(823, ['Puzzle','Strategy','Challenge'], 824);
-  const daily = shuffled(dailySeed()).slice(0, 9);
-  const trending = mixByTags(929, ['Multiplayer','Online','3A'], 930);
-  const classics = mixByTags(1031, ['3A','Adventure','RPG'], 1032);
-  const owned = games.filter(g => Cloud.owns(g)).slice(0, 9);
+  const deals = shuffled(211).filter(game => dealFor(game)).slice(0, 6);
+  const recommended = shuffled(401).slice(0, 7);
+  const quickPlay = mixByTags(509, ['Easy','Casual','Arcade','Indie'], 510).slice(0, 7);
+  const actionShooter = mixByTags(613, ['Action','Shooting','Fighting'], 614).slice(0, 7);
+  const racingDriving = mixByTags(719, ['Racing','Sports','Simulation'], 720).slice(0, 7);
+  const owned = games.filter(g => Cloud.owns(g)).slice(0, 7);
 
   content.append(buildDeals(deals));
   content.append(shelf('Games we recommend', recommended, {
     subtitle:'Hand-picked from the cloud catalogue',
     kicker:'FOR YOU',
-    wide:true
+    wide:true,
+    auto:false
   }));
   content.append(shelf('Quick play', quickPlay, {
     subtitle:'Jump in fast without overthinking it',
     kicker:'PLAY NOW',
-    wide:true
+    wide:true,
+    auto:false
   }));
   if (owned.length) content.append(shelf('Continue from your library', owned, {
     subtitle:'Ready to stream',
     kicker:'YOUR GAMES',
-    wide:true
+    wide:true,
+    auto:false
   }));
-  content.append(shelf('Action & shooter', actionShooter, { kicker:'HIGH ENERGY', wide:true }));
-  content.append(shelf('Racing & driving', racingDriving, { wide:true, kicker:'FULL SPEED' }));
-  content.append(shelf('Puzzle & strategy', puzzleStrategy, { kicker:'THINK AHEAD', wide:true }));
-  content.append(shelf('Daily picks', daily, {
-    subtitle:'A fresh mix every day',
-    kicker:'TODAY',
-    wide:true
+  content.append(shelf('Action & shooter', actionShooter, {
+    kicker:'HIGH ENERGY',
+    wide:true,
+    auto:false
   }));
-  content.append(shelf('Trending now', trending, { kicker:'POPULAR', wide:true }));
-  content.append(shelf('All-time favorites', classics, {
-    subtitle:'Big games worth coming back to',
-    kicker:'CLASSICS',
-    wide:true
+  content.append(shelf('Racing & driving', racingDriving, {
+    wide:true,
+    kicker:'FULL SPEED',
+    auto:false
   }));
 
-  requestAnimationFrame(() => startAutoRows(root));
+  /* Off-screen shelves are intentionally omitted. Games, Deals, Search and
+     Owned still expose the complete catalogue without making Store Home
+     render ~100 cards at once. */
 }
 
 function renderBrowse(root, label){
@@ -504,7 +442,7 @@ function renderBrowse(root, label){
     FILTERS.forEach(([id, text]) => {
       const btn = el('button', 'xstore-filter' + (filter === id ? ' active' : ''), escapeHtml(text));
       btn.dataset.nav = '';
-      btn._navActivate = () => { filter = id; renderShell(root); };
+      btn._navActivate = () => { filter = id; browseVisible = 42; renderShell(root); };
       filters.append(btn);
     });
     content.append(filters);
@@ -521,7 +459,11 @@ function renderBrowse(root, label){
     input.setAttribute('aria-label', 'Search Microsoft Store');
     input.addEventListener('input', () => {
       query = input.value;
-      renderBrowseGrid(content);
+      browseVisible = 42;
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => {
+        if (input.isConnected) renderBrowseGrid(content);
+      }, 110);
     });
     wrap.append(input);
     content.append(wrap);
@@ -539,8 +481,30 @@ function renderBrowseGrid(content){
   if (!grid) return;
   const list = matching();
   if (count) count.textContent = `${list.length.toLocaleString()} games`;
-  grid.innerHTML = '';
-  list.forEach(game => grid.append(storeCard(game, { deal:mode === 'deals' })));
+  grid.replaceChildren();
+
+  const shown = list.slice(0, browseVisible);
+  const frag = document.createDocumentFragment();
+  shown.forEach(game => frag.append(storeCard(game, { deal:mode === 'deals' })));
+  grid.append(frag);
+
+  if (list.length > shown.length){
+    const more = el('button','xstore-load-more',
+      `Show ${Math.min(42, list.length - shown.length)} more`);
+    more.dataset.nav = '';
+    more.dataset.ringRadius = '.45rem';
+    more._navActivate = () => {
+      browseVisible += 42;
+      renderBrowseGrid(content);
+      requestAnimationFrame(() => window.Nav?.focusIn?.(content,'.xstore-load-more'));
+    };
+    more.addEventListener('click', event => {
+      event.preventDefault();
+      more._navActivate();
+    });
+    grid.append(more);
+  }
+
   if (!list.length){
     const msg = mode === 'wishlist' ? 'Your wish list is empty.' : mode === 'owned' ? 'You do not own any cloud games yet.' : 'No games found.';
     grid.append(el('div', 'xstore-empty', msg));
@@ -581,6 +545,8 @@ function switchMode(next, root = lastRoot){
   mode = next;
   if (next !== 'search') query = '';
   filter = 'all';
+  browseVisible = 42;
+  clearTimeout(searchTimer);
   renderShell(root);
 }
 
