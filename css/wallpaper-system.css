@@ -1,0 +1,218 @@
+/* Wallpaper-only personalization.
+   Uploaded images/videos are displayed from their original Blob bytes. */
+
+:root{
+  --wallpaper-brightness:.42;
+  --wallpaper-blur:0px;
+}
+
+.wallpaper-custom-media{
+  position:absolute;
+  inset:0;
+  z-index:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+  background:#000;
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  image-rendering:auto;
+  filter:brightness(var(--wallpaper-brightness)) blur(var(--wallpaper-blur));
+  transform:scale(1.012);
+  transition:opacity 150ms ease;
+}
+body.wallpaper-custom-active .wallpaper-custom-media{
+  opacity:1;
+  visibility:visible;
+}
+
+body[data-wallpaper-mode="waves"] .home-neutral-video{
+  filter:brightness(var(--wallpaper-brightness)) blur(var(--wallpaper-blur)) !important;
+  transform:scale(1.012) translateZ(0);
+}
+body[data-wallpaper-mode="black"] .home-neutral-video,
+body[data-wallpaper-mode="game"] .home-neutral-video,
+body[data-wallpaper-mode="custom"] .home-neutral-video,
+body[data-wallpaper-mode="random"] .home-neutral-video{
+  opacity:0 !important;
+  visibility:hidden !important;
+}
+body[data-view="home"][data-home-neutral="true"][data-wallpaper-mode="black"] .backdrop,
+body[data-view="home"][data-home-neutral="true"][data-wallpaper-mode="game"] .backdrop{
+  background:#000 !important;
+}
+
+/* Apply wallpaper controls to focused-game artwork too. */
+body[data-view="home"] .backdrop-layer{
+  filter:
+    saturate(var(--sat,1.35))
+    brightness(var(--wallpaper-brightness))
+    contrast(1.04)
+    blur(var(--wallpaper-blur)) !important;
+}
+
+/* Settings wallpaper library */
+.wallpaper-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(14rem,1fr));
+  gap:1rem;
+  margin:.8rem 0 1.8rem;
+}
+.wallpaper-card{
+  position:relative;
+  min-height:10rem;
+  overflow:hidden;
+  border:.1rem solid rgba(255,255,255,.08);
+  border-radius:.75rem;
+  background:#111315;
+  color:#fff;
+  text-align:left;
+}
+.wallpaper-card[data-focused],
+.wallpaper-card:hover{
+  outline:.28rem solid var(--accent);
+  outline-offset:.15rem;
+}
+.wallpaper-card img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  image-rendering:auto;
+}
+.wallpaper-card::after{
+  content:"";
+  position:absolute;
+  inset:42% 0 0;
+  background:linear-gradient(transparent,rgba(0,0,0,.88));
+}
+.wallpaper-card.video::before{
+  content:"▶";
+  position:absolute;
+  z-index:3;
+  inset:0;
+  display:grid;
+  place-items:center;
+  font-size:2.4rem;
+  text-shadow:0 .2rem .8rem #000;
+}
+.wallpaper-card>span,
+.wallpaper-card>small{
+  position:absolute;
+  z-index:4;
+  left:.8rem;
+  right:.8rem;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.wallpaper-card>span{
+  bottom:2.15rem;
+  font-size:1.05rem;
+  font-weight:700;
+}
+.wallpaper-card>small{
+  bottom:.7rem;
+  color:rgba(255,255,255,.62);
+  font-size:.88rem;
+}
+.wallpaper-empty{
+  grid-column:1/-1;
+  padding:1.2rem 0;
+  color:rgba(255,255,255,.48);
+  font-size:1.05rem;
+}
+
+/* Full wallpaper manager */
+.wallpaper-manager{
+  position:fixed;
+  inset:0;
+  z-index:270;
+  display:grid;
+  place-items:center;
+  padding:3rem;
+  background:rgba(0,0,0,.74);
+  backdrop-filter:blur(.75rem);
+  -webkit-backdrop-filter:blur(.75rem);
+}
+.wallpaper-manager-panel{
+  width:min(80rem,94vw);
+  max-height:min(78rem,88vh);
+  overflow:auto;
+  padding:2rem;
+  border:.1rem solid rgba(255,255,255,.12);
+  border-radius:1.25rem;
+  background:#111315;
+  box-shadow:0 3rem 8rem rgba(0,0,0,.68);
+}
+.wallpaper-manager-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:2rem;
+  margin-bottom:1.4rem;
+}
+.wallpaper-manager-head h2{
+  margin:0;
+  font-size:2.4rem;
+}
+.wallpaper-manager-head button,
+.wallpaper-manager-row button{
+  min-height:3.7rem;
+  padding:0 1rem;
+  border-radius:.6rem;
+  background:#24272a;
+  color:#fff;
+  font-weight:700;
+}
+.wallpaper-manager-head button{
+  border-radius:2rem;
+  background:#fff;
+  color:#111;
+}
+.wallpaper-manager-row{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto auto auto;
+  align-items:center;
+  gap:.65rem;
+  min-height:6.5rem;
+  padding:.7rem 0;
+  border-bottom:.1rem solid rgba(255,255,255,.07);
+}
+.wallpaper-manager-row>div{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:.3rem;
+}
+.wallpaper-manager-row strong,
+.wallpaper-manager-row small{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.wallpaper-manager-row strong{font-size:1.25rem}
+.wallpaper-manager-row small{color:rgba(255,255,255,.48);font-size:.95rem}
+.wallpaper-manager-row button[data-focused],
+.wallpaper-manager-row button:hover{
+  background:#fff;
+  color:#111;
+  outline:.2rem solid var(--accent);
+}
+.wallpaper-manager-empty{
+  padding:3rem .2rem;
+  color:rgba(255,255,255,.48);
+  font-size:1.1rem;
+}
+
+@media (max-width:900px){
+  .wallpaper-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .wallpaper-manager{padding:1rem}
+  .wallpaper-manager-row{
+    grid-template-columns:minmax(0,1fr) auto;
+  }
+  .wallpaper-manager-row button{min-width:7rem}
+}
