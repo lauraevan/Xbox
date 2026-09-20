@@ -32,7 +32,7 @@
 <link rel="stylesheet" href="css/flagship-pages-pass.css">
 <link rel="stylesheet" href="css/idle-hud.css">
 <link rel="stylesheet" href="css/xbox-motion-pass.css">
-<link rel="stylesheet" href="css/final-home-fixes.css?v=home-waves-20260919-2">
+<link rel="stylesheet" href="css/final-home-fixes.css?v=home-waves-20260919-2">\n<link rel="stylesheet" href="css/wallpaper-system.css?v=wallpaper-hq-20260920-1">
 </head>
 <body data-theme="dark">
 
@@ -126,11 +126,10 @@
 <div id="stage" class="stage" hidden>
   <div class="backdrop">
     <!-- The owner's Xbox Series X|S "Waves Faded Dark Grey" clip, vendored.
-         home-neutral-video.js upgrades this to the WebM and, on small
-         screens, to the 720p pair; this src is the universally decodable
-         fallback so the element is never empty. -->
+         Wallpaper playback is pinned to the highest-quality local 1080p MP4.
+         There is no mobile/720p downgrade. -->
     <video id="homeNeutralVideo" class="home-neutral-video"
-           muted loop playsinline webkit-playsinline preload="metadata"
+           muted loop playsinline webkit-playsinline preload="auto"
            disablepictureinpicture aria-hidden="true"
            poster="assets/wallpaper/waves-poster.jpg"
            src="assets/wallpaper/waves-1080.mp4"></video>
@@ -233,11 +232,11 @@
 <script src="js/features.js"></script>
 <script src="js/artwork.js"></script>
 <script src="js/catalog.js"></script>
-<script src="js/state.js?v=devmode-20260919-1"></script>
+<script src="js/state.js?v=wallpaper-hq-20260920-1"></script>
 <script src="js/audio.js"></script>
 <script src="js/nav.js"></script>
 <script src="js/views.js?v=devmode-20260919-1"></script>
-<script src="js/console-pages.js"></script>
+<script src="js/console-pages.js?v=wallpaper-hq-20260920-1"></script>
 <script src="js/stratus.js?v=devmode-20260919-1"></script>
 <script src="js/stratus-backend-pass.js?v=nowgg-20260919-3"></script>
 <script src="js/store.js"></script>
@@ -245,8 +244,8 @@
 <script src="js/guide.js"></script>
 <script src="js/reference.js?v=synapse-store-labels-20260919-1"></script>
 <script src="js/app.js?v=xbox-green-greeting-20260919-1"></script>
-<script src="js/app-patch.js?v=synapse-store-labels-20260919-1"></script>
-<script src="js/home-neutral-video.js?v=home-waves-20260919-2"></script>
+<script src="js/app-patch.js?v=wallpaper-hq-20260920-1"></script>\n<script src="js/wallpaper-system.js?v=wallpaper-hq-20260920-1"></script>
+<script src="js/home-neutral-video.js?v=wallpaper-hq-20260920-1"></script>
 <script src="js/store-console-pass.js"></script>
 <script src="js/profile-sidebar.js"></script>
 <script src="js/home-row-custom.js?v=black-home-20260919-2"></script>\n<script src="js/home-library-persistence.js?v=catalog-rdr1-20260919-1"></script>
