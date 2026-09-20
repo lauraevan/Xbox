@@ -21,17 +21,10 @@ video.setAttribute('webkit-playsinline', '');
    H.264 as the universally decodable fallback; upgrade to WebM where it is
    supported, and drop to the 720p pair on phones and tablets - 1.0MB instead
    of 3.7MB, and a far cheaper decode. */
-function smallScreen(){
-  try {
-    return innerWidth <= 900 || window.matchMedia?.('(pointer:coarse)').matches;
-  } catch { return innerWidth <= 900; }
-}
-
 function chooseSource(){
-  const base = smallScreen() ? 'assets/wallpaper/waves-720'
-                             : 'assets/wallpaper/waves-1080';
-  const webm = video.canPlayType?.('video/webm; codecs="vp9"');
-  const next = base + (webm === 'probably' || webm === 'maybe' ? '.webm' : '.mp4');
+  /* Highest-quality local encode only. No 720p/mobile downgrade and no
+     smaller WebM substitution. */
+  const next = 'assets/wallpaper/waves-1080.mp4';
   if (!video.src.endsWith(next)) video.src = next;
 }
 
@@ -40,14 +33,11 @@ function chooseSource(){
 function permitted(){
   let set = {};
   try { set = window.State?.settings || {}; } catch {}
-  if (set.background === 'plain') return false;
-  if (set.wallpaper) return false;          // a fixed wallpaper wins, per CLAUDE.md
+  const mode = set.wallpaperMode || 'waves';
+  if (mode !== 'waves') return false;
+  if ((set.wallpaperMotion || 'normal') === 'off') return false;
   if (set.motion === 'reduced') return false;
   if (reducedMotion?.matches) return false;
-  const link = navigator.connection || {};
-  if (link.saveData) return false;
-  if (/(^|-)2g$/.test(String(link.effectiveType || ''))) return false;
-  if (typeof navigator.deviceMemory === 'number' && navigator.deviceMemory < 4) return false;
   return true;
 }
 
@@ -116,7 +106,7 @@ video.addEventListener('error', () => {
 
 new MutationObserver(sync).observe(document.body, {
   attributes:true,
-  attributeFilter:['data-view','data-home-neutral']
+  attributeFilter:['data-view','data-home-neutral','data-wallpaper-mode']
 });
 
 document.addEventListener('visibilitychange', sync, { passive:true });
@@ -127,6 +117,11 @@ window.addEventListener('pagehide', () => {
 }, { passive:true });
 
 reducedMotion?.addEventListener?.('change', sync);
+window.State?.on?.(event => {
+  if (event?.type !== 'settings') return;
+  if (!video.src && permitted()) chooseSource();
+  sync();
+});
 
 /* Home is its own scroller; coalesce to one check per frame. */
 let scrollQueued = false;
