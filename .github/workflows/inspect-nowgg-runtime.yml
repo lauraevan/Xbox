@@ -14,52 +14,29 @@ jobs:
   inspect:
     runs-on: ubuntu-latest
     steps:
-      - name: Inspect public game pages
+      - name: Inspect launcher logic
         shell: bash
         run: |
           python3 - <<'PY'
-          import re, urllib.request, urllib.parse
+          import urllib.request
 
-          urls = [
-            'https://nowgg.fun/apps/a/19900/b.html',
-            'https://nowgg.fun/apps/robtop-games/1400/geometry-dash.html',
-            'https://nowgg.fun/apps/a/10011/b.html',
-            'https://nowgg.fun/apps/a/10008/b.html',
+          url='https://nowgg.fun/apps/a/19900/b.html'
+          req=urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0'})
+          html=urllib.request.urlopen(req,timeout=20).read().decode('utf-8','ignore')
+          lines=html.splitlines()
+
+          needles=[
+            'RTCPeerConnection','createElement("iframe")',"createElement('iframe')",
+            '.src =','src =','appendChild','getIPs','getQueryParam','fetch(',
+            'window.location','document.location','iframe'
           ]
-          headers = {'User-Agent':'Mozilla/5.0'}
 
-          for url in urls:
-              print('\n===== PAGE', url, '=====')
-              req = urllib.request.Request(url, headers=headers)
-              html = urllib.request.urlopen(req, timeout=20).read().decode('utf-8','ignore')
-              print('bytes', len(html))
-
-              print('--- URLs / refs ---')
-              seen = set()
-              for m in re.findall(r'(?:src|href|action|poster)=["\x27]([^"\x27]+)', html, re.I):
-                  full = urllib.parse.urljoin(url, m)
-                  if full not in seen:
-                      seen.add(full)
-                      print(full)
-
-              print('--- Runtime keywords ---')
-              for line in html.splitlines():
-                  if re.search(r'webrtc|RTCPeerConnection|websocket|WebSocket|wss://|ws://|iframe|fetch\(|XMLHttpRequest|postMessage|nowgg|now\.gg|api|signal|rtc|turn|stun', line, re.I):
-                      print(line[:2400])
-
-              scripts = re.findall(r'<script[^>]+src=["\x27]([^"\x27]+)', html, re.I)
-              for src in scripts:
-                  surl = urllib.parse.urljoin(url, src)
-                  if urllib.parse.urlparse(surl).hostname != 'nowgg.fun':
-                      continue
-                  try:
-                      req = urllib.request.Request(surl, headers=headers)
-                      js = urllib.request.urlopen(req, timeout=20).read().decode('utf-8','ignore')
-                  except Exception as exc:
-                      print('SCRIPT ERROR', surl, exc)
-                      continue
-                  print('--- SCRIPT', surl, 'bytes', len(js), '---')
-                  for line in js.splitlines():
-                      if re.search(r'webrtc|RTCPeerConnection|websocket|WebSocket|wss://|ws://|iframe|fetch\(|XMLHttpRequest|postMessage|nowgg|now\.gg|api|signal|rtc|turn|stun', line, re.I):
-                          print(line[:3000])
+          for needle in needles:
+              print('\n===== NEEDLE', needle, '=====')
+              for i,line in enumerate(lines):
+                  if needle in line:
+                      start=max(0,i-18); end=min(len(lines),i+34)
+                      for n in range(start,end):
+                          print(f'{n+1:04d}: {lines[n]}')
+                      print('---')
           PY
