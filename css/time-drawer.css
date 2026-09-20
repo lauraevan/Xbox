@@ -7,12 +7,12 @@
 .clock.clock-action:hover,.clock.clock-action[data-focused],.clock.clock-action[aria-expanded="true"]{background:rgba(255,255,255,.08);color:#fff}
 .time-drawer{position:fixed;inset:0;z-index:175;pointer-events:none;visibility:hidden}
 .time-drawer.open{pointer-events:auto;visibility:visible}
-.time-drawer-scrim{position:absolute;inset:0;background:rgba(0,0,0,.6);opacity:0;transition:opacity .2s ease} /* = .guide-scrim */
+.time-drawer-scrim{position:absolute;inset:0;background:rgba(0,0,0,.6);opacity:0;transition:opacity .2s ease}
 .time-drawer.open .time-drawer-scrim{opacity:1}
 .time-drawer-panel{
  position:absolute;top:4.8rem;right:5.4rem;bottom:4.8rem;width:45.5rem;max-width:calc(100vw - 10.8rem);box-sizing:border-box;
- overflow-y:auto;overflow-x:hidden;padding:4.4rem 2.5rem 3rem;
- background:rgba(15,16,18,.992)!important;border:.1rem solid rgba(255,255,255,.05)!important;border-radius:1.7rem;
+ overflow-y:auto;overflow-x:hidden;padding:3.6rem 2.5rem 2.6rem;
+ background:rgba(15,16,18,.992)!important;border:.1rem solid rgba(255,255,255,.05)!important;border-radius:1.35rem;
  box-shadow:-1.1rem 1.4rem 5rem rgba(0,0,0,.72)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
  transform:translate3d(100%,0,0);opacity:1;will-change:transform;
  transition:transform .28s cubic-bezier(.16,1,.3,1);
@@ -27,28 +27,30 @@
 .time-weather-temp{font-size:2rem;font-weight:550;color:#fff}.time-weather-condition{font-size:1.3rem;color:rgba(255,255,255,.5)}
 .drawer-personal-controls{display:grid;grid-template-columns:1fr;gap:.65rem;padding-top:1.55rem}
 .drawer-personal-control{
- min-width:0;min-height:5.8rem;padding:.9rem 1.1rem;text-align:left;display:grid;grid-template-columns:1fr auto;align-items:center;gap:1.2rem;
- border:.1rem solid transparent;border-radius:1.15rem;background:rgba(255,255,255,.045);color:#fff;
+ min-width:0;min-height:5.8rem;padding:1rem 1.25rem;text-align:left;display:grid;grid-template-columns:1fr auto;align-items:center;gap:1.2rem;
+ border:.1rem solid rgba(255,255,255,.08);border-radius:1.2rem;background:rgba(255,255,255,.055);color:#fff;
  transition:background .14s ease,transform .14s ease,border-color .14s ease;
 }
 .drawer-personal-control span{font-size:1.3rem;font-weight:550;color:rgba(255,255,255,.7)}
 .drawer-personal-control strong{max-width:16rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:1.3rem;font-weight:600;color:#fff;text-align:right}
-.drawer-personal-control:hover,.drawer-personal-control[data-focused]{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.16);transform:translateX(-.12rem)}
+.drawer-personal-control:hover,.drawer-personal-control[data-focused]{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.12)}
 .drawer-personal-control[data-focused]{outline:.2rem solid var(--accent);outline-offset:.08rem}
 body[data-wave-theme="cool"] .home-neutral-video{filter:brightness(var(--personal-bg-brightness)) blur(var(--personal-bg-blur)) hue-rotate(185deg) saturate(1.18)!important}
 body[data-wave-theme="mono"] .home-neutral-video{filter:brightness(var(--personal-bg-brightness)) blur(var(--personal-bg-blur)) grayscale(1) saturate(0)!important}
 body[data-wave-theme="warm"] .home-neutral-video{filter:brightness(var(--personal-bg-brightness)) blur(var(--personal-bg-blur)) sepia(.28) hue-rotate(330deg) saturate(1.2)!important}
 body[data-wave-theme="original"] .home-neutral-video{filter:brightness(var(--personal-bg-brightness)) blur(var(--personal-bg-blur))!important}
-@media(max-width:720px){.time-drawer-panel{top:1rem;right:1rem;bottom:1rem;width:min(35rem,calc(100vw - 2rem));max-width:none;padding:3rem 1.5rem 2rem}.time-drawer-clock{font-size:4.7rem}.drawer-personal-control{min-height:5.4rem}}
+@media(max-width:720px){.time-drawer-panel{top:1.2rem;right:1.2rem;bottom:1.2rem;width:min(35rem,calc(100vw - 2.4rem));max-width:none;padding:3rem 1.5rem 2rem}.time-drawer-clock{font-size:4.7rem}.drawer-personal-control{min-height:5.4rem}}
 @media(prefers-reduced-motion:reduce){.time-drawer-panel{transition:transform .12s linear}}
 
-/* Keep this panel visually identical to the active Xbox Guide surface in every
-   theme. The guide's live surface is darker-theme.css's rgba(15,16,18,.992),
-   not reference.css's rgba(72,75,79,.95) — darker-theme.css loads after
-   reference.css and wins, so matching the earlier value left this drawer a
-   lighter grey than the guide. Measured at 1920x1080:
-     before  guide rgba(15,16,18,.992)  drawer rgba(72,75,79,.95)
+/* Right quick panel uses the same fixed Xbox-dark palette in every wallpaper
+   mode, and that palette is the guide's *rendered* one. The guide panel is
+   rgba(72,75,79,.95) in reference.css but darker-theme.css loads after it and
+   overrides it to rgba(15,16,18,.992), so matching the reference value left
+   this drawer a visibly lighter grey than the guide. Measured at 1920x1080,
+   dark and light:
+     before  guide rgba(15,16,18,.992)  drawer rgb(72,75,79)
      after   both  rgba(15,16,18,.992)
-   Shadow x-offset is mirrored (-1.1rem) because this panel sits on the right. */
-body[data-theme="light"] .time-drawer-panel,
-html[data-theme="light"] .time-drawer-panel{background:rgba(15,16,18,.992)!important;color:#fff!important}
+   Shadow x-offset is mirrored (-1.1rem) because this panel sits on the right;
+   scrim matches .guide-scrim's rendered rgba(0,0,0,.6) for the same reason. */
+.time-drawer-panel{background:rgba(15,16,18,.992)!important;color:#fff!important;isolation:isolate}
+.time-drawer-head{border-color:rgba(255,255,255,.1)!important}
