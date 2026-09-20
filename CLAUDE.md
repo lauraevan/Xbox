@@ -2,7 +2,7 @@
 
 Written by Claude for whoever picks this up next — human or agent. It records
 what the project is trying to be, how it is put together, and the conventions
-that keep roughly 26 layered scripts from breaking each other.
+that keep roughly 32 layered scripts from breaking each other.
 
 There is a companion `CHATGPT.md`. If the two ever disagree about a
 convention, they have drifted; reconcile them rather than picking one.
@@ -112,11 +112,15 @@ Load order in `index.html` is **load-bearing**:
 ```
 icons media features artwork catalog state audio nav views
 console-pages stratus stratus-backend-pass store cloud-library
-guide reference app
-app-patch store-console-pass profile-sidebar home-row-custom
-minecraft-local-pass library-minimal-pass time-drawer
-flagship-launch-pass boot-preload-pass home-catalog-pass idle-hud
+guide reference wallpaper-system personalization app
+app-patch home-neutral-video store-console-pass profile-sidebar
+home-row-custom home-library-persistence minecraft-local-pass
+library-minimal-pass time-drawer flagship-launch-pass
+boot-preload-pass idle-hud xbox-motion-pass
 ```
+
+**32 scripts as of 2026-09-20**, against the 26 this file was written at. The
+hazard below scales with that number.
 
 Base modules own the data and the first render. Anything named `*-pass.js`,
 `app-patch.js` or `*-custom.js` is a **layer on top** that augments what
@@ -198,7 +202,7 @@ Two things follow for anyone editing here:
 
 ## Known hazards
 
-**Script-order fragility.** 26 sequentially loaded scripts where later ones
+**Script-order fragility.** 32 sequentially loaded scripts where later ones
 patch earlier ones. One failing to arrive leaves a *half-patched* app rather
 than a clean failure. An inline failsafe in `index.html` clears the boot
 screen after 13s and names the missing modules — **do not remove it**. Every
@@ -245,7 +249,7 @@ would ask of you, and what I will take off your hands.
    retries, per-host health, graceful placeholder. Swapping the call sites is
    small and it turns "broken image icon" into "designed plate".
 
-2. **Extend an existing pass rather than adding a new file.** We are at 26
+2. **Extend an existing pass rather than adding a new file.** We are at 32
    sequentially loaded scripts. Each new one raises the chance of a
    half-patched app, which is the failure mode behind the boot hang the owner
    already hit.
@@ -297,7 +301,17 @@ settled. Keep it short — detail belongs in the commit message.
 
 The owner supplied the Xbox Series X|S "Waves Faded Dark Grey" clip and asked
 for it behind Home wherever no game is selected, explicitly without breaking
-mobile. It lives in `app-patch.js` rather than a 27th script, per §2.
+mobile.
+
+**Correcting myself: it lives in your `js/home-neutral-video.js`, not in
+`app-patch.js`.** We built this feature in parallel within the same hour. Your
+`#homeNeutralVideo` landed with the markup, the CSS and the play/pause
+plumbing already right, but pointed at a 320×180 10fps 8KB placeholder. Mine
+had the owner's real footage and the device guards. Two full-screen videos on
+one page is exactly the bug the owner asked us to avoid, so I kept your element
+and moved the footage and the guards onto it, and deleted my 186-line duplicate
+from `app-patch.js`. `assets/backgrounds/home-neutral-waves.mp4` is now
+unreferenced; it is your file, so I left it rather than deleting it.
 
 **Vendored, not hotlinked.** Source was 3840×2160 @ 59.94fps, 60s, 29MB, with
 an audio track. Re-encoded to 1080p30 and 720p30, audio stripped (autoplay
@@ -311,17 +325,18 @@ assets/wallpaper/waves-720.webm   1,034,211
 assets/wallpaper/waves-poster.jpg    23,891
 ```
 
-Small viewports and coarse pointers get the 720p pair. The clip is **never
-requested at all** when `settings.background === 'plain'`, a fixed wallpaper is
+`chooseSource()` picks the encode before anything is fetched, and small
+viewports and coarse pointers get the 720p pair. The clip is **never requested
+at all** — `video.removeAttribute('src')` — when `settings.background === 'plain'`, a fixed wallpaper is
 set (the wallpaper still wins), `settings.motion === 'reduced'`,
 `prefers-reduced-motion`, `saveData`, a 2g `effectiveType`, or
 `deviceMemory < 4`. Every failure path — autoplay refused, iOS Low Power Mode,
 a decode error — lands on the still poster, which is strictly better than the
 flat black it replaced.
 
-**One thing that needed your code to be safe, so please keep it in mind.**
-`home-catalog-pass.js` starts its own full-screen Waves clip on the lower shelf
-from `onHomeScroll`. Two 1080p videos decoding at once is exactly what makes a
+**One thing that needed your code to be safe, so please keep it in mind**, and
+it is now inside your file. `home-catalog-pass.js` starts its own full-screen
+Waves clip on the lower shelf from `onHomeScroll`. Two 1080p videos decoding at once is exactly what makes a
 phone stutter and run hot, and only one of them is ever on screen. The backdrop
 clip now pauses once `#view-home.scrollTop >= 40`, using your own scroll seam,
 so they hand off instead of overlapping. If you move that shelf video, the
