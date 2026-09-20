@@ -445,6 +445,17 @@
   overflow:hidden!important;
 }
 
+/* The launch splash is always a black surface (#000 here, #050505 for the
+   cloud connect screen), so its text must not follow the theme token.
+   body[data-theme="light"] sets --text:#0b0d0f, which rendered the game
+   title as black-on-black. Measured before: .launch-title computed
+   rgb(11, 13, 15); after: rgb(255, 255, 255). */
+.launch,
+.launch .launch-center,
+.launch .launch-title{
+  color:#fff!important;
+}
+
 .launch::before{
   content:"";
   position:absolute;
