@@ -540,3 +540,19 @@ html[data-theme="dark"] body[data-view="home"][data-wallpaper-dim="on"] .backdro
 body[data-theme="dark"][data-view="home"][data-wallpaper-dim="on"] .backdrop-scrim{
   opacity:1;
 }
+
+/* Light exposure mode: remove every Home artwork dim layer, including the top-bar scrim. */
+html[data-theme="light"] body[data-view="home"] .topbar-scrim,
+body[data-theme="light"][data-view="home"] .topbar-scrim{
+  background:transparent!important;
+  opacity:0!important;
+}
+html[data-theme="light"] body[data-view="home"] .backdrop-layer,
+html[data-theme="light"] body[data-view="home"] .backdrop-layer.wide,
+html[data-theme="light"] body[data-view="home"] .backdrop-layer.reference-wide,
+body[data-theme="light"][data-view="home"] .backdrop-layer,
+body[data-theme="light"][data-view="home"] .backdrop-layer.wide,
+body[data-theme="light"][data-view="home"] .backdrop-layer.reference-wide{
+  filter:none!important;
+  --sat:1!important;
+}
