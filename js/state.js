@@ -65,8 +65,8 @@ const DEFAULTS = {
     surfaceTone:'black',             // black | graphite
     transparencyStrength:'normal',   // solid | normal | glass
     uiScale:1,
-    animationStrength:'normal',      // subtle | normal | expressive
-    motionBlurStrength:'off',        // off | low | strong
+    animationStrength:'expressive',  // subtle | normal | expressive
+    motionBlurStrength:'low',        // off | low | strong
     perGameWallpaperPinned:{},       // normalized title -> keep current wallpaper while focused
 
     saturation:  1.35,  // backdrop punch
