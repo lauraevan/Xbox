@@ -47,6 +47,15 @@ fs.copyFileSync(
   path.join(stratusOut, 'cloud.json')
 );
 
+/* The cloud player's embed page, served from our own origin so the dashboard
+   can drive its input. Cross-origin, the touch controls cannot reach it at
+   all. This is the one page out of stratus/api that ships; the backend source
+   beside it still does not. */
+fs.copyFileSync(
+  path.join(root, 'stratus', 'api', 'public', 'e.html'),
+  path.join(stratusOut, 'embed.html')
+);
+
 for (const rel of protectedFiles) {
   const sourcePath = path.join(root, rel);
   const outputPath = path.join(out, rel);

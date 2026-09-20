@@ -521,7 +521,11 @@ function showPlayer(game, uuid){
   frame.removeAttribute('sandbox');
   frame.setAttribute('allow', 'autoplay *; fullscreen *; gamepad *; encrypted-media *; clipboard-write *; clipboard-read *; pointer-lock *; microphone *; camera *');
   frame.referrerPolicy = 'unsafe-url';
-  frame.src = `${BASE}/cloud/v1/embed?id=${encodeURIComponent(uuid)}`;
+  /* Same-origin on purpose. Hosted by Stratus this is cross-origin, and the
+     touch controls in app-patch.js then have no way to reach the stream: no
+     synthetic input, no gamepad, no postMessage listener. Serving our own copy
+     of the embed from this origin is what makes them work. */
+  frame.src = 'stratus/embed.html?id=' + encodeURIComponent(uuid);
   frame.tabIndex = 0;
 
   player.hidden = false;

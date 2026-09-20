@@ -443,7 +443,29 @@
         let touchPad = null, touchPadAt = 0;
         window.addEventListener("message", (e) => {
             const d = e.data;
-            if (!d || d.source !== "xbox-touchpad" || !d.pad) return;
+            if (!d || d.source !== "xbox-touchpad") return;
+
+            /* Relative cursor movement, which is what the owner's controls
+               drive with the left stick. curX/curY are what sendMouse turns
+               into the absolute position the host expects, so they have to be
+               advanced here the way a real mousemove would. */
+            if (d.kind === "mouse") {
+                if (!_dc) return;
+                const r = getVideoRect();
+                const dx = Math.max(-127, Math.min(127, Math.round(d.dx || 0)));
+                const dy = Math.max(-127, Math.min(127, Math.round(d.dy || 0)));
+                curX = Math.max(r.left, Math.min(r.left + r.width,  curX + dx));
+                curY = Math.max(r.top,  Math.min(r.top  + r.height, curY + dy));
+                if (typeof d.buttons === "number") mouseButtons = d.buttons;
+                sendMouse(dx, dy, d.scroll || 0);
+                return;
+            }
+            if (d.kind === "key") {
+                if (!_dc || !d.code) return;
+                sendKey(d.code | 0, !!d.down);
+                return;
+            }
+            if (!d.pad) return;
             const p = d.pad;
             touchPad = {
                 mask: (p.mask | 0) & 0xffff,
@@ -456,6 +478,19 @@
             };
             touchPadAt = Date.now();
         });
+        /* A touch-only device never fires mousemove, so curX/curY would sit at
+           their initial value and every absolute position would be wrong.
+           Park the virtual cursor in the middle of the video once it is up. */
+        let cursorSeeded = false;
+        function seedCursor() {
+            if (cursorSeeded) return;
+            const r = getVideoRect();
+            if (!r.width || !r.height) return;
+            curX = r.left + r.width / 2;
+            curY = r.top + r.height / 2;
+            cursorSeeded = true;
+        }
+
         function sendTouchPad() {
             if (!touchPad) return;
             /* If the page stops posting, let the pad go neutral rather than
@@ -477,7 +512,7 @@
         }
 
         function inputLoop() {
-            if (_dc && _dc.readyState === "open") { sendGamepad(); sendTouchPad(); }
+            if (_dc && _dc.readyState === "open") { seedCursor(); sendGamepad(); sendTouchPad(); }
             requestAnimationFrame(inputLoop);
         }
         requestAnimationFrame(inputLoop);
@@ -490,7 +525,14 @@
             const host   = params.get('host');
             if (!id) return;
             try {
-                const res = await fetch(`/cloud/v1/embed-data?id=${encodeURIComponent(id)}`);
+                /* Served from the Xbox origin, so the old relative path would
+                   resolve to a page that does not exist there. api/stratus.js
+                   carries an embed-data route for exactly this. */
+                const sameOrigin = !/(^|\.)nowgg\.fun$|onrender\.com$/.test(location.hostname);
+                const endpoint = sameOrigin
+                    ? `/api/stratus?action=embed-data&uuid=${encodeURIComponent(id)}`
+                    : `/cloud/v1/embed-data?id=${encodeURIComponent(id)}`;
+                const res = await fetch(endpoint);
                 const data = await res.json();
                 if (host && data.signaling_ws) {
                     data.signaling_ws = data.signaling_ws.replace(/wss?:\/\/[^/]+/, `wss://${host}`);

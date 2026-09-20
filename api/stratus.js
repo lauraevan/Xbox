@@ -72,6 +72,20 @@ export default async function handler(req, res) {
   const headers = { "content-type": "application/json", "x-api-key": API_KEY };
 
   try {
+    /* The embed page is served from this origin (see stratus/embed.html in the
+       build) so the dashboard can drive its input across a same-origin
+       boundary. That copy fetches its session data through here instead of the
+       relative /cloud/v1/embed-data it used when it was hosted by Stratus. */
+    if (action === "embed-data") {
+      const uuid = String(req.query?.uuid || req.query?.id || "");
+      if (!uuid) return sendJson(res, 400, { error: "Missing uuid." });
+      const upstream = await fetch(
+        `${API_BASE}/cloud/v1/embed-data?id=${encodeURIComponent(uuid)}`,
+        { headers, cache: "no-store" }
+      );
+      return relay(res, upstream, "application/json");
+    }
+
     if (action === "queue") {
       const uuid = String(req.query?.uuid || "");
       if (!uuid) return sendJson(res, 400, { error: "Missing uuid." });

@@ -395,11 +395,41 @@ checkPinnedBuildFreshness();
   const pad = { mask:0, lt:0, rt:0, lx:0, ly:0, rx:0, ry:0 };
   let beat = null;
 
-  function post(){
-    try {
-      frame.contentWindow?.postMessage(
-        { source:'xbox-touchpad', pad:{ ...pad } }, '*');
-    } catch {}
+  function send(msg){
+    try { frame.contentWindow?.postMessage({ source:'xbox-touchpad', ...msg }, '*'); }
+    catch {}
+  }
+  function post(){ send({ pad:{ ...pad } }); }
+
+  /* The owner's controls drive the cursor with the left stick, so the stick is
+     not an axis here - it is a velocity. Held off-centre, it posts relative
+     mouse movement every frame, the same shape a real mousemove would. */
+  let mouseButtons = 0;
+  let aim = { x:0, y:0 }, aiming = null;
+  const AIM_SPEED = 13;          // px per frame at full deflection
+
+  function aimLoop(){
+    if (!aiming) return;
+    const dead = 0.08;
+    const len = Math.hypot(aim.x, aim.y);
+    if (len > dead){
+      const scale = (len - dead) / (1 - dead);
+      const k = (AIM_SPEED * scale) / len;
+      send({ kind:'mouse', dx: aim.x * k, dy: aim.y * k, buttons: mouseButtons });
+    }
+    aiming = requestAnimationFrame(aimLoop);
+  }
+  function setAim(x, y){
+    aim.x = x; aim.y = y;
+    const live = Math.hypot(x, y) > 0.08;
+    if (live && !aiming) aiming = requestAnimationFrame(aimLoop);
+    if (!live && aiming){ cancelAnimationFrame(aiming); aiming = null; }
+  }
+  function setMouseButton(bit, down){
+    const next = down ? (mouseButtons | bit) : (mouseButtons & ~bit);
+    if (next === mouseButtons) return;
+    mouseButtons = next;
+    send({ kind:'mouse', dx:0, dy:0, buttons: mouseButtons });
   }
   function idle(){
     return !pad.mask && !pad.lt && !pad.rt && !pad.lx && !pad.ly && !pad.rx && !pad.ry;
@@ -439,6 +469,8 @@ checkPinnedBuildFreshness();
     pad.lx = 0; pad.ly = 0; pad.rx = 0; pad.ry = 0;
     post();
     if (beat){ clearInterval(beat); beat = null; }
+    setAim(0, 0);
+    if (mouseButtons){ mouseButtons = 0; send({ kind:'mouse', dx:0, dy:0, buttons:0 }); }
   }
 
   /* ---- the surface ---- */
@@ -473,8 +505,11 @@ checkPinnedBuildFreshness();
     b.addEventListener('contextmenu', e => e.preventDefault());
     return b;
   }
-  const btn = (label, cls, bit, name) =>
-    button(label, cls, () => setButton(bit, true), () => setButton(bit, false), name);
+  const btn = (label, cls, bit, name, mouseBit) =>
+    button(label, cls,
+      () => { setButton(bit, true);  if (mouseBit) setMouseButton(mouseBit, true); },
+      () => { setButton(bit, false); if (mouseBit) setMouseButton(mouseBit, false); },
+      name);
   const trig = (label, cls, side, name) =>
     button(label, cls, () => setTrigger(side, 1), () => setTrigger(side, 0), name);
 
@@ -494,13 +529,15 @@ checkPinnedBuildFreshness();
       const len = Math.hypot(dx, dy);
       if (len > 1){ dx /= len; dy /= len; }
       knob.style.transform = `translate(${dx * 42}%, ${dy * 42}%)`;
-      setStick('l', dx, dy);
+      setStick('l', dx, dy);   // still reported as an axis for pad-driven titles
+      setAim(dx, dy);          // and drives the cursor, which is what it is for
     };
     const end = e => {
       if (e.pointerId !== id) return;
       id = null;
       knob.style.transform = '';
       setStick('l', 0, 0);
+      setAim(0, 0);
     };
     wrap.addEventListener('pointerdown', e => {
       e.preventDefault(); e.stopPropagation();
@@ -550,8 +587,11 @@ checkPinnedBuildFreshness();
                 btn('DN','tpad-d tpad-dd',DD,'D-pad down'));
 
     const face = document.createElement('div'); face.className = 'tpad-face';
+    /* A is the left mouse button and B the right, because the stick is
+       steering a cursor. They still send their pad bits as well, so a
+       pad-driven title is unaffected. */
     face.append(btn('Y','tpad-f tpad-y',Y,'Y'), btn('X','tpad-f tpad-x',X,'X'),
-                btn('B','tpad-f tpad-b',B,'B'), btn('A','tpad-f tpad-a',A,'A'));
+                btn('B','tpad-f tpad-b',B,'B',2), btn('A','tpad-f tpad-a',A,'A',1));
 
     const hints = document.createElement('div'); hints.className = 'tpad-hints';
     hints.append(btn('LS','tpad-hint',LS,'Left stick click'),
