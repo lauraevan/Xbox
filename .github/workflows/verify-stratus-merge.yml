@@ -1,0 +1,25 @@
+name: Verify live Stratus merge
+
+on:
+  push:
+    branches:
+      - claude/xbox-web-replica-v4s0jk
+    paths:
+      - .github/workflows/verify-stratus-merge.yml
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check live merged-title code
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL --max-time 20             https://xbox-xi-gold.vercel.app/js/stratus.js             -o /tmp/stratus.js
+          grep -Fq 'Prefer a NowGG-backed title whenever Stratus has the same game name.' /tmp/stratus.js
+          grep -Fq 'legacyGameKeys' /tmp/stratus.js
+          grep -Fq 'if (game?.nowgg) return playNowgg(game);' /tmp/stratus.js
+          echo "live merge patch present"
