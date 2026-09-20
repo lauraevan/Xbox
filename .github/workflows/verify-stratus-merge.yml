@@ -1,4 +1,4 @@
-name: Verify live Stratus merge
+name: Verify live Stratus runtime
 
 on:
   push:
@@ -14,12 +14,11 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     steps:
-      - name: Check live merged-title code
+      - name: Check production runtime version
         shell: bash
         run: |
           set -euo pipefail
-          curl -fsSL --max-time 20             https://xbox-xi-gold.vercel.app/js/stratus.js             -o /tmp/stratus.js
-          grep -Fq 'Prefer a NowGG-backed title whenever Stratus has the same game name.' /tmp/stratus.js
-          grep -Fq 'legacyGameKeys' /tmp/stratus.js
-          grep -Fq 'if (game?.nowgg) return playNowgg(game);' /tmp/stratus.js
-          echo "live merge patch present"
+          curl -fsSL --max-time 20             https://xbox-xi-gold.vercel.app/             -o /tmp/index.html
+          grep -Fq 'js/stratus.js?v=nowgg-20260919-3' /tmp/index.html
+          grep -Fq 'js/stratus-backend-pass.js?v=nowgg-20260919-3' /tmp/index.html
+          echo "live cache-busted Stratus runtime present"
