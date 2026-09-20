@@ -574,9 +574,9 @@ async function reorderByTitles(titles){
   const seen = new Set();
 
   for (const title of Array.isArray(titles) ? titles : []){
+    const def = canonicalDefault(title);
     const game = gameByTitle(list, title);
-    if (!game) continue;
-    const id = itemId(game);
+    const id = def ? 'default:' + norm(def) : (game ? itemId(game) : null);
     if (!id || seen.has(id)) continue;
     seen.add(id);
     requested.push(id);
