@@ -362,11 +362,26 @@ function pollPads(){
    Mouse hover follows focus. Touch and pen do not, because pointermove fires
    continuously while a finger is swiping a horizontal Xbox rail. A clean tap
    directly activates the controller-style item instead of requiring a second
-   tap after focus. */
+   tap after focus.
+
+   Mouse is recorded here too, and that is a fix rather than a tidy-up. Every
+   console-page control is built by console-pages.js as
+   `node.dataset.nav = ''; node._navActivate = fn` with no DOM click listener
+   of its own, so the only route from a press to an action is the click
+   handler below. It gated on this record, and this record was only ever
+   written for touch and pen - so a mouse click moved the focus ring and did
+   nothing else. Settings categories, posters, the Game Pass hero: all dead to
+   a mouse, working fine on a controller or a phone. The one-off click
+   handlers in app-patch.js for the top bar were papering over this.
+
+   Primary button only, so right and middle clicks still do nothing, and the
+   same 11px move threshold cancels it, so dragging a rail is not a click. */
 let touchTap = null;
 
 document.addEventListener('pointerdown', e => {
-  if (e.pointerType !== 'touch' && e.pointerType !== 'pen') return;
+  const pointerOk = e.pointerType === 'touch' || e.pointerType === 'pen' ||
+    ((e.pointerType === 'mouse' || !e.pointerType) && e.button === 0);
+  if (!pointerOk) return;
   const el = e.target.closest?.('[data-nav]');
   touchTap = el && rootEl().contains(el)
     ? { pointerId:e.pointerId, el, x:e.clientX, y:e.clientY, moved:false, at:performance.now() }
@@ -374,14 +389,14 @@ document.addEventListener('pointerdown', e => {
 }, { passive:true });
 
 document.addEventListener('pointermove', e => {
-  if (e.pointerType === 'touch' || e.pointerType === 'pen'){
-    if (touchTap && touchTap.pointerId === e.pointerId){
-      const dx = e.clientX - touchTap.x;
-      const dy = e.clientY - touchTap.y;
-      if (Math.hypot(dx, dy) > 11) touchTap.moved = true;
-    }
-    return;
+  /* Applies to every pointer type now that the mouse can arm a tap. */
+  if (touchTap && touchTap.pointerId === e.pointerId){
+    const dx = e.clientX - touchTap.x;
+    const dy = e.clientY - touchTap.y;
+    if (Math.hypot(dx, dy) > 11) touchTap.moved = true;
   }
+
+  if (e.pointerType === 'touch' || e.pointerType === 'pen') return;
 
   const el = e.target.closest?.('[data-nav]');
   if (el && el !== current && visible(el) && rootEl().contains(el))

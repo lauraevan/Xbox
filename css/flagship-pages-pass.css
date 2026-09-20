@@ -607,3 +607,30 @@
   }
   .detail-title{ font-size:5rem!important; }
 }
+
+/* ───────── settings row polish ─────────
+   The switch was drawing two knobs. console-pages.js builds the container as
+   `<span class="console-settings-value toggle">`, and `toggle` is also a
+   standalone component in pages.css - a 5.2rem pill with its own ::after
+   knob, belonging to the older settings screen. The container was therefore
+   inheriting a whole second switch around the real one: outer grey pill plus
+   a knob on the left, wrapping .console-toggle's green pill and its knob on
+   the right. Measured: container 52x28 with a background, .console-toggle
+   48x27 inside it. Reset the container back to a plain wrapper; the legacy
+   .toggle component is untouched for the screen that still uses it. */
+#view-settings .console-settings-value.toggle{
+  width:auto !important;
+  height:auto !important;
+  background:none !important;
+  border-radius:0 !important;
+  display:flex;
+  align-items:center;
+}
+#view-settings .console-settings-value.toggle::after{
+  content:none !important;
+}
+
+/* A chevron promises a sub-page. Switches flip in place. */
+#view-settings .console-settings-row.console-settings-switch::after{
+  content:none;
+}

@@ -297,6 +297,61 @@ Newest first. Post facts, open questions and things that change your plan.
 Add an entry when you need me to know something; delete one once it is
 settled. Keep it short — detail belongs in the commit message.
 
+### 2026-09-20 — a mouse click never activated anything in the console pages
+
+Owner said the app was "bugging out" and they could not tell what it was
+doing. It was not the app misbehaving — **nothing on the console pages
+responded to a mouse click at all.**
+
+`console-pages.js` builds every control as
+
+```js
+const nav = (node, fn) => { node.dataset.nav = ''; node._navActivate = fn; return node; };
+```
+
+with no DOM click listener of its own, so the only route from a press to an
+action is `nav.js`'s document click handler. That handler gates on a `touchTap`
+record, and the `pointerdown` listener that writes the record opened with
+
+```js
+if (e.pointerType !== 'touch' && e.pointerType !== 'pen') return;
+```
+
+So on a mouse the record was never written, `tapped` was always false, and a
+click only moved the focus ring. Measured before the fix: nine real mouse
+clicks on the Settings sidebar, all nine still showing `h1="General"`; the
+first toggle still `on` after being clicked. After: all nine categories switch
+(Account, Personalization with 37 rows, Display & sound, Network, Controller &
+devices, Cloud gaming, Accessibility, System) and the toggle flips.
+
+Touch was always fine, which is why this survived — and it is why the one-off
+click handlers in `app-patch.js` for `.sysnav-btn` and the Home store card
+exist. Those are now redundant, though harmless: `nav.js` registers first and
+calls `stopImmediatePropagation()`, so they never run. Verified no double
+navigation, and mouse and touch now fire `nav:activate` exactly once each.
+
+Primary button only, and the 11px move threshold now applies to the mouse too,
+so dragging a rail is still not a click.
+
+**Two settings-page fixes while I was there.** The switch was drawing two
+knobs: `console-pages.js` builds the container as
+`<span class="console-settings-value toggle">`, and `toggle` is *also* a
+standalone component in `pages.css` — a 5.2rem pill with its own `::after`
+knob, belonging to the older settings screen. The container was inheriting a
+whole second switch around the real one. Reset it back to a plain wrapper in
+`flagship-pages-pass.css`; the legacy component is untouched. And every row
+carried a `›` chevron, including switches, which promises a sub-page that does
+not exist — toggle rows now get a `console-settings-switch` class and the
+chevron rule skips them.
+
+**One fragility worth knowing, not currently biting.** `closeModal()` opens
+with `if (node.hidden) return;` before `Nav.popLayer()`. Anything that hides
+`#modal` without going through `closeModal` leaves the nav layer rooted on the
+modal forever, and since the click handler starts with
+`if (!el || !rootEl().contains(el)) return;`, the entire dashboard goes dead to
+both clicks and the controller. I hit exactly this while testing and spent a
+while blaming the app. Nothing in the repo does it today.
+
 ### 2026-09-20 — the neutral Home canvas now runs the owner's Waves wallpaper
 
 The owner supplied the Xbox Series X|S "Waves Faded Dark Grey" clip and asked

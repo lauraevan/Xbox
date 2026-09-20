@@ -340,6 +340,9 @@ function settingsRow(title,sub,value,action,kind='value',id=''){
 }
 function toggleRow(title,sub,on,action,id=''){
   const b=settingsRow(title,sub,'',action,'toggle',id);
+  /* A '>' chevron means "opens a sub-page". A switch flips in place, so the
+     row is marked and the chevron rule skips it. */
+  b.classList.add('console-settings-switch');
   const v=b.querySelector('.console-settings-value');
   v.innerHTML=`<i class="console-toggle ${on?'on':''}"><span></span></i>`;
   return b;
