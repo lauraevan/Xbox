@@ -1,0 +1,32 @@
+name: Verify production Xbox deployment
+
+on:
+  push:
+    branches:
+      - claude/xbox-web-replica-v4s0jk
+    paths:
+      - .github/workflows/verify-production.yml
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check production alias
+        shell: bash
+        run: |
+          set -u
+          echo "===== INDEX ====="
+          curl -sSIL --max-time 20 https://xbox-xi-gold.vercel.app/ | sed -n '1,30p'
+
+          echo "===== NOWGG CATALOG ====="
+          curl -sS --max-time 20 -D /tmp/catalog-headers.txt             'https://xbox-xi-gold.vercel.app/api/nowgg?catalog=1'             -o /tmp/catalog.txt || true
+          cat /tmp/catalog-headers.txt || true
+          echo
+          cat /tmp/catalog.txt || true
+          echo
+
+          echo "===== LOCAL ART ====="
+          curl -sSIL --max-time 20             https://xbox-xi-gold.vercel.app/assets/nowgg/stumble-guys.jpg             | sed -n '1,30p'
