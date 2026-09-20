@@ -1,0 +1,38 @@
+name: Verify live Home waves
+
+on:
+  push:
+    branches:
+      - claude/xbox-web-replica-v4s0jk
+    paths:
+      - .github/workflows/verify-live-home-waves.yml
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify production Home waves
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE='https://xbox-xi-gold.vercel.app'
+
+          curl -fsSL --max-time 20 "$BASE/" -o /tmp/index.html
+          grep -Fq 'id="homeNeutralVideo"' /tmp/index.html
+          grep -Fq 'waves-seamless-20260919-1' /tmp/index.html
+          grep -Fq 'home-neutral-video.js?v=home-waves-20260919-2' /tmp/index.html
+
+          curl -fsSL -D /tmp/video.headers --max-time 20 \
+            "$BASE/assets/backgrounds/home-neutral-waves.mp4?v=waves-seamless-20260919-1" \
+            -o /tmp/waves.mp4
+
+          SIZE="$(stat -c%s /tmp/waves.mp4)"
+          echo "video_size=$SIZE"
+          test "$SIZE" -gt 8000
+          test "$SIZE" -lt 12000
+          file /tmp/waves.mp4
+          grep -qi 'content-type: video/mp4' /tmp/video.headers
+          echo LIVE_HOME_WAVES_OK
