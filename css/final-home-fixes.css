@@ -33,6 +33,10 @@ body[data-view="home"][data-home-neutral="true"] .backdrop{
   visibility:hidden;
   pointer-events:none;
   transform:translateZ(0);
+  /* Owner asked for a darker canvas. The clip's own frame measures 24 mean
+     luminance; at .55 the open middle of the page drops from 19.3 to ~11,
+     so the waves still read as motion without competing with the tiles. */
+  filter:brightness(.55);
   transition:opacity 160ms ease;
 }
 
