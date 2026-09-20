@@ -1144,3 +1144,16 @@ When choosing between:
 choose the second.
 
 The project succeeds when someone can look at it and immediately feel that it is reproducing the Xbox dashboard, not merely borrowing its colors.
+
+
+### 2026-09-20 — Xbox version snapshot boot notification
+
+Current snapshot: `m4r9vx`
+
+After every successful Xbox boot, show a compact black-and-white build notification along the **bottom edge** of the screen. It must have a clearly visible light outline and restrained Windows/Xbox styling. The notification reads `Xbox Version 1.5` and `Snapshot <random-code>`.
+
+Important workflow rule:
+- Every user-visible project update should receive a fresh random snapshot code.
+- Report that snapshot code in chat after the update so the user can verify the newest build is loaded.
+- Update the snapshot shown by the boot notification whenever the snapshot changes.
+- Do not move this notification to the top or make it a generic floating card.
