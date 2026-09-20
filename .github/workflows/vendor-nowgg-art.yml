@@ -36,14 +36,11 @@ jobs:
             test -s "$out"
           }
 
-          fetch_art 945360  assets/nowgg/among-us.jpg
+          # These IDs are mapped from the matching SteamDB app records.
+          fetch_art 1677740 assets/nowgg/stumble-guys.jpg
+          fetch_art 1938090 assets/nowgg/call-of-duty.jpg
           fetch_art 322170  assets/nowgg/geometry-dash.jpg
-          fetch_art 319510  assets/nowgg/fnaf.jpg
-          fetch_art 332800  assets/nowgg/fnaf-2.jpg
-          fetch_art 1721470 assets/nowgg/poppy-playtime.jpg
-          fetch_art 1206560 assets/nowgg/worldbox.jpg
-          fetch_art 1276390 assets/nowgg/bloons-td-battles-2.jpg
-          fetch_art 1419170 assets/nowgg/my-singing-monsters.jpg
+          fetch_art 252950  assets/nowgg/rocket-league.jpg
 
       - name: Commit vendored artwork
         shell: bash
@@ -56,5 +53,5 @@ jobs:
             echo "Artwork already vendored."
             exit 0
           fi
-          git commit -m "Vendor NowGG game artwork"
+          git commit -m "Vendor visible NowGG game artwork"
           git push origin HEAD:claude/xbox-web-replica-v4s0jk
