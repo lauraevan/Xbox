@@ -161,3 +161,19 @@ body[data-view="home"] .ref-friends .tile-face{
   #view-library .console-poster-art{ width:13.2rem !important; }
   #view-library .console-poster-art{ height:16.25rem !important; }
 }
+
+
+/* Neutral Home boot state: exact top-bar black until a game is focused. */
+body[data-view="home"][data-home-neutral="true"],
+body[data-view="home"][data-home-neutral="true"] .backdrop{
+  background:#000 !important;
+}
+body[data-view="home"][data-home-neutral="true"] .backdrop-scrim{
+  background:#000 !important;
+}
+body[data-view="home"][data-home-neutral="true"] .backdrop-glow{
+  opacity:0 !important;
+}
+body[data-view="home"][data-home-neutral="true"] .backdrop-layer{
+  opacity:0 !important;
+}
