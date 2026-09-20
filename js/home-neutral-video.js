@@ -13,7 +13,7 @@ video.muted = true;
 video.playsInline = true;
 
 let failed = false;
-let playing = false;
+let playPending = false;
 
 function shouldPlay(){
   return !failed
@@ -28,31 +28,37 @@ function sync(){
   document.body.classList.toggle('home-neutral-video-active', active);
 
   if (active){
-    if (!playing){
-      const attempt = video.play();
-      if (attempt?.catch) attempt.catch(() => {
+    if (!video.paused || playPending) return;
+    playPending = true;
+    const attempt = video.play();
+    if (attempt?.then){
+      attempt.then(() => {
+        playPending = false;
+      }).catch(() => {
+        playPending = false;
         /* Autoplay refusal degrades cleanly to the black fallback. */
       });
-      playing = true;
+    } else {
+      playPending = false;
     }
   } else {
+    playPending = false;
     if (!video.paused) video.pause();
-    playing = false;
   }
 }
 
 video.addEventListener('playing', () => {
-  playing = true;
+  playPending = false;
   document.body.classList.add('home-neutral-video-ready');
 });
 
 video.addEventListener('pause', () => {
-  playing = false;
+  playPending = false;
 });
 
 video.addEventListener('error', () => {
   failed = true;
-  playing = false;
+  playPending = false;
   document.body.classList.remove('home-neutral-video-active', 'home-neutral-video-ready');
   video.hidden = true;
 });
@@ -66,7 +72,7 @@ document.addEventListener('visibilitychange', sync, { passive:true });
 window.addEventListener('pageshow', sync, { passive:true });
 window.addEventListener('pagehide', () => {
   if (!video.paused) video.pause();
-  playing = false;
+  playPending = false;
 }, { passive:true });
 
 reducedMotion?.addEventListener?.('change', sync);
