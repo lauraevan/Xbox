@@ -46,21 +46,11 @@ function coverArt(game, opts = {}){
 
   wrap.append(plate, img);
 
-  if (game.directCover){
-    img.src = game.directCover;
-    img.classList.add('loaded');
-    img.addEventListener('error', () => {
-      img.remove();
-      wrap.classList.add('art-missing');
-    }, { once:true });
-    wrap._cancelCover = () => {};
-  } else {
-    const cancel = window.Media.loadCover(game.coverFile, img, {
-      priority: opts.priority,
-      onFail: () => { img.remove(); wrap.classList.add('art-missing'); }
-    });
-    wrap._cancelCover = cancel;
-  }
+  const cancel = window.Media.loadCover(game.coverFile, img, {
+    priority: opts.priority,
+    onFail: () => { img.remove(); wrap.classList.add('art-missing'); }
+  });
+  wrap._cancelCover = cancel;
   return wrap;
 }
 
@@ -95,9 +85,7 @@ function tile(game, kind = 'sm'){
     face.append(el('span', 'tile-pin', ICON.pin));
 
   btn.append(face, el('span', 'tile-label', escapeHtml(game.name)));
-  btn._navActivate = () => game.sourceProvider
-    ? window.App.launch(game)
-    : window.App.openDetail(game);
+  btn._navActivate = () => window.App.openDetail(game);
   return btn;
 }
 
