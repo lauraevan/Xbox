@@ -125,6 +125,30 @@ async function loadNowggGames(offset=0){
   }
 }
 
+function mergeCloudCatalogues(stratusGames, nowggGames){
+  if (!nowggGames.length) return stratusGames.slice();
+
+  const out = [];
+  const extras = nowggGames.slice();
+  let sinceExtra = 0;
+
+  for (const game of stratusGames){
+    out.push(game);
+    sinceExtra++;
+
+    /* Put one hidden-provider title after every three Stratus titles.
+       This keeps them visibly mixed into the normal Store instead of
+       clustering them in a separate provider shelf. */
+    if (extras.length && sinceExtra >= 3){
+      out.push(extras.shift());
+      sinceExtra = 0;
+    }
+  }
+
+  out.push(...extras);
+  return out;
+}
+
 async function loadCatalogue(){
   if (catalogue) return catalogue;
   if (cataloguePromise) return cataloguePromise;
@@ -148,7 +172,7 @@ async function loadCatalogue(){
 
         const nowggGames = await loadNowggGames(stratusGames.length);
         const seen = new Set();
-        catalogue = [...stratusGames, ...nowggGames].filter(game => {
+        catalogue = mergeCloudCatalogues(stratusGames, nowggGames).filter(game => {
           const key = String(game.gameKey);
           if (!key || seen.has(key)) return false;
           seen.add(key);
