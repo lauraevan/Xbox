@@ -299,10 +299,7 @@ if (stage){
   }).observe(stage, { attributes:true, attributeFilter:['hidden'] });
 }
 
-const XBOX_MARK = `
-<svg class="xbox-guide-mark" viewBox="0 0 24 24" aria-hidden="true">
-  <path fill="currentColor" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm-5.9 4.25c1.85-1.16 3.73-1.2 5.9.14-1.42.97-2.76 2.22-4.02 3.73A18.8 18.8 0 0 0 6.1 6.25Zm11.8 0a18.8 18.8 0 0 0-1.88 3.87c-1.26-1.51-2.6-2.76-4.02-3.73 2.17-1.34 4.05-1.3 5.9-.14ZM5.02 9.18c2.02 1.55 4.35 4.15 6.98 7.8 2.63-3.65 4.96-6.25 6.98-7.8.66 1.53.75 3.2.23 5.02A7.5 7.5 0 0 1 12 19.5a7.5 7.5 0 0 1-7.21-5.3 7.1 7.1 0 0 1 .23-5.02Z"/>
-</svg>`;
+const XBOX_MARK = '<img class="xbox-guide-mark" src="assets/pwa/xbox-logo.svg" alt="" aria-hidden="true">';
 
 function tuneGuideTabs(){
   const tabs = document.getElementById('guideTabs');
