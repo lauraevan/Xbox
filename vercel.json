@@ -12,6 +12,14 @@
   },
   "rewrites": [
     {
+      "source": "/nowgg-ip/:prefix",
+      "destination": "/api/nowgg?ip=:prefix&path="
+    },
+    {
+      "source": "/nowgg-ip/:prefix/:path*",
+      "destination": "/api/nowgg?ip=:prefix&path=:path*"
+    },
+    {
       "source": "/nowgg",
       "destination": "/api/nowgg?path="
     },
