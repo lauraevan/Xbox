@@ -35,6 +35,7 @@ function permitted(){
   try { set = window.State?.settings || {}; } catch {}
   const mode = set.wallpaperMode || 'waves';
   if (mode !== 'waves') return false;
+  if ((set.wallpaperBehavior || 'dynamic') !== 'dynamic') return false;
   if ((set.wallpaperMotion || 'normal') === 'off') return false;
   if (set.motion === 'reduced') return false;
   if (reducedMotion?.matches) return false;
@@ -106,7 +107,7 @@ video.addEventListener('error', () => {
 
 new MutationObserver(sync).observe(document.body, {
   attributes:true,
-  attributeFilter:['data-view','data-home-neutral','data-wallpaper-mode']
+  attributeFilter:['data-view','data-home-neutral','data-wallpaper-mode','data-wallpaper-behavior']
 });
 
 document.addEventListener('visibilitychange', sync, { passive:true });
