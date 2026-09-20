@@ -1,23 +1,69 @@
-/* Final Home surface corrections.
-   Loaded last so older theme passes cannot repaint the neutral canvas. */
+/* Neutral Home: animated waves with a pure-black fallback.
+   Loaded last so older theme passes cannot repaint the canvas. */
 
-body[data-view="home"][data-home-neutral="true"],
+body[data-view="home"][data-home-neutral="true"]{
+  background:#000 !important;
+}
+
 body[data-view="home"][data-home-neutral="true"] #stage,
 body[data-view="home"][data-home-neutral="true"] .stage,
 body[data-view="home"][data-home-neutral="true"] .sysbar,
 body[data-view="home"][data-home-neutral="true"] .views,
 body[data-view="home"][data-home-neutral="true"] #view-home,
-body[data-view="home"][data-home-neutral="true"] #view-home.reference-home,
-body[data-view="home"][data-home-neutral="true"] .backdrop,
-body[data-view="home"][data-home-neutral="true"] .backdrop-scrim,
-body[data-view="home"][data-home-neutral="true"] .topbar-scrim{
+body[data-view="home"][data-home-neutral="true"] #view-home.reference-home{
+  background:transparent !important;
+  background-image:none !important;
+}
+
+body[data-view="home"][data-home-neutral="true"] .backdrop{
   background:#000 !important;
   background-image:none !important;
+}
+
+.home-neutral-video{
+  position:absolute;
+  inset:0;
+  z-index:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+  background:#000;
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transform:translateZ(0);
+  transition:opacity 160ms ease;
+}
+
+body.home-neutral-video-active .home-neutral-video{
+  opacity:1;
+  visibility:visible;
 }
 
 body[data-view="home"][data-home-neutral="true"] .backdrop-layer{
   opacity:0 !important;
   background-image:none !important;
+}
+
+body[data-view="home"][data-home-neutral="true"] .backdrop-scrim{
+  background:linear-gradient(
+    180deg,
+    rgba(0,0,0,.18) 0%,
+    rgba(0,0,0,.05) 38%,
+    rgba(0,0,0,.08) 68%,
+    rgba(0,0,0,.24) 100%
+  ) !important;
+}
+
+body[data-view="home"][data-home-neutral="true"] .topbar-scrim{
+  background:linear-gradient(
+    180deg,
+    rgba(0,0,0,.76) 0%,
+    rgba(0,0,0,.48) 44%,
+    rgba(0,0,0,.18) 74%,
+    transparent 100%
+  ) !important;
 }
 
 body[data-view="home"][data-home-neutral="true"] .backdrop-glow{
@@ -32,6 +78,12 @@ body[data-view="home"][data-home-neutral="true"] .reference-home::after{
   background:none !important;
   box-shadow:none !important;
   filter:none !important;
+}
+
+@media (prefers-reduced-motion: reduce){
+  .home-neutral-video{
+    display:none !important;
+  }
 }
 
 /* Use the real local Xbox logo in the Guide's Xbox tab. */
