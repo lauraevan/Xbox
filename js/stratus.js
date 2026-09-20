@@ -28,6 +28,7 @@ function retiredGame(raw){
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, ' ')
     .trim();
+  if (window.State?.settings?.devMode === true) return false;
   return RETIRED_GAME_KEYS.has(key) || RETIRED_GAME_TITLES.has(title);
 }
 
