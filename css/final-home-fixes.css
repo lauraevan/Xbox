@@ -33,10 +33,11 @@ body[data-view="home"][data-home-neutral="true"] .backdrop{
   visibility:hidden;
   pointer-events:none;
   transform:translateZ(0);
-  /* Owner asked for a darker canvas. The clip's own frame measures 24 mean
-     luminance; at .55 the open middle of the page drops from 19.3 to ~11,
-     so the waves still read as motion without competing with the tiles. */
-  filter:brightness(.55);
+  /* Owner asked for a darker canvas, then a little darker again. The clip's
+     own frame measures 24 mean luminance. Reference points, measured at
+     1920x1080 as the open middle of the page: none 19.3, .55 -> 10.3,
+     .42 -> 8.0. This is the only knob - raise it to lighten. */
+  filter:brightness(.42);
   transition:opacity 160ms ease;
 }
 
