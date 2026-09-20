@@ -1,8 +1,9 @@
 # Xbox — web dashboard
 
 A console dashboard rebuilt for the browser: the system bar, the tile rail,
-the guide overlay, spatial focus, controller input, achievements, and a
-743-title catalogue streamed straight from the CDN.
+the guide overlay, spatial focus, controller input, achievements, a 743-title
+catalogue streamed straight from the CDN, and cloud titles streamed through
+Stratus.
 
 Runs from static files in development — open `index.html` and it works. Production
 goes out through a build step (`npm run build`) that Vercel runs for you.
@@ -78,11 +79,31 @@ drift so rows and columns stay coherent. Mouse and touch work too.
   recently played, parties, achievements, capture, notifications, power.
 - **Achievements** — 14 of them, with the slide-in toast and a Gamerscore that
   persists.
+- **Store** — a console-style storefront with an icon rail, gallery and
+  product pages, mounted separately from the five core views.
 - **Launching** — a boot splash, then the game runs in a sandboxed iframe.
   The guide still works on top of it; B quits back to the dashboard.
 
+### Console behaviour
+
+Multiple profiles with per-profile state, Quick Resume, a captures gallery,
+screen-time limits, content blocks by category, night mode on a schedule, an
+idle HUD, a time drawer, button remapping, and accessibility passes for
+colour-vision filters, text scaling, high contrast and reduced transparency.
+
+### The neutral canvas
+
+With nothing selected, Home runs the Xbox Series X|S Waves wallpaper behind the
+dashboard, and cross-fades a game's key art over it once a tile is focused. The
+clip is vendored, not hotlinked, at 1080p and 720p — the smaller pair is served
+to phones and tablets. It is never fetched at all under reduced motion,
+Save-Data, a 2g connection, under 4 GB of device memory, or when a fixed
+wallpaper is set, and every failure path lands on a still poster rather than an
+empty frame.
+
 Profile, pins, recents, playtime, achievements and settings persist to
-`localStorage`, so the console remembers you between visits.
+`localStorage`; captures and a custom wallpaper live in IndexedDB. The console
+remembers you between visits.
 
 ## Data
 
@@ -98,6 +119,29 @@ fallback, so covers, backdrops and the manifest itself recover on networks that
 block jsDelivr. If both hosts fail, the dashboard says so instead of sitting
 empty.
 
+Flagship key art and the Waves wallpaper are **vendored** under `assets/`
+rather than hotlinked, so they do not depend on a third-party host staying
+reachable.
+
+## Stratus
+
+Cloud titles come from
+[Stratus](https://github.com/evanjeffrey1212-eng/stratus-api), co-developed by
+this project's owner — which is why the integration goes deeper than a
+catalogue drop-in. Purchased licences are surfaced first in the library, and
+sessions are created, started, kept alive and quit from the dashboard itself.
+
+The browser never sees the API key. Requests go
+
+```
+browser  ->  /api/stratus  (Vercel function)  ->  Stratus API
+```
+
+`api/stratus.js` reads the credential from the environment only, returns a
+clean 503 when it is not configured, and fails over to a secondary upstream on
+a retryable status. The backend is vendored under `stratus/` for reference and
+is deliberately excluded from the published build — see below.
+
 ## Layout
 
 The UI is authored against a 1920×1080 canvas:
@@ -111,21 +155,43 @@ The UI is authored against a 1920×1080 canvas:
 a phone.
 
 ```
-index.html
-assets/          boot clip (mp4 + webm), poster, favicon, icon licence
-css/   base      tokens, TV scaling, boot sequence
-       chrome    system bar, guide, toasts, modals
-       home      hero, tile rail, spotlight cards
-       pages     library, Game Pass, search, settings, detail, player
-js/    icons     Fluent icon path data
-       catalog   manifest loading, mirrors, queries
-       state     profile, pins, recents, achievements, settings
-       audio     UI sounds, synthesised with WebAudio
-       nav       spatial focus engine, gamepad and keyboard input
-       views     the five main screens
-       guide     the guide overlay
-       app       boot, routing, backdrop, detail page, launching
+index.html       load order is load-bearing; see below
+api/             Vercel serverless functions (Stratus gateway)
+assets/          boot clip, Waves wallpaper, vendored key art, icon licence
+stratus/         vendored Stratus backend, not published to the web build
+scripts/         protect-build.mjs, the production build
+css/             22 stylesheets: tokens and TV scaling, then themes and passes
+js/              31 scripts, loaded in order
 ```
+
+### Base modules, then passes
+
+Load order matters. The base modules own the data and the first render:
+
+```
+icons  media  features  artwork  catalog  state  audio  nav  views
+console-pages  stratus  stratus-backend-pass  store  cloud-library
+guide  reference  personalization  app
+```
+
+| Module | Owns |
+| --- | --- |
+| `catalog` | manifest loading, mirrors, queries |
+| `media` | cover loading: mirror chain, bounded queue, retries, host health |
+| `state` | profiles, pins, recents, achievements, settings |
+| `nav` | spatial focus engine, gamepad and keyboard input |
+| `stratus` | the cloud catalogue and session lifecycle |
+| `app` | boot, routing, backdrop, detail page, launching |
+
+Everything after `app` is a **pass** — a layer that augments what already
+exists rather than replacing it. Passes wrap rather than rewrite, attach
+through the `nav:*` event seam, and fail soft: a pass that cannot do its job
+must leave the dashboard working.
+
+A consequence worth knowing before adding a 32nd script: these load
+sequentially and later ones patch earlier ones, so one failing to arrive leaves
+a *half-patched* app rather than a clean failure. An inline failsafe in
+`index.html` clears the boot screen after 13s and names the missing modules.
 
 ## Boot screen
 
