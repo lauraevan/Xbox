@@ -216,3 +216,9 @@ body[data-view="home"] .backdrop-layer{
   }
   .wallpaper-manager-row button{min-width:7rem}
 }
+
+
+/* Full-resolution Waves still frame is the fallback whenever video motion is off. */
+body[data-view="home"][data-home-neutral="true"][data-wallpaper-mode="waves"] .backdrop{
+  background:#000 url("../assets/wallpaper/waves-poster.jpg") center/cover no-repeat !important;
+}
