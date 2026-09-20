@@ -1,0 +1,31 @@
+name: Inspect Roblox nowgg.fun relay
+
+on:
+  push:
+    branches:
+      - claude/xbox-web-replica-v4s0jk
+    paths:
+      - .github/workflows/inspect-nowgg-roblox.yml
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Inspect Roblox relay page
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -A "Mozilla/5.0" -fsSL --max-time 25             https://20.ip.nowgg.fun/apps/a/19900/b.html             -o /tmp/roblox.html
+
+          echo "bytes=$(wc -c < /tmp/roblox.html)"
+          echo "===== ERROR MATCHES ====="
+          grep -Ein -C 12 'does not exist|game not found|not found|invalid game|unavailable|19900|roblox' /tmp/roblox.html | head -400 || true
+
+          echo "===== URLS ====="
+          grep -Eo 'https?://[^"'"'"' <>()]+' /tmp/roblox.html | head -200 || true
+
+          echo "===== SCRIPT SIGNALS ====="
+          grep -Ein -C 8 'gameId|game_id|appId|app_id|launch|session|package|deeplink|deep_link|nowgg|now\.gg|iframe|WebSocket|RTCPeerConnection' /tmp/roblox.html | head -500 || true
