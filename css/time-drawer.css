@@ -41,3 +41,17 @@ body[data-wave-theme="warm"] .home-neutral-video{filter:brightness(var(--persona
 body[data-wave-theme="original"] .home-neutral-video{filter:brightness(var(--personal-bg-brightness)) blur(var(--personal-bg-blur))!important}
 @media(max-width:720px){.time-drawer-panel{width:min(35rem,94vw);padding:3rem 1.5rem 2rem}.time-drawer-clock{font-size:4.7rem}.drawer-personal-control{min-height:5.4rem}}
 @media(prefers-reduced-motion:reduce){.time-drawer-panel{transition:transform .12s linear}}
+
+/* Light mode keeps the quick drawer readable while matching the console theme. */
+html[data-theme="light"] .time-drawer-scrim{background:rgba(15,18,20,.22)}
+html[data-theme="light"] .time-drawer-panel{
+ background:rgba(242,244,246,.965);border-left-color:rgba(0,0,0,.14);box-shadow:-1.4rem 0 4.5rem rgba(0,0,0,.22);color:#111;
+}
+html[data-theme="light"] .time-drawer-head{border-bottom-color:rgba(0,0,0,.1)}
+html[data-theme="light"] .time-drawer-clock,html[data-theme="light"] .time-weather-temp{color:#111}
+html[data-theme="light"] .time-drawer-date,html[data-theme="light"] .time-weather-condition{color:rgba(0,0,0,.58)}
+html[data-theme="light"] .time-weather{color:rgba(0,0,0,.72)}
+html[data-theme="light"] .drawer-personal-control{background:rgba(0,0,0,.045);color:#111}
+html[data-theme="light"] .drawer-personal-control span{color:rgba(0,0,0,.68)}
+html[data-theme="light"] .drawer-personal-control strong{color:#111}
+html[data-theme="light"] .drawer-personal-control:hover,html[data-theme="light"] .drawer-personal-control[data-focused]{background:rgba(0,0,0,.09);border-color:rgba(0,0,0,.14)}
