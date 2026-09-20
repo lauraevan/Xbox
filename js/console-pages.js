@@ -473,18 +473,65 @@ function renderSettings(root){
   }
 
   if(settingsMode==='personalization'){
+    const W=window.WallpaperSystem;
     const accentOptions=['#4ade4a','#107c10','#2d7dff','#8c52ff','#e96b2c','#f2f2f2'];
     const saturationOptions=[1,1.2,1.35,1.6];
+    const wallpaperModes=['waves','black','game','custom','random'];
+    const wallpaperBehaviors=['static','adaptive','dynamic'];
+    const brightnessOptions=[25,42,55,70,85,100];
+    const blurOptions=[0,2,4,8,12];
+
+    const wset=(key,value,id=key)=>{
+      if(W?.set) W.set(key,value);
+      else state.setSetting(key,value);
+      rerenderSettings(root,id);
+    };
+
     panel.append(
-      groupTitle('Look & feel','These settings directly change Home and system chrome.'),
+      groupTitle('Look & feel','Keep the Xbox layout, but personalize the Home background.'),
       settingsRow('Theme','System chrome appearance',set.theme==='light'?'Light':'Dark',()=>setConsoleSetting(root,'theme',set.theme==='dark'?'light':'dark','theme'),'value','theme'),
       settingsRow('My color','Accent used for focus and highlights',set.accent||'#4ade4a',()=>setConsoleSetting(root,'accent',cycle(set.accent||'#4ade4a',accentOptions),'accent'),'value','accent'),
-      toggleRow('Dynamic backgrounds','Change Home artwork with the selected game',set.background==='dynamic',()=>setConsoleSetting(root,'background',set.background==='dynamic'?'plain':'dynamic','background'),'background'),
-      settingsRow('Home wallpaper',set.wallpaper?'A custom wallpaper is set':'Use a fixed image instead of selected-game art',set.wallpaper?'Change':'Choose',()=>window.App?.promptWallpaper?.(),'value','wallpaper'),
-      settingsRow('Artwork saturation','How vivid Home artwork appears',`${Math.round((set.saturation??1.35)*100)}%`,()=>setConsoleSetting(root,'saturation',cycle(set.saturation??1.35,saturationOptions),'saturation'),'value','saturation'),
+
+      groupTitle('Wallpaper','Wallpapers are saved locally at their original uploaded quality.'),
+      settingsRow('Wallpaper','Choose the resting Home background',
+        W?.modeLabel?.(set.wallpaperMode)||'Waves',
+        ()=>wset('wallpaperMode',cycle(set.wallpaperMode||'waves',wallpaperModes),'wallpaperMode'),
+        'value','wallpaperMode'),
+      settingsRow('Wallpaper behavior','Static keeps the wallpaper. Adaptive shows game art on focus. Dynamic also plays video wallpapers.',
+        W?.behaviorLabel?.(set.wallpaperBehavior)||'Dynamic',
+        ()=>wset('wallpaperBehavior',cycle(set.wallpaperBehavior||'dynamic',wallpaperBehaviors),'wallpaperBehavior'),
+        'value','wallpaperBehavior'),
+      settingsRow('Quality','Uploaded images and videos are stored without resizing, transcoding, or recompression',
+        'Original / highest',null,'value','wallpaperQuality'),
+      settingsRow('Brightness','Adjust the wallpaper without changing the source file',
+        `${set.wallpaperBrightness??42}%`,
+        ()=>wset('wallpaperBrightness',cycle(set.wallpaperBrightness??42,brightnessOptions),'wallpaperBrightness'),
+        'value','wallpaperBrightness'),
+      settingsRow('Blur','Optional display blur. The original saved file stays untouched.',
+        set.wallpaperBlur?`${set.wallpaperBlur}px`:'Off',
+        ()=>wset('wallpaperBlur',cycle(set.wallpaperBlur||0,blurOptions),'wallpaperBlur'),
+        'value','wallpaperBlur'),
+      toggleRow('Wallpaper motion','Allow the full-quality Waves/video wallpaper to animate',
+        (set.wallpaperMotion||'normal')!=='off',
+        ()=>wset('wallpaperMotion',(set.wallpaperMotion||'normal')==='off'?'normal':'off','wallpaperMotion'),
+        'wallpaperMotion'),
+      settingsRow('Add image','Store the exact original image file on this device','Choose',
+        ()=>W?.upload?.('image',()=>rerenderSettings(root,'wallpaperMode')),
+        'value','wallpaperImage'),
+      settingsRow('Add video','Store the exact original video file on this device','Choose',
+        ()=>W?.upload?.('video',()=>rerenderSettings(root,'wallpaperMode')),
+        'value','wallpaperVideo'),
+      settingsRow('Manage wallpapers','Select, rename, or delete saved original files','Manage',
+        ()=>W?.openManager?.(()=>rerenderSettings(root,'wallpaperManage')),
+        'value','wallpaperManage'),
+      settingsRow('Artwork saturation','How vivid focused-game artwork appears',`${Math.round((set.saturation??1.35)*100)}%`,()=>setConsoleSetting(root,'saturation',cycle(set.saturation??1.35,saturationOptions),'saturation'),'value','saturation'),
+
+      groupTitle('Home details','The rest of the dashboard layout stays unchanged.'),
       toggleRow('Game details on Home','Show focused-title details above the Home row',!!set.heroText,()=>setConsoleSetting(root,'heroText',!set.heroText,'heroText'),'heroText'),
       toggleRow('Tile badges','Show PORT, FLASH and emulator badges where available',!!set.tileBadges,()=>setConsoleSetting(root,'tileBadges',!set.tileBadges,'tileBadges'),'tileBadges')
     );
+
+    W?.mountLibrary?.(panel,()=>rerenderSettings(root,'wallpaperMode'));
   }
 
   if(settingsMode==='display'){
