@@ -1,272 +1,79 @@
-/* Time / weather drawer opened from the system clock.
-   Sized and colored to mirror the main Xbox Guide panel. */
+/* Minimal clock + personalization drawer. */
 .clock.clock-action{
-  cursor:pointer;
-  min-height:3.8rem;
-  padding:0 .85rem;
-  border-radius:.45rem;
-  display:flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  transition:background .16s ease, color .16s ease;
+ cursor:pointer;min-height:3.8rem;padding:0 .85rem;border-radius:.45rem;
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ transition:background .16s ease,color .16s ease;
 }
-.clock.clock-action:hover,
-.clock.clock-action[data-focused],
-.clock.clock-action[aria-expanded="true"]{
-  background:rgba(255,255,255,.08);
-  color:#fff;
+.clock.clock-action:hover,.clock.clock-action[data-focused],.clock.clock-action[aria-expanded="true"]{
+ background:rgba(255,255,255,.08);color:#fff;
 }
-
-.time-drawer{
-  position:fixed;
-  inset:0;
-  z-index:175;
-  pointer-events:none;
-  visibility:hidden;
-}
-.time-drawer.open{
-  pointer-events:auto;
-  visibility:visible;
-}
-.time-drawer-scrim{
-  position:absolute;
-  inset:0;
-  background:rgba(0,0,0,.60);
-  opacity:0;
-  transition:opacity .2s ease;
-}
-.time-drawer.open .time-drawer-scrim{ opacity:1; }
-
+.time-drawer{position:fixed;inset:0;z-index:175;pointer-events:none;visibility:hidden}
+.time-drawer.open{pointer-events:auto;visibility:visible}
+.time-drawer-scrim{position:absolute;inset:0;background:rgba(0,0,0,.56);opacity:0;transition:opacity .18s ease}
+.time-drawer.open .time-drawer-scrim{opacity:1}
 .time-drawer-panel{
-  position:absolute;
-  top:4.8rem;
-  right:5.4rem;
-  bottom:4.8rem;
-  width:45.5rem;
-  display:flex;
-  flex-direction:column;
-  overflow:hidden;
-  background:rgba(15,16,18,.992);
-  border:.1rem solid rgba(255,255,255,.05);
-  border-radius:2rem;
-  box-shadow:-1.1rem 1.4rem 5rem rgba(0,0,0,.72);
-  transform:translateX(calc(100% + 7rem));
-  opacity:.5;
-  transition:transform .24s cubic-bezier(.2,.85,.2,1), opacity .2s ease;
+ position:absolute;top:4.8rem;right:5.4rem;bottom:4.8rem;width:39rem;
+ overflow:hidden;padding:2.4rem;
+ background:rgba(8,9,10,.985);border:.1rem solid rgba(255,255,255,.055);border-radius:1.7rem;
+ box-shadow:-1.1rem 1.4rem 5rem rgba(0,0,0,.72);
+ transform:translateX(calc(100% + 7rem));opacity:.45;
+ transition:transform .23s cubic-bezier(.2,.85,.2,1),opacity .18s ease;
 }
-.time-drawer.open .time-drawer-panel{
-  transform:none;
-  opacity:1;
-}
-
-.time-drawer-head{
-  position:relative;
-  padding:2.4rem 2.5rem 2.2rem;
-  background:#090a0b;
-  border-bottom:.1rem solid rgba(255,255,255,.06);
-}
-.time-wallpaper-toggle{
-  position:absolute;
-  top:1.7rem;
-  right:1.8rem;
-  width:4.2rem;
-  height:4.2rem;
-  display:grid;
-  place-items:center;
-  padding:0;
-  border:0;
-  border-radius:1rem;
-  background:transparent;
-  color:rgba(255,255,255,.66);
-  cursor:pointer;
-  transition:background .15s ease,color .15s ease;
-}
-.time-wallpaper-toggle:hover,
-.time-wallpaper-toggle[aria-pressed="true"]{
-  background:#17191b;
-  color:#fff;
-}
-.time-wallpaper-toggle:focus-visible{
-  outline:.24rem solid #53d64b;
-  outline-offset:-.24rem;
-}
-.time-wallpaper-toggle svg{
-  width:2.15rem;
-  height:2.15rem;
-  fill:none;
-  stroke:currentColor;
-  stroke-width:1.75;
-  stroke-linecap:round;
-  stroke-linejoin:round;
-}
-.time-drawer-body{
-  flex:1;
-  min-height:0;
-  padding:2.5rem;
-  overflow-y:auto;
-  background:#111315;
-  scrollbar-width:none;
-}
-.time-drawer-body::-webkit-scrollbar{ display:none; }
-.time-drawer-foot{
-  min-height:6.6rem;
-  display:flex;
-  align-items:center;
-  padding:0 2.5rem;
-  background:#090a0b;
-  border-top:.1rem solid rgba(255,255,255,.06);
-}
-
-.time-drawer-eyebrow{
-  font-size:1.05rem;
-  font-weight:700;
-  letter-spacing:.18rem;
-  text-transform:uppercase;
-  color:rgba(255,255,255,.42);
-}
+.time-drawer.open .time-drawer-panel{transform:none;opacity:1}
+.time-drawer-head{padding:.3rem .35rem 2rem;border-bottom:.1rem solid rgba(255,255,255,.07)}
 .time-drawer-clock{
-  margin-top:1.1rem;
-  font-size:6.8rem;
-  line-height:.96;
-  font-weight:300;
-  letter-spacing:-.2rem;
-  color:#fff;
+ font-size:6.4rem;line-height:.95;font-weight:300;letter-spacing:-.2rem;color:#fff
 }
-.time-drawer-period{
-  margin-left:.7rem;
-  font-size:1.6rem;
-  font-weight:600;
-  letter-spacing:.03rem;
-  color:rgba(255,255,255,.52);
-}
-.time-drawer-month{
-  margin-top:1.05rem;
-  font-size:1.75rem;
-  font-weight:500;
-  color:rgba(255,255,255,.66);
-}
-
+.time-drawer-date{margin-top:.75rem;font-size:1.45rem;font-weight:500;color:rgba(255,255,255,.5)}
 .time-weather{
-  display:grid;
-  grid-template-columns:7rem minmax(0,1fr);
-  gap:1.75rem;
-  align-items:center;
-  margin-top:1.5rem;
-  padding:1.6rem 1.4rem;
-  border-radius:1rem;
-  background:#17191b;
+ display:flex;align-items:center;gap:.8rem;margin-top:1.7rem;color:rgba(255,255,255,.78)
 }
-.time-weather-icon{
-  width:7rem;
-  height:7rem;
-  display:grid;
-  place-items:center;
-  color:#fff;
-}
+.time-weather-icon{width:3.4rem;height:3.4rem;display:grid;place-items:center}
 .time-weather-icon svg{
-  width:5.9rem;
-  height:5.9rem;
-  fill:none;
-  stroke:currentColor;
-  stroke-width:1.65;
-  stroke-linecap:round;
-  stroke-linejoin:round;
+ width:3rem;height:3rem;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round
 }
-.time-weather-temp{
-  font-size:4.5rem;
-  line-height:1;
-  font-weight:300;
-  letter-spacing:-.1rem;
-  color:#fff;
+.time-weather-temp{font-size:2.2rem;font-weight:500;color:#fff}
+.time-weather-condition{font-size:1.25rem;color:rgba(255,255,255,.45)}
+.drawer-personal-controls{
+ display:grid;grid-template-columns:1fr 1fr;gap:.8rem;padding-top:1.8rem
 }
-.time-weather-condition{
-  margin-top:.5rem;
-  font-size:1.5rem;
-  line-height:1.25;
-  font-weight:500;
-  color:rgba(255,255,255,.62);
+.drawer-personal-control{
+ min-width:0;min-height:7rem;padding:1.05rem 1.15rem;text-align:left;
+ display:flex;flex-direction:column;justify-content:space-between;gap:.65rem;
+ border:.1rem solid rgba(255,255,255,.04);border-radius:1rem;
+ background:#141617;color:#fff;
+ transition:background .14s ease,transform .14s ease,border-color .14s ease
 }
-.time-weather-status{
-  margin-top:1.15rem;
-  font-size:1.12rem;
-  color:rgba(255,255,255,.38);
+.drawer-personal-control span{
+ font-size:1.05rem;font-weight:550;color:rgba(255,255,255,.43)
 }
-.time-weather-status.default{
-  color:rgba(255,255,255,.48);
+.drawer-personal-control strong{
+ overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+ font-size:1.38rem;font-weight:600;color:rgba(255,255,255,.94)
 }
+.drawer-personal-control:hover,.drawer-personal-control[data-focused]{
+ background:#202326;border-color:rgba(255,255,255,.12);transform:translateY(-.08rem)
+}
+.drawer-personal-control[data-focused]{outline:.22rem solid var(--accent);outline-offset:.1rem}
 
-.time-weather-stats{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:.75rem;
-  margin-top:1.65rem;
+/* Quick waves themes affect only the system waves video, never game artwork. */
+body[data-wave-theme="cool"] .home-neutral-video{
+ filter:brightness(var(--personal-bg-brightness)) blur(var(--personal-bg-blur)) hue-rotate(185deg) saturate(1.18)!important
 }
-.time-weather-stat{
-  min-width:0;
-  min-height:6.6rem;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  padding:1.05rem 1.15rem;
-  border-radius:1rem;
-  background:#17191b;
-  border:.1rem solid rgba(255,255,255,.025);
+body[data-wave-theme="mono"] .home-neutral-video{
+ filter:brightness(var(--personal-bg-brightness)) blur(var(--personal-bg-blur)) grayscale(1) saturate(0)!important
 }
-.time-weather-stat span{
-  display:block;
-  margin-bottom:.48rem;
-  overflow:hidden;
-  white-space:nowrap;
-  text-overflow:ellipsis;
-  font-size:1.02rem;
-  font-weight:600;
-  letter-spacing:.02rem;
-  color:rgba(255,255,255,.38);
+body[data-wave-theme="warm"] .home-neutral-video{
+ filter:brightness(var(--personal-bg-brightness)) blur(var(--personal-bg-blur)) sepia(.28) hue-rotate(330deg) saturate(1.2)!important
 }
-.time-weather-stat strong{
-  display:block;
-  overflow:hidden;
-  white-space:nowrap;
-  text-overflow:ellipsis;
-  font-size:1.48rem;
-  line-height:1.15;
-  font-weight:550;
-  color:rgba(255,255,255,.9);
+body[data-wave-theme="original"] .home-neutral-video{
+ filter:brightness(var(--personal-bg-brightness)) blur(var(--personal-bg-blur))!important
 }
-
-.time-drawer-hint{
-  font-size:1.08rem;
-  color:rgba(255,255,255,.38);
+@media(max-aspect-ratio:16/10){
+ .time-drawer-panel{top:3.6rem;right:3.6rem;bottom:3.6rem;width:39rem}
+ .time-drawer-clock{font-size:5.8rem}
 }
-
-/* Wallpaper-only brightness toggle. The rest of the console stays dark. */
-body.wallpaper-light[data-view="home"] .backdrop{
-  background:#111!important;
-}
-body.wallpaper-light[data-view="home"] .backdrop-layer,
-body.wallpaper-light[data-view="home"] .backdrop-layer.wide,
-body.wallpaper-light[data-view="home"] .backdrop-layer.reference-wide{
-  filter:saturate(1.03) brightness(1.04) contrast(1.01)!important;
-}
-body.wallpaper-light[data-view="home"] .backdrop-scrim{
-  background:linear-gradient(180deg,rgba(0,0,0,.02) 0%,rgba(0,0,0,.025) 60%,rgba(0,0,0,.13) 100%)!important;
-}
-body.wallpaper-light[data-view="home"] .topbar-scrim{
-  background:linear-gradient(180deg,rgba(0,0,0,.14),rgba(0,0,0,.02) 72%,transparent)!important;
-}
-body.wallpaper-light[data-view="home"] .backdrop-glow{
-  opacity:.08!important;
-}
-
-@media (max-aspect-ratio:16/10){
-  .time-drawer-panel{
-    top:3.6rem;
-    right:3.6rem;
-    bottom:3.6rem;
-    width:46rem;
-  }
-  .time-drawer-clock{ font-size:6.2rem; }
-  .time-drawer-head,
-  .time-drawer-body{ padding-left:2.25rem; padding-right:2.25rem; }
-  .time-drawer-foot{ padding-left:2.25rem; padding-right:2.25rem; }
+@media(max-width:720px){
+ .time-drawer-panel{top:1rem;right:1rem;bottom:1rem;width:min(38rem,calc(100vw - 2rem));padding:2rem}
+ .time-drawer-clock{font-size:5.2rem}
 }
