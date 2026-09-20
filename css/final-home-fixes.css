@@ -186,3 +186,19 @@ body[data-view="home"][data-home-neutral="true"] .reference-home::after{
 .reference-home .ref-card.card-store:hover{
   background:#1b1e20 !important;
 }
+
+/* ───────── per-game dynamic backdrop, darkened ─────────
+   Owner asked for the dynamic background a bit darker too. This is the key
+   art that fades in behind Home when a tile is focused - a different layer
+   from the Waves wallpaper above, which is why it needed its own knob.
+
+   reference-2026-theme.css sets saturate(.78) brightness(.66) contrast(1.02)
+   on these; this repeats that at equal specificity and loads later, changing
+   only the brightness. Measured at 1920x1080 with Forza key art painted, the
+   open middle of the page: .66 -> 71.2 mean luminance, .46 -> 50.8.
+   Brightness is the only value changed - raise it to lighten. */
+body[data-view="home"] .backdrop-layer,
+body[data-view="home"] .backdrop-layer.wide,
+body[data-view="home"] .backdrop-layer.reference-wide{
+  filter:saturate(.78) brightness(.46) contrast(1.02) !important;
+}
