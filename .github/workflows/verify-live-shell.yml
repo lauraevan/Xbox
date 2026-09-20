@@ -1,0 +1,42 @@
+name: Verify live Xbox shell
+
+on:
+  push:
+    branches:
+      - claude/xbox-web-replica-v4s0jk
+    paths:
+      - .github/workflows/verify-live-shell.yml
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for production alias and verify
+        shell: bash
+        run: |
+          set -euo pipefail
+          URL='https://xbox-xi-gold.vercel.app/'
+          for i in $(seq 1 36); do
+            echo "attempt=$i"
+            curl -fsS -D /tmp/headers --max-time 20 "$URL" -o /tmp/index.html || true
+            if grep -Fq 'css/chrome.css?v=xbox-green-greeting-20260919-1' /tmp/index.html 2>/dev/null \
+              && grep -Fq 'css/reference-2026-theme.css?v=black-home-20260919-2' /tmp/index.html 2>/dev/null \
+              && grep -Fq 'js/app.js?v=xbox-green-greeting-20260919-1' /tmp/index.html 2>/dev/null; then
+              echo "LIVE_MARKERS_OK"
+              echo "===== RESPONSE HEADERS ====="
+              cat /tmp/headers
+              echo "===== LIVE MARKERS ====="
+              grep -E 'xbox-green-greeting-20260919-1|black-home-20260919-2' /tmp/index.html
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "Production alias never exposed expected markers"
+          echo "===== LAST HEADERS ====="
+          cat /tmp/headers || true
+          echo "===== LAST INDEX SCRIPT/LINK VERSIONS ====="
+          grep -E 'css/(chrome|reference-2026-theme)|js/(app|reference|app-patch|home-row-custom)' /tmp/index.html || true
+          exit 1
