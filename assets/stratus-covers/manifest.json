@@ -1108,5 +1108,20 @@
     "name": "Hollow Knight",
     "path": "assets/stratus-covers/jy0011.jpg",
     "source": "steamgriddb"
+  },
+  "bs0096": {
+    "name": "Black Myth: Wukong",
+    "path": "assets/stratus-covers/bs0096.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0333": {
+    "name": "Red Dead Redemption 2",
+    "path": "assets/stratus-covers/jy0333.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0532": {
+    "name": "GTA V MOD version",
+    "path": "assets/stratus-covers/jy0532.jpg",
+    "source": "steamgriddb"
   }
 }
