@@ -1,0 +1,68 @@
+name: Build neutral Home waves asset
+
+on:
+  push:
+    branches:
+      - claude/xbox-web-replica-v4s0jk
+    paths:
+      - .github/workflows/build-home-waves.yml
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: claude/xbox-web-replica-v4s0jk
+          fetch-depth: 0
+
+      - name: Install downloader
+        run: python -m pip install --disable-pip-version-check -q yt-dlp
+
+      - name: Download Waves Faded source
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/xbox-waves
+          yt-dlp \
+            --no-playlist \
+            --extractor-args "youtube:player_client=android,web" \
+            -f "bestvideo[ext=mp4]/best[ext=mp4]/best" \
+            -o "/tmp/xbox-waves/source.%(ext)s" \
+            "https://www.youtube.com/watch?v=HqNXS4wH6xc"
+          ls -lh /tmp/xbox-waves
+
+      - name: Create lightweight local background
+        shell: bash
+        run: |
+          set -euo pipefail
+          SRC="$(find /tmp/xbox-waves -type f -name 'source.*' | head -1)"
+          test -n "$SRC"
+          mkdir -p assets/backgrounds
+          ffmpeg -y -v error -i "$SRC" \
+            -an \
+            -vf "fps=12,scale=400:-2:flags=lanczos" \
+            -c:v libx264 -preset slow -crf 38 -pix_fmt yuv420p \
+            -movflags +faststart \
+            assets/backgrounds/home-neutral-waves.mp4
+
+          SIZE="$(stat -c%s assets/backgrounds/home-neutral-waves.mp4)"
+          DURATION="$(ffprobe -v error -show_entries format=duration -of csv=p=0 assets/backgrounds/home-neutral-waves.mp4)"
+          echo "size=$SIZE duration=$DURATION"
+          test "$SIZE" -gt 20000
+          test "$SIZE" -lt 300000
+
+      - name: Commit asset and clean temporary staging
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf .asset-staging/home-neutral
+          rm -f .github/workflows/build-home-waves.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Add lightweight Xbox Waves Home background"
+          git push origin HEAD:claude/xbox-web-replica-v4s0jk
