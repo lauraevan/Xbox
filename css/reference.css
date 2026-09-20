@@ -431,9 +431,9 @@ body[data-view="home"] .legend{ display:none !important; }
 .version-snapshot-toast.out{opacity:0;transform:translate(-50%,.7rem)}
 .version-snapshot-mark{
   width:3.8rem;height:3.8rem;flex:0 0 3.8rem;display:grid;place-items:center;
-  background:transparent;color:#fff;border:.14rem solid rgba(255,255,255,.82);
-  border-radius:.2rem;font-size:1.8rem;font-weight:650;
+  background:transparent;border:0;
 }
+.version-snapshot-mark img{width:3.15rem;height:3.15rem;display:block;filter:grayscale(1) brightness(0) invert(1)}
 .version-snapshot-copy{display:flex;flex-direction:column;gap:.25rem}
 .version-snapshot-copy strong{font-size:1.35rem;font-weight:550;letter-spacing:.01em}
 .version-snapshot-copy span{font-size:1.08rem;color:rgba(255,255,255,.68);font-weight:400}
