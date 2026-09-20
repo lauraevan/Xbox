@@ -17,7 +17,7 @@ const LOCAL_COVERS = {
   'eldenring':'assets/game-art/elden-ring-cover.jpg',
   'reddeadredemption2':'assets/game-art/rdr2-cover.jpg',
   'rdr2':'assets/game-art/rdr2-cover.jpg',
-  'minecraft':'assets/game-art/minecraft-cover-user.jpg',
+  'minecraft':'assets/game-art/minecraft-cover-boxart.jpg',
   'fortnite':'assets/game-art/fortnite-cover.jpg'
 };
 

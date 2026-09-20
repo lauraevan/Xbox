@@ -11,7 +11,7 @@ const LAUNCHER = `${ROOT}/index.html`;
    where every other title is a local file - and this pass force-writes it
    over whatever home-row-custom set, so the tile went blank on any network
    that blocks that host. The comment further down already said "local". */
-const COVER = 'assets/game-art/minecraft-cover-user.jpg';
+const COVER = 'assets/game-art/minecraft-cover-boxart.jpg';
 const HERO = 'https://www.minecraft.net/content/dam/minecraftnet/games/minecraft/key-art/NewKeyArt_Header.jpg';
 const COVER_SENTINEL = '__xbox_local_minecraft_cover__';
 const HOME = document.getElementById('view-home');

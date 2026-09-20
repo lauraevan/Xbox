@@ -16,7 +16,7 @@ const COVER = {
   'Hollow Knight: Silksong': 'assets/game-art/silksong-cover.png',
   'Elden Ring': 'assets/game-art/elden-ring-cover.jpg',
   'Red Dead Redemption 2': 'assets/game-art/rdr2-cover.jpg',
-  'Minecraft': 'assets/game-art/minecraft-cover-user.jpg',
+  'Minecraft': 'assets/game-art/minecraft-cover-boxart.jpg',
   'Fortnite': 'assets/game-art/fortnite-cover.jpg',
   'Cyberpunk 2077': 'https://store-images.s-microsoft.com/image/apps.47379.63407868131364914.bcaa868c-407e-42c2-baeb-48a3c9f29b54.89bb995b-b066-4a53-9fe4-0260ce07e894?h=900&q=95&w=600'
 };
