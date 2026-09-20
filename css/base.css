@@ -56,11 +56,7 @@
   transition-duration:.001s !important;
 }
 
-body[data-theme="light"]{
-  --bg:#e9ecef; --panel:#f6f7f9; --panel-2:#eceff2; --panel-3:#e0e4e8;
-  --text:#0b0d0f; --text-2:rgba(0,0,0,.7); --text-3:rgba(0,0,0,.45);
-  --stroke:rgba(0,0,0,.1); --stroke-2:rgba(0,0,0,.18);
-}
+/* Light/dark mode only controls wallpaper exposure. UI colors stay Xbox-dark. */
 
 *,*::before,*::after{ box-sizing:border-box; }
 
@@ -149,18 +145,14 @@ svg .s{ fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; 
   background:linear-gradient(180deg,
     rgba(2,3,4,.72) 0%, rgba(2,3,4,.44) 40%, rgba(3,4,6,.16) 72%, transparent 100%);
 }
-body[data-theme="light"] .topbar-scrim{
-  background:linear-gradient(180deg, rgba(240,242,245,.96), transparent);
-}
+
 .backdrop-glow{
   position:absolute; left:50%; top:26%; width:86rem; height:86rem;
   transform:translate(-50%,-50%);
   background:radial-gradient(circle, rgba(120,190,255,.07), transparent 62%);
   pointer-events:none;
 }
-body[data-theme="light"] .backdrop-scrim{
-  background:linear-gradient(180deg, rgba(235,238,241,.86), rgba(235,238,241,.5) 40%, rgba(235,238,241,.92));
-}
+
 body[data-bg="plain"] .backdrop-layer{ opacity:0 !important; }
 
 /* ───────── boot ─────────
