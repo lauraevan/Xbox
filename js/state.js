@@ -44,7 +44,7 @@ const DEFAULTS = {
     wallpaperBrightness:42,     // percent
     wallpaperBlur:0,            // px
     wallpaperMotion:'normal',   // off | low | normal
-    wallpaperDimNavigation:true
+    wallpaperDimNavigation:true,
 
     /* Home / chrome personalization */
     personalizationPreset:'synapse', // xbox | minimal | synapse | custom
