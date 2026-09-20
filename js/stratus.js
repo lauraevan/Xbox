@@ -14,6 +14,22 @@ const CATALOG_SOURCES = [
 ];
 const LOCAL_ART_MANIFEST = 'assets/stratus-covers/manifest.json';
 const NOWGG_CATALOG = '/assets/nowgg/catalog.json';
+const RETIRED_GAME_KEYS = new Set(['bs0096','jy0333','jy0532']);
+const RETIRED_GAME_TITLES = new Set([
+  'black myth wukong',
+  'red dead redemption 2',
+  'gta v mod version',
+  'gta 5 modded'
+]);
+
+function retiredGame(raw){
+  const key = String(raw?.game_key || raw?.key || '').trim();
+  const title = String(raw?.name || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+  return RETIRED_GAME_KEYS.has(key) || RETIRED_GAME_TITLES.has(title);
+}
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 const isAbort = err => err?.name === 'AbortError';
@@ -203,6 +219,7 @@ async function loadCatalogue(){
         if (!Array.isArray(data)) throw new Error('catalogue response was not an array');
         const localArt = await loadLocalArtwork();
         const stratusGames = data
+          .filter(raw => !retiredGame(raw))
           .map(normalizeGame)
           .filter(game => game.gameKey && game.name)
           .map(game => {
