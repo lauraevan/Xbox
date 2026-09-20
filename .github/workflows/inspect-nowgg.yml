@@ -1,0 +1,43 @@
+name: Inspect nowgg.fun app metadata
+
+on:
+  push:
+    branches:
+      - claude/xbox-web-replica-v4s0jk
+    paths:
+      - .github/workflows/inspect-nowgg.yml
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch nowgg.fun public client files
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/nowgg
+          curl -A "Mozilla/5.0" -fsSL --max-time 20 https://nowgg.fun/ -o /tmp/nowgg/index.html
+
+          echo "===== HTML references ====="
+          grep -Eo '(src|href)=["'"''][^"'"'']+["'"'']' /tmp/nowgg/index.html | head -100 || true
+
+          echo "===== App-ish HTML ====="
+          grep -Ein 'app|game|roblox|among|geometry|fnaf|poppy|worldbox|bloons|singing' /tmp/nowgg/index.html | head -200 || true
+
+          python3 - <<'PY'
+          import re, pathlib, subprocess, urllib.parse
+          html = pathlib.Path('/tmp/nowgg/index.html').read_text(errors='ignore')
+          scripts = re.findall(r'<script[^>]+src=["\x27]([^"\x27]+)', html, re.I)
+          print("===== Scripts =====")
+          for i, src in enumerate(scripts[:30]):
+              url = urllib.parse.urljoin('https://nowgg.fun/', src)
+              print(url)
+              out = f'/tmp/nowgg/script-{i}.js'
+              subprocess.run(['curl','-A','Mozilla/5.0','-fsSL','--max-time','20',url,'-o',out], check=False)
+          PY
+
+          echo "===== App-ish script matches ====="
+          grep -Ein 'pre-picked|app|game|roblox|among|geometry|fnaf|poppy|worldbox|bloons|singing|nowgg' /tmp/nowgg/script-*.js 2>/dev/null | head -400 || true
