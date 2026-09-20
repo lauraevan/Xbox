@@ -35,10 +35,6 @@ function poster(game, opts = {}){
       Cloud()?.play?.(game).catch(err => window.App?.toast?.('Cloud gaming', err?.message || 'Could not start game.'));
       return;
     }
-    if (game.sourceProvider){
-      window.App?.launch?.(game);
-      return;
-    }
     window.App?.openDetail?.(game);
   });
   btn.dataset.ringRadius = '.45rem';
@@ -184,7 +180,6 @@ const PASS_ITEMS = [
   { id:'home', label:'Home', icon:'home' },
   { id:'all', label:'All games', icon:'games' },
   { id:'recent', label:'Recently added', icon:'clock' },
-  { id:'sources', label:'Sources', icon:'grid' },
   { id:'perks', label:'Perks', icon:'trophy' },
   { id:'playlater', label:'Play later', icon:'pin' }
 ];
@@ -241,12 +236,6 @@ function renderPass(root){
     main.append(passShelf('Recently added','Fresh additions to the catalog',shuffled.slice(1,15)));
     main.append(passShelf('Most popular','Popular with Game Pass members',shuffled.slice(15,30)));
     main.append(passShelf('Cloud gaming','Play instantly without installing',shuffled.slice(30,46)));
-  } else if (passMode==='sources'){
-    const sources=C()?.sources?.() || [];
-    const grid=el('section','console-poster-grid console-pass-grid');
-    sources.forEach(game => grid.append(poster(game, { meta:'Game source • Proxied' })));
-    if (sources.length) main.append(grid);
-    else main.append(el('div','console-empty',`${ICON.grid}<h2>No sources yet</h2><p>Game sources will appear here.</p>`));
   } else if (passMode==='perks'){
     const perks=el('section','console-perks-grid');
     [
