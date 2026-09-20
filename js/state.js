@@ -43,7 +43,8 @@ const DEFAULTS = {
     wallpaperId:'',             // original-quality file stored in IndexedDB
     wallpaperBrightness:42,     // percent
     wallpaperBlur:0,            // px
-    wallpaperMotion:'normal',   // off | normal
+    wallpaperMotion:'normal',   // off | low | normal
+    wallpaperDimNavigation:true,
 
     /* Home / chrome personalization */
     personalizationPreset:'synapse', // xbox | minimal | synapse | custom
@@ -55,6 +56,7 @@ const DEFAULTS = {
     homeSeriesBadges:'hover',        // off | hover | always
     homeCornerRadius:'rounded',      // square | xbox | rounded
     homeStartFocus:'profile',        // profile | first-game
+    startupView:'home',               // home | library
     topBarOrder:['library','store','search','settings'],
     topBarHidden:[],
     topBarTooltips:true,

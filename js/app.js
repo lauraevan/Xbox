@@ -971,13 +971,14 @@ async function boot(){
     return;
   }
 
-  setView('home');
-  restoreWallpaper();
+  const startupView = window.State.settings.startupView === 'library' ? 'library' : 'home';
+  setView(startupView);
+  if (startupView === 'home') restoreWallpaper();
   window.State.unlock('boot');
 
   /* Boot fade ends at 600ms and the boot node is removed at 620ms.
-     Show the signed-in greeting only after Home is completely unobstructed. */
-  setTimeout(showBootGreeting, 720);
+     Keep the greeting attached to Home rather than floating over Library. */
+  if (startupView === 'home') setTimeout(showBootGreeting, 720);
 }
 
 /* ═══════════ captures, profiles, rumble ═══════════ */

@@ -20,6 +20,7 @@ const PRESETS = {
     wallpaperBrightness:100,
     wallpaperBlur:0,
     wallpaperMotion:'normal',
+    wallpaperDimNavigation:true,
     homeVisibleGames:8,
     homeTileSize:'standard',
     homePromoRow:true,
@@ -28,6 +29,7 @@ const PRESETS = {
     homeSeriesBadges:'hover',
     homeCornerRadius:'xbox',
     homeStartFocus:'profile',
+    startupView:'home',
     topBarOrder:['library','store','search','settings'],
     topBarHidden:[],
     topBarTooltips:true,
@@ -48,6 +50,7 @@ const PRESETS = {
     wallpaperBrightness:100,
     wallpaperBlur:0,
     wallpaperMotion:'off',
+    wallpaperDimNavigation:false,
     homeVisibleGames:5,
     homeTileSize:'compact',
     homePromoRow:false,
@@ -56,6 +59,7 @@ const PRESETS = {
     homeSeriesBadges:'off',
     homeCornerRadius:'xbox',
     homeStartFocus:'profile',
+    startupView:'home',
     topBarOrder:['library','store','search','settings'],
     topBarHidden:['library'],
     topBarTooltips:false,
@@ -76,6 +80,7 @@ const PRESETS = {
     wallpaperBrightness:42,
     wallpaperBlur:0,
     wallpaperMotion:'normal',
+    wallpaperDimNavigation:true,
     homeVisibleGames:8,
     homeTileSize:'standard',
     homePromoRow:true,
@@ -84,6 +89,7 @@ const PRESETS = {
     homeSeriesBadges:'hover',
     homeCornerRadius:'rounded',
     homeStartFocus:'profile',
+    startupView:'home',
     topBarOrder:['library','store','search','settings'],
     topBarHidden:[],
     topBarTooltips:true,
@@ -214,6 +220,7 @@ function applyHomeLayout(){
   const max = Number(s.homeVisibleGames || 8);
   games.forEach((tile,index) => {
     tile.hidden = max < 90 && index >= max;
+    tile.dataset.wallpaperPinned = s.perGameWallpaperPinned?.[norm(tile.dataset.refTitle)] ? '1' : '0';
   });
 
   if (homeEditing) syncHomeEditorTiles();
@@ -246,6 +253,7 @@ function apply(){
   applyMotionVars();
   applyTopBar();
   applyHomeLayout();
+  handleHomeFocus(document.querySelector('[data-focused]'));
 }
 
 function topbarLabel(){
@@ -458,8 +466,8 @@ async function gameForTitle(title){
 async function hideFocusedGame(){
   const tile = focusedHomeTile();
   if(!tile) return;
-  const game = await gameForTitle(tile.dataset.refTitle);
-  if(game) window.XboxHome?.remove?.(game);
+  const game = await gameForTitle(tile.dataset.refTitle) || { name:tile.dataset.refTitle };
+  window.XboxHome?.remove?.(game);
 }
 
 function isWallpaperPinned(title){
@@ -490,6 +498,8 @@ function shouldPaintGameArt(title){
 function handleHomeFocus(target){
   if(document.body.dataset.view !== 'home') return;
   const tile = target?.closest?.('.ref-tile[data-ref-title]');
+  const dim = settings().wallpaperDimNavigation !== false && !tile;
+  document.body.dataset.wallpaperDim = dim ? 'on' : 'off';
   if(tile && isWallpaperPinned(tile.dataset.refTitle)){
     void wallpaper()?.restore?.();
   }
