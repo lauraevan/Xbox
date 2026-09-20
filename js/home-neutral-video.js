@@ -34,7 +34,7 @@ function permitted(){
   let set = {};
   try { set = window.State?.settings || {}; } catch {}
   const mode = set.wallpaperMode || 'waves';
-  if (mode !== 'waves') return false;
+  if (!['waves','waves-blue','waves-red','waves-gold'].includes(mode)) return false;
   if ((set.wallpaperBehavior || 'dynamic') !== 'dynamic') return false;
   if ((set.wallpaperMotion || 'normal') === 'off') return false;
   if (set.motion === 'reduced') return false;
