@@ -2,6 +2,49 @@ import { Readable } from 'node:stream';
 
 const ORIGIN = 'https://nowgg.fun';
 
+const CURATED_GAMES = [
+  {
+    game_key:'nowgg:stumble-guys',
+    name:'Stumble Guys',
+    description:'Instant cloud play.',
+    image:'/assets/nowgg/stumble-guys.jpg',
+    cover:'/assets/nowgg/stumble-guys.jpg',
+    tags:['Cloud','Multiplayer','Party'],
+    nowgg:true,
+    launch_url:'/nowgg/apps/a/10011/b.html'
+  },
+  {
+    game_key:'nowgg:call-of-duty',
+    name:'Call of Duty',
+    description:'Instant cloud play.',
+    image:'/assets/nowgg/call-of-duty.jpg',
+    cover:'/assets/nowgg/call-of-duty.jpg',
+    tags:['Cloud','Action','Shooter'],
+    nowgg:true,
+    launch_url:'/nowgg/apps/a/10008/b.html'
+  },
+  {
+    game_key:'nowgg:geometry-dash',
+    name:'Geometry Dash',
+    description:'Instant cloud play.',
+    image:'/assets/nowgg/geometry-dash.jpg',
+    cover:'/assets/nowgg/geometry-dash.jpg',
+    tags:['Cloud','Arcade','Rhythm'],
+    nowgg:true,
+    launch_url:'/nowgg/apps/robtop-games/1400/geometry-dash.html'
+  },
+  {
+    game_key:'nowgg:rocket-league',
+    name:'Rocket League',
+    description:'Instant cloud play.',
+    image:'/assets/nowgg/rocket-league.jpg',
+    cover:'/assets/nowgg/rocket-league.jpg',
+    tags:['Cloud','Sports','Racing'],
+    nowgg:true,
+    launch_url:'/nowgg/apps/psyonix-studios/4656/rocket-league.html'
+  }
+];
+
 function cleanPath(value){
   const raw = Array.isArray(value) ? value[0] : String(value || '');
   const decoded = (() => {
@@ -196,24 +239,9 @@ export default async function handler(req, res){
   };
 
   if (String(req.query?.catalog || '') === '1'){
-    try {
-      const upstream = await fetchRoot(headers);
-      const games = catalogFromHtml(await upstream.text());
-      res.setHeader('Cache-Control','public, s-maxage=900, stale-while-revalidate=86400');
-      res.setHeader('Content-Type','application/json; charset=utf-8');
-      res.status(200).json(games);
-    } catch (error){
-      res.status(200).json([{
-        game_key:'nowgg:cloud-arcade',
-        name:'Cloud Arcade',
-        description:'More instant-play cloud games.',
-        image:'/nowgg/img/landscape.png',
-        cover:'/nowgg/img/landscape.png',
-        tags:['Cloud','Instant play'],
-        nowgg:true,
-        launch_url:'/nowgg/'
-      }]);
-    }
+    res.setHeader('Cache-Control','public, s-maxage=900, stale-while-revalidate=86400');
+    res.setHeader('Content-Type','application/json; charset=utf-8');
+    res.status(200).json(CURATED_GAMES);
     return;
   }
 
