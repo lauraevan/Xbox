@@ -1,0 +1,60 @@
+name: Vendor NowGG Steam artwork
+
+on:
+  push:
+    branches:
+      - claude/xbox-web-replica-v4s0jk
+    paths:
+      - .github/workflows/vendor-nowgg-art.yml
+
+permissions:
+  contents: write
+
+jobs:
+  vendor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: claude/xbox-web-replica-v4s0jk
+
+      - name: Download SteamDB-mapped artwork
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p assets/nowgg
+
+          fetch_art() {
+            local appid="$1"
+            local out="$2"
+            local base="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/$appid"
+
+            if ! curl -A "Mozilla/5.0" -fL --retry 3 --connect-timeout 10               "$base/library_600x900.jpg" -o "$out"; then
+              curl -A "Mozilla/5.0" -fL --retry 3 --connect-timeout 10                 "$base/header.jpg" -o "$out"
+            fi
+
+            test -s "$out"
+          }
+
+          fetch_art 945360  assets/nowgg/among-us.jpg
+          fetch_art 322170  assets/nowgg/geometry-dash.jpg
+          fetch_art 319510  assets/nowgg/fnaf.jpg
+          fetch_art 332800  assets/nowgg/fnaf-2.jpg
+          fetch_art 1721470 assets/nowgg/poppy-playtime.jpg
+          fetch_art 1206560 assets/nowgg/worldbox.jpg
+          fetch_art 1276390 assets/nowgg/bloons-td-battles-2.jpg
+          fetch_art 1419170 assets/nowgg/my-singing-monsters.jpg
+
+      - name: Commit vendored artwork
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/nowgg
+          if git diff --cached --quiet; then
+            echo "Artwork already vendored."
+            exit 0
+          fi
+          git commit -m "Vendor NowGG game artwork"
+          git push origin HEAD:claude/xbox-web-replica-v4s0jk
