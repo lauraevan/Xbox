@@ -62,7 +62,10 @@ if (home){
 
 function paintHomeBackground(url, title, token){
   if (!url || token !== homeBgToken || document.body.dataset.view !== 'home') return;
-  if (window.WallpaperSystem?.shouldPaintGameArt && !window.WallpaperSystem.shouldPaintGameArt(title)) return;
+  const canPaint = window.Personalization?.shouldPaintGameArt
+    ? window.Personalization.shouldPaintGameArt(title)
+    : (window.WallpaperSystem?.shouldPaintGameArt?.(title) ?? true);
+  if (!canPaint) return;
   window.WallpaperSystem?.onGameArtPaint?.(title);
   delete document.body.dataset.homeNeutral;
   const a = document.getElementById('bgA');
@@ -82,7 +85,10 @@ async function responsiveHomeBackground(tile){
   if (window.State?.settings?.wallpaper) return;
   const title = tile.dataset.refTitle;
   if (!title || title === lastHomeTitle) return;
-  if (window.WallpaperSystem?.shouldPaintGameArt && !window.WallpaperSystem.shouldPaintGameArt(title)) return;
+  const canPaint = window.Personalization?.shouldPaintGameArt
+    ? window.Personalization.shouldPaintGameArt(title)
+    : (window.WallpaperSystem?.shouldPaintGameArt?.(title) ?? true);
+  if (!canPaint) return;
   lastHomeTitle = title;
   const token = ++homeBgToken;
   clearTimeout(fallbackTimer);
