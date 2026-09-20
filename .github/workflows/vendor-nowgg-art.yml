@@ -1,4 +1,4 @@
-name: Vendor NowGG Steam artwork
+name: Vendor NowGG artwork
 
 on:
   push:
@@ -18,29 +18,44 @@ jobs:
         with:
           ref: claude/xbox-web-replica-v4s0jk
 
-      - name: Download SteamDB-mapped artwork
+      - name: Download local artwork
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p assets/nowgg
 
-          fetch_art() {
+          fetch_steam() {
             local appid="$1"
             local out="$2"
             local base="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/$appid"
-
-            if ! curl -A "Mozilla/5.0" -fL --retry 3 --connect-timeout 10               "$base/library_600x900.jpg" -o "$out"; then
-              curl -A "Mozilla/5.0" -fL --retry 3 --connect-timeout 10                 "$base/header.jpg" -o "$out"
+            if ! curl -A "Mozilla/5.0" -fL --retry 3 --connect-timeout 10 "$base/library_600x900.jpg" -o "$out"; then
+              curl -A "Mozilla/5.0" -fL --retry 3 --connect-timeout 10 "$base/header.jpg" -o "$out"
             fi
-
             test -s "$out"
           }
 
-          # These IDs are mapped from the matching SteamDB app records.
-          fetch_art 1677740 assets/nowgg/stumble-guys.jpg
-          fetch_art 1938090 assets/nowgg/call-of-duty.jpg
-          fetch_art 322170  assets/nowgg/geometry-dash.jpg
-          fetch_art 252950  assets/nowgg/rocket-league.jpg
+          fetch_nowgg() {
+            local path="$1"
+            local out="$2"
+            curl -A "Mozilla/5.0" -fL --retry 3 --connect-timeout 10 "https://nowgg.fun$path" -o "$out"
+            test -s "$out"
+          }
+
+          # Exact SteamDB/Steam matches, vendored locally.
+          fetch_steam 1677740 assets/nowgg/stumble-guys.jpg
+          fetch_steam 1938090 assets/nowgg/call-of-duty.jpg
+          fetch_steam 322170  assets/nowgg/geometry-dash.jpg
+          fetch_steam 252950  assets/nowgg/rocket-league.jpg
+
+          # Titles/tools with no matching SteamDB app entry. Still vendored locally,
+          # never hotlinked by the Xbox frontend.
+          fetch_nowgg /img/roadblock.png      assets/nowgg/roblox.png
+          fetch_nowgg /img/fortnite.png       assets/nowgg/fortnite.png
+          fetch_nowgg /img/melon-sandbox.png  assets/nowgg/melon-sandbox.png
+          fetch_nowgg /img/aptoide.png        assets/nowgg/aptoide.png
+          fetch_nowgg /img/android.jpg        assets/nowgg/android.jpg
+          fetch_nowgg /img/cookierun.jpg      assets/nowgg/cookierun.jpg
+          fetch_nowgg /img/minecraft.png      assets/nowgg/minecraft.png
 
       - name: Commit vendored artwork
         shell: bash
@@ -53,5 +68,5 @@ jobs:
             echo "Artwork already vendored."
             exit 0
           fi
-          git commit -m "Vendor visible NowGG game artwork"
+          git commit -m "Vendor complete nowgg.fun artwork set"
           git push origin HEAD:claude/xbox-web-replica-v4s0jk
