@@ -44,6 +44,28 @@ const DEFAULTS = {
     wallpaperBrightness:42,     // percent
     wallpaperBlur:0,            // px
     wallpaperMotion:'normal',   // off | normal
+
+    /* Home / chrome personalization */
+    personalizationPreset:'synapse', // xbox | minimal | synapse | custom
+    homeVisibleGames:8,              // 5 | 6 | 7 | 8 | 99
+    homeTileSize:'standard',         // compact | standard | large
+    homePromoRow:true,
+    homeSectionOrder:'games-first',  // games-first | promos-first
+    homeTileLabels:false,
+    homeSeriesBadges:'hover',        // off | hover | always
+    homeCornerRadius:'rounded',      // square | xbox | rounded
+    homeStartFocus:'profile',        // profile | first-game
+    topBarOrder:['library','store','search','settings'],
+    topBarHidden:[],
+    topBarTooltips:true,
+    topBarSize:'standard',           // compact | standard
+    profilePosition:'left',          // left | right
+    surfaceTone:'black',             // black | graphite
+    transparencyStrength:'normal',   // solid | normal | glass
+    uiScale:1,
+    animationStrength:'normal',      // subtle | normal | expressive
+    motionBlurStrength:'off',        // off | low | strong
+
     saturation:  1.35,  // backdrop punch
     heroText:  false,   // the console shows no copy over the backdrop
     tileBadges:true,    // tag badges (PORT / FLASH / EMU) ride on the tiles
