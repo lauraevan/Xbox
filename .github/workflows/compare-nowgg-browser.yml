@@ -1,0 +1,39 @@
+name: Compare NowGG direct vs proxy
+
+on:
+  push:
+    branches:
+      - claude/xbox-web-replica-v4s0jk
+    paths:
+      - .github/workflows/compare-nowgg-browser.yml
+
+permissions:
+  contents: read
+
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Compare rendered Roblox pages
+        shell: bash
+        run: |
+          set -euo pipefail
+          CHROME=$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser)
+          echo "chrome=$CHROME"
+
+          dump() {
+            local url="$1"
+            local out="$2"
+            "$CHROME"               --headless=new               --no-sandbox               --disable-dev-shm-usage               --autoplay-policy=no-user-gesture-required               --use-fake-ui-for-media-stream               --virtual-time-budget=12000               --dump-dom "$url" > "$out" 2>/tmp/chrome.err || true
+            echo "URL=$url bytes=$(wc -c < "$out")"
+            grep -Ein -C 4 'does not exist|game not found|not found|invalid game|unavailable|error|roblox|play now' "$out" | head -220 || true
+          }
+
+          echo "===== DIRECT ====="
+          dump 'https://20.ip.nowgg.fun/apps/a/19900/b.html' /tmp/direct.html
+
+          echo "===== PROXY ====="
+          dump 'https://xbox-xi-gold.vercel.app/nowgg-ip/20/apps/a/19900/b.html' /tmp/proxy.html
+
+          echo "===== PROXY COOKIE HEADERS ====="
+          curl -sS -D - -o /dev/null --max-time 20             'https://xbox-xi-gold.vercel.app/nowgg-ip/20/apps/a/19900/b.html'             | grep -Ei '^(HTTP/|set-cookie:|x-nowgg-proxy:)' || true
