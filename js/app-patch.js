@@ -82,9 +82,10 @@ function paintHomeBackground(url, title, token){
 
 async function responsiveHomeBackground(tile){
   if (!tile || document.body.dataset.view !== 'home') return;
-  if (window.State?.settings?.wallpaper) return;
+  if (window.State?.settings?.wallpaper && !window.Personalization) return;
   const title = tile.dataset.refTitle;
-  if (!title || title === lastHomeTitle) return;
+  if (!title) return;
+  if (title === lastHomeTitle && document.body.dataset.homeNeutral !== 'true') return;
   const canPaint = window.Personalization?.shouldPaintGameArt
     ? window.Personalization.shouldPaintGameArt(title)
     : (window.WallpaperSystem?.shouldPaintGameArt?.(title) ?? true);
