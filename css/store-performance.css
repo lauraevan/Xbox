@@ -1,0 +1,80 @@
+/* Store performance pass.
+   Keep the console visual language while avoiding unnecessary offscreen work. */
+
+#view-store .xstore-shelf,
+#view-store .xstore-deals{
+  content-visibility:auto;
+  contain-intrinsic-size:auto 34rem;
+  contain:layout paint style;
+}
+
+#view-store .store-game,
+#view-store .xstore-deal-promo{
+  contain:layout paint style;
+}
+
+#view-store .store-cover img,
+#view-store .store-lead-art img{
+  transform:translateZ(0);
+}
+
+#view-store .xstore-row{
+  scroll-snap-type:x proximity !important;
+  mask-image:none !important;
+  -webkit-mask-image:none !important;
+}
+
+#view-store .xstore-shelf-motion,
+#view-store .xstore-carousel-clone{
+  display:none !important;
+}
+
+.xstore-load-more{
+  grid-column:1/-1;
+  min-height:5.2rem;
+  margin:1.2rem 0 2.5rem;
+  border:.1rem solid rgba(255,255,255,.12);
+  border-radius:.55rem;
+  background:#1a1a1a;
+  color:#fff;
+  font:650 1.2rem/1 "Segoe UI Variable Text","Segoe UI",system-ui,sans-serif;
+}
+.xstore-load-more:hover,
+.xstore-load-more[data-focused],
+.xstore-load-more:focus-visible{
+  background:#f2f2f2;
+  color:#111;
+  outline:.28rem solid #107c10;
+  outline-offset:.16rem;
+}
+
+/* On coarse-pointer/smaller devices remove effects that cost GPU bandwidth but
+   barely change the Store visually. */
+@media (pointer:coarse), (max-width:1100px){
+  #view-store .xstore-rail,
+  #view-store .xstore-shell,
+  #view-store .xstore-content,
+  #view-store .store-game,
+  #view-store .store-cover,
+  #view-store .xstore-deal-promo{
+    box-shadow:none !important;
+  }
+
+  #view-store .store-game,
+  #view-store .store-cover,
+  #view-store .xstore-deal-promo-art{
+    transition-duration:.08s !important;
+  }
+
+  #view-store .xstore-deal-promo-art{
+    transform:none !important;
+  }
+}
+
+@media (prefers-reduced-motion:reduce){
+  #view-store *,
+  #view-store *::before,
+  #view-store *::after{
+    scroll-behavior:auto !important;
+  }
+}
