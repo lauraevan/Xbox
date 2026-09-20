@@ -66,6 +66,9 @@ function shouldPlay(){
 }
 
 function sync(){
+  let set = {};
+  try { set = window.State?.settings || {}; } catch {}
+  video.playbackRate = (set.wallpaperMotion || 'normal') === 'low' ? .65 : 1;
   const active = shouldPlay();
   document.body.classList.toggle('home-neutral-video-active', active);
 
