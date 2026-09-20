@@ -566,6 +566,21 @@
   background:transparent;
   overflow:visible;
   filter:drop-shadow(0 .12rem .28rem rgba(0,0,0,.7));
+  opacity:0;
+  visibility:hidden;
+  transform:translateY(.18rem);
+  transition:opacity 120ms ease, transform 120ms ease, visibility 120ms step-end;
+  pointer-events:none;
+}
+
+.reference-home .ref-tile[data-ref-title]:hover .ref-platform.ref-platform-xs,
+.reference-home .ref-tile[data-ref-title]:focus .ref-platform.ref-platform-xs,
+.reference-home .ref-tile[data-ref-title]:focus-visible .ref-platform.ref-platform-xs,
+.reference-home .ref-tile[data-ref-title][data-focused] .ref-platform.ref-platform-xs{
+  opacity:1;
+  visibility:visible;
+  transform:translateY(0);
+  transition:opacity 120ms ease, transform 120ms ease, visibility 0s;
 }
 .reference-home .ref-platform-xs-img{
   display:block;

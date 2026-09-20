@@ -15,7 +15,7 @@ const COVER = {
   'Grand Theft Auto V': 'assets/game-art/gta-v-cover.jpg',
   'Hollow Knight: Silksong': 'assets/game-art/silksong-cover.png',
   'Elden Ring': 'assets/game-art/elden-ring-cover.jpg',
-  'Red Dead Redemption 2': 'assets/game-art/rdr2-cover.jpg',
+  'Red Dead Redemption': 'assets/stratus-covers/bs0095.jpg',
   'Minecraft': 'assets/game-art/minecraft-cover-boxart.jpg',
   'Fortnite': 'assets/game-art/fortnite-cover.jpg',
   'Cyberpunk 2077': 'https://store-images.s-microsoft.com/image/apps.47379.63407868131364914.bcaa868c-407e-42c2-baeb-48a3c9f29b54.89bb995b-b066-4a53-9fe4-0260ce07e894?h=900&q=95&w=600'
@@ -26,7 +26,7 @@ const HERO = {
   'Grand Theft Auto V': 'assets/game-art/gta-v-hero.jpg',
   'Hollow Knight: Silksong': 'assets/game-art/silksong-hero.jpg',
   'Elden Ring': 'assets/game-art/elden-ring-hero.jpg',
-  'Red Dead Redemption 2': 'assets/game-art/rdr2-hero.jpg',
+  'Red Dead Redemption': 'assets/stratus-covers/bs0095.jpg',
   'Minecraft': 'assets/game-art/minecraft-hero-keyart.jpg',
   'Fortnite': 'assets/game-art/fortnite-hero.jpg',
   'Cyberpunk 2077': 'https://store-images.s-microsoft.com/image/apps.34838.63407868131364914.bcaa868c-407e-42c2-baeb-48a3c9f29b54.1463028d-79fa-46e5-9fc2-63203992a4dc?h=1080&q=95&w=1920'
@@ -35,7 +35,7 @@ const HERO = {
 const SWAPS = [
   { from:'Subnautica 2', to:'Grand Theft Auto V', badge:'X|S' },
   { from:'Microsoft Edge', to:'Elden Ring', badge:'X|S' },
-  { from:'Mortal Kombat 1', to:'Red Dead Redemption 2', badge:'X|S' },
+  { from:'Mortal Kombat 1', to:'Red Dead Redemption', badge:'X|S' },
   { from:'Roblox', to:'Minecraft', badge:'X|S' }
 ];
 
@@ -44,7 +44,7 @@ const CLOUD_ALIASES = {
   'Grand Theft Auto V': ['grand theft auto v','gta v','gta 5','grand theft auto 5'],
   'Hollow Knight: Silksong': ['hollow knight silksong','silksong'],
   'Elden Ring': ['elden ring'],
-  'Red Dead Redemption 2': ['red dead redemption 2','rdr2'],
+  'Red Dead Redemption': ['red dead redemption','red dead redemption 1','rdr1'],
   'Minecraft': ['minecraft'],
   'Fortnite': ['fortnite'],
   'Cyberpunk 2077': ['cyberpunk 2077','cyberpunk2077']
@@ -435,7 +435,7 @@ function makeLibraryTile(){
 
   const mosaic = document.createElement('span');
   mosaic.className = 'ref-library-mosaic';
-  ['Grand Theft Auto V','Elden Ring','Red Dead Redemption 2','Minecraft'].forEach(title => {
+  ['Grand Theft Auto V','Elden Ring','Red Dead Redemption','Minecraft'].forEach(title => {
     const img = document.createElement('img');
     img.src = COVER[title];
     img.alt = '';
@@ -482,10 +482,13 @@ function removeFortniteFromHome(){
 function pinInitialBackdrop(){
   if (document.body.dataset.view && document.body.dataset.view !== 'home') return;
   const layers = [...document.querySelectorAll('.backdrop-layer')];
-  const active = layers.find(layer => layer.classList.contains('on'));
-  if (!active || active.dataset.dynamicTitle) return;
-  active.style.backgroundImage = `url("${HERO['Forza Horizon 5']}")`;
-  active.style.backgroundPosition = 'center top';
+  if (layers.some(layer => layer.dataset.dynamicTitle)) return;
+
+  layers.forEach(layer => {
+    layer.style.backgroundImage = 'none';
+    layer.style.backgroundPosition = 'center center';
+    layer.classList.remove('on', 'wide', 'reference-wide');
+  });
 }
 
 function patchHome(){

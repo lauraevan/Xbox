@@ -10,12 +10,13 @@ if (!Cloud) return;
 const HOME_KEY = 'xbox.home.screen.v2';
 const LEGACY_HOME_KEYS = ['xbox.home.screen.v1','xbox.home.pins'];
 const CYBERPUNK_MIGRATION_KEY = 'xbox.home.cyberpunk.default.v1';
+const RDR1_MIGRATION_KEY = 'xbox.home.rdr1.default.v1';
 const DEFAULT_TITLES = [
   'Forza Horizon 5',
   'Grand Theft Auto V',
   'Hollow Knight: Silksong',
   'Elden Ring',
-  'Red Dead Redemption 2',
+  'Red Dead Redemption',
   'Minecraft',
   'Cyberpunk 2077'
 ];
@@ -25,7 +26,7 @@ const ALIASES = {
   'Grand Theft Auto V': ['grand theft auto v','gta v','gta 5','grand theft auto 5'],
   'Hollow Knight: Silksong': ['hollow knight silksong','silksong'],
   'Elden Ring': ['elden ring'],
-  'Red Dead Redemption 2': ['red dead redemption 2','rdr2'],
+  'Red Dead Redemption': ['red dead redemption','red dead redemption 1','rdr1'],
   'Minecraft': ['minecraft'],
   'Cyberpunk 2077': ['cyberpunk 2077','cyberpunk2077']
 };
@@ -80,6 +81,18 @@ function readHomeIds(){
         if (!ids.includes(cyberpunkId)) ids.push(cyberpunkId);
         localStorage.setItem(HOME_KEY, JSON.stringify(ids));
         localStorage.setItem(CYBERPUNK_MIGRATION_KEY, '1');
+      }
+    } catch {}
+
+    try {
+      if (!localStorage.getItem(RDR1_MIGRATION_KEY)){
+        const oldId = 'default:' + norm('Red Dead Redemption 2');
+        const newId = 'default:' + norm('Red Dead Redemption');
+        const oldIndex = ids.indexOf(oldId);
+        if (oldIndex >= 0) ids.splice(oldIndex, 1, newId);
+        else if (!ids.includes(newId)) ids.push(newId);
+        localStorage.setItem(HOME_KEY, JSON.stringify([...new Set(ids)]));
+        localStorage.setItem(RDR1_MIGRATION_KEY, '1');
       }
     } catch {}
 

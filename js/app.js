@@ -162,7 +162,13 @@ function setView(name, opts = {}){
   document.body.dataset.view = name;
   syncNavHighlight();
   updateLegend();
-  window.Nav.focusIn(node, name === 'home' ? '.tile' : null);
+  if (name === 'home'){
+    const profile = document.querySelector('.profile[data-nav], .profile');
+    if (profile) window.Nav.focus(profile, { silent:true });
+    else window.Nav.focusIn(node);
+  } else {
+    window.Nav.focusIn(node);
+  }
 
   if (name !== 'home'){
     const hero = $('.hero');

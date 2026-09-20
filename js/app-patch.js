@@ -62,6 +62,7 @@ if (home){
 
 function paintHomeBackground(url, title, token){
   if (!url || token !== homeBgToken || document.body.dataset.view !== 'home') return;
+  delete document.body.dataset.homeNeutral;
   const a = document.getElementById('bgA');
   const b = document.getElementById('bgB');
   if (!a || !b) return;

@@ -14,6 +14,23 @@ const CATALOG_SOURCES = [
 ];
 const LOCAL_ART_MANIFEST = 'assets/stratus-covers/manifest.json';
 const NOWGG_CATALOG = '/assets/nowgg/catalog.json';
+const RETIRED_GAME_KEYS = new Set(['bs0096','jy0333','jy0532']);
+const RETIRED_GAME_TITLES = new Set([
+  'black myth wukong',
+  'red dead redemption 2',
+  'gta v mod version',
+  'gta 5 modded'
+]);
+
+function retiredGame(raw){
+  const key = String(raw?.game_key || raw?.key || '').trim();
+  const title = String(raw?.name || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+  if (window.State?.settings?.devMode === true) return false;
+  return RETIRED_GAME_KEYS.has(key) || RETIRED_GAME_TITLES.has(title);
+}
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 const isAbort = err => err?.name === 'AbortError';
@@ -125,20 +142,60 @@ async function loadNowggGames(offset=0){
   }
 }
 
+function titleKey(value){
+  return String(value || '')
+    .toLowerCase()
+    .normalize('NFKD')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+}
+
 function mergeCloudCatalogues(stratusGames, nowggGames){
   if (!nowggGames.length) return stratusGames.slice();
 
+  const nowggByTitle = new Map(
+    nowggGames.map(game => [titleKey(game.name), game])
+  );
+  const consumed = new Set();
+  const base = [];
+
+  /*
+   * Prefer a NowGG-backed title whenever Stratus has the same game name.
+   * Preserve the old Stratus key as a legacy license alias so existing
+   * library ownership continues to unlock the replacement entry.
+   */
+  for (const stratusGame of stratusGames){
+    const key = titleKey(stratusGame.name);
+    const replacement = nowggByTitle.get(key);
+
+    if (replacement){
+      if (consumed.has(replacement.gameKey)) continue;
+      consumed.add(replacement.gameKey);
+      base.push({
+        ...replacement,
+        legacyGameKeys:[
+          ...new Set([
+            ...(Array.isArray(replacement.legacyGameKeys) ? replacement.legacyGameKeys : []),
+            stratusGame.gameKey
+          ].filter(Boolean))
+        ]
+      });
+      continue;
+    }
+
+    base.push(stratusGame);
+  }
+
+  const extras = nowggGames.filter(game => !consumed.has(game.gameKey));
+  if (!extras.length) return base;
+
   const out = [];
-  const extras = nowggGames.slice();
   let sinceExtra = 0;
 
-  for (const game of stratusGames){
+  for (const game of base){
     out.push(game);
     sinceExtra++;
 
-    /* Put one hidden-provider title after every three Stratus titles.
-       This keeps them visibly mixed into the normal Store instead of
-       clustering them in a separate provider shelf. */
     if (extras.length && sinceExtra >= 3){
       out.push(extras.shift());
       sinceExtra = 0;
@@ -163,6 +220,7 @@ async function loadCatalogue(){
         if (!Array.isArray(data)) throw new Error('catalogue response was not an array');
         const localArt = await loadLocalArtwork();
         const stratusGames = data
+          .filter(raw => !retiredGame(raw))
           .map(normalizeGame)
           .filter(game => game.gameKey && game.name)
           .map(game => {
@@ -187,17 +245,34 @@ async function loadCatalogue(){
   return cataloguePromise;
 }
 
+function ownedKeySet(){
+  return new Set(licenseRows().map(row => String(row.gameKey || '')));
+}
+
 function owns(gameOrKey){
-  const gameKey = String(gameOrKey?.gameKey || gameOrKey || '');
-  return !!gameKey && licenseRows().some(row => String(row.gameKey) === gameKey);
+  const keys = ownedKeySet();
+
+  if (gameOrKey && typeof gameOrKey === 'object'){
+    const primary = String(gameOrKey.gameKey || '');
+    if (primary && keys.has(primary)) return true;
+
+    const legacy = Array.isArray(gameOrKey.legacyGameKeys)
+      ? gameOrKey.legacyGameKeys
+      : [];
+    return legacy.some(key => keys.has(String(key)));
+  }
+
+  const gameKey = String(gameOrKey || '');
+  return !!gameKey && keys.has(gameKey);
 }
 
 function acquire(game){
   if (!game?.gameKey) return false;
+  if (owns(game)) return false;
+
   const all = readLicenses();
   const id = profileId();
   const rows = Array.isArray(all[id]) ? all[id] : [];
-  if (rows.some(row => String(row.gameKey) === String(game.gameKey))) return false;
   rows.unshift({ gameKey:String(game.gameKey), acquiredAt:Date.now() });
   all[id] = rows;
   writeLicenses(all);
@@ -205,12 +280,25 @@ function acquire(game){
   return true;
 }
 
+function ownedIndex(game, order){
+  const primary = order.get(String(game?.gameKey || ''));
+  if (primary != null) return primary;
+
+  const legacy = Array.isArray(game?.legacyGameKeys) ? game.legacyGameKeys : [];
+  for (const key of legacy){
+    const index = order.get(String(key));
+    if (index != null) return index;
+  }
+
+  return Number.POSITIVE_INFINITY;
+}
+
 async function ownedGames(){
   const list = await loadCatalogue();
   const order = new Map(licenseRows().map((row, i) => [String(row.gameKey), i]));
   return list
-    .filter(game => order.has(String(game.gameKey)))
-    .sort((a,b) => order.get(String(a.gameKey)) - order.get(String(b.gameKey)));
+    .filter(game => ownedIndex(game, order) !== Number.POSITIVE_INFINITY)
+    .sort((a,b) => ownedIndex(a, order) - ownedIndex(b, order));
 }
 
 function backendUrl(action, uuid){

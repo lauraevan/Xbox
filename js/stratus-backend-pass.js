@@ -329,6 +329,11 @@ async function quit(){
 }
 
 async function play(game){
+  if (game?.nowgg){
+    if (active || pending) await quit();
+    return original.play?.(game);
+  }
+
   if (!game?.gameKey) throw new Error('This title has no Stratus game key.');
   if (starting) return;
   if (!original.owns?.(game)) throw new Error('This game is not in your library yet.');
@@ -407,12 +412,17 @@ addEventListener('pagehide', () => {
   } catch {}
 });
 
+async function quitAny(){
+  if (original.active) return original.quit?.();
+  return quit();
+}
+
 const upgraded = {
   ...original,
   BASE:API_BASE,
   BACKENDS,
   play,
-  quit,
+  quit:quitAny,
   warm:() => Promise.allSettled(BACKENDS.map(base => fetch(base,{mode:'no-cors',cache:'no-store'})))
 };
 Object.defineProperties(upgraded,{

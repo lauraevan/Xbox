@@ -4,11 +4,6 @@
     "path": "assets/stratus-covers/bs0078.jpg",
     "source": "steamgriddb"
   },
-  "bs0096": {
-    "name": "Black Myth: Wukong",
-    "path": "assets/stratus-covers/bs0096.jpg",
-    "source": "steamgriddb"
-  },
   "bs0095": {
     "name": "Red Dead Redemption",
     "path": "assets/stratus-covers/bs0095.jpg",
@@ -604,11 +599,6 @@
     "path": "assets/stratus-covers/kj0332.jpg",
     "source": "steamgriddb"
   },
-  "jy0333": {
-    "name": "Red Dead Redemption 2",
-    "path": "assets/stratus-covers/jy0333.jpg",
-    "source": "steamgriddb"
-  },
   "dg0170": {
     "name": "Elden Ring",
     "path": "assets/stratus-covers/dg0170.jpg",
@@ -717,11 +707,6 @@
   "jy0559": {
     "name": "Slime Rancher",
     "path": "assets/stratus-covers/jy0559.jpg",
-    "source": "steamgriddb"
-  },
-  "jy0532": {
-    "name": "GTA V MOD version",
-    "path": "assets/stratus-covers/jy0532.jpg",
     "source": "steamgriddb"
   },
   "jy0362": {
@@ -1122,6 +1107,21 @@
   "jy0011": {
     "name": "Hollow Knight",
     "path": "assets/stratus-covers/jy0011.jpg",
+    "source": "steamgriddb"
+  },
+  "bs0096": {
+    "name": "Black Myth: Wukong",
+    "path": "assets/stratus-covers/bs0096.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0333": {
+    "name": "Red Dead Redemption 2",
+    "path": "assets/stratus-covers/jy0333.jpg",
+    "source": "steamgriddb"
+  },
+  "jy0532": {
+    "name": "GTA V MOD version",
+    "path": "assets/stratus-covers/jy0532.jpg",
     "source": "steamgriddb"
   }
 }

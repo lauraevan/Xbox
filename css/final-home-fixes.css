@@ -1,0 +1,45 @@
+/* Final Home surface corrections.
+   Loaded last so older theme passes cannot repaint the neutral canvas. */
+
+body[data-view="home"][data-home-neutral="true"],
+body[data-view="home"][data-home-neutral="true"] #stage,
+body[data-view="home"][data-home-neutral="true"] .stage,
+body[data-view="home"][data-home-neutral="true"] .sysbar,
+body[data-view="home"][data-home-neutral="true"] .views,
+body[data-view="home"][data-home-neutral="true"] #view-home,
+body[data-view="home"][data-home-neutral="true"] #view-home.reference-home,
+body[data-view="home"][data-home-neutral="true"] .backdrop,
+body[data-view="home"][data-home-neutral="true"] .backdrop-scrim,
+body[data-view="home"][data-home-neutral="true"] .topbar-scrim{
+  background:#000 !important;
+  background-image:none !important;
+}
+
+body[data-view="home"][data-home-neutral="true"] .backdrop-layer{
+  opacity:0 !important;
+  background-image:none !important;
+}
+
+body[data-view="home"][data-home-neutral="true"] .backdrop-glow{
+  display:none !important;
+}
+
+body[data-view="home"][data-home-neutral="true"] #view-home::before,
+body[data-view="home"][data-home-neutral="true"] #view-home::after,
+body[data-view="home"][data-home-neutral="true"] .reference-home::before,
+body[data-view="home"][data-home-neutral="true"] .reference-home::after{
+  content:none !important;
+  background:none !important;
+  box-shadow:none !important;
+  filter:none !important;
+}
+
+/* Use the real local Xbox logo in the Guide's Xbox tab. */
+.guide-tab .xbox-guide-mark{
+  width:2.85rem !important;
+  height:2.85rem !important;
+  display:block !important;
+  object-fit:contain !important;
+  border-radius:50% !important;
+  flex:none !important;
+}

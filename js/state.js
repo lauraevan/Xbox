@@ -36,6 +36,7 @@ const DEFAULTS = {
     micMuted:  true,
     profileLine: '',    // second line under the gamertag on Home
     profileCapsule:false, // optional black Home profile text capsule
+    devMode:     false, // exposes disabled/test cloud titles in the catalogue
     wallpaper:   '',    // image URL; empty falls back to cover art
     saturation:  1.35,  // backdrop punch
     heroText:  false,   // the console shows no copy over the backdrop
