@@ -214,6 +214,7 @@ function applyHomeLayout(){
   const max = Number(s.homeVisibleGames || 8);
   games.forEach((tile,index) => {
     tile.hidden = max < 90 && index >= max;
+    tile.dataset.wallpaperPinned = s.perGameWallpaperPinned?.[norm(tile.dataset.refTitle)] ? '1' : '0';
   });
 
   if (homeEditing) syncHomeEditorTiles();
@@ -458,8 +459,8 @@ async function gameForTitle(title){
 async function hideFocusedGame(){
   const tile = focusedHomeTile();
   if(!tile) return;
-  const game = await gameForTitle(tile.dataset.refTitle);
-  if(game) window.XboxHome?.remove?.(game);
+  const game = await gameForTitle(tile.dataset.refTitle) || { name:tile.dataset.refTitle };
+  window.XboxHome?.remove?.(game);
 }
 
 function isWallpaperPinned(title){
