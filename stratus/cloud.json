@@ -12,6 +12,18 @@
         ]
     },
     {
+        "name": "Black Myth: Wukong",
+        "game_key": "bs0096",
+        "description": "Black Myth: Wukong is an action RPG rooted in Chinese mythology. You shall set out as the Destined One to venture into the challenges and marvels ahead, to uncover the obscured truth beneath the veil of a glorious legend from the past.",
+        "image": "https://download-oss.raccoongame.com/uploads/image/20260724/20260724162056936.jpg",
+        "cover": "https://download-oss.raccoongame.com/uploads/image/20260724/20260724174943207.jpg",
+        "tags": [
+            "Action",
+            "RPG",
+            "3A"
+        ]
+    },
+    {
         "name": "Red Dead Redemption",
         "game_key": "bs0095",
         "description": "Experience the story of former outlaw John Marston as he tracks down the last remaining members of the notorious Van der Linde Gang in the PC debut of the critically acclaimed predecessor to Red Dead Redemption 2.",
@@ -1419,6 +1431,19 @@
         ]
     },
     {
+        "name": "Red Dead Redemption 2",
+        "game_key": "jy0333",
+        "description": "【Loading】: The game requires some loading time, please be patient. 【Introduction】: The game tells the legendary story of Arthur Morgan and the notorious Van der Linde gang,experiencing a journey across America in the last years of the 19th century. 【Force Quit】: Back + RB (Right back button on the controller) 【Buttons】: Melee Attack: B Sprint: A Mount/Enter Vehicle: Y Pick Up/Carry: X Attack: RT Aim: LT Take Cover: RB Weapon Wheel: LB",
+        "image": "https://download-oss.raccoongame.com/uploads/image/20260407/20260407165500251.jpg",
+        "cover": "https://download-oss.raccoongame.com/uploads/image/20260407/20260407165503850.jpg",
+        "tags": [
+            "3A",
+            "Adventure",
+            "RPG",
+            "Shooting"
+        ]
+    },
+    {
         "name": "Elden Ring",
         "game_key": "dg0170",
         "description": "【Note】: When creating a character, long press START to enter the settings menu - Control Settings - Enable Virtual Keyboard Input to input text. 【Introduction】: Step into vast scenes and explore unknown underground labyrinths. Challenge perilous situations filled with difficulties and enjoy the sense of accomplishment when overcoming them. 【Force Quit】: Back + RB (Right Bumper on the controller) 【Controls】: Roll, Dash, Backstep: B Jump: A Trigger Event: Y Use Item: X Heavy Attack: RT Skill: LT Light Attack: RB Guard: LB Crouch: LS",
@@ -1689,6 +1714,18 @@
             "Strategy",
             "Easy",
             "RPG"
+        ]
+    },
+    {
+        "name": "GTA V MOD version",
+        "game_key": "jy0532",
+        "description": "Mods Version! RB+LB Super hero mod(A: Confirm: B: Back); RB+X Get cars/weapon/characters mod (A: Confirm: B: Back) RB+Y characters/money/cheating mod（X: Confirm Y：Back） note: This version doesn't support user controller to switch weapons",
+        "image": "https://download-oss.raccoongame.com/uploads/image/20260122/20260122002957664.png",
+        "cover": "https://download-oss.raccoongame.com/uploads/image/20250208/20250208153431847.jpg",
+        "tags": [
+            "Challenge",
+            "Adventure",
+            "3A"
         ]
     },
     {
