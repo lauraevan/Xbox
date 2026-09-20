@@ -32,7 +32,7 @@
 <link rel="stylesheet" href="css/flagship-pages-pass.css">
 <link rel="stylesheet" href="css/idle-hud.css">
 <link rel="stylesheet" href="css/xbox-motion-pass.css">
-<link rel="stylesheet" href="css/final-home-fixes.css?v=blackfix-20260919-1">
+<link rel="stylesheet" href="css/final-home-fixes.css?v=home-waves-20260919-2">
 </head>
 <body data-theme="dark">
 
@@ -125,6 +125,10 @@
 
 <div id="stage" class="stage" hidden>
   <div class="backdrop">
+    <video id="homeNeutralVideo" class="home-neutral-video"
+           muted loop playsinline preload="metadata" disablepictureinpicture
+           aria-hidden="true"
+           src="assets/backgrounds/home-neutral-waves.mp4?v=waves-seamless-20260919-1"></video>
     <div class="backdrop-layer" id="bgA"></div>
     <div class="backdrop-layer" id="bgB"></div>
     <div class="backdrop-scrim"></div>
@@ -137,17 +141,13 @@
     <div class="sysbar-top">
       <nav class="sysnav" id="sysnav">
         <button class="sysnav-btn" data-nav data-group="sysbar" data-view="library"
-                data-icon="library" title="My games &amp; apps" aria-label="My games and apps"></button>
+                data-icon="library" data-label="My games & apps" aria-label="My games and apps"></button>
         <button class="sysnav-btn" data-nav data-group="sysbar" data-view="store"
-                data-icon="shopping_bag" title="Microsoft Store" aria-label="Microsoft Store"></button>
-        <button class="sysnav-btn" data-nav data-group="sysbar" data-view="pass"
-                title="Game Pass" aria-label="Game Pass">
-          <span class="gp-chip">GAME<br>PASS</span>
-        </button>
+                data-icon="shopping_bag" data-label="Store" aria-label="Synapse Store"></button>
         <button class="sysnav-btn" data-nav data-group="sysbar" data-view="search"
-                data-icon="search" title="Search" aria-label="Search"></button>
+                data-icon="search" data-label="Search" aria-label="Search"></button>
         <button class="sysnav-btn" data-nav data-group="sysbar" data-view="settings"
-                data-icon="settings" title="Settings" aria-label="Settings">
+                data-icon="settings" data-label="Settings" aria-label="Settings">
           <span class="badge-dot" id="settingsDot"></span>
         </button>
       </nav>
@@ -238,9 +238,10 @@
 <script src="js/store.js"></script>
 <script src="js/cloud-library.js"></script>
 <script src="js/guide.js"></script>
-<script src="js/reference.js?v=guide-logo-blackfix-20260919-1"></script>
+<script src="js/reference.js?v=synapse-store-labels-20260919-1"></script>
 <script src="js/app.js?v=xbox-green-greeting-20260919-1"></script>
-<script src="js/app-patch.js?v=black-home-20260919-2"></script>
+<script src="js/app-patch.js?v=synapse-store-labels-20260919-1"></script>
+<script src="js/home-neutral-video.js?v=home-waves-20260919-2"></script>
 <script src="js/store-console-pass.js"></script>
 <script src="js/profile-sidebar.js"></script>
 <script src="js/home-row-custom.js?v=black-home-20260919-2"></script>\n<script src="js/home-library-persistence.js?v=catalog-rdr1-20260919-1"></script>

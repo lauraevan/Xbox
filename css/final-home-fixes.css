@@ -1,23 +1,69 @@
-/* Final Home surface corrections.
-   Loaded last so older theme passes cannot repaint the neutral canvas. */
+/* Neutral Home: animated waves with a pure-black fallback.
+   Loaded last so older theme passes cannot repaint the canvas. */
 
-body[data-view="home"][data-home-neutral="true"],
+body[data-view="home"][data-home-neutral="true"]{
+  background:#000 !important;
+}
+
 body[data-view="home"][data-home-neutral="true"] #stage,
 body[data-view="home"][data-home-neutral="true"] .stage,
 body[data-view="home"][data-home-neutral="true"] .sysbar,
 body[data-view="home"][data-home-neutral="true"] .views,
 body[data-view="home"][data-home-neutral="true"] #view-home,
-body[data-view="home"][data-home-neutral="true"] #view-home.reference-home,
-body[data-view="home"][data-home-neutral="true"] .backdrop,
-body[data-view="home"][data-home-neutral="true"] .backdrop-scrim,
-body[data-view="home"][data-home-neutral="true"] .topbar-scrim{
+body[data-view="home"][data-home-neutral="true"] #view-home.reference-home{
+  background:transparent !important;
+  background-image:none !important;
+}
+
+body[data-view="home"][data-home-neutral="true"] .backdrop{
   background:#000 !important;
   background-image:none !important;
+}
+
+.home-neutral-video{
+  position:absolute;
+  inset:0;
+  z-index:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+  background:#000;
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transform:translateZ(0);
+  transition:opacity 160ms ease;
+}
+
+body.home-neutral-video-active .home-neutral-video{
+  opacity:1;
+  visibility:visible;
 }
 
 body[data-view="home"][data-home-neutral="true"] .backdrop-layer{
   opacity:0 !important;
   background-image:none !important;
+}
+
+body[data-view="home"][data-home-neutral="true"] .backdrop-scrim{
+  background:linear-gradient(
+    180deg,
+    rgba(0,0,0,.18) 0%,
+    rgba(0,0,0,.05) 38%,
+    rgba(0,0,0,.08) 68%,
+    rgba(0,0,0,.24) 100%
+  ) !important;
+}
+
+body[data-view="home"][data-home-neutral="true"] .topbar-scrim{
+  background:linear-gradient(
+    180deg,
+    rgba(0,0,0,.76) 0%,
+    rgba(0,0,0,.48) 44%,
+    rgba(0,0,0,.18) 74%,
+    transparent 100%
+  ) !important;
 }
 
 body[data-view="home"][data-home-neutral="true"] .backdrop-glow{
@@ -34,6 +80,12 @@ body[data-view="home"][data-home-neutral="true"] .reference-home::after{
   filter:none !important;
 }
 
+@media (prefers-reduced-motion: reduce){
+  .home-neutral-video{
+    display:none !important;
+  }
+}
+
 /* Use the real local Xbox logo in the Guide's Xbox tab. */
 .guide-tab .xbox-guide-mark{
   width:2.85rem !important;
@@ -42,4 +94,90 @@ body[data-view="home"][data-home-neutral="true"] .reference-home::after{
   object-fit:contain !important;
   border-radius:50% !important;
   flex:none !important;
+}
+
+
+/* Xbox-style top navigation labels, matching the small popup in the reference. */
+.sysnav-btn{
+  position:relative !important;
+  overflow:visible !important;
+}
+.sysnav-btn::after{
+  content:attr(data-label);
+  position:absolute;
+  left:50%;
+  top:calc(100% + .78rem);
+  z-index:80;
+  transform:translate(-50%,-.18rem) scale(.96);
+  display:block;
+  width:max-content;
+  max-width:15rem;
+  padding:.34rem .62rem .38rem;
+  border:.08rem solid rgba(255,255,255,.12);
+  border-radius:.28rem;
+  background:#050505;
+  box-shadow:0 .3rem .85rem rgba(0,0,0,.56);
+  color:#fff;
+  font:600 1.08rem/1 "Segoe UI Variable Text","Segoe UI",system-ui,sans-serif;
+  letter-spacing:.005rem;
+  white-space:nowrap;
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transition:opacity 90ms ease,transform 110ms ease,visibility 90ms step-end;
+}
+.sysnav-btn:hover::after,
+.sysnav-btn:focus-visible::after,
+.sysnav-btn[data-focused]::after,
+.sysnav-btn.active::after{
+  opacity:1;
+  visibility:visible;
+  transform:translate(-50%,0) scale(1);
+  transition:opacity 90ms ease,transform 110ms ease,visibility 0s;
+}
+
+/* Custom Synapse Store Home card. */
+.reference-home .ref-card.card-store,
+.reference-home .ref-card.card-store .ref-card-art,
+.reference-home .ref-card.card-store .synapse-store-art{
+  background:#151718 !important;
+}
+.reference-home .ref-card.card-store::before,
+.reference-home .ref-card.card-store::after{
+  display:none !important;
+}
+.reference-home .synapse-store-art{
+  position:absolute !important;
+  inset:0 !important;
+  display:flex !important;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:1rem;
+  color:#fff !important;
+  overflow:hidden;
+}
+.reference-home .synapse-store-icon{
+  width:5.2rem;
+  height:5.2rem;
+  display:grid;
+  place-items:center;
+  color:#fff !important;
+}
+.reference-home .synapse-store-icon svg{
+  width:4.4rem !important;
+  height:4.4rem !important;
+  fill:currentColor !important;
+  color:#fff !important;
+}
+.reference-home .synapse-store-name{
+  display:block;
+  color:#fff !important;
+  font:650 1.48rem/1.1 "Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;
+  letter-spacing:.005rem;
+  text-align:center;
+}
+.reference-home .ref-card.card-store[data-focused],
+.reference-home .ref-card.card-store:hover{
+  background:#1b1e20 !important;
 }

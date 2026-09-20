@@ -47,7 +47,7 @@ function patchHomeStoreCard(){
   const home = document.getElementById('view-home');
   if (!home) return;
   const card = [...home.querySelectorAll('.ref-card')]
-    .find(node => node.getAttribute('aria-label') === 'Browse the store');
+    .find(node => node.getAttribute('aria-label') === 'Synapse Store');
   if (card){
     card._navActivate = showStore;
     card.dataset.opensStore = '1';
