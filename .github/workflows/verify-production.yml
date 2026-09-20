@@ -17,16 +17,26 @@ jobs:
       - name: Check production alias
         shell: bash
         run: |
-          set -u
-          echo "===== INDEX ====="
-          curl -sSIL --max-time 20 https://xbox-xi-gold.vercel.app/ | sed -n '1,30p'
+          set -euo pipefail
 
-          echo "===== NOWGG CATALOG ====="
-          curl -sS --max-time 20 -D /tmp/catalog-headers.txt             'https://xbox-xi-gold.vercel.app/api/nowgg?catalog=1'             -o /tmp/catalog.txt || true
-          cat /tmp/catalog-headers.txt || true
-          echo
-          cat /tmp/catalog.txt || true
-          echo
+          echo "===== STATIC NOWGG CATALOG ====="
+          curl -fsSL --max-time 20             https://xbox-xi-gold.vercel.app/assets/nowgg/catalog.json             -o /tmp/catalog.json
+          cat /tmp/catalog.json
+          grep -q '"Stumble Guys"' /tmp/catalog.json
+          grep -q '"Geometry Dash"' /tmp/catalog.json
+          grep -q '"Rocket League"' /tmp/catalog.json
 
+          echo
           echo "===== LOCAL ART ====="
-          curl -sSIL --max-time 20             https://xbox-xi-gold.vercel.app/assets/nowgg/stumble-guys.jpg             | sed -n '1,30p'
+          curl -fsSIL --max-time 20             https://xbox-xi-gold.vercel.app/assets/nowgg/stumble-guys.jpg             | sed -n '1,25p'
+
+          echo
+          echo "===== NOWGG.FUN PROXY GAME ====="
+          curl -sSL --max-time 25 -o /tmp/game.html -D /tmp/game.headers             https://xbox-xi-gold.vercel.app/nowgg/apps/robtop-games/1400/geometry-dash.html
+          cat /tmp/game.headers
+          test -s /tmp/game.html
+          if grep -q 'FUNCTION_INVOCATION_FAILED' /tmp/game.html; then
+            echo "Proxy function still failed"
+            exit 1
+          fi
+          echo "Proxy body bytes: $(wc -c < /tmp/game.html)"
