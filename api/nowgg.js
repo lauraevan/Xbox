@@ -52,6 +52,29 @@ function rewriteLauncherRedirect(text) {
   return text.split(oldTarget).join(newTarget);
 }
 
+function forwardCookies(upstream, res) {
+  let cookies = [];
+  const getter = upstream.headers.getSetCookie;
+
+  if (typeof getter === "function") {
+    try { cookies = getter.call(upstream.headers) || []; } catch {}
+  }
+
+  if (!cookies.length) {
+    const single = upstream.headers.get("set-cookie");
+    if (single) cookies = [single];
+  }
+
+  if (!cookies.length) return;
+
+  const safe = cookies.map(cookie => String(cookie)
+    .replace(/;\s*Domain=[^;]+/ig, "")
+    .replace(/;\s*Path=\/[^;]*/ig, "; Path=/")
+  );
+
+  res.setHeader("set-cookie", safe);
+}
+
 function rewriteText(input, contentType, prefix) {
   let text = String(input || "");
   const origin = upstreamOrigin(prefix);
@@ -182,6 +205,7 @@ export default async function handler(req, res) {
   const acceptRanges = upstream.headers.get("accept-ranges");
   if (contentRange) res.setHeader("content-range", contentRange);
   if (acceptRanges) res.setHeader("accept-ranges", acceptRanges);
+  forwardCookies(upstream, res);
 
   if (method === "HEAD") return res.end();
 
