@@ -293,6 +293,62 @@ Newest first. Post facts, open questions and things that change your plan.
 Add an entry when you need me to know something; delete one once it is
 settled. Keep it short — detail belongs in the commit message.
 
+### 2026-09-20 — the neutral Home canvas now runs the owner's Waves wallpaper
+
+The owner supplied the Xbox Series X|S "Waves Faded Dark Grey" clip and asked
+for it behind Home wherever no game is selected, explicitly without breaking
+mobile. It lives in `app-patch.js` rather than a 27th script, per §2.
+
+**Vendored, not hotlinked.** Source was 3840×2160 @ 59.94fps, 60s, 29MB, with
+an audio track. Re-encoded to 1080p30 and 720p30, audio stripped (autoplay
+needs a muted track anyway):
+
+```
+assets/wallpaper/waves-1080.mp4   3,722,954
+assets/wallpaper/waves-1080.webm  1,879,035
+assets/wallpaper/waves-720.mp4    1,549,844
+assets/wallpaper/waves-720.webm   1,034,211
+assets/wallpaper/waves-poster.jpg    23,891
+```
+
+Small viewports and coarse pointers get the 720p pair. The clip is **never
+requested at all** when `settings.background === 'plain'`, a fixed wallpaper is
+set (the wallpaper still wins), `settings.motion === 'reduced'`,
+`prefers-reduced-motion`, `saveData`, a 2g `effectiveType`, or
+`deviceMemory < 4`. Every failure path — autoplay refused, iOS Low Power Mode,
+a decode error — lands on the still poster, which is strictly better than the
+flat black it replaced.
+
+**One thing that needed your code to be safe, so please keep it in mind.**
+`home-catalog-pass.js` starts its own full-screen Waves clip on the lower shelf
+from `onHomeScroll`. Two 1080p videos decoding at once is exactly what makes a
+phone stutter and run hot, and only one of them is ever on screen. The backdrop
+clip now pauses once `#view-home.scrollTop >= 40`, using your own scroll seam,
+so they hand off instead of overlapping. If you move that shelf video, the
+handoff is the thing to preserve.
+
+**Two notes on that shelf video.** It is hotlinked to
+`assets.website-files.com`, which is the §1 hazard — when that CDN blocks or
+the URL rots, the shelf goes to its flat `#001d07`. There is now a local Waves
+file it could point at instead. And it is the green variant while the owner's
+is faded dark grey, so they are not interchangeable without asking first —
+I have not touched it.
+
+**How it coexists with your black canvas.** I nearly got this wrong: grepping
+for `home-neutral` finds no JS, because `reference.js` sets it as
+`document.body.dataset.homeNeutral`. It is very much live, and it is what
+paints `.backdrop`, `.backdrop-scrim`, `.topbar-scrim`, `.views`, `#view-home`
+and `.sysbar` opaque `#000` — the black the owner asked to replace. Rather than
+unpick that, the clip sets a second flag, `data-home-wallpaper="on"`, and the
+override is keyed one attribute deeper than your rules, so it wins on
+specificity rather than on file order. The moment the clip is opted out of or
+fails, the flag comes off and your black canvas is exactly what returns.
+
+The two scrims come back as gradients while it plays, kept light through the
+middle band where the waves actually read. Measured at 1920×1080: top-bar band
+16 mean luminance, open middle 22 (the clip's own frame is 24, so it is barely
+touched), card row 48, whole page 29 against 0 before.
+
 ### 2026-09-19 — `home-library-persistence.js` was re-rendering Home every frame
 
 Owner reported "all the game icons on the first row are gone". They were not

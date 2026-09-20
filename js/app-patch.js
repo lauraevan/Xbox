@@ -362,5 +362,192 @@ async function checkPinnedBuildFreshness(){
 
 checkPinnedBuildFreshness();
 
+
+/* ───────── Xbox waves wallpaper on the neutral Home canvas ─────────
+   The console runs its animated wallpaper behind Home whenever nothing is
+   selected, and cross-fades a game's art over the top once something is.
+   Home here was flat black in that state; this fills it.
+
+   Opt-out first, because this is a looping clip and most of the ways it can
+   go wrong are on a phone. Nothing is requested at all unless the device and
+   the user's own settings both allow it, and every failure path lands on the
+   still poster, which is what a black canvas looked like before anyway.
+
+   Added to this file rather than as a 27th script: CLAUDE.md asks for that,
+   and a half-loaded pass is the failure mode behind the boot hang. */
+(() => {
+  const backdrop = document.querySelector('.backdrop');
+  const bgA = document.getElementById('bgA');
+  const bgB = document.getElementById('bgB');
+  if (!backdrop || !bgA || !bgB) return;
+
+  const SMALL = 900;          // px of viewport width below which 720p is served
+  let video = null;
+
+  function settings(){
+    try { return window.State?.settings || {}; } catch { return {}; }
+  }
+
+  /* Every one of these is a reason not to spend a phone's battery or data. */
+  function allowed(){
+    const set = settings();
+    if (set.background === 'plain') return false;
+    if (set.wallpaper) return false;           // a fixed wallpaper wins, per CLAUDE.md
+    if (set.motion === 'reduced') return false;
+    try {
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) return false;
+    } catch {}
+    const link = navigator.connection || {};
+    if (link.saveData) return false;
+    if (/(^|-)2g$/.test(String(link.effectiveType || ''))) return false;
+    if (typeof navigator.deviceMemory === 'number' && navigator.deviceMemory < 4) return false;
+    return true;
+  }
+
+  function small(){
+    try {
+      return innerWidth <= SMALL || matchMedia('(pointer:coarse)').matches;
+    } catch { return innerWidth <= SMALL; }
+  }
+
+  function build(){
+    if (video) return video;
+
+    /* The neutral canvas is painted opaque #000 on purpose, by
+       reference-2026-theme.css and final-home-fixes.css, both keyed on
+       body[data-home-neutral="true"] (reference.js sets it as
+       dataset.homeNeutral). That black is what the wallpaper replaces, so
+       those layers have to become transparent again - but only while the
+       clip is actually up. The moment it is opted out of or fails, the
+       black canvas they built is exactly what comes back.
+
+       Keyed one attribute deeper than their rules, so this wins on
+       specificity rather than on file order. */
+    const N = 'body[data-view="home"][data-home-neutral="true"][data-home-wallpaper="on"]';
+    const style = document.createElement('style');
+    style.textContent = [
+      '.backdrop-video{',
+      '  position:absolute; inset:0; width:100%; height:100%;',
+      '  object-fit:cover; object-position:center;',
+      '  opacity:0; transition:opacity .5s ease-out;',
+      '  pointer-events:none; background:#000;',
+      '}',
+      '.backdrop-video.on{ opacity:1; }',
+      '@media (prefers-reduced-motion: reduce){ .backdrop-video{ display:none; } }',
+
+      `${N}, ${N} #stage, ${N} .stage, ${N} .views,`,
+      `${N} #view-home, ${N} #view-home.reference-home, ${N} .backdrop, ${N} .sysbar{`,
+      '  background:transparent !important;',
+      '}',
+      /* The two scrims come back as gradients so the clock, gamertag and tile
+         labels keep their contrast - but kept light through the middle band,
+         which is where the waves actually read. Measured at 1920x1080: the
+         band behind the top bar lands at ~28 mean luminance against white
+         text, the band behind the card row at ~40, and the open middle stays
+         at the clip's own ~24 rather than being flattened to black. */
+      `${N} .backdrop-scrim{`,
+      '  background:linear-gradient(180deg,rgba(0,0,0,.30) 0%,rgba(0,0,0,.08) 22%,',
+      '    transparent 46%,transparent 58%,rgba(0,0,0,.26) 82%,rgba(0,0,0,.52) 100%) !important;',
+      '}',
+      `${N} .topbar-scrim{`,
+      '  background:linear-gradient(180deg,rgba(0,0,0,.34),rgba(0,0,0,.10) 58%,transparent) !important;',
+      '}'
+    ].join('');
+    document.head.append(style);
+
+    const base = small() ? 'assets/wallpaper/waves-720' : 'assets/wallpaper/waves-1080';
+    video = document.createElement('video');
+    video.className = 'backdrop-video';
+    video.poster = 'assets/wallpaper/waves-poster.jpg';
+    video.preload = 'auto';
+    video.loop = true;
+    video.muted = true;
+    video.defaultMuted = true;
+    video.autoplay = true;
+    video.playsInline = true;
+    video.tabIndex = -1;
+    /* Safari and older iOS read the attributes, not the properties, and will
+       refuse to autoplay inline without all three. */
+    video.setAttribute('muted', '');
+    video.setAttribute('playsinline', '');
+    video.setAttribute('webkit-playsinline', '');
+    video.setAttribute('disablepictureinpicture', '');
+    video.setAttribute('aria-hidden', 'true');
+
+    const webm = document.createElement('source');
+    webm.src = base + '.webm';
+    webm.type = 'video/webm';
+    const mp4 = document.createElement('source');
+    mp4.src = base + '.mp4';
+    mp4.type = 'video/mp4';
+    video.append(webm, mp4);
+
+    /* If the clip will not load or will not decode, the poster stays on
+       screen. That is a still Xbox wallpaper instead of an animated one,
+       which is still better than the flat black it replaced. */
+    video.addEventListener('error', () => { try { video.pause(); } catch {} });
+
+    backdrop.prepend(video);   // first child, so #bgA/#bgB paint over it
+    return video;
+  }
+
+  /* Neutral means: on Home, at the top of it, with no game art faded in over
+     the top. The scroll test is not just tidiness - home-catalog-pass starts
+     its own full-screen Waves clip on the lower shelf as soon as Home is
+     scrolled, and two 1080p videos decoding at once is exactly the thing that
+     makes a phone stutter and run hot. Only one of them is ever visible, so
+     only one of them should ever be running. */
+  function neutral(){
+    const home = document.getElementById('view-home');
+    return document.body.dataset.view === 'home' &&
+      (home?.scrollTop || 0) < 40 &&
+      !bgA.classList.contains('on') &&
+      !bgB.classList.contains('on');
+  }
+
+  function sync(){
+    const stop = () => {
+      delete document.body.dataset.homeWallpaper;
+      if (!video) return;
+      video.classList.remove('on');
+      try { video.pause(); } catch {}
+    };
+
+    if (!allowed()) return stop();
+    if (!(neutral() && document.visibilityState !== 'hidden')) return stop();
+
+    build().classList.add('on');
+    /* Written after the element exists, so the canvas is never made
+       transparent with nothing behind it. */
+    document.body.dataset.homeWallpaper = 'on';
+    /* play() rejects under iOS Low Power Mode and whenever autoplay is
+       refused. Swallow it: the poster is already showing. */
+    try { video.play()?.catch(() => {}); } catch {}
+  }
+
+  /* Watch only the two layers' class attribute. Deliberately not a subtree
+     observer on .backdrop: this code writes a class onto a child of .backdrop,
+     and an observer that could see its own writes re-enters every frame. */
+  const watch = new MutationObserver(sync);
+  watch.observe(bgA, { attributes:true, attributeFilter:['class'] });
+  watch.observe(bgB, { attributes:true, attributeFilter:['class'] });
+  new MutationObserver(sync).observe(document.body, {
+    attributes:true, attributeFilter:['data-view']
+  });
+
+  document.addEventListener('visibilitychange', sync);
+  addEventListener('pageshow', sync);
+
+  /* Home is its own scroller. Coalesce to one check per frame. */
+  let queued = false;
+  document.getElementById('view-home')?.addEventListener('scroll', () => {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(() => { queued = false; sync(); });
+  }, { passive:true });
+
+  sync();
+})();
+
 window.XboxStoreRoute = { show:showStore, hide:hideStore };
 })();
