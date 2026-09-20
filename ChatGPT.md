@@ -1148,12 +1148,12 @@ The project succeeds when someone can look at it and immediately feel that it is
 
 ### 2026-09-20 — Xbox version snapshot boot notification
 
-Current snapshot: `g5n8rz`
+Current snapshot: `r2v7kc`
 
-After every successful Xbox boot, show a compact green-and-black build notification along the **bottom edge** of the screen. It must have a clearly visible Xbox-green outline, rounded corners, dark black surface, and restrained Windows/Xbox styling. The notification uses the repo-local Xbox logo and reads `Xbox Version 1.5` and `Snapshot <random-code>`.
+After every successful Xbox boot, show a compact green-and-black build notification in the **bottom-right corner** of the screen. It must have a clearly visible Xbox-green outline, rounded corners, dark black surface, and restrained Windows/Xbox styling. The notification uses the repo-local Xbox logo and reads `Xbox Version 1.5` and `Snapshot <random-code>`.
 
 Important workflow rule:
 - Every user-visible project update should receive a fresh random snapshot code.
 - Report that snapshot code in chat after the update so the user can verify the newest build is loaded.
 - Update the snapshot shown by the boot notification whenever the snapshot changes.
-- Do not move this notification to the top or make it a generic floating card.
+- Keep this notification in the bottom-right corner. Do not move it to the top or center it unless the user explicitly asks.
