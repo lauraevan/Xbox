@@ -230,6 +230,7 @@ function refCard({ label, sub, artName, chip, cls }){
 }
 
 function setReferenceBackdrop(){
+  document.body.dataset.homeNeutral = 'true';
   const a = document.getElementById('bgA');
   const b = document.getElementById('bgB');
 
