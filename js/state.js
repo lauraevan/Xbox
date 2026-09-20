@@ -37,7 +37,13 @@ const DEFAULTS = {
     profileLine: '',    // second line under the gamertag on Home
     profileCapsule:false, // optional black Home profile text capsule
     devMode:     false, // exposes disabled/test cloud titles in the catalogue
-    wallpaper:   '',    // image URL; empty falls back to cover art
+    wallpaper:   '',    // legacy image URL support
+    wallpaperMode:'waves',      // waves | black | game | custom | random
+    wallpaperBehavior:'dynamic',// static | adaptive | dynamic
+    wallpaperId:'',             // original-quality file stored in IndexedDB
+    wallpaperBrightness:42,     // percent
+    wallpaperBlur:0,            // px
+    wallpaperMotion:'normal',   // off | normal
     saturation:  1.35,  // backdrop punch
     heroText:  false,   // the console shows no copy over the backdrop
     tileBadges:true,    // tag badges (PORT / FLASH / EMU) ride on the tiles
