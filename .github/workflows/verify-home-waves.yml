@@ -1,0 +1,29 @@
+name: Verify Home waves asset
+
+on:
+  push:
+    branches:
+      - claude/xbox-web-replica-v4s0jk
+    paths:
+      - .github/workflows/verify-home-waves.yml
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: claude/xbox-web-replica-v4s0jk
+      - name: Probe asset
+        shell: bash
+        run: |
+          set -euo pipefail
+          FILE=assets/backgrounds/home-neutral-waves.mp4
+          ls -lh "$FILE"
+          stat -c 'bytes=%s' "$FILE"
+          ffprobe -v error -show_entries format=duration,size,bit_rate -show_entries stream=codec_name,width,height,r_frame_rate,avg_frame_rate -of default=noprint_wrappers=1 "$FILE"
+          ffmpeg -v error -i "$FILE" -f null -
+          echo HOME_WAVES_VALID
