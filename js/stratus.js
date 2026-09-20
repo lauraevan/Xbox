@@ -13,7 +13,7 @@ const CATALOG_SOURCES = [
   'https://cdn.jsdelivr.net/gh/evanjeffrey1212-eng/stratus-api@main/cloud.json'
 ];
 const LOCAL_ART_MANIFEST = 'assets/stratus-covers/manifest.json';
-const NOWGG_CATALOG = '/api/nowgg?catalog=1';
+const NOWGG_CATALOG = '/assets/nowgg/catalog.json';
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 const isAbort = err => err?.name === 'AbortError';
