@@ -269,6 +269,7 @@ function apply(){
 }
 
 function set(key,value){
+  window.Personalization?.markCustom?.();
   State()?.setSetting(key,value);
   apply();
 }
@@ -299,6 +300,7 @@ async function upload(kind,done){
     if(!file) return;
     try{
       const rec=await saveOriginal(file);
+      window.Personalization?.markCustom?.();
       State()?.setSetting('wallpaperId',rec.id);
       State()?.setSetting('wallpaperMode','custom');
       apply();
@@ -314,6 +316,7 @@ async function upload(kind,done){
 async function use(id,done){
   const rec=await get(id);
   if(!rec) return;
+  window.Personalization?.markCustom?.();
   State()?.setSetting('wallpaperId',id);
   State()?.setSetting('wallpaperMode','custom');
   apply();
@@ -380,6 +383,7 @@ function openManager(done){
         await remove(rec.id);
         if(mediaId===rec.id) destroyMedia();
         if(settings().wallpaperId===rec.id){
+          window.Personalization?.markCustom?.();
           State()?.setSetting('wallpaperId','');
           State()?.setSetting('wallpaperMode','waves');
         }
