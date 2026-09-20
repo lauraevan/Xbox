@@ -264,3 +264,119 @@ body[data-theme="light"] .detail-scrim{
   .keyboard{ display:none; }
   .guide-panel{ width:100%; }
 }
+
+
+/* ───────── touch gamepad for cloud games ─────────
+   Only mounted on coarse-pointer devices, and only while a Stratus session is
+   on screen. Sits above the stream iframe; every control is pointer-driven so
+   one finger per button works, and nothing here scrolls or selects.
+
+   Sized in px, deliberately, against the grain of the rest of this codebase.
+   The TV canvas makes 1rem = 10px only at 1080p; on a 844x390 phone 1rem
+   resolves to 3.6px, which turned every button into an 18px target. A finger
+   is the same size whatever the viewport, so these use px floors. */
+.touchpad{
+  position:absolute; inset:0; z-index:8;
+  display:none;
+  pointer-events:none;
+  -webkit-user-select:none; user-select:none;
+  touch-action:none;
+  font-family:"Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;
+}
+.touchpad.on{ display:block; }
+.touchpad > *{ pointer-events:none; }
+
+.tpad-top{
+  position:absolute; left:0; right:0; top:0;
+  display:flex; align-items:flex-start; justify-content:space-between;
+  padding:10px 14px; gap:10px;
+}
+/* The player's own quit control lives in the top-right corner, so the right
+   cluster stops short of it rather than being covered by it. */
+.tpad-top > .tpad-cluster:last-child{ margin-right:56px; }
+.tpad-cluster{ display:flex; gap:8px; pointer-events:none; }
+.tpad-mid{ margin-top:2px; }
+
+.tpad-bottom{ position:absolute; inset:0; }
+.tpad-left{ position:absolute; left:18px; bottom:18px; }
+
+.tpad-btn{
+  pointer-events:auto;
+  display:grid; place-items:center;
+  min-width:0; padding:0;
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:10px;
+  background:rgba(14,14,16,.6);
+  color:rgba(255,255,255,.92);
+  font:650 13px/1 "Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;
+  letter-spacing:.4px;
+  backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+  transition:background .08s linear, transform .08s linear;
+  touch-action:none;
+}
+.touchpad .tpad-btn.down{ background:rgba(255,255,255,.3); transform:scale(.94); }
+
+.tpad-sm{ width:56px; height:38px; }
+.tpad-wide{ width:74px; height:34px; font-size:12px; }
+.tpad-start{ background:rgba(96,18,18,.66); }
+
+.tpad-stick{
+  pointer-events:auto;
+  position:relative;
+  width:128px; height:128px;
+  border-radius:50%;
+  border:2px solid rgba(255,255,255,.18);
+  background:rgba(10,10,12,.32);
+  touch-action:none;
+}
+.tpad-knob{
+  position:absolute; left:50%; top:50%;
+  width:54px; height:54px; margin:-27px 0 0 -27px;
+  border-radius:50%;
+  border:2px solid rgba(255,255,255,.36);
+  background:rgba(228,228,228,.2);
+  transition:transform .06s linear;
+}
+
+.tpad-dpad{
+  position:absolute; right:212px; bottom:20px;
+  width:132px; height:132px;
+}
+.tpad-d{ position:absolute; width:44px; height:44px; font-size:12px; }
+.tpad-du{ left:44px; top:0; }
+.tpad-dd{ left:44px; bottom:0; }
+.tpad-dl{ left:0; top:44px; }
+.tpad-dr{ right:0; top:44px; }
+
+.tpad-face{
+  position:absolute; right:18px; bottom:20px;
+  width:132px; height:132px;
+}
+.tpad-f{ position:absolute; width:46px; height:46px; border-radius:50%; font-size:16px; }
+.tpad-y{ left:43px; top:0; }
+.tpad-a{ left:43px; bottom:0; }
+.tpad-x{ left:0; top:43px; }
+.tpad-b{ right:0; top:43px; }
+
+.tpad-hints{
+  position:absolute; right:160px; bottom:20px;
+  display:flex; flex-direction:column; gap:8px;
+}
+.tpad-hint{ width:44px; height:34px; font-size:12px; }
+
+/* Narrow phones in portrait: pull the clusters in so nothing overlaps. */
+@media (max-width:560px){
+  .tpad-stick{ width:104px; height:104px; }
+  .tpad-knob{ width:44px; height:44px; margin:-22px 0 0 -22px; }
+  .tpad-dpad{ right:168px; width:116px; height:116px; }
+  .tpad-d{ width:38px; height:38px; }
+  .tpad-du,.tpad-dd{ left:39px; }
+  .tpad-dl,.tpad-dr{ top:39px; }
+  .tpad-face{ width:116px; height:116px; }
+  .tpad-f{ width:40px; height:40px; }
+  .tpad-y,.tpad-a{ left:38px; }
+  .tpad-x,.tpad-b{ top:38px; }
+  .tpad-hints{ right:126px; }
+  .tpad-sm{ width:48px; height:34px; }
+  .tpad-wide{ width:62px; height:30px; font-size:11px; }
+}

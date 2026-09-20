@@ -432,8 +432,52 @@
         function dcSend(buf) {
             if (_dc && _dc.readyState === "open") _dc.send(buf);
         }
+
+        /* ---- virtual pad from the embedding page ----
+           The Xbox dashboard embeds this page cross-origin and draws on-screen
+           controls over it on phones and tablets. It cannot reach in to
+           dispatch input and it cannot create a gamepad, so it posts the same
+           XInput-shaped state sendGamepad() builds and we emit it here as an
+           extra pad. A real controller is unaffected: this only adds a pad,
+           it never overrides navigator.getGamepads(). */
+        let touchPad = null, touchPadAt = 0;
+        window.addEventListener("message", (e) => {
+            const d = e.data;
+            if (!d || d.source !== "xbox-touchpad" || !d.pad) return;
+            const p = d.pad;
+            touchPad = {
+                mask: (p.mask | 0) & 0xffff,
+                lt: Math.max(0, Math.min(255, p.lt | 0)),
+                rt: Math.max(0, Math.min(255, p.rt | 0)),
+                lx: Math.max(-32767, Math.min(32767, p.lx | 0)),
+                ly: Math.max(-32767, Math.min(32767, p.ly | 0)),
+                rx: Math.max(-32767, Math.min(32767, p.rx | 0)),
+                ry: Math.max(-32767, Math.min(32767, p.ry | 0))
+            };
+            touchPadAt = Date.now();
+        });
+        function sendTouchPad() {
+            if (!touchPad) return;
+            /* If the page stops posting, let the pad go neutral rather than
+               leaving a stick or a button stuck down. */
+            if (Date.now() - touchPadAt > 2000) {
+                const idle = touchPad.mask === 0 && !touchPad.lt && !touchPad.rt &&
+                    !touchPad.lx && !touchPad.ly && !touchPad.rx && !touchPad.ry;
+                if (idle) return;
+                touchPad = { mask:0, lt:0, rt:0, lx:0, ly:0, rx:0, ry:0 };
+            }
+            const t = touchPad;
+            const buf = new ArrayBuffer(17), v = new DataView(buf);
+            v.setUint8(0, 1); v.setUint8(1, 16); v.setUint8(2, 3); v.setUint8(3, 2);
+            v.setUint8(4, 0);
+            v.setUint16(5, t.mask); v.setUint8(7, t.lt); v.setUint8(8, t.rt);
+            v.setInt16(9, t.lx); v.setInt16(11, t.ly);
+            v.setInt16(13, t.rx); v.setInt16(15, t.ry);
+            dcSend(buf);
+        }
+
         function inputLoop() {
-            if (_dc && _dc.readyState === "open") sendGamepad();
+            if (_dc && _dc.readyState === "open") { sendGamepad(); sendTouchPad(); }
             requestAnimationFrame(inputLoop);
         }
         requestAnimationFrame(inputLoop);

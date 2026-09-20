@@ -372,5 +372,220 @@ async function checkPinnedBuildFreshness(){
 checkPinnedBuildFreshness();
 
 
+
+/* ───────── touch gamepad for cloud games (mobile only) ─────────
+   A Stratus session renders in a cross-origin iframe, so nothing here can
+   reach into it: no synthetic key events, no injected gamepad. The only
+   channel is postMessage, and the embed has to meet us. The listener that
+   does that is in stratus/api/public/e.html in this repo, and it will not be
+   live until Stratus itself is deployed with it - see CLAUDE.md.
+
+   The wire format below mirrors e.html's own sendGamepad() exactly: an
+   XInput-shaped button mask, two analog triggers and four 16-bit axes. */
+(() => {
+  const player = document.getElementById('player');
+  const frame  = document.getElementById('playerFrame');
+  if (!player || !frame) return;
+
+  /* Standard-gamepad index -> XInput mask, copied from e.html. */
+  const A=4096, B=8192, X=16384, Y=32768, LB=256, RB=512,
+        BACK=32, START=16, LS=64, RS=128, DU=1, DD=2, DL=4, DR=8;
+
+  const pad = { mask:0, lt:0, rt:0, lx:0, ly:0, rx:0, ry:0 };
+  let beat = null;
+
+  function post(){
+    try {
+      frame.contentWindow?.postMessage(
+        { source:'xbox-touchpad', pad:{ ...pad } }, '*');
+    } catch {}
+  }
+  function idle(){
+    return !pad.mask && !pad.lt && !pad.rt && !pad.lx && !pad.ly && !pad.rx && !pad.ry;
+  }
+  /* Every change posts immediately. Coalescing to one message per frame lost
+     any tap that went down and up inside the same frame - which is most taps,
+     and the first version of this did exactly that. The interval only keeps a
+     held button fresh against the embed's 2s staleness timeout. */
+  function mark(){
+    post();
+    if (beat || idle()) return;
+    beat = setInterval(() => {
+      if (idle()){ clearInterval(beat); beat = null; return; }
+      post();
+    }, 250);
+  }
+
+  function setButton(bit, down){
+    const next = down ? (pad.mask | bit) : (pad.mask & ~bit);
+    if (next === pad.mask) return;
+    pad.mask = next; mark();
+  }
+  function setTrigger(side, value){
+    const v = Math.max(0, Math.min(255, Math.round(value * 255)));
+    if (pad[side] === v) return;
+    pad[side] = v; mark();
+  }
+  function setStick(side, x, y){
+    const px = side === 'l' ? 'lx' : 'rx', py = side === 'l' ? 'ly' : 'ry';
+    const nx = Math.max(-32767, Math.min(32767, Math.round(x * 32767)));
+    const ny = Math.max(-32767, Math.min(32767, Math.round(-y * 32767)));
+    if (pad[px] === nx && pad[py] === ny) return;
+    pad[px] = nx; pad[py] = ny; mark();
+  }
+  function releaseAll(){
+    pad.mask = 0; pad.lt = 0; pad.rt = 0;
+    pad.lx = 0; pad.ly = 0; pad.rx = 0; pad.ry = 0;
+    post();
+    if (beat){ clearInterval(beat); beat = null; }
+  }
+
+  /* ---- the surface ---- */
+  let root = null;
+
+  function button(label, cls, onDown, onUp, name){
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'tpad-btn ' + cls;
+    b.textContent = label;
+    /* The reference art labels the d-pad's sides LT and RT, the same text the
+       triggers carry. Keep the look, but name them apart for screen readers
+       and for anything addressing a specific control. */
+    b.setAttribute('aria-label', name || label);
+    b.dataset.pad = (name || label).toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    /* Pointer events, not touch events: one handler covers finger, pen and a
+       desktop mouse, and setPointerCapture keeps the release attached to this
+       button even if the finger slides off it mid-press. */
+    b.addEventListener('pointerdown', e => {
+      e.preventDefault(); e.stopPropagation();
+      try { b.setPointerCapture(e.pointerId); } catch {}
+      b.classList.add('down'); onDown();
+    });
+    const up = e => {
+      if (!b.classList.contains('down')) return;
+      e.preventDefault(); e.stopPropagation();
+      b.classList.remove('down'); onUp();
+    };
+    b.addEventListener('pointerup', up);
+    b.addEventListener('pointercancel', up);
+    b.addEventListener('lostpointercapture', up);
+    b.addEventListener('contextmenu', e => e.preventDefault());
+    return b;
+  }
+  const btn = (label, cls, bit, name) =>
+    button(label, cls, () => setButton(bit, true), () => setButton(bit, false), name);
+  const trig = (label, cls, side, name) =>
+    button(label, cls, () => setTrigger(side, 1), () => setTrigger(side, 0), name);
+
+  function stick(){
+    const wrap = document.createElement('div');
+    wrap.className = 'tpad-stick';
+    const knob = document.createElement('span');
+    knob.className = 'tpad-knob';
+    wrap.append(knob);
+
+    let id = null, cx = 0, cy = 0, radius = 1;
+    const move = e => {
+      if (e.pointerId !== id) return;
+      e.preventDefault();
+      let dx = (e.clientX - cx) / radius;
+      let dy = (e.clientY - cy) / radius;
+      const len = Math.hypot(dx, dy);
+      if (len > 1){ dx /= len; dy /= len; }
+      knob.style.transform = `translate(${dx * 42}%, ${dy * 42}%)`;
+      setStick('l', dx, dy);
+    };
+    const end = e => {
+      if (e.pointerId !== id) return;
+      id = null;
+      knob.style.transform = '';
+      setStick('l', 0, 0);
+    };
+    wrap.addEventListener('pointerdown', e => {
+      e.preventDefault(); e.stopPropagation();
+      id = e.pointerId;
+      const r = wrap.getBoundingClientRect();
+      cx = r.left + r.width / 2; cy = r.top + r.height / 2;
+      radius = r.width / 2;
+      try { wrap.setPointerCapture(e.pointerId); } catch {}
+      move(e);
+    });
+    wrap.addEventListener('pointermove', move);
+    wrap.addEventListener('pointerup', end);
+    wrap.addEventListener('pointercancel', end);
+    wrap.addEventListener('lostpointercapture', end);
+    return wrap;
+  }
+
+  function build(){
+    if (root) return root;
+    root = document.createElement('div');
+    root.className = 'touchpad';
+    root.setAttribute('aria-label', 'Touch controls');
+
+    const top = document.createElement('div');
+    top.className = 'tpad-top';
+    const topL = document.createElement('div'); topL.className = 'tpad-cluster';
+    topL.append(btn('LB','tpad-sm',LB,'Left bumper'),
+                trig('LT','tpad-sm','lt','Left trigger'));
+    const topC = document.createElement('div'); topC.className = 'tpad-cluster tpad-mid';
+    topC.append(btn('SELECT','tpad-wide',BACK,'Select'),
+                btn('START','tpad-wide tpad-start',START,'Start'));
+    const topR = document.createElement('div'); topR.className = 'tpad-cluster';
+    topR.append(btn('RB','tpad-sm',RB,'Right bumper'),
+                trig('RT','tpad-sm','rt','Right trigger'));
+    top.append(topL, topC, topR);
+
+    const bottom = document.createElement('div');
+    bottom.className = 'tpad-bottom';
+
+    const left = document.createElement('div'); left.className = 'tpad-left';
+    left.append(stick());
+
+    const dpad = document.createElement('div'); dpad.className = 'tpad-dpad';
+    dpad.append(btn('UP','tpad-d tpad-du',DU,'D-pad up'),
+                btn('LT','tpad-d tpad-dl',DL,'D-pad left'),
+                btn('RT','tpad-d tpad-dr',DR,'D-pad right'),
+                btn('DN','tpad-d tpad-dd',DD,'D-pad down'));
+
+    const face = document.createElement('div'); face.className = 'tpad-face';
+    face.append(btn('Y','tpad-f tpad-y',Y,'Y'), btn('X','tpad-f tpad-x',X,'X'),
+                btn('B','tpad-f tpad-b',B,'B'), btn('A','tpad-f tpad-a',A,'A'));
+
+    const hints = document.createElement('div'); hints.className = 'tpad-hints';
+    hints.append(btn('LS','tpad-hint',LS,'Left stick click'),
+                 btn('RS','tpad-hint',RS,'Right stick click'));
+
+    bottom.append(left, dpad, hints, face);
+    root.append(top, bottom);
+    player.append(root);
+    return root;
+  }
+
+  /* Only phones and tablets. A desktop has a keyboard and can pair a real
+     controller, which e.html already reads directly. */
+  function wanted(){
+    if (player.hidden) return false;
+    if (!player.classList.contains('cloud-player')) return false;
+    try {
+      return matchMedia('(pointer:coarse)').matches || navigator.maxTouchPoints > 0;
+    } catch { return navigator.maxTouchPoints > 0; }
+  }
+
+  function sync(){
+    const on = wanted();
+    if (on){ build().classList.add('on'); }
+    else if (root){ root.classList.remove('on'); releaseAll(); }
+  }
+
+  new MutationObserver(sync).observe(player, {
+    attributes:true, attributeFilter:['hidden','class']
+  });
+  document.addEventListener('visibilitychange', () => { if (document.hidden) releaseAll(); });
+  sync();
+
+  window.XboxTouchPad = { sync, pad, releaseAll };
+})();
+
 window.XboxStoreRoute = { show:showStore, hide:hideStore };
 })();
