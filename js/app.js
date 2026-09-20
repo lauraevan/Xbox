@@ -979,6 +979,19 @@ async function boot(){
   /* Boot fade ends at 600ms and the boot node is removed at 620ms.
      Keep the greeting attached to Home rather than floating over Library. */
   if (startupView === 'home') setTimeout(showBootGreeting, 720);
+
+  // Version stamp shown once after every full console boot.
+  setTimeout(() => {
+    const node = el('div', 'version-snapshot-toast');
+    node.innerHTML = '<div class="version-snapshot-mark">X</div><div class="version-snapshot-copy"><strong>Xbox Version 1.5</strong><span>Snapshot q7mx2k</span></div>';
+    $('#toasts').append(node);
+    requestAnimationFrame(() => node.classList.add('show'));
+    setTimeout(() => {
+      node.classList.remove('show');
+      node.classList.add('out');
+      setTimeout(() => node.remove(), 280);
+    }, 5200);
+  }, 1350);
 }
 
 /* ═══════════ captures, profiles, rumble ═══════════ */
