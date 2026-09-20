@@ -185,6 +185,7 @@ async function showRecord(rec){
   }
   document.body.classList.add('wallpaper-custom-active');
   if (media?.tagName === 'VIDEO'){
+    media.playbackRate = (settings().wallpaperMotion || 'normal') === 'low' ? .65 : 1;
     if (document.body.dataset.view === 'home' && !document.hidden && videoMayPlay()){
       try { await media.play(); } catch {}
     } else {
