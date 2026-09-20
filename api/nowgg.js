@@ -1,4 +1,4 @@
-const ORIGIN = "https://nowgg.fun";
+const ROOT_ORIGIN = "https://nowgg.fun";
 
 function send(res, status, body, type = "text/plain; charset=utf-8") {
   res.statusCode = status;
@@ -15,11 +15,26 @@ function cleanPath(value) {
   return "/" + decoded;
 }
 
-function targetUrl(req) {
-  const target = new URL(cleanPath(req.query?.path), ORIGIN);
+function relayPrefix(req) {
+  const raw = Array.isArray(req.query?.ip) ? req.query.ip[0] : String(req.query?.ip || "").trim();
+  if (!raw) return "";
+  const value = Number(raw);
+  if (!Number.isInteger(value) || value < 1 || value > 255 || String(value) !== raw) {
+    throw new Error("Invalid relay prefix");
+  }
+  return raw;
+}
+
+function upstreamOrigin(prefix) {
+  return prefix ? `https://${prefix}.ip.nowgg.fun` : ROOT_ORIGIN;
+}
+
+function targetUrl(req, prefix) {
+  const origin = upstreamOrigin(prefix);
+  const target = new URL(cleanPath(req.query?.path), origin);
 
   for (const [key, value] of Object.entries(req.query || {})) {
-    if (key === "path") continue;
+    if (key === "path" || key === "ip") continue;
     if (Array.isArray(value)) {
       for (const item of value) target.searchParams.append(key, String(item));
     } else if (value != null) {
@@ -27,32 +42,43 @@ function targetUrl(req) {
     }
   }
 
-  if (target.origin !== ORIGIN) throw new Error("Blocked origin");
+  if (target.origin !== origin) throw new Error("Blocked origin");
   return target;
 }
 
-function rewriteText(input, contentType) {
+function rewriteLauncherRedirect(text) {
+  const oldTarget = 'https://${sessionStorage.getItem("prefix")}.ip.${window.location.host}${window.location.pathname}';
+  const newTarget = '/nowgg-ip/${sessionStorage.getItem("prefix")}${window.location.pathname.startsWith("/nowgg/") ? window.location.pathname.slice(6) : window.location.pathname}';
+  return text.split(oldTarget).join(newTarget);
+}
+
+function rewriteText(input, contentType, prefix) {
   let text = String(input || "");
+  const origin = upstreamOrigin(prefix);
+  const basePath = prefix ? `/nowgg-ip/${prefix}` : "/nowgg";
 
   text = text
-    .split("https://nowgg.fun").join("/nowgg")
-    .split("http://nowgg.fun").join("/nowgg")
-    .split('src="/').join('src="/nowgg/')
-    .split("src='/").join("src='/nowgg/")
-    .split('href="/').join('href="/nowgg/')
-    .split("href='/").join("href='/nowgg/")
-    .split('action="/').join('action="/nowgg/')
-    .split("action='/").join("action='/nowgg/")
-    .split('poster="/').join('poster="/nowgg/')
-    .split("poster='/").join("poster='/nowgg/")
-    .split("url(/").join("url(/nowgg/");
+    .split(origin).join(basePath)
+    .split(ROOT_ORIGIN).join("/nowgg")
+    .split('src="/').join(`src="${basePath}/`)
+    .split("src='/").join(`src='${basePath}/`)
+    .split('href="/').join(`href="${basePath}/`)
+    .split("href='/").join(`href='${basePath}/`)
+    .split('action="/').join(`action="${basePath}/`)
+    .split("action='/").join(`action='${basePath}/`)
+    .split('poster="/').join(`poster="${basePath}/`)
+    .split("poster='/").join(`poster='${basePath}/`)
+    .split("url(/").join(`url(${basePath}/`);
+
+  if (!prefix) text = rewriteLauncherRedirect(text);
 
   if (contentType.includes("text/html")) {
     const bridge = [
       "<script>",
       "(()=>{",
-      "const P='/nowgg';",
-      "const fix=u=>{if(typeof u!=='string')return u;if(u.startsWith('https://nowgg.fun'))return P+u.slice('https://nowgg.fun'.length);if(u.startsWith('http://nowgg.fun'))return P+u.slice('http://nowgg.fun'.length);if(u.startsWith('/')&&!u.startsWith('/nowgg/'))return P+u;return u;};",
+      `const P=${JSON.stringify(basePath)};`,
+      `const O=${JSON.stringify(origin)};`,
+      "const fix=u=>{if(typeof u!=='string')return u;if(u.startsWith(O))return P+u.slice(O.length);if(u.startsWith('https://nowgg.fun'))return '/nowgg'+u.slice('https://nowgg.fun'.length);if(u.startsWith('/')&&!u.startsWith('/nowgg/')&&!u.startsWith('/nowgg-ip/'))return P+u;return u;};",
       "const nf=window.fetch.bind(window);",
       "window.fetch=(input,init)=>{if(typeof input==='string')return nf(fix(input),init);if(input instanceof Request){const next=fix(input.url);if(next!==input.url)input=new Request(next,input);}return nf(input,init);};",
       "const no=XMLHttpRequest.prototype.open;",
@@ -62,9 +88,9 @@ function rewriteText(input, contentType) {
     ].join("");
 
     const lower = text.toLowerCase();
-    const headEnd = lower.indexOf("<head>");
-    if (headEnd >= 0) {
-      text = text.slice(0, headEnd + 6) + bridge + text.slice(headEnd + 6);
+    const headTag = lower.indexOf("<head>");
+    if (headTag >= 0) {
+      text = text.slice(0, headTag + 6) + bridge + text.slice(headTag + 6);
     } else {
       text = bridge + text;
     }
@@ -74,19 +100,23 @@ function rewriteText(input, contentType) {
 }
 
 export default async function handler(req, res) {
+  let prefix;
   let target;
   try {
-    target = targetUrl(req);
+    prefix = relayPrefix(req);
+    target = targetUrl(req, prefix);
   } catch {
     return send(res, 400, "Invalid nowgg.fun path");
   }
 
   const method = String(req.method || "GET").toUpperCase();
+  const origin = upstreamOrigin(prefix);
   const headers = {
     "user-agent": req.headers["user-agent"] || "Mozilla/5.0",
     "accept": req.headers.accept || "*/*",
     "accept-language": req.headers["accept-language"] || "en-US,en;q=0.9",
-    "referer": ORIGIN + "/"
+    "referer": origin + "/",
+    "origin": origin
   };
 
   if (req.headers.cookie) headers.cookie = req.headers.cookie;
@@ -124,19 +154,23 @@ export default async function handler(req, res) {
     try { next = new URL(location, target); }
     catch { return send(res, 502, "Invalid nowgg.fun redirect"); }
 
-    if (next.origin !== ORIGIN) {
-      return send(res, 502, "Blocked redirect outside https://nowgg.fun");
+    const allowedHosts = new Set(["nowgg.fun"]);
+    if (prefix) allowedHosts.add(`${prefix}.ip.nowgg.fun`);
+    if (!allowedHosts.has(next.hostname)) {
+      return send(res, 502, "Blocked redirect outside nowgg.fun");
     }
 
+    const nextPrefix = next.hostname === "nowgg.fun" ? "" : prefix;
+    const localBase = nextPrefix ? `/nowgg-ip/${nextPrefix}` : "/nowgg";
     res.statusCode = upstream.status;
-    res.setHeader("location", "/nowgg" + next.pathname + next.search + next.hash);
+    res.setHeader("location", localBase + next.pathname + next.search + next.hash);
     return res.end();
   }
 
   const contentType = upstream.headers.get("content-type") || "application/octet-stream";
   res.statusCode = upstream.status;
   res.setHeader("content-type", contentType);
-  res.setHeader("x-nowgg-proxy", "nowgg.fun");
+  res.setHeader("x-nowgg-proxy", prefix ? `${prefix}.ip.nowgg.fun` : "nowgg.fun");
   res.setHeader(
     "cache-control",
     contentType.includes("text/html") || contentType.includes("application/json")
@@ -157,7 +191,7 @@ export default async function handler(req, res) {
     contentType.includes("javascript") ||
     contentType.includes("application/json")
   ) {
-    return res.end(rewriteText(await upstream.text(), contentType));
+    return res.end(rewriteText(await upstream.text(), contentType, prefix));
   }
 
   return res.end(Buffer.from(await upstream.arrayBuffer()));
