@@ -5,6 +5,19 @@
   "functions": {
     "api/stratus.js": {
       "maxDuration": 120
+    },
+    "api/nowgg.js": {
+      "maxDuration": 60
     }
-  }
+  },
+  "rewrites": [
+    {
+      "source": "/nowgg",
+      "destination": "/api/nowgg?path="
+    },
+    {
+      "source": "/nowgg/:path*",
+      "destination": "/api/nowgg?path=:path*"
+    }
+  ]
 }
