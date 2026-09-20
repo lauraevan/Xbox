@@ -88,7 +88,7 @@ body[data-view="home"][data-home-neutral="true"] .reference-home::after{
 .reference-home .ref-card.card-store,
 .reference-home .ref-card.card-store .ref-card-art,
 .reference-home .ref-card.card-store .synapse-store-art{
-  background:#000 !important;
+  background:#151718 !important;
 }
 .reference-home .ref-card.card-store::before,
 .reference-home .ref-card.card-store::after{
@@ -127,5 +127,5 @@ body[data-view="home"][data-home-neutral="true"] .reference-home::after{
 }
 .reference-home .ref-card.card-store[data-focused],
 .reference-home .ref-card.card-store:hover{
-  background:#000 !important;
+  background:#1b1e20 !important;
 }
