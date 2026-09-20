@@ -15,11 +15,134 @@ function cleanPath(value){
 function proxyURL(req){
   const target = new URL(cleanPath(req.query?.path), ORIGIN);
   for (const [key, value] of Object.entries(req.query || {})){
-    if (key === 'path') continue;
+    if (key === 'path' || key === 'catalog') continue;
     if (Array.isArray(value)) value.forEach(item => target.searchParams.append(key, String(item)));
     else if (value != null) target.searchParams.set(key, String(value));
   }
   return target;
+}
+
+function decodeHtml(value=''){
+  return String(value)
+    .replace(/&amp;/g,'&')
+    .replace(/&quot;/g,'"')
+    .replace(/&#39;|&apos;/g,"'")
+    .replace(/&lt;/g,'<')
+    .replace(/&gt;/g,'>')
+    .replace(/&#(\d+);/g,(_,n)=>String.fromCodePoint(Number(n)));
+}
+
+function stripTags(value=''){
+  return decodeHtml(String(value).replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim());
+}
+
+function attr(attrs, name){
+  const match = String(attrs || '').match(new RegExp('(?:^|\\\\s)' + name + '=["\\\\\\']([^"\\\\\\']+)["\\\\\\']','i'));
+  return match?.[1] ? decodeHtml(match[1].trim()) : '';
+}
+
+function toInternalUrl(value){
+  if (!value) return null;
+  let url;
+  try { url = new URL(value, ORIGIN); } catch { return null; }
+  if (url.origin !== ORIGIN) return null;
+  return url;
+}
+
+function proxied(value){
+  const url = toInternalUrl(value);
+  return url ? '/nowgg' + url.pathname + url.search + url.hash : '';
+}
+
+function appKey(value){
+  return String(value || '')
+    .toLowerCase()
+    .replace(/^https?:\/\/nowgg\.fun/i,'')
+    .replace(/[^a-z0-9]+/g,'-')
+    .replace(/^-+|-+$/g,'')
+    .slice(0,72) || 'cloud-arcade';
+}
+
+function isAppPath(url){
+  if (!url || url.origin !== ORIGIN) return false;
+  const p = url.pathname.toLowerCase();
+  if (p === '/' || !p) return false;
+  if (/\.(?:png|jpe?g|webp|svg|gif|css|js|json|woff2?|ttf|ico|mp4|webm)$/i.test(p)) return false;
+  if (/^\/(?:img|images|icons|assets|css|js|fonts|api)(?:\/|$)/i.test(p)) return false;
+  return true;
+}
+
+function catalogFromHtml(html){
+  const games = [];
+  const seen = new Set();
+
+  for (const match of String(html || '').matchAll(/<a\b([^>]*?)href=["']([^"']+)["']([^>]*)>([\s\S]*?)<\/a>/gi)){
+    const attrs = (match[1] || '') + ' ' + (match[3] || '');
+    const href = decodeHtml(match[2]);
+    const url = toInternalUrl(href);
+    if (!isAppPath(url)) continue;
+
+    const body = match[4] || '';
+    const imageMatch = body.match(/<img\b([^>]*)>/i);
+    const imageAttrs = imageMatch?.[1] || '';
+    const image = attr(imageAttrs,'src') || attr(imageAttrs,'data-src');
+    const rawName =
+      attr(attrs,'data-name') ||
+      attr(attrs,'title') ||
+      attr(imageAttrs,'alt') ||
+      stripTags(body);
+
+    const name = String(rawName || '')
+      .replace(/\b(?:play|open|launch)\b/gi,' ')
+      .replace(/\s+/g,' ')
+      .trim();
+
+    if (!name || /^(?:image|app|game|open|play)$/i.test(name)) continue;
+
+    const launchUrl = proxied(url.toString());
+    const key = 'nowgg:' + appKey(url.pathname + url.search);
+    if (!launchUrl || seen.has(key)) continue;
+    seen.add(key);
+
+    games.push({
+      game_key:key,
+      name,
+      description:'Play instantly through Stratus Cloud.',
+      image:proxied(image) || '/nowgg/img/landscape.png',
+      cover:proxied(image) || '/nowgg/img/landscape.png',
+      tags:['Cloud','Instant play'],
+      nowgg:true,
+      launch_url:launchUrl
+    });
+
+    if (games.length >= 40) break;
+  }
+
+  if (!games.length){
+    games.push({
+      game_key:'nowgg:cloud-arcade',
+      name:'Cloud Arcade',
+      description:'More instant-play cloud games.',
+      image:'/nowgg/img/landscape.png',
+      cover:'/nowgg/img/landscape.png',
+      tags:['Cloud','Instant play'],
+      nowgg:true,
+      launch_url:'/nowgg/'
+    });
+  }
+
+  return games;
+}
+
+async function fetchRoot(headers){
+  const response = await fetch(ORIGIN + '/', {
+    headers,
+    cache:'no-store',
+    redirect:'follow',
+    signal:AbortSignal.timeout(15000)
+  });
+  if (!response.ok) throw new Error('nowgg.fun returned ' + response.status);
+  return response;
 }
 
 function rewriteText(text, type){
@@ -36,7 +159,7 @@ function rewriteText(text, type){
       '<script>',
       '(()=>{',
       "const P='/nowgg';",
-      "const fix=u=>{if(typeof u!=='string')return u;if(u.startsWith('https://nowgg.fun'))return P+u.slice(17);if(u.startsWith('http://nowgg.fun'))return P+u.slice(16);if(u.startsWith('/')&&!u.startsWith('/nowgg/'))return P+u;return u;};",
+      "const fix=u=>{if(typeof u!=='string')return u;if(u.startsWith('https://nowgg.fun'))return P+u.slice('https://nowgg.fun'.length);if(u.startsWith('http://nowgg.fun'))return P+u.slice('http://nowgg.fun'.length);if(u.startsWith('/')&&!u.startsWith('/nowgg/'))return P+u;return u;};",
       'const nf=window.fetch.bind(window);',
       "window.fetch=(input,init)=>{if(typeof input==='string')return nf(fix(input),init);if(input instanceof Request){const next=fix(input.url);if(next!==input.url)input=new Request(next,input);}return nf(input,init);};",
       'const no=XMLHttpRequest.prototype.open;',
@@ -65,6 +188,35 @@ function forwardCookies(upstream, res){
 }
 
 export default async function handler(req, res){
+  const headers = {
+    'user-agent':req.headers['user-agent'] || 'Mozilla/5.0',
+    'accept':req.headers.accept || '*/*',
+    'accept-language':req.headers['accept-language'] || 'en-US,en;q=0.9',
+    'referer':ORIGIN + '/'
+  };
+
+  if (String(req.query?.catalog || '') === '1'){
+    try {
+      const upstream = await fetchRoot(headers);
+      const games = catalogFromHtml(await upstream.text());
+      res.setHeader('Cache-Control','public, s-maxage=900, stale-while-revalidate=86400');
+      res.setHeader('Content-Type','application/json; charset=utf-8');
+      res.status(200).json(games);
+    } catch (error){
+      res.status(200).json([{
+        game_key:'nowgg:cloud-arcade',
+        name:'Cloud Arcade',
+        description:'More instant-play cloud games.',
+        image:'/nowgg/img/landscape.png',
+        cover:'/nowgg/img/landscape.png',
+        tags:['Cloud','Instant play'],
+        nowgg:true,
+        launch_url:'/nowgg/'
+      }]);
+    }
+    return;
+  }
+
   let target;
   try { target = proxyURL(req); }
   catch {
@@ -78,13 +230,6 @@ export default async function handler(req, res){
   }
 
   const method = String(req.method || 'GET').toUpperCase();
-  const headers = {
-    'user-agent': req.headers['user-agent'] || 'Mozilla/5.0',
-    'accept': req.headers.accept || '*/*',
-    'accept-language': req.headers['accept-language'] || 'en-US,en;q=0.9',
-    'referer': ORIGIN + '/'
-  };
-
   if (req.headers.cookie) headers.cookie = req.headers.cookie;
   if (req.headers['content-type']) headers['content-type'] = req.headers['content-type'];
 
@@ -132,7 +277,7 @@ export default async function handler(req, res){
   const type = upstream.headers.get('content-type') || 'application/octet-stream';
   res.status(upstream.status);
   res.setHeader('Content-Type', type);
-  res.setHeader('X-NowGG-Proxy', 'nowgg.fun');
+  res.setHeader('X-NowGG-Proxy','nowgg.fun');
   res.setHeader('Cache-Control',
     /text\/html|application\/json/i.test(type)
       ? 'no-store'
