@@ -125,11 +125,9 @@ reachable.
 
 ## Stratus
 
-Cloud titles come from
-[Stratus](https://github.com/evanjeffrey1212-eng/stratus-api), co-developed by
-this project's owner — which is why the integration goes deeper than a
-catalogue drop-in. Purchased licences are surfaced first in the library, and
-sessions are created, started, kept alive and quit from the dashboard itself.
+Cloud titles come from Stratus. The integration goes deeper than a catalogue
+drop-in: purchased licences are surfaced first in the library, and sessions are
+created, started, kept alive and quit from the dashboard itself.
 
 The browser never sees the API key. Requests go
 
