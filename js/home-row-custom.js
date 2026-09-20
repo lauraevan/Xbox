@@ -482,10 +482,13 @@ function removeFortniteFromHome(){
 function pinInitialBackdrop(){
   if (document.body.dataset.view && document.body.dataset.view !== 'home') return;
   const layers = [...document.querySelectorAll('.backdrop-layer')];
-  const active = layers.find(layer => layer.classList.contains('on'));
-  if (!active || active.dataset.dynamicTitle) return;
-  active.style.backgroundImage = `url("${HERO['Forza Horizon 5']}")`;
-  active.style.backgroundPosition = 'center top';
+  if (layers.some(layer => layer.dataset.dynamicTitle)) return;
+
+  layers.forEach(layer => {
+    layer.style.backgroundImage = 'none';
+    layer.style.backgroundPosition = 'center center';
+    layer.classList.remove('on', 'wide', 'reference-wide');
+  });
 }
 
 function patchHome(){
