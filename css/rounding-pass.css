@@ -301,3 +301,34 @@ body[data-view="store"] .xproduct-action{
     grid-auto-columns:16.3rem !important;
   }
 }
+
+
+/* Exact neutral Home black: match the top navigation bar pixel-for-pixel. */
+body[data-view="home"][data-home-neutral="true"]{
+  --bg:#000 !important;
+  background:#000 !important;
+}
+body[data-view="home"][data-home-neutral="true"] .stage,
+body[data-view="home"][data-home-neutral="true"] .views,
+body[data-view="home"][data-home-neutral="true"] #view-home,
+body[data-view="home"][data-home-neutral="true"] .reference-home,
+body[data-view="home"][data-home-neutral="true"] .backdrop,
+body[data-view="home"][data-home-neutral="true"] .backdrop-scrim,
+body[data-view="home"][data-home-neutral="true"] .topbar-scrim{
+  background:#000 !important;
+}
+body[data-view="home"][data-home-neutral="true"] .backdrop-layer{
+  opacity:0 !important;
+  background-image:none !important;
+}
+body[data-view="home"][data-home-neutral="true"] .backdrop-glow{
+  display:none !important;
+}
+body[data-view="home"][data-home-neutral="true"] #view-home::before,
+body[data-view="home"][data-home-neutral="true"] #view-home::after,
+body[data-view="home"][data-home-neutral="true"] .reference-home::before,
+body[data-view="home"][data-home-neutral="true"] .reference-home::after{
+  background:transparent !important;
+  box-shadow:none !important;
+  filter:none !important;
+}
