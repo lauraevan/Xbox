@@ -1062,6 +1062,16 @@ function renderSettings(root, opts = {}){
 
   if (settingsSection === 'system'){
     body.append(el('h2', 'page-title', 'System'));
+    body.append(srow({
+      name:'Dev Mode',
+      desc:'Show disabled and experimental cloud titles for testing',
+      control:toggleControl(set.devMode === true),
+      onActivate:() => {
+        S.setSetting('devMode', !set.devMode);
+        S.flush?.();
+        setTimeout(() => location.reload(), 80);
+      }
+    }));
     body.append(srow({ name:'Catalogue source', desc: window.Catalog.state.source || 'unknown',
       value:`${window.Catalog.count()} titles` }));
     body.append(srow({ name:'Storage', desc:'Profile, pins and achievements are stored in this browser',
