@@ -13,6 +13,7 @@ permissions:
 jobs:
   compare:
     runs-on: ubuntu-latest
+    timeout-minutes: 3
     steps:
       - name: Compare rendered Roblox pages
         shell: bash
@@ -24,9 +25,18 @@ jobs:
           dump() {
             local url="$1"
             local out="$2"
-            "$CHROME"               --headless=new               --no-sandbox               --disable-dev-shm-usage               --autoplay-policy=no-user-gesture-required               --use-fake-ui-for-media-stream               --virtual-time-budget=12000               --dump-dom "$url" > "$out" 2>/tmp/chrome.err || true
+            timeout 22s "$CHROME"               --headless=new               --no-sandbox               --disable-dev-shm-usage               --disable-background-networking               --autoplay-policy=no-user-gesture-required               --use-fake-ui-for-media-stream               --virtual-time-budget=9000               --dump-dom "$url" > "$out" 2>/tmp/chrome.err || true
             echo "URL=$url bytes=$(wc -c < "$out")"
-            grep -Ein -C 4 'does not exist|game not found|not found|invalid game|unavailable|error|roblox|play now' "$out" | head -220 || true
+            python3 - "$out" <<'PY'
+          import re,sys
+          text=open(sys.argv[1],errors='ignore').read()
+          plain=re.sub(r'<[^>]+>',' ',text)
+          plain=re.sub(r'\s+',' ',plain)
+          for phrase in ['does not exist','game not found','invalid game','unavailable','Roblox','Play now']:
+              print(phrase, phrase.lower() in plain.lower())
+          for m in re.finditer(r'(?i).{0,140}(?:does not exist|game not found|invalid game|unavailable).{0,180}',plain):
+              print('ERROR_CONTEXT:',m.group(0))
+          PY
           }
 
           echo "===== DIRECT ====="
