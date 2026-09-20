@@ -1,0 +1,473 @@
+/* Synapse personalization UI + live Home/chrome layout overrides.
+   Wallpaper media is handled separately by wallpaper-system.css. */
+
+/* Home tile density */
+body[data-home-tile-size="compact"] .reference-home .ref-tile,
+body[data-home-tile-size="compact"] .reference-home .ref-tile.ref-hero{
+  width:15rem!important;
+  margin-top:3.6rem!important;
+}
+body[data-home-tile-size="compact"] .reference-home .ref-tile .tile-face,
+body[data-home-tile-size="compact"] .reference-home .ref-tile.ref-hero .tile-face{
+  width:15rem!important;
+  height:15rem!important;
+}
+body[data-home-tile-size="compact"] .reference-home .ref-tile[data-focused],
+body[data-home-tile-size="compact"] .reference-home .ref-tile:hover{
+  width:19rem!important;
+  margin-top:0!important;
+}
+body[data-home-tile-size="compact"] .reference-home .ref-tile[data-focused] .tile-face,
+body[data-home-tile-size="compact"] .reference-home .ref-tile:hover .tile-face{
+  width:19rem!important;
+  height:19rem!important;
+}
+
+body[data-home-tile-size="large"] .reference-home .ref-tile,
+body[data-home-tile-size="large"] .reference-home .ref-tile.ref-hero{
+  width:20rem!important;
+  margin-top:5rem!important;
+}
+body[data-home-tile-size="large"] .reference-home .ref-tile .tile-face,
+body[data-home-tile-size="large"] .reference-home .ref-tile.ref-hero .tile-face{
+  width:20rem!important;
+  height:20rem!important;
+}
+body[data-home-tile-size="large"] .reference-home .ref-tile[data-focused],
+body[data-home-tile-size="large"] .reference-home .ref-tile:hover{
+  width:25rem!important;
+  margin-top:0!important;
+}
+body[data-home-tile-size="large"] .reference-home .ref-tile[data-focused] .tile-face,
+body[data-home-tile-size="large"] .reference-home .ref-tile:hover .tile-face{
+  width:25rem!important;
+  height:25rem!important;
+}
+
+/* Tile corners */
+body[data-home-radius="square"] .reference-home .tile-face,
+body[data-home-radius="square"] .reference-home .ref-art,
+body[data-home-radius="square"] .reference-home .ref-card{
+  border-radius:0!important;
+}
+body[data-home-radius="xbox"] .reference-home .tile-face,
+body[data-home-radius="xbox"] .reference-home .ref-art,
+body[data-home-radius="xbox"] .reference-home .ref-card{
+  border-radius:.6rem!important;
+}
+body[data-home-radius="rounded"] .reference-home .tile-face,
+body[data-home-radius="rounded"] .reference-home .ref-art,
+body[data-home-radius="rounded"] .reference-home .ref-card{
+  border-radius:1.65rem!important;
+}
+
+/* Optional direct game labels */
+body[data-home-labels="on"] .reference-home .ref-tile[data-ref-title]::after{
+  content:attr(data-ref-title);
+  position:absolute;
+  left:.65rem;
+  right:.65rem;
+  bottom:.62rem;
+  z-index:14;
+  overflow:hidden;
+  padding:.44rem .58rem;
+  border-radius:.42rem;
+  background:rgba(0,0,0,.76);
+  color:#fff;
+  font-size:1.06rem;
+  font-weight:600;
+  line-height:1.1;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  pointer-events:none;
+}
+
+/* Series X|S visibility */
+body[data-home-series-badges="off"] .reference-home .ref-platform.ref-platform-xs{
+  display:none!important;
+}
+body[data-home-series-badges="hover"] .reference-home .ref-platform.ref-platform-xs{
+  opacity:0!important;
+  visibility:hidden!important;
+  transition:opacity var(--dur-fast) ease!important;
+}
+body[data-home-series-badges="hover"] .reference-home .ref-tile:hover .ref-platform.ref-platform-xs,
+body[data-home-series-badges="hover"] .reference-home .ref-tile[data-focused] .ref-platform.ref-platform-xs,
+body[data-home-series-badges="hover"] .reference-home .ref-tile:focus-visible .ref-platform.ref-platform-xs{
+  opacity:1!important;
+  visibility:visible!important;
+}
+body[data-home-series-badges="always"] .reference-home .ref-platform.ref-platform-xs{
+  opacity:1!important;
+  visibility:visible!important;
+}
+
+/* Home sections */
+body[data-home-promos="off"] .reference-home .ref-cards{
+  display:none!important;
+}
+body[data-home-section-order="promos-first"] .reference-home .ref-cards{
+  top:30rem!important;
+}
+body[data-home-section-order="promos-first"] .reference-home .ref-rail{
+  top:53rem!important;
+}
+
+/* Top bar reordering/hiding keeps the connected capsule shape correct. */
+.sysnav-btn.personal-first{
+  border-radius:2.7rem 0 0 2.7rem!important;
+}
+.sysnav-btn.personal-last{
+  border-radius:0 2.7rem 2.7rem 0!important;
+}
+.sysnav-btn.personal-first.personal-last{
+  border-radius:2.7rem!important;
+}
+body[data-topbar-tooltips="off"] .sysnav-btn::after{
+  display:none!important;
+}
+body[data-topbar-size="compact"] .sysnav{
+  padding:.24rem .33rem!important;
+}
+body[data-topbar-size="compact"] .sysnav-btn{
+  width:4.25rem!important;
+  height:4.25rem!important;
+}
+body[data-topbar-size="compact"] .sysnav-btn svg{
+  width:2.35rem!important;
+  height:2.35rem!important;
+}
+
+/* Profile placement */
+body[data-view="home"][data-profile-position="right"] .profile{
+  left:auto!important;
+  right:calc(var(--safe-x) - .6rem)!important;
+}
+body[data-view="home"][data-profile-position="right"] .profile-text{
+  text-align:right!important;
+}
+
+/* Surface / transparency */
+body[data-surface-tone="graphite"]{
+  --panel:#101214;
+  --panel-2:#15181b;
+  --panel-3:#1d2125;
+}
+body[data-surface-tone="black"]{
+  --panel:#050505;
+  --panel-2:#0b0b0b;
+  --panel-3:#121212;
+}
+body[data-transparency-strength="solid"] .sysnav,
+body[data-transparency-strength="solid"] .guide-panel,
+body[data-transparency-strength="solid"] .console-settings-row,
+body[data-transparency-strength="solid"] .xstore-rail{
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
+body[data-transparency-strength="solid"] .sysnav{
+  background:#000!important;
+}
+body[data-transparency-strength="glass"] .sysnav{
+  background:rgba(0,0,0,.72)!important;
+  backdrop-filter:blur(1.4rem) saturate(1.14)!important;
+  -webkit-backdrop-filter:blur(1.4rem) saturate(1.14)!important;
+}
+body[data-transparency-strength="glass"] .guide-panel{
+  backdrop-filter:blur(1.6rem) saturate(1.12)!important;
+  -webkit-backdrop-filter:blur(1.6rem) saturate(1.12)!important;
+}
+
+/* Lightweight focus motion blur. It only runs as focus lands, never continuously. */
+@keyframes personalFocusBlurLow{
+  0%{filter:blur(.45px)}
+  100%{filter:blur(0)}
+}
+@keyframes personalFocusBlurStrong{
+  0%{filter:blur(.85px)}
+  100%{filter:blur(0)}
+}
+body[data-motion-blur="low"] .reference-home .ref-tile[data-focused],
+body[data-motion-blur="low"] .sysnav-btn[data-focused]{
+  animation:personalFocusBlurLow var(--dur) var(--ease-decel);
+}
+body[data-motion-blur="strong"] .reference-home .ref-tile[data-focused],
+body[data-motion-blur="strong"] .sysnav-btn[data-focused]{
+  animation:personalFocusBlurStrong var(--dur-mid) var(--ease-decel);
+}
+
+/* Settings live preview */
+.personal-preview{
+  position:relative;
+  min-height:20rem;
+  overflow:hidden;
+  margin:.4rem 0 1.6rem;
+  border:.1rem solid rgba(255,255,255,.09);
+  border-radius:1.25rem;
+  background:#000;
+  box-shadow:0 1.1rem 3rem rgba(0,0,0,.26);
+}
+.personal-preview-bg{
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(70% 95% at 70% 10%,rgba(255,255,255,.08),transparent 62%),
+    linear-gradient(145deg,#090a0c,#15191d 62%,#050505);
+  opacity:.95;
+}
+.personal-preview[data-mode="waves"] .personal-preview-bg{
+  background:
+    linear-gradient(rgba(0,0,0,.22),rgba(0,0,0,.26)),
+    url("../assets/wallpaper/waves-poster.jpg") center/cover no-repeat;
+}
+.personal-preview[data-mode="black"] .personal-preview-bg{
+  background:#000;
+}
+.personal-preview[data-mode="game"] .personal-preview-bg{
+  background:
+    radial-gradient(80% 120% at 75% 40%,rgba(54,76,95,.34),transparent 60%),
+    linear-gradient(145deg,#101214,#22272d);
+}
+.personal-preview-top{
+  position:absolute;
+  z-index:2;
+  left:50%;
+  top:2.3rem;
+  transform:translateX(-50%);
+  display:flex;
+  gap:.18rem;
+  padding:.32rem;
+  border-radius:2rem;
+  background:#030303;
+}
+.personal-preview-top i{
+  display:block;
+  width:2.6rem;
+  height:2.6rem;
+  border-radius:50%;
+  background:#181b1f;
+}
+.personal-preview-row{
+  position:absolute;
+  z-index:2;
+  left:2rem;
+  right:2rem;
+  top:8rem;
+  display:flex;
+  align-items:flex-end;
+  gap:.8rem;
+}
+.personal-preview-row i{
+  display:block;
+  width:7rem;
+  height:7rem;
+  border-radius:.65rem;
+  background:
+    linear-gradient(145deg,rgba(255,255,255,.12),rgba(255,255,255,.035)),
+    #151718;
+  box-shadow:inset 0 0 0 .1rem rgba(255,255,255,.05);
+}
+.personal-preview-row i:first-child{
+  width:8.6rem;
+  height:8.6rem;
+}
+.personal-preview-copy{
+  position:absolute;
+  z-index:3;
+  left:2rem;
+  bottom:1.25rem;
+  display:flex;
+  flex-direction:column;
+  gap:.28rem;
+  text-shadow:0 .2rem .8rem rgba(0,0,0,.65);
+}
+.personal-preview-copy strong{
+  font-size:1.7rem;
+}
+.personal-preview-copy span{
+  color:rgba(255,255,255,.62);
+  font-size:1rem;
+}
+
+/* Generic editor used by top-bar customization. */
+.personal-editor{
+  position:fixed;
+  inset:0;
+  z-index:270;
+  display:grid;
+  place-items:center;
+  padding:3rem;
+  background:rgba(0,0,0,.74);
+  backdrop-filter:blur(.78rem);
+  -webkit-backdrop-filter:blur(.78rem);
+}
+.personal-editor-panel{
+  width:min(72rem,92vw);
+  max-height:min(76rem,86vh);
+  overflow:auto;
+  padding:2rem;
+  border:.1rem solid rgba(255,255,255,.12);
+  border-radius:1.3rem;
+  background:#111315;
+  box-shadow:0 3rem 8rem rgba(0,0,0,.7);
+}
+.personal-editor-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:2rem;
+  margin-bottom:1.4rem;
+}
+.personal-editor-head h2{
+  margin:0;
+  font-size:2.3rem;
+}
+.personal-editor-head p{
+  margin:.4rem 0 0;
+  color:rgba(255,255,255,.48);
+  font-size:1rem;
+}
+.personal-editor-head button{
+  min-width:7rem;
+  min-height:3.8rem;
+  padding:0 1.2rem;
+  border-radius:2rem;
+  background:#fff;
+  color:#111;
+  font-weight:700;
+}
+.personal-editor-row{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto auto auto;
+  align-items:center;
+  gap:.65rem;
+  min-height:5.8rem;
+  border-bottom:.1rem solid rgba(255,255,255,.07);
+}
+.personal-editor-row strong{
+  font-size:1.25rem;
+}
+.personal-editor-row button{
+  min-width:4.4rem;
+  min-height:3.6rem;
+  padding:0 .85rem;
+  border-radius:.58rem;
+  background:#24272a;
+  color:#fff;
+  font-weight:700;
+}
+.personal-editor-row button[data-focused],
+.personal-editor-row button:hover{
+  background:#fff;
+  color:#111;
+  outline:.2rem solid var(--accent);
+}
+
+/* Home edit mode */
+.home-customize-banner{
+  position:fixed;
+  left:50%;
+  top:3.2rem;
+  z-index:260;
+  transform:translateX(-50%);
+  display:flex;
+  align-items:center;
+  gap:1.5rem;
+  min-width:min(76rem,calc(100vw - 4rem));
+  padding:.8rem .9rem .8rem 1.35rem;
+  border:.1rem solid rgba(255,255,255,.12);
+  border-radius:2.4rem;
+  background:rgba(0,0,0,.94);
+  box-shadow:0 1.2rem 3.6rem rgba(0,0,0,.52);
+}
+.home-customize-banner>div{
+  flex:1;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:.2rem;
+}
+.home-customize-banner strong{
+  font-size:1.2rem;
+}
+.home-customize-banner span{
+  overflow:hidden;
+  color:rgba(255,255,255,.57);
+  font-size:.95rem;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.home-customize-banner button{
+  min-width:6.8rem;
+  min-height:3.4rem;
+  padding:0 1rem;
+  border-radius:1.8rem;
+  background:#107c10;
+  color:#fff;
+  font-weight:700;
+}
+body[data-home-editing="true"] .reference-home .ref-tile[data-ref-title]{
+  cursor:grab;
+}
+body[data-home-editing="true"] .reference-home .ref-tile[data-ref-title]::before{
+  content:"⋮⋮";
+  position:absolute;
+  z-index:30;
+  top:.55rem;
+  right:.55rem;
+  display:grid;
+  place-items:center;
+  width:2.7rem;
+  height:2.7rem;
+  border-radius:50%;
+  background:rgba(0,0,0,.78);
+  color:#fff;
+  font-size:1.4rem;
+  pointer-events:none;
+}
+body[data-home-editing="true"] .reference-home .ref-tile.personal-dragging{
+  opacity:.58!important;
+  cursor:grabbing;
+}
+
+/* Show a small pin marker for games whose wallpaper has been pinned. */
+body[data-home-editing="true"] .reference-home .ref-tile[data-wallpaper-pinned="1"]::after{
+  content:"Wallpaper pinned";
+  position:absolute;
+  left:.6rem;
+  bottom:.6rem;
+  z-index:31;
+  padding:.38rem .55rem;
+  border-radius:.4rem;
+  background:#107c10;
+  color:#fff;
+  font-size:.9rem;
+  font-weight:700;
+}
+
+@media (max-width:900px){
+  .personal-preview-row{
+    gap:.55rem;
+  }
+  .personal-preview-row i{
+    width:5.2rem;
+    height:5.2rem;
+  }
+  .personal-preview-row i:first-child{
+    width:6.4rem;
+    height:6.4rem;
+  }
+  .personal-editor{
+    padding:1rem;
+  }
+  .personal-editor-row{
+    grid-template-columns:minmax(0,1fr) auto;
+  }
+  .home-customize-banner{
+    top:1rem;
+    min-width:calc(100vw - 2rem);
+  }
+  .home-customize-banner span{
+    display:none;
+  }
+}
