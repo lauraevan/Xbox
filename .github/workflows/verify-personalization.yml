@@ -1,0 +1,33 @@
+name: Verify personalization
+
+on:
+  push:
+    branches:
+      - claude/xbox-web-replica-v4s0jk
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - run: npm ci
+      - name: Syntax check browser scripts
+        run: find js -type f -name '*.js' -print0 | xargs -0 -n1 node --check
+      - name: Check HTML separators
+        run: |
+          if grep -F '\n<link' index.html; then exit 1; fi
+          if grep -F '</script>\n<script' index.html; then exit 1; fi
+      - name: Production build
+        run: npm run build
+      - name: Verify personalization output
+        run: |
+          test -f dist/js/personalization.js
+          test -f dist/css/personalization.css
+          test -f dist/js/wallpaper-system.js
+          grep -q 'personalization.js?v=personalize-20260920-2' dist/index.html
+          grep -q 'wallpaper-system.js?v=personalize-20260920-2' dist/index.html
