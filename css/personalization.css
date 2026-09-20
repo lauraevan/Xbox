@@ -471,3 +471,29 @@ body[data-home-editing="true"] .reference-home .ref-tile[data-wallpaper-pinned="
     display:none;
   }
 }
+
+
+/* Background dimming while focus is in system chrome. */
+body[data-view="home"][data-wallpaper-dim="on"] .backdrop-scrim{
+  background:linear-gradient(
+    180deg,
+    rgba(0,0,0,.42) 0%,
+    rgba(0,0,0,.30) 42%,
+    rgba(0,0,0,.38) 72%,
+    rgba(0,0,0,.58) 100%
+  )!important;
+}
+
+/* Animation intensity also covers Home's hard-coded transition durations. */
+body[data-animation-strength="subtle"] .reference-home .ref-tile,
+body[data-animation-strength="subtle"] .reference-home .ref-tile .tile-face,
+body[data-animation-strength="subtle"] .reference-home .ref-tile .tile-label,
+body[data-animation-strength="subtle"] .sysnav-btn{
+  transition-duration:.12s!important;
+}
+body[data-animation-strength="expressive"] .reference-home .ref-tile,
+body[data-animation-strength="expressive"] .reference-home .ref-tile .tile-face,
+body[data-animation-strength="expressive"] .reference-home .ref-tile .tile-label,
+body[data-animation-strength="expressive"] .sysnav-btn{
+  transition-duration:.23s!important;
+}
