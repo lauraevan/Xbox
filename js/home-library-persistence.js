@@ -568,12 +568,48 @@ if (home){
   homeObserver.observe(home, { childList:true, subtree:true });
 }
 
+async function reorderByTitles(titles){
+  const list = await catalogue();
+  const requested = [];
+  const seen = new Set();
+
+  for (const title of Array.isArray(titles) ? titles : []){
+    const game = gameByTitle(list, title);
+    if (!game) continue;
+    const id = itemId(game);
+    if (!id || seen.has(id)) continue;
+    seen.add(id);
+    requested.push(id);
+  }
+
+  /* Keep any Home entries that are currently hidden/off-screen. */
+  for (const id of readHomeIds()){
+    if (seen.has(id)) continue;
+    seen.add(id);
+    requested.push(id);
+  }
+
+  writeHomeIds(requested);
+  await applyHome();
+  return requested;
+}
+
+function resetHome(){
+  const ids = defaultHomeIds();
+  writeHomeIds(ids);
+  void applyHome();
+  return ids;
+}
+
 /* Expose a small shared surface for Store/Library/Home integrations. */
 window.XboxHome = {
   DEFAULT_TITLES:[...DEFAULT_TITLES],
   isOnHome,
   add:game => { const changed = addToHome(game); void applyHome(); return changed; },
   remove:game => { const changed = removeFromHome(game); void applyHome(); return changed; },
+  reorderByTitles,
+  reset:resetHome,
+  ids:() => [...readHomeIds()],
   refresh:applyHome
 };
 
