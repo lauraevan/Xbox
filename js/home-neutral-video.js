@@ -11,13 +11,64 @@ const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)');
 video.defaultMuted = true;
 video.muted = true;
 video.playsInline = true;
+/* Safari reads the attributes, not the properties, and will refuse to
+   autoplay inline without them. */
+video.setAttribute('muted', '');
+video.setAttribute('playsinline', '');
+video.setAttribute('webkit-playsinline', '');
+
+/* Pick the encode before anything is fetched. index.html carries the 1080p
+   H.264 as the universally decodable fallback; upgrade to WebM where it is
+   supported, and drop to the 720p pair on phones and tablets - 1.0MB instead
+   of 3.7MB, and a far cheaper decode. */
+function smallScreen(){
+  try {
+    return innerWidth <= 900 || window.matchMedia?.('(pointer:coarse)').matches;
+  } catch { return innerWidth <= 900; }
+}
+
+function chooseSource(){
+  const base = smallScreen() ? 'assets/wallpaper/waves-720'
+                             : 'assets/wallpaper/waves-1080';
+  const webm = video.canPlayType?.('video/webm; codecs="vp9"');
+  const next = base + (webm === 'probably' || webm === 'maybe' ? '.webm' : '.mp4');
+  if (!video.src.endsWith(next)) video.src = next;
+}
+
+/* Every one of these is a reason not to spend a phone's battery or data.
+   The poster still shows, so the canvas is never empty. */
+function permitted(){
+  let set = {};
+  try { set = window.State?.settings || {}; } catch {}
+  if (set.background === 'plain') return false;
+  if (set.wallpaper) return false;          // a fixed wallpaper wins, per CLAUDE.md
+  if (set.motion === 'reduced') return false;
+  if (reducedMotion?.matches) return false;
+  const link = navigator.connection || {};
+  if (link.saveData) return false;
+  if (/(^|-)2g$/.test(String(link.effectiveType || ''))) return false;
+  if (typeof navigator.deviceMemory === 'number' && navigator.deviceMemory < 4) return false;
+  return true;
+}
+
+/* Only reach for the clip at all when it is allowed. On an opted-out device
+   the element keeps its poster and nothing beyond it is ever requested. */
+if (permitted()) chooseSource();
+else video.removeAttribute('src');
 
 let failed = false;
 let playPending = false;
 
 function shouldPlay(){
+  /* home-catalog-pass starts its own full-screen Waves clip on the lower
+     shelf from onHomeScroll. Two 1080p videos decoding at once is what makes
+     a phone stutter and run hot, and only one of them is ever on screen, so
+     hand off at the same scroll seam it uses. */
+  const scrolled = (document.getElementById('view-home')?.scrollTop || 0) >= 40;
   return !failed
     && !document.hidden
+    && !scrolled
+    && permitted()
     && document.body.dataset.view === 'home'
     && document.body.dataset.homeNeutral === 'true'
     && !reducedMotion?.matches;
@@ -76,5 +127,14 @@ window.addEventListener('pagehide', () => {
 }, { passive:true });
 
 reducedMotion?.addEventListener?.('change', sync);
+
+/* Home is its own scroller; coalesce to one check per frame. */
+let scrollQueued = false;
+document.getElementById('view-home')?.addEventListener('scroll', () => {
+  if (scrollQueued) return;
+  scrollQueued = true;
+  requestAnimationFrame(() => { scrollQueued = false; sync(); });
+}, { passive:true });
+
 sync();
 })();

@@ -125,10 +125,15 @@
 
 <div id="stage" class="stage" hidden>
   <div class="backdrop">
+    <!-- The owner's Xbox Series X|S "Waves Faded Dark Grey" clip, vendored.
+         home-neutral-video.js upgrades this to the WebM and, on small
+         screens, to the 720p pair; this src is the universally decodable
+         fallback so the element is never empty. -->
     <video id="homeNeutralVideo" class="home-neutral-video"
-           muted loop playsinline preload="metadata" disablepictureinpicture
-           aria-hidden="true"
-           src="assets/backgrounds/home-neutral-waves.mp4?v=waves-seamless-20260919-1"></video>
+           muted loop playsinline webkit-playsinline preload="metadata"
+           disablepictureinpicture aria-hidden="true"
+           poster="assets/wallpaper/waves-poster.jpg"
+           src="assets/wallpaper/waves-1080.mp4"></video>
     <div class="backdrop-layer" id="bgA"></div>
     <div class="backdrop-layer" id="bgB"></div>
     <div class="backdrop-scrim"></div>
