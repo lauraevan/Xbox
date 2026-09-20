@@ -65,6 +65,7 @@ const DEFAULTS = {
     uiScale:1,
     animationStrength:'normal',      // subtle | normal | expressive
     motionBlurStrength:'off',        // off | low | strong
+    perGameWallpaperPinned:{},       // normalized title -> keep current wallpaper while focused
 
     saturation:  1.35,  // backdrop punch
     heroText:  false,   // the console shows no copy over the backdrop
