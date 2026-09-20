@@ -268,78 +268,102 @@ body[data-theme="light"] .detail-scrim{
 
 /* ───────── touch gamepad for cloud games ─────────
    Only mounted on coarse-pointer devices, and only while a Stratus session is
-   on screen. Sits above the stream iframe; every control is pointer-driven so
-   one finger per button works, and nothing here scrolls or selects.
+   on screen. Every control is pointer-driven so one finger per button works.
 
-   Sized in px, deliberately, against the grain of the rest of this codebase.
-   The TV canvas makes 1rem = 10px only at 1080p; on a 844x390 phone 1rem
-   resolves to 3.6px, which turned every button into an 18px target. A finger
-   is the same size whatever the viewport, so these use px floors. */
+   Sized in px, deliberately against the house rem convention: the TV canvas
+   makes 1rem = 10px only at 1080p, and on a phone it resolves to ~3.6px, which
+   turned every button into an 18px target. A finger does not scale.
+
+   Positioned with dvh and the safe-area insets because on an iPad the bottom
+   row was landing under the home indicator and off the visual viewport, so
+   the d-pad and face buttons could not be reached at all. --tpad-lift is the
+   single knob for how far the bottom cluster sits above the edge. */
 .touchpad{
-  position:absolute; inset:0; z-index:8;
+  position:fixed;
+  left:0; right:0; top:0;
+  height:100dvh;
+  z-index:8;
   display:none;
   pointer-events:none;
   -webkit-user-select:none; user-select:none;
   touch-action:none;
+  --tpad-lift:calc(env(safe-area-inset-bottom, 0px) + 46px);
+  --tpad-side:calc(env(safe-area-inset-right, 0px) + 20px);
   font-family:"Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;
 }
+@supports not (height:100dvh){ .touchpad{ height:100%; } }
 .touchpad.on{ display:block; }
 .touchpad > *{ pointer-events:none; }
 
+/* Collapsed: everything goes except the control that brings it back. */
+.touchpad.hidden .tpad-top,
+.touchpad.hidden .tpad-bottom{ display:none; }
+
 .tpad-top{
-  position:absolute; left:0; right:0; top:0;
+  position:absolute; left:0; right:0;
+  top:calc(env(safe-area-inset-top, 0px) + 10px);
   display:flex; align-items:flex-start; justify-content:space-between;
-  padding:10px 14px; gap:10px;
+  padding:0 var(--tpad-side) 0 calc(env(safe-area-inset-left, 0px) + 20px);
+  gap:10px;
 }
-/* The player's own quit control lives in the top-right corner, so the right
-   cluster stops short of it rather than being covered by it. */
-.tpad-top > .tpad-cluster:last-child{ margin-right:56px; }
+/* The player's own quit control sits in the top-right corner. */
+.tpad-top > .tpad-cluster:last-child{ margin-right:52px; }
 .tpad-cluster{ display:flex; gap:8px; pointer-events:none; }
 .tpad-mid{ margin-top:2px; }
 
 .tpad-bottom{ position:absolute; inset:0; }
-.tpad-left{ position:absolute; left:18px; bottom:18px; }
+.tpad-left{
+  position:absolute;
+  left:calc(env(safe-area-inset-left, 0px) + 20px);
+  bottom:var(--tpad-lift);
+}
 
 .tpad-btn{
   pointer-events:auto;
   display:grid; place-items:center;
   min-width:0; padding:0;
-  border:1px solid rgba(255,255,255,.16);
-  border-radius:10px;
-  background:rgba(14,14,16,.6);
-  color:rgba(255,255,255,.92);
-  font:650 13px/1 "Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;
-  letter-spacing:.4px;
-  backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
-  transition:background .08s linear, transform .08s linear;
+  border:1px solid rgba(255,255,255,.13);
+  border-radius:11px;
+  background:rgba(12,12,14,.52);
+  color:rgba(255,255,255,.88);
+  font:600 13px/1 "Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;
+  letter-spacing:.3px;
+  backdrop-filter:blur(8px) saturate(.9);
+  -webkit-backdrop-filter:blur(8px) saturate(.9);
+  transition:background .07s linear, transform .07s linear, border-color .07s linear;
   touch-action:none;
 }
-.touchpad .tpad-btn.down{ background:rgba(255,255,255,.3); transform:scale(.94); }
+.touchpad .tpad-btn.down{
+  background:rgba(255,255,255,.32);
+  border-color:rgba(255,255,255,.5);
+  color:#0c0c0e;
+  transform:scale(.93);
+}
 
 .tpad-sm{ width:56px; height:38px; }
 .tpad-wide{ width:74px; height:34px; font-size:12px; }
-.tpad-start{ background:rgba(96,18,18,.66); }
+.tpad-start{ background:rgba(88,20,20,.58); }
 
 .tpad-stick{
   pointer-events:auto;
   position:relative;
   width:128px; height:128px;
   border-radius:50%;
-  border:2px solid rgba(255,255,255,.18);
-  background:rgba(10,10,12,.32);
+  border:1.5px solid rgba(255,255,255,.15);
+  background:rgba(10,10,12,.28);
   touch-action:none;
 }
 .tpad-knob{
   position:absolute; left:50%; top:50%;
   width:54px; height:54px; margin:-27px 0 0 -27px;
   border-radius:50%;
-  border:2px solid rgba(255,255,255,.36);
-  background:rgba(228,228,228,.2);
+  border:1.5px solid rgba(255,255,255,.32);
+  background:rgba(222,222,226,.18);
   transition:transform .06s linear;
 }
 
 .tpad-dpad{
-  position:absolute; right:212px; bottom:20px;
+  position:absolute; right:212px; bottom:var(--tpad-lift);
   width:132px; height:132px;
 }
 .tpad-d{ position:absolute; width:44px; height:44px; font-size:12px; }
@@ -349,7 +373,7 @@ body[data-theme="light"] .detail-scrim{
 .tpad-dr{ right:0; top:44px; }
 
 .tpad-face{
-  position:absolute; right:18px; bottom:20px;
+  position:absolute; right:var(--tpad-side); bottom:var(--tpad-lift);
   width:132px; height:132px;
 }
 .tpad-f{ position:absolute; width:46px; height:46px; border-radius:50%; font-size:16px; }
@@ -357,15 +381,38 @@ body[data-theme="light"] .detail-scrim{
 .tpad-a{ left:43px; bottom:0; }
 .tpad-x{ left:0; top:43px; }
 .tpad-b{ right:0; top:43px; }
+/* A is select, so it reads as the primary action. */
+.tpad-a{ border-color:rgba(122,222,122,.42); }
 
 .tpad-hints{
-  position:absolute; right:160px; bottom:20px;
+  position:absolute; right:calc(var(--tpad-side) + 142px);
+  bottom:var(--tpad-lift);
   display:flex; flex-direction:column; gap:8px;
 }
 .tpad-hint{ width:44px; height:34px; font-size:12px; }
 
-/* Narrow phones in portrait: pull the clusters in so nothing overlaps. */
+/* Show/hide. Small, always reachable, never under the quit control. */
+.tpad-toggle{
+  pointer-events:auto;
+  position:absolute;
+  right:calc(env(safe-area-inset-right, 0px) + 14px);
+  top:calc(env(safe-area-inset-top, 0px) + 58px);
+  width:44px; height:44px;
+  display:grid; place-items:center;
+  padding:0;
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:50%;
+  background:rgba(12,12,14,.56);
+  color:rgba(255,255,255,.8);
+  font:600 15px/1 system-ui, sans-serif;
+  backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+  touch-action:none;
+}
+.touchpad.hidden .tpad-toggle{ background:rgba(12,12,14,.3); color:rgba(255,255,255,.5); }
+
+/* Narrow phones: pull the clusters in so nothing overlaps. */
 @media (max-width:560px){
+  .touchpad{ --tpad-lift:calc(env(safe-area-inset-bottom, 0px) + 30px); }
   .tpad-stick{ width:104px; height:104px; }
   .tpad-knob{ width:44px; height:44px; margin:-22px 0 0 -22px; }
   .tpad-dpad{ right:168px; width:116px; height:116px; }
@@ -376,7 +423,12 @@ body[data-theme="light"] .detail-scrim{
   .tpad-f{ width:40px; height:40px; }
   .tpad-y,.tpad-a{ left:38px; }
   .tpad-x,.tpad-b{ top:38px; }
-  .tpad-hints{ right:126px; }
+  .tpad-hints{ right:calc(var(--tpad-side) + 126px); }
   .tpad-sm{ width:48px; height:34px; }
   .tpad-wide{ width:62px; height:30px; font-size:11px; }
+}
+
+/* Short landscape phones have no room for a 46px lift. */
+@media (max-height:440px){
+  .touchpad{ --tpad-lift:calc(env(safe-area-inset-bottom, 0px) + 18px); }
 }

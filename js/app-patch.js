@@ -425,11 +425,36 @@ checkPinnedBuildFreshness();
     if (live && !aiming) aiming = requestAnimationFrame(aimLoop);
     if (!live && aiming){ cancelAnimationFrame(aiming); aiming = null; }
   }
-  function setMouseButton(bit, down){
-    const next = down ? (mouseButtons | bit) : (mouseButtons & ~bit);
-    if (next === mouseButtons) return;
-    mouseButtons = next;
+  /* A tap is two packets a few milliseconds apart, and the host can miss a
+     press that short - which is why selecting did not register. Hold the
+     button for a floor of 90ms, repeat the down state once in case a packet
+     is dropped, and defer the release rather than cancelling it. */
+  const CLICK_FLOOR = 90;
+  const downAt = new Map();
+  const upTimer = new Map();
+
+  function emitButtons(){
     send({ kind:'mouse', dx:0, dy:0, buttons: mouseButtons });
+  }
+  function setMouseButton(bit, down){
+    if (down){
+      clearTimeout(upTimer.get(bit)); upTimer.delete(bit);
+      if (mouseButtons & bit) return;
+      mouseButtons |= bit;
+      downAt.set(bit, performance.now());
+      emitButtons();
+      setTimeout(() => { if (mouseButtons & bit) emitButtons(); }, 40);
+      return;
+    }
+    if (!(mouseButtons & bit)) return;
+    const held = performance.now() - (downAt.get(bit) || 0);
+    const release = () => {
+      upTimer.delete(bit);
+      mouseButtons &= ~bit;
+      emitButtons();
+    };
+    if (held >= CLICK_FLOOR) release();
+    else upTimer.set(bit, setTimeout(release, CLICK_FLOOR - held));
   }
   function idle(){
     return !pad.mask && !pad.lt && !pad.rt && !pad.lx && !pad.ly && !pad.rx && !pad.ry;
@@ -598,7 +623,34 @@ checkPinnedBuildFreshness();
                  btn('RS','tpad-hint',RS,'Right stick click'));
 
     bottom.append(left, dpad, hints, face);
-    root.append(top, bottom);
+
+    /* Hide the controls without leaving the game - the stream is the point,
+       and on a tablet the overlay covers a lot of it. */
+    const toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.className = 'tpad-toggle';
+    const label = () => {
+      const off = root.classList.contains('hidden');
+      toggle.textContent = off ? '\u25CE' : '\u2715';
+      toggle.setAttribute('aria-label', off ? 'Show controls' : 'Hide controls');
+      toggle.title = toggle.getAttribute('aria-label');
+    };
+    toggle.addEventListener('pointerdown', e => {
+      e.preventDefault(); e.stopPropagation();
+      releaseAll();
+      root.classList.toggle('hidden');
+      label();
+      try { localStorage.setItem('xbox.touchpad.hidden',
+        root.classList.contains('hidden') ? '1' : '0'); } catch {}
+    });
+    toggle.addEventListener('contextmenu', e => e.preventDefault());
+
+    try {
+      if (localStorage.getItem('xbox.touchpad.hidden') === '1') root.classList.add('hidden');
+    } catch {}
+    label();
+
+    root.append(top, bottom, toggle);
     player.append(root);
     return root;
   }
