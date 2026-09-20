@@ -90,6 +90,12 @@ function control(title,value,action,id){
  b.innerHTML='<span>'+title+'</span><strong>'+value+'</strong>';
  b._navActivate=action;b.addEventListener('click',action);return b;
 }
+function applyTheme(theme){
+ const next=theme==='light'?'light':'dark';
+ document.documentElement.dataset.theme=next;
+ document.body.dataset.theme=next;
+ set('theme',next);
+}
 function refreshControls(){
  if(!drawer)return;
  const host=drawer.querySelector('[data-personal-controls]');
@@ -97,6 +103,9 @@ function refreshControls(){
  host.innerHTML='';
  const s=window.State?.settings||{};
  host.append(
+  control('Theme',labelMap(s.theme||'dark',{dark:'Dark mode',light:'Light mode'}),()=>{
+   applyTheme((s.theme||'dark')==='dark'?'light':'dark');
+  },'theme'),
   control('Background',labelMap(s.homeBackgroundMode||'waves',{waves:'Waves',black:'Black',game:'Game art',custom:'Custom',random:'Random'}),()=>{
    set('homeBackgroundMode',cycle(s.homeBackgroundMode||'waves',['waves','black','game','custom','random']));
   },'background'),
@@ -158,6 +167,8 @@ clock.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventD
 document.addEventListener('keydown',e=>{if(drawer?.classList.contains('open')&&e.key==='Escape'){e.preventDefault();close();}});
 window.addEventListener('nav:button',e=>{if(drawer?.classList.contains('open')&&e.detail?.button==='b')close();});
 window.State?.on?.(e=>{if(e?.type==='settings'&&drawer?.classList.contains('open'))refreshControls();});
+document.documentElement.dataset.theme=window.State?.settings?.theme||'dark';
+document.body.dataset.theme=window.State?.settings?.theme||'dark';
 timer=setInterval(renderTime,1000);renderTime();window.Nav?.repaint?.();
 window.TimeDrawer={open,close,updateWeather};
 })();
