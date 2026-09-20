@@ -250,6 +250,14 @@ function focusReferenceChrome(){
   const enforce = () => {
     if (epoch !== focusEpoch) return;
     if (document.body.dataset.view && document.body.dataset.view !== 'home') return;
+    const start = window.State?.settings?.homeStartFocus || 'profile';
+    if (start === 'first-game'){
+      const firstGame = document.querySelector('#view-home .ref-strip .ref-tile[data-ref-title]:not([hidden])');
+      if (firstGame){
+        window.Nav?.focus?.(firstGame, { silent:true });
+        return;
+      }
+    }
     const profile = document.querySelector('.profile[data-nav], .profile');
     if (profile) window.Nav?.focus?.(profile, { silent:true });
   };
