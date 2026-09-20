@@ -13,6 +13,7 @@ const CATALOG_SOURCES = [
   'https://cdn.jsdelivr.net/gh/evanjeffrey1212-eng/stratus-api@main/cloud.json'
 ];
 const LOCAL_ART_MANIFEST = 'assets/stratus-covers/manifest.json';
+const NOWGG_CATALOG = '/api/nowgg?catalog=1';
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 const isAbort = err => err?.name === 'AbortError';
@@ -104,8 +105,24 @@ function normalizeGame(raw, index){
     tags:Array.isArray(raw?.tags) ? raw.tags.map(String).filter(Boolean) : [],
     provider:'Stratus Cloud',
     cloud:true,
-    price:0
+    price:0,
+    nowgg:raw?.nowgg === true,
+    launchUrl:String(raw?.launch_url || raw?.launchUrl || '')
   };
+}
+
+async function loadNowggGames(offset=0){
+  try {
+    const res = await fetch(NOWGG_CATALOG, { cache:'no-store' });
+    if (!res.ok) return [];
+    const data = await res.json();
+    if (!Array.isArray(data)) return [];
+    return data
+      .map((raw, index) => normalizeGame(raw, offset + index))
+      .filter(game => game.gameKey && game.name && game.nowgg);
+  } catch {
+    return [];
+  }
 }
 
 async function loadCatalogue(){
@@ -121,13 +138,22 @@ async function loadCatalogue(){
         const data = await res.json();
         if (!Array.isArray(data)) throw new Error('catalogue response was not an array');
         const localArt = await loadLocalArtwork();
-        catalogue = data
+        const stratusGames = data
           .map(normalizeGame)
           .filter(game => game.gameKey && game.name)
           .map(game => {
             const path = localArtworkPath(localArt, game.gameKey);
             return path ? { ...game, image:path, cover:path, localCover:path } : game;
           });
+
+        const nowggGames = await loadNowggGames(stratusGames.length);
+        const seen = new Set();
+        catalogue = [...stratusGames, ...nowggGames].filter(game => {
+          const key = String(game.gameKey);
+          if (!key || seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
         return catalogue;
       } catch (err){ lastError = err; }
     }
@@ -411,7 +437,65 @@ function restorePlayerSandbox(){
   }
 }
 
+function showNowggPlayer(game){
+  const player = document.getElementById('player');
+  const frame = document.getElementById('playerFrame');
+  const hint = document.getElementById('playerHint');
+  if (!player || !frame) throw new Error('Player surface is missing.');
+
+  if (!frame.dataset.originalSandbox)
+    frame.dataset.originalSandbox = frame.getAttribute('sandbox') || '';
+
+  frame.removeAttribute('sandbox');
+  frame.setAttribute('allow', 'autoplay *; fullscreen *; gamepad *; encrypted-media *; clipboard-write *; clipboard-read *; pointer-lock *; microphone *; camera *');
+  frame.referrerPolicy = 'same-origin';
+  frame.src = game.launchUrl || '/nowgg/';
+  frame.tabIndex = 0;
+
+  player.hidden = false;
+  player.classList.add('cloud-player');
+  hint?.classList.add('hide');
+
+  window.Nav?.pushLayer?.(player);
+  window.Nav?.hideRing?.();
+
+  const focus = () => {
+    try { frame.contentWindow?.focus?.(); } catch {}
+    try { frame.focus?.(); } catch {}
+  };
+  [60, 250, 900, 2200].forEach(ms => setTimeout(focus, ms));
+  window.Guide?.notify?.({ title:'Cloud game started', text:game.name, icon:'' });
+}
+
+async function playNowgg(game){
+  if (starting) return;
+  if (!owns(game)) throw new Error('This game is not in your library yet.');
+  if (active) await quit();
+
+  starting = true;
+  const { splash, sub } = launchSurface(game);
+
+  try {
+    if (sub) sub.textContent = 'Starting stream…';
+    active = { uuid:null, game, controller:null, session:{ nowgg:true } };
+    if (splash) splash.hidden = true;
+    showNowggPlayer(game);
+  } catch (err){
+    active = null;
+    if (sub) sub.textContent = `Could not start cloud game: ${err?.message || 'Unknown error'}`;
+    window.Sound?.error?.();
+    setTimeout(() => {
+      if (splash) splash.hidden = true;
+      window.Nav?.setRingVisible?.(true);
+      window.Nav?.repaint?.();
+    }, 4000);
+  } finally {
+    starting = false;
+  }
+}
+
 async function play(game){
+  if (game?.nowgg) return playNowgg(game);
   if (!game?.gameKey) throw new Error('This title has no Stratus game key.');
   if (starting) return;
   if (!owns(game)) throw new Error('This game is not in your library yet.');
