@@ -122,12 +122,52 @@ async function activateTitle(title){
 
 let preview = null;
 let previewTitle = null;
+let previewBackdropTitle = null;
+
+function paintSelectedGameBackdrop(title, hero){
+  if (!title || !hero) return;
+  if (document.body.dataset.view && document.body.dataset.view !== 'home') return;
+
+  previewBackdropTitle = title;
+  document.body.dataset.homeNeutral = 'false';
+
+  const a = document.getElementById('bgA');
+  const b = document.getElementById('bgB');
+  if (!a || !b) return;
+
+  a.style.backgroundImage = `url("${String(hero).replace(/"/g, '%22')}")`;
+  a.style.backgroundPosition = 'center center';
+  a.dataset.dynamicTitle = title;
+  a.classList.add('on', 'wide', 'reference-wide');
+
+  b.style.backgroundImage = 'none';
+  b.style.backgroundPosition = 'center center';
+  delete b.dataset.dynamicTitle;
+  b.classList.remove('on', 'wide', 'reference-wide');
+}
+
+function restoreWavesBackdrop(){
+  previewBackdropTitle = null;
+  if (document.body.dataset.view && document.body.dataset.view !== 'home') return;
+
+  document.body.dataset.homeNeutral = 'true';
+  for (const layer of document.querySelectorAll('.backdrop-layer')){
+    layer.style.backgroundImage = 'none';
+    layer.style.backgroundPosition = 'center center';
+    delete layer.dataset.dynamicTitle;
+    layer.classList.remove('on', 'wide', 'reference-wide');
+  }
+}
 
 function closeGamePreview(){
-  if (!preview) return;
+  if (!preview){
+    restoreWavesBackdrop();
+    return;
+  }
   const node = preview;
   preview = null;
   previewTitle = null;
+  restoreWavesBackdrop();
   node.classList.add('out');
   setTimeout(() => node.remove(), 180);
   try { window.Nav?.popLayer?.(); } catch {}
@@ -148,6 +188,9 @@ async function openGamePreview(title){
   window.Sound?.gameSelect?.();
 
   const known = canonicalTitle(title) || window.GameDetails?.canonical?.(title) || title;
+  const defaultHero = HERO[known] || '';
+  if (defaultHero) paintSelectedGameBackdrop(title, defaultHero);
+
   const [cloud, local, rich] = await Promise.all([
     cloudGame(title),
     Promise.resolve(localGame(title)),
@@ -158,6 +201,7 @@ async function openGamePreview(title){
   const screenshots = Array.isArray(rich?.screenshots) ? rich.screenshots.filter(Boolean) : [];
   const cover = rich?.cover || COVER[known] || game.cover || game.image || '';
   const hero = rich?.hero || screenshots[0] || HERO[known] || game.image || game.cover || cover;
+  if (hero && previewBackdropTitle === title) paintSelectedGameBackdrop(title, hero);
   const availability = cloud ? 'Cloud playable' : 'Ready to play';
   const fallbackTags = Array.isArray(game.tags) ? game.tags.filter(Boolean) : [];
   const genres = Array.isArray(rich?.genres) ? rich.genres.filter(Boolean) : fallbackTags;
