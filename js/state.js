@@ -7,7 +7,7 @@
 'use strict';
 
 const KEY = 'xbox.web.profile.v1';
-const GLOBAL_RESET_MARKER = 'xbox.reset.20260920.zr6p1d';
+const GLOBAL_RESET_MARKER = 'xbox.reset.20260920.xb5n8w';
 
 /* One-time fleet reset. Every browser that loads this build clears all prior
    Xbox-local state before defaults are read, then records this reset marker. */
@@ -42,7 +42,7 @@ const DEFAULTS = {
   settings: {
     theme:     'dark',
     onboardingComplete:false,
-    accent:    '#4ade4a',
+    accent:    '#107c10',
     sounds:    true,
     volume:    70,
     motion:    'full',
@@ -64,14 +64,14 @@ const DEFAULTS = {
     wallpaperDimNavigation:true,
 
     /* Home / chrome personalization */
-    personalizationPreset:'synapse', // xbox | minimal | synapse | custom
+    personalizationPreset:'xbox', // xbox | minimal | synapse | custom
     homeVisibleGames:8,              // 5 | 6 | 7 | 8 | 99
     homeTileSize:'standard',         // compact | standard | large
     homePromoRow:true,
     homeSectionOrder:'games-first',  // games-first | promos-first
     homeTileLabels:false,
     homeSeriesBadges:'hover',        // off | hover | always
-    homeCornerRadius:'rounded',      // square | xbox | rounded
+    homeCornerRadius:'xbox',         // square | xbox | rounded
     homeStartFocus:'profile',        // profile | first-game
     startupView:'home',               // home | library
     topBarOrder:['library','store','search','settings'],
@@ -82,8 +82,8 @@ const DEFAULTS = {
     surfaceTone:'black',             // black | graphite
     transparencyStrength:'normal',   // solid | normal | glass
     uiScale:1,
-    animationStrength:'expressive',  // subtle | normal | expressive
-    motionBlurStrength:'low',        // off | low | strong
+    animationStrength:'normal',      // subtle | normal | expressive
+    motionBlurStrength:'off',        // off | low | strong
     perGameWallpaperPinned:{},       // normalized title -> keep current wallpaper while focused
 
     saturation:  1.35,  // backdrop punch
