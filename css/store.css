@@ -1645,3 +1645,131 @@ body[data-view="store"] .legend{
     gap:1.35rem .7rem;
   }
 }
+
+
+/* ───────── 4-column clean catalog ───────── */
+.xstore-browse .xstore-grid{
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:1.15rem;
+  align-items:start;
+}
+.xstore-browse .store-catalog-card{
+  width:100%;
+  min-width:0;
+  padding:0;
+  overflow:visible;
+}
+.xstore-browse .store-catalog-card .store-cover{
+  position:relative;
+  width:100%;
+  aspect-ratio:16/9;
+  overflow:hidden;
+  border-radius:.82rem;
+  background:#181a1b;
+  box-shadow:0 .35rem 1.1rem rgba(0,0,0,.2);
+}
+.xstore-browse .store-catalog-card .store-cover::after{
+  content:"";
+  position:absolute;
+  z-index:1;
+  inset:38% 0 0;
+  background:linear-gradient(180deg,transparent,rgba(0,0,0,.34) 25%,rgba(0,0,0,.9) 100%);
+  opacity:0;
+  transition:opacity .16s ease;
+  pointer-events:none;
+}
+.xstore-browse .store-catalog-card .store-game-meta{
+  position:absolute;
+  z-index:2;
+  left:0;
+  right:0;
+  bottom:0;
+  min-height:0;
+  padding:3.3rem 1rem .85rem;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:.18rem;
+  background:transparent;
+  color:#fff;
+  opacity:0;
+  transform:translate3d(0,.45rem,0);
+  transition:opacity .14s ease,transform .18s var(--store-ease-out);
+  pointer-events:none;
+}
+.xstore-browse .store-catalog-card:hover .store-cover::after,
+.xstore-browse .store-catalog-card[data-focused] .store-cover::after,
+.xstore-browse .store-catalog-card:focus-visible .store-cover::after{
+  opacity:1;
+}
+.xstore-browse .store-catalog-card:hover .store-game-meta,
+.xstore-browse .store-catalog-card[data-focused] .store-game-meta,
+.xstore-browse .store-catalog-card:focus-visible .store-game-meta{
+  opacity:1;
+  transform:translate3d(0,0,0);
+}
+.xstore-browse .store-catalog-card .store-game-title{
+  width:100%;
+  overflow:hidden;
+  color:#fff;
+  font-size:1.26rem;
+  font-weight:620;
+  line-height:1.18;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  text-shadow:0 .12rem .35rem rgba(0,0,0,.72);
+}
+.xstore-browse .store-catalog-card .store-game-price,
+.xstore-browse .store-catalog-card .store-game-sub{
+  color:rgba(255,255,255,.7);
+  font-size:.98rem;
+  line-height:1.2;
+}
+.xstore-browse .store-catalog-card .store-game-sub{
+  width:100%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.xstore-browse .store-catalog-card .store-cloud-mark{
+  z-index:3;
+  top:.65rem;
+  right:.65rem;
+  opacity:0;
+  transform:scale(.92);
+  transition:opacity .14s ease,transform .16s var(--store-ease-out);
+}
+.xstore-browse .store-catalog-card:hover .store-cloud-mark,
+.xstore-browse .store-catalog-card[data-focused] .store-cloud-mark{
+  opacity:1;
+  transform:scale(1);
+}
+.xstore-browse .store-catalog-card .store-owned-badge,
+.xstore-browse .store-catalog-card .store-deal-badge{
+  z-index:3;
+}
+.xstore-browse .store-catalog-card:hover,
+.xstore-browse .store-catalog-card[data-focused]{
+  transform:translate3d(0,-.12rem,0) scale(1.008);
+}
+.xstore-browse .store-catalog-card[data-focused] .store-cover,
+.xstore-browse .store-catalog-card:focus-visible .store-cover{
+  outline:.2rem solid rgba(255,255,255,.95);
+  outline-offset:.18rem;
+  box-shadow:0 .65rem 1.8rem rgba(0,0,0,.34);
+}
+.xstore-browse .store-catalog-card:hover .store-cover img,
+.xstore-browse .store-catalog-card[data-focused] .store-cover img{
+  transform:scale(1.025);
+}
+@media(max-width:900px){
+  .xstore-browse .xstore-grid{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+  }
+}
+@media(max-width:620px){
+  .xstore-browse .xstore-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:.8rem;
+  }
+}
