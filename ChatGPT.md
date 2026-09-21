@@ -1148,7 +1148,7 @@ The project succeeds when someone can look at it and immediately feel that it is
 
 ### 2026-09-20 — Xbox version snapshot boot notification
 
-Current snapshot: `tv7p2x`
+Current snapshot: `rd4m8q`
 
 After every successful Xbox boot, show a compact green-and-black build notification in the **bottom-right corner** of the screen. It must have a clearly visible Xbox-green outline, rounded corners, dark black surface, and restrained Windows/Xbox styling. The notification uses the repo-local Xbox logo and reads `Xbox Version 1.5` and `Snapshot <random-code>`.
 
@@ -1232,3 +1232,8 @@ The onboarding was re-tuned against the supplied photos rather than stylized fro
 ### 2026-09-20 — 1920×1080 OOBE coordinate correction
 
 The previous onboarding was visually wrong because it treated the project rem scale like normal web CSS. This project is authored on a 1920×1080 TV canvas where about 1rem = 10 design pixels at 1080p. The reference panels occupy roughly 70% of the screen width, so onboarding panels now use ~138rem widths instead of ~72rem. Typography, spinner, Gamertag field, software keyboard, color circles, privacy rows, and controller legend were all rescaled to the actual Xbox TV proportions. This is the new sizing baseline. Per the standing onboarding rule, reset epoch is `tv7p2x`.
+
+
+### 2026-09-20 — fleet data reset rd4m8q
+
+A fresh one-time reset marker `xbox.reset.20260920.rd4m8q` clears all prior `xbox.*` localStorage data for every client on next load, including onboarding completion, profile state, personalization, Home layout, pins, recents, and settings. After the reset runs once, state persists normally.
