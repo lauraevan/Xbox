@@ -36,7 +36,11 @@ let checkout = null;
 let lastRoot = null;
 let selectedHomeGame = null;
 let autoRotateTimer = null;
-let browseVisible = 42;
+const BROWSE_BATCH = 36;
+let browseVisible = 0;
+let browseObserver = null;
+let browseLoadNext = null;
+let browseRenderToken = 0;
 let searchTimer = null;
 
 const lower = value => String(value || '').toLowerCase();
@@ -129,6 +133,7 @@ function storeCard(game, { compact=false, wide=false, deal=false } = {}){
   const cls = (compact ? 'store-game store-compact' : wide ? 'store-game store-wide' : 'store-game store-grid-card')
     + (offer ? ' store-deal-card' : '');
   const btn = el('button', cls);
+  btn.classList.add('store-card-enter');
   btn.dataset.nav = '';
   btn.dataset.storeKey = game.gameKey;
   btn.dataset.ringRadius = '.35rem';
@@ -140,6 +145,8 @@ function storeCard(game, { compact=false, wide=false, deal=false } = {}){
   img.alt = '';
   img.loading = 'lazy';
   img.decoding = 'async';
+  img.addEventListener('load', () => img.classList.add('ready'), { once:true });
+  if (img.complete) requestAnimationFrame(() => img.classList.add('ready'));
   try { img.fetchPriority = 'low'; } catch {}
   art.append(img);
 
@@ -237,17 +244,33 @@ function buildRail(root){
 function paintHomeSelection(root, game){
   if (!root || !game) return;
   selectedHomeGame = game;
+  const feature = root.querySelector('.xstore-feature');
+  const detail = root.querySelector('.xstore-selected');
   const title = root.querySelector('.xstore-selected-title');
   const rating = root.querySelector('.xstore-selected-rating');
   const genre = root.querySelector('.xstore-selected-genre');
   const price = root.querySelector('.xstore-selected-price');
   const offer = root.querySelector('.xstore-selected-offer');
+  const art = game.image || game.cover || '';
   const { rating:stars, reviews } = starsFor(game);
+
+  if (feature && art){
+    feature.style.setProperty('--feature-art', `url("${art.replace(/"/g,'\\\"')}")`);
+    feature.classList.remove('selection-changed');
+    void feature.offsetWidth;
+    feature.classList.add('selection-changed');
+  }
+
   if (title) title.textContent = game.name;
   if (rating) rating.innerHTML = `<span class="xstore-stars">★★★★★</span><b>${stars}</b><span>${reviews}</span>`;
   if (genre) genre.textContent = (game.tags[0] || 'GAME').toUpperCase();
   if (price) price.textContent = Cloud.owns(game) ? 'Owned' : 'Free';
   if (offer) offer.textContent = Cloud.owns(game) ? 'Ready to play with cloud gaming' : 'Get it free, then play from your library';
+
+  if (detail){
+    detail.classList.remove('selection-changed');
+    requestAnimationFrame(() => detail.classList.add('selection-changed'));
+  }
 }
 
 function buildHomeGallery(root, list){
@@ -428,6 +451,79 @@ function renderHome(root){
      render ~100 cards at once. */
 }
 
+function stopBrowseAutoload(){
+  browseObserver?.disconnect?.();
+  browseObserver = null;
+  browseLoadNext = null;
+}
+
+function appendBrowseBatch(content, list, token){
+  if (token !== browseRenderToken || !content?.isConnected) return;
+  const grid = content.querySelector('.xstore-grid');
+  const sentinel = grid?.querySelector('.xstore-autoload-sentinel');
+  if (!grid || !sentinel) return;
+
+  const start = browseVisible;
+  const end = Math.min(list.length, start + BROWSE_BATCH);
+  if (end <= start){
+    sentinel.remove();
+    stopBrowseAutoload();
+    return;
+  }
+
+  const frag = document.createDocumentFragment();
+  list.slice(start, end).forEach((game, index) => {
+    const card = storeCard(game, { deal:mode === 'deals' });
+    card.style.setProperty('--store-order', String(Math.min(index, 14)));
+    frag.append(card);
+  });
+  grid.insertBefore(frag, sentinel);
+  browseVisible = end;
+
+  if (browseVisible >= list.length){
+    sentinel.classList.add('done');
+    setTimeout(() => sentinel.remove(), 160);
+    stopBrowseAutoload();
+  }
+  window.Nav?.repaint?.();
+}
+
+function armBrowseAutoload(content, list, token){
+  const grid = content.querySelector('.xstore-grid');
+  const sentinel = grid?.querySelector('.xstore-autoload-sentinel');
+  if (!grid || !sentinel || browseVisible >= list.length) return;
+
+  let loading = false;
+  browseLoadNext = () => {
+    if (loading || token !== browseRenderToken || browseVisible >= list.length) return;
+    loading = true;
+    sentinel.classList.add('loading');
+    requestAnimationFrame(() => {
+      appendBrowseBatch(content, list, token);
+      loading = false;
+      sentinel.classList.remove('loading');
+    });
+  };
+
+  if ('IntersectionObserver' in window){
+    browseObserver = new IntersectionObserver(entries => {
+      if (entries.some(entry => entry.isIntersecting)) browseLoadNext?.();
+    }, {
+      root:content,
+      rootMargin:'900px 0px 1100px',
+      threshold:0
+    });
+    browseObserver.observe(sentinel);
+  } else {
+    const pump = () => {
+      if (token !== browseRenderToken || browseVisible >= list.length) return;
+      browseLoadNext?.();
+      setTimeout(pump, 60);
+    };
+    setTimeout(pump, 60);
+  }
+}
+
 function renderBrowse(root, label){
   const content = el('div', 'xstore-content xstore-browse');
   const head = el('div', 'xstore-page-head');
@@ -443,7 +539,7 @@ function renderBrowse(root, label){
     FILTERS.forEach(([id, text]) => {
       const btn = el('button', 'xstore-filter' + (filter === id ? ' active' : ''), escapeHtml(text));
       btn.dataset.nav = '';
-      btn._navActivate = () => { filter = id; browseVisible = 42; renderShell(root); };
+      btn._navActivate = () => { filter = id; browseVisible = 0; renderShell(root); };
       filters.append(btn);
     });
     content.append(filters);
@@ -460,7 +556,7 @@ function renderBrowse(root, label){
     input.setAttribute('aria-label', 'Search Microsoft Store');
     input.addEventListener('input', () => {
       query = input.value;
-      browseVisible = 42;
+      browseVisible = 0;
       clearTimeout(searchTimer);
       searchTimer = setTimeout(() => {
         if (input.isConnected) renderBrowseGrid(content);
@@ -477,42 +573,32 @@ function renderBrowse(root, label){
 }
 
 function renderBrowseGrid(content){
+  stopBrowseAutoload();
+  const token = ++browseRenderToken;
   const grid = content.querySelector('.xstore-grid');
   const count = content.querySelector('.xstore-page-count');
   if (!grid) return;
+
   const list = matching();
+  browseVisible = 0;
   if (count) count.textContent = `${list.length.toLocaleString()} games`;
   grid.replaceChildren();
-
-  const shown = list.slice(0, browseVisible);
-  const frag = document.createDocumentFragment();
-  shown.forEach(game => frag.append(storeCard(game, { deal:mode === 'deals' })));
-  grid.append(frag);
-
-  if (list.length > shown.length){
-    const more = el('button','xstore-load-more',
-      `Show ${Math.min(42, list.length - shown.length)} more`);
-    more.dataset.nav = '';
-    more.dataset.ringRadius = '.45rem';
-    more._navActivate = () => {
-      browseVisible += 42;
-      renderBrowseGrid(content);
-      requestAnimationFrame(() => window.Nav?.focusIn?.(content,'.xstore-load-more'));
-    };
-    more.addEventListener('click', event => {
-      event.preventDefault();
-      more._navActivate();
-    });
-    grid.append(more);
-  }
 
   if (!list.length){
     const msg = mode === 'wishlist' ? 'Your wish list is empty.' : mode === 'owned' ? 'You do not own any cloud games yet.' : 'No games found.';
     grid.append(el('div', 'xstore-empty', msg));
+    window.Nav?.repaint?.();
+    return;
   }
-  window.Nav?.repaint?.();
-}
 
+  const sentinel = el('div','xstore-autoload-sentinel');
+  sentinel.setAttribute('aria-hidden','true');
+  sentinel.innerHTML = '<span></span><span></span><span></span>';
+  grid.append(sentinel);
+
+  appendBrowseBatch(content, list, token);
+  armBrowseAutoload(content, list, token);
+}
 function modeLabel(){
   if (mode === 'games') return 'Games';
   if (mode === 'deals') return 'Deals & specials';
@@ -525,15 +611,36 @@ function modeLabel(){
 function renderShell(root){
   if (!root) return;
   stopAutoRows();
+  stopBrowseAutoload();
   lastRoot = root;
   closeProduct();
   root.classList.add('reference-store');
-  root.innerHTML = '';
-  const shell = el('div', 'xstore-shell');
-  shell.append(buildRail(root), el('main', 'xstore-main'));
-  root.append(shell);
+
+  let shell = root.querySelector(':scope > .xstore-shell');
+  let main = shell?.querySelector('.xstore-main');
+
+  if (!shell || !main){
+    root.innerHTML = '';
+    shell = el('div', 'xstore-shell');
+    main = el('main', 'xstore-main');
+    shell.append(buildRail(root), main);
+    root.append(shell);
+  } else {
+    main.replaceChildren();
+    shell.querySelectorAll('.xstore-nav-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.storeMode === mode);
+    });
+  }
+
   if (mode === 'home') renderHome(root);
   else renderBrowse(root, modeLabel());
+
+  const content = main.querySelector('.xstore-content');
+  if (content){
+    content.classList.remove('store-page-enter');
+    requestAnimationFrame(() => content.classList.add('store-page-enter'));
+  }
+
   window.Nav?.repaint?.();
   requestAnimationFrame(() => {
     const target = mode === 'home' ? '.store-lead' : mode === 'search' ? '.xstore-search' : '.store-game';
@@ -543,10 +650,11 @@ function renderShell(root){
 }
 
 function switchMode(next, root = lastRoot){
+  if (!root || mode === next) return;
   mode = next;
   if (next !== 'search') query = '';
   filter = 'all';
-  browseVisible = 42;
+  browseVisible = 0;
   clearTimeout(searchTimer);
   renderShell(root);
 }
@@ -869,9 +977,19 @@ async function render(root){
 window.addEventListener('nav:focus', event => {
   const target = event.detail?.el;
   const card = target?.closest?.('#view-store .store-game');
-  if (!card || mode !== 'home') return;
-  const game = games.find(item => item.gameKey === card.dataset.storeKey);
-  if (game) paintHomeSelection(lastRoot, game);
+  if (!card) return;
+
+  if (mode === 'home'){
+    const game = games.find(item => item.gameKey === card.dataset.storeKey);
+    if (game) paintHomeSelection(lastRoot, game);
+    return;
+  }
+
+  const grid = card.closest('.xstore-grid');
+  if (!grid) return;
+  const cards = [...grid.querySelectorAll('.store-game')];
+  const index = cards.indexOf(card);
+  if (index >= Math.max(0, cards.length - 10)) browseLoadNext?.();
 });
 
 window.addEventListener('nav:button', event => {
