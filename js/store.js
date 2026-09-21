@@ -171,7 +171,13 @@ function storeCard(game, { compact=false, wide=false, deal=false } = {}){
   }
 
   if (!compact) meta.append(el('span', 'store-game-sub', escapeHtml(game.tags.slice(0, 2).join(' • ') || 'Cloud gaming')));
-  btn.append(art, meta);
+  if (!compact && !wide){
+    btn.classList.add('store-catalog-hover-card');
+    art.append(meta);
+    btn.append(art);
+  } else {
+    btn.append(art, meta);
+  }
   btn._navActivate = () => openProduct(game);
   return btn;
 }
