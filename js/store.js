@@ -536,17 +536,6 @@ function renderBrowse(root, label){
   );
   content.append(head);
 
-  if (mode === 'games'){
-    const filters = el('nav', 'xstore-filters');
-    FILTERS.forEach(([id, text]) => {
-      const btn = el('button', 'xstore-filter' + (filter === id ? ' active' : ''), escapeHtml(text));
-      btn.dataset.nav = '';
-      btn._navActivate = () => { filter = id; browseVisible = 0; renderShell(root); };
-      filters.append(btn);
-    });
-    content.append(filters);
-  }
-
   if (mode === 'search'){
     const wrap = el('div', 'xstore-search-wrap');
     wrap.innerHTML = `<span class="xstore-search-icon">${icon('search')}</span>`;
