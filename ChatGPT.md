@@ -1148,7 +1148,7 @@ The project succeeds when someone can look at it and immediately feel that it is
 
 ### 2026-09-20 — Xbox version snapshot boot notification
 
-Current snapshot: `off6p3`
+Current snapshot: `gn8r4k`
 
 After every successful Xbox boot, show a compact green-and-black build notification in the **bottom-right corner** of the screen. It must have a clearly visible Xbox-green outline, rounded corners, dark black surface, and restrained Windows/Xbox styling. The notification uses the repo-local Xbox logo and reads `Xbox Version 1.5` and `Snapshot <random-code>`.
 
@@ -1244,3 +1244,14 @@ A fresh one-time reset marker `xbox.reset.20260920.rd4m8q` clears all prior `xbo
 Onboarding is temporarily disabled with `ONBOARDING_ENABLED = false` in `js/app.js`. The existing onboarding implementation remains in place for later re-enabling, but boot currently skips it and proceeds to the dashboard.
 
 Per the standing onboarding workflow, this onboarding change also advances the fleet reset epoch to `off6p3`, so all existing `xbox.*` local state is cleared once on next load.
+
+
+### 2026-09-20 — local GameNexus rich launcher details
+
+The game launcher now prefers a locally vendored GameNexus detail manifest and local screenshots. Current curated launcher coverage is Forza Horizon 5, Grand Theft Auto V, Hollow Knight: Silksong, Elden Ring, Red Dead Redemption, Minecraft, Fortnite, and Cyberpunk 2077.
+
+Important: GameNexus and IGDB are source-time references only. The Xbox runtime must not call or hotlink GameNexus/IGDB for these launcher details. Covers, screenshots, rating, release date, developers, publishers, platforms, genres, franchises, game modes, themes, and trailer IDs are captured into `assets/game-details`. Launcher descriptions are short local paraphrases in `js/game-details.js`.
+
+The launcher exposes every captured screenshot in a horizontal local gallery and uses the selected screenshot as the launcher hero. Do not replace this with a remote GameNexus embed or runtime API request.
+
+Current snapshot: `gn8r4k`.
