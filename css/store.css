@@ -950,3 +950,351 @@ body[data-view="store"] .legend{
     flex-basis:max(12rem,116px);
   }
 }
+
+
+/* ───────── Store motion + responsiveness pass ───────── */
+.view-store{
+  --store-ease-out:cubic-bezier(.16,1,.3,1);
+  --store-ease-soft:cubic-bezier(.22,.61,.36,1);
+}
+.xstore-shell{
+  isolation:isolate;
+}
+.xstore-main::before{
+  content:"";
+  position:absolute;
+  z-index:0;
+  inset:-14%;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 72% 23%,rgba(16,124,16,.08),transparent 24%),
+    radial-gradient(circle at 26% 78%,rgba(255,255,255,.025),transparent 32%);
+  opacity:.72;
+  transform:translate3d(0,0,0) scale(1.02);
+  animation:xstoreAmbient 18s ease-in-out infinite alternate;
+}
+@keyframes xstoreAmbient{
+  from{transform:translate3d(-1.2%,0,0) scale(1.02)}
+  to{transform:translate3d(1.4%,-.8%,0) scale(1.045)}
+}
+.xstore-content{
+  z-index:1;
+  overscroll-behavior:contain;
+  scroll-behavior:smooth;
+  -webkit-overflow-scrolling:touch;
+}
+.xstore-content.store-page-enter{
+  animation:xstorePageIn .28s var(--store-ease-out) both;
+}
+@keyframes xstorePageIn{
+  from{opacity:0;transform:translate3d(0,.8rem,0)}
+  to{opacity:1;transform:translate3d(0,0,0)}
+}
+
+/* Keep the rail alive between Store sections instead of flashing/rebuilding. */
+.xstore-rail{
+  transition:background-color .2s ease,box-shadow .2s ease;
+}
+.xstore-nav-btn{
+  transition:
+    background-color .14s ease,
+    color .14s ease,
+    transform .18s var(--store-ease-out);
+}
+.xstore-nav-btn:hover,
+.xstore-nav-btn[data-focused]{
+  transform:translate3d(.18rem,0,0);
+}
+.xstore-nav-btn::before{
+  transition:height .18s var(--store-ease-out),background-color .14s ease;
+}
+
+/* Home hero gets a living ambient layer based on the focused game. */
+.xstore-feature{
+  position:relative;
+  isolation:isolate;
+  padding:1.2rem 1.35rem 1.55rem;
+  margin-left:-1.35rem;
+  margin-right:-.7rem;
+  border-radius:1.1rem;
+  overflow:hidden;
+}
+.xstore-feature::before{
+  content:"";
+  position:absolute;
+  z-index:-2;
+  top:-18%;
+  right:-5%;
+  width:66%;
+  height:92%;
+  background-image:var(--feature-art);
+  background-size:cover;
+  background-position:center;
+  opacity:.16;
+  filter:saturate(.78) brightness(.72);
+  transform:scale(1.055) translate3d(1%,0,0);
+  transition:opacity .22s ease;
+  animation:xstoreFeatureDrift 15s ease-in-out infinite alternate;
+}
+.xstore-feature::after{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  inset:0;
+  background:
+    linear-gradient(90deg,#151515 0%,rgba(21,21,21,.95) 38%,rgba(21,21,21,.55) 73%,rgba(21,21,21,.92) 100%),
+    linear-gradient(180deg,rgba(255,255,255,.025),transparent 36%,rgba(0,0,0,.18));
+  pointer-events:none;
+}
+@keyframes xstoreFeatureDrift{
+  from{transform:scale(1.055) translate3d(0,0,0)}
+  to{transform:scale(1.085) translate3d(-1.3%,.6%,0)}
+}
+.xstore-feature.selection-changed::before{
+  animation:xstoreFeatureSwap .34s var(--store-ease-out),xstoreFeatureDrift 15s .34s ease-in-out infinite alternate;
+}
+@keyframes xstoreFeatureSwap{
+  0%{opacity:.04;transform:scale(1.075) translate3d(1.4%,0,0)}
+  100%{opacity:.16;transform:scale(1.055) translate3d(0,0,0)}
+}
+.xstore-selected.selection-changed{
+  animation:xstoreSelectedSwap .2s var(--store-ease-out);
+}
+@keyframes xstoreSelectedSwap{
+  from{opacity:.55;transform:translate3d(0,.35rem,0)}
+  to{opacity:1;transform:translate3d(0,0,0)}
+}
+
+/* Smooth, restrained card motion. No bounce. */
+.store-game{
+  position:relative;
+  z-index:1;
+  transform:translate3d(0,0,0);
+  transition:
+    transform .2s var(--store-ease-out),
+    opacity .16s ease;
+  will-change:transform;
+}
+.store-card-enter{
+  animation:xstoreCardIn .28s var(--store-ease-out) both;
+  animation-delay:calc(min(var(--store-order,0),14) * 14ms);
+}
+@keyframes xstoreCardIn{
+  from{opacity:0;transform:translate3d(0,.85rem,0) scale(.992)}
+  to{opacity:1;transform:translate3d(0,0,0) scale(1)}
+}
+.store-game:hover,
+.store-game[data-focused]{
+  z-index:3;
+  transform:translate3d(0,-.28rem,0) scale(1.018);
+}
+.store-cover,
+.store-lead-art{
+  transform:translateZ(0);
+  transition:
+    box-shadow .2s ease,
+    outline-color .16s ease,
+    background-color .2s ease;
+}
+.store-cover img,
+.store-lead-art img{
+  opacity:.01;
+  transform:scale(1.025);
+  transition:
+    opacity .2s ease,
+    transform .42s var(--store-ease-soft),
+    filter .18s ease;
+}
+.store-cover img.ready,
+.store-lead-art img.ready{
+  opacity:1;
+}
+.store-game:hover .store-cover img,
+.store-game[data-focused] .store-cover img,
+.store-lead:hover .store-lead-art img,
+.store-lead[data-focused] .store-lead-art img{
+  transform:scale(1.055);
+}
+.store-game:not(:hover):not([data-focused]) .store-cover img{
+  filter:saturate(.94);
+}
+.store-game-meta{
+  transition:transform .18s var(--store-ease-out),opacity .16s ease;
+}
+.store-game:hover .store-game-meta,
+.store-game[data-focused] .store-game-meta{
+  transform:translate3d(0,.08rem,0);
+}
+.xstore-row,
+.xstore-gallery-small,
+.xproduct-rich-gallery{
+  scroll-behavior:smooth;
+  scroll-snap-type:x proximity;
+  overscroll-behavior-inline:contain;
+}
+.store-game,
+.xproduct-rich-shot{
+  scroll-snap-align:start;
+}
+
+/* Shelves materialize as they enter the page without adding expensive blur. */
+.xstore-shelf,
+.xstore-deals{
+  animation:xstoreSectionIn .34s var(--store-ease-out) both;
+}
+.xstore-shelf:nth-of-type(2){animation-delay:35ms}
+.xstore-shelf:nth-of-type(3){animation-delay:65ms}
+.xstore-shelf:nth-of-type(4){animation-delay:95ms}
+.xstore-shelf:nth-of-type(5){animation-delay:125ms}
+@keyframes xstoreSectionIn{
+  from{opacity:0;transform:translate3d(0,.7rem,0)}
+  to{opacity:1;transform:translate3d(0,0,0)}
+}
+
+/* Browse page: seamless infinite catalog. No "Show more" button. */
+.xstore-grid{
+  position:relative;
+  align-items:start;
+}
+.xstore-autoload-sentinel{
+  grid-column:1/-1;
+  height:5.2rem;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:.55rem;
+  opacity:.6;
+  transition:opacity .16s ease,height .16s ease;
+  pointer-events:none;
+}
+.xstore-autoload-sentinel span{
+  width:.62rem;
+  height:.62rem;
+  border-radius:50%;
+  background:rgba(255,255,255,.62);
+  animation:xstoreLoadDot 1s ease-in-out infinite;
+}
+.xstore-autoload-sentinel span:nth-child(2){animation-delay:.12s}
+.xstore-autoload-sentinel span:nth-child(3){animation-delay:.24s}
+.xstore-autoload-sentinel:not(.loading){
+  opacity:.24;
+}
+.xstore-autoload-sentinel.done{
+  height:0;
+  opacity:0;
+}
+@keyframes xstoreLoadDot{
+  0%,70%,100%{transform:translateY(0);opacity:.42}
+  35%{transform:translateY(-.35rem);opacity:1}
+}
+.xstore-filter{
+  transition:
+    transform .18s var(--store-ease-out),
+    background-color .14s ease,
+    color .14s ease,
+    outline-color .14s ease;
+}
+.xstore-filter:hover,
+.xstore-filter[data-focused]{
+  transform:translate3d(0,-.12rem,0);
+}
+.xstore-search-wrap{
+  transition:border-color .15s ease,background-color .15s ease,transform .2s var(--store-ease-out);
+}
+.xstore-search-wrap:focus-within{
+  transform:translate3d(0,-.08rem,0);
+  background:#292929;
+}
+
+/* Product pages feel like a console transition instead of a hard DOM swap. */
+.xproduct{
+  animation:xproductEnter .3s var(--store-ease-out) both;
+}
+@keyframes xproductEnter{
+  from{opacity:0;transform:scale(1.008)}
+  to{opacity:1;transform:scale(1)}
+}
+.xproduct-art{
+  transform:scale(1.035);
+  animation:xproductArtIn .55s var(--store-ease-out) both,xproductArtDrift 22s .55s ease-in-out infinite alternate;
+}
+@keyframes xproductArtIn{
+  from{opacity:.22;transform:scale(1.075) translate3d(1.2%,0,0)}
+  to{opacity:.68;transform:scale(1.035) translate3d(0,0,0)}
+}
+@keyframes xproductArtDrift{
+  from{transform:scale(1.035) translate3d(0,0,0)}
+  to{transform:scale(1.06) translate3d(-1.2%,.6%,0)}
+}
+.xproduct-cover-wrap{
+  animation:xproductCoverIn .34s .04s var(--store-ease-out) both;
+}
+@keyframes xproductCoverIn{
+  from{opacity:0;transform:translate3d(-1.2rem,.5rem,0) scale(.985)}
+  to{opacity:1;transform:translate3d(0,0,0) scale(1)}
+}
+.xproduct-copy{
+  animation:xproductCopyIn .36s .08s var(--store-ease-out) both;
+}
+@keyframes xproductCopyIn{
+  from{opacity:0;transform:translate3d(1rem,.45rem,0)}
+  to{opacity:1;transform:translate3d(0,0,0)}
+}
+.xproduct-action{
+  transition:
+    transform .16s var(--store-ease-out),
+    background-color .14s ease,
+    color .14s ease,
+    box-shadow .16s ease;
+}
+.xproduct-action:hover,
+.xproduct-action[data-focused]{
+  transform:translate3d(0,-.16rem,0);
+  box-shadow:0 .7rem 1.8rem rgba(0,0,0,.28);
+}
+.xproduct-rich-shot{
+  transition:
+    opacity .14s ease,
+    transform .18s var(--store-ease-out),
+    border-color .14s ease;
+}
+
+/* Faster-feeling loading surface. */
+.xstore-loading::before{
+  content:"";
+  width:4.6rem;
+  height:.32rem;
+  border-radius:999px;
+  background:linear-gradient(90deg,transparent,#9bf00b,transparent);
+  transform:translateX(-5rem);
+  animation:xstoreLoader 1.05s ease-in-out infinite;
+}
+@keyframes xstoreLoader{
+  0%{transform:translateX(-5rem);opacity:.18}
+  50%{opacity:1}
+  100%{transform:translateX(5rem);opacity:.18}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .xstore-main::before,
+  .xstore-feature::before,
+  .xstore-feature.selection-changed::before,
+  .store-card-enter,
+  .xstore-shelf,
+  .xstore-deals,
+  .xproduct,
+  .xproduct-art,
+  .xproduct-cover-wrap,
+  .xproduct-copy,
+  .xstore-autoload-sentinel span,
+  .xstore-loading::before{
+    animation:none!important;
+  }
+  .store-game,
+  .store-cover img,
+  .store-lead-art img,
+  .xstore-nav-btn,
+  .xproduct-action{
+    transition-duration:.01ms!important;
+  }
+}
