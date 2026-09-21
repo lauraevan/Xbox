@@ -475,3 +475,16 @@ body[data-transparency="reduced"] .backdrop-layer{ filter:none; opacity:.18; }
   .microsoft-credit-grid{width:5.5rem;height:5.5rem;gap:.24rem}
   .microsoft-credit-word{font-size:4.8rem}
 }
+
+.xbox-onboarding{position:fixed;inset:0;z-index:198;background:#050505;color:#fff;font-family:"Segoe UI",system-ui,sans-serif;display:grid;place-items:center;transition:opacity .24s ease}
+.xbox-onboarding.out{opacity:0}.onboard-shell{width:min(92rem,calc(100vw - 4rem));min-height:52rem;display:grid;grid-template-rows:auto 1fr}
+.onboard-xbox{display:flex;align-items:center;gap:1rem;color:#fff;font-size:1.55rem;font-weight:700;letter-spacing:.12em;padding:2rem 0}
+.onboard-xbox img{width:3.6rem;height:3.6rem}.onboard-content{align-self:center;max-width:70rem;opacity:0;transform:translateY(1rem)}
+.onboard-content.ready{animation:onboardIn .3s cubic-bezier(.16,1,.3,1) forwards}@keyframes onboardIn{to{opacity:1;transform:none}}
+.onboard-eyebrow{color:#107c10;font-size:1.35rem;font-weight:800;letter-spacing:.12em;margin-bottom:1.1rem}.onboard-content h1{font-size:5.2rem;line-height:1.02;font-weight:500;margin:0 0 1.2rem}.onboard-content p{font-size:1.75rem;color:rgba(255,255,255,.68);margin:0 0 3rem}
+.onboard-primary,.onboard-secondary,.onboard-choice{font:600 1.45rem "Segoe UI",system-ui;border:0;color:#fff;cursor:pointer}.onboard-primary{background:#107c10;padding:1.2rem 2.5rem;min-width:14rem}.onboard-primary:hover,.onboard-primary:focus{background:#16a016;outline:.25rem solid #fff;outline-offset:.2rem}.onboard-secondary{background:#292929;padding:1.2rem 2rem}.onboard-actions{display:flex;gap:1rem;align-items:center}
+.onboard-loader{display:flex;gap:.8rem}.onboard-loader i{width:1.3rem;height:1.3rem;background:#107c10;animation:onboardPulse .9s ease-in-out infinite alternate}.onboard-loader i:nth-child(2){animation-delay:.12s}.onboard-loader i:nth-child(3){animation-delay:.24s}.onboard-loader i:nth-child(4){animation-delay:.36s}@keyframes onboardPulse{to{opacity:.25;transform:translateY(-.5rem)}}
+.onboard-field{display:block;width:min(48rem,100%);margin-bottom:2rem}.onboard-field span{display:block;font-size:1.25rem;margin-bottom:.65rem;color:rgba(255,255,255,.72)}.onboard-field input{width:100%;box-sizing:border-box;background:#fff;color:#111;border:.3rem solid transparent;padding:1.25rem 1.4rem;font:500 1.65rem "Segoe UI",system-ui;outline:none}.onboard-field input:focus{border-color:#107c10}
+.onboard-profile{display:flex;align-items:center;gap:1.6rem;margin-bottom:2.4rem}.onboard-profile img{width:9rem;height:9rem;object-fit:cover}.onboard-profile strong{font-size:2.2rem;font-weight:500}
+.onboard-choice-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2.5rem}.onboard-choice{min-height:12rem;padding:1.5rem;text-align:left;background:#202020;border:.3rem solid transparent}.onboard-choice.selected{border-color:#107c10}.onboard-choice b,.onboard-choice span{display:block}.onboard-choice b{font-size:1.55rem;margin-bottom:.7rem}.onboard-choice span{font-weight:400;color:rgba(255,255,255,.62);line-height:1.35}
+@media(max-width:720px){.onboard-shell{width:calc(100vw - 2.4rem);min-height:calc(100vh - 2.4rem)}.onboard-content h1{font-size:3.8rem}.onboard-choice-grid{grid-template-columns:1fr}.onboard-choice{min-height:7rem}}
