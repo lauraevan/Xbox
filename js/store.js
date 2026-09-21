@@ -177,7 +177,7 @@ function storeCard(game, { compact=false, wide=false, deal=false } = {}){
 }
 
 function leadCard(game){
-  const btn = el('button', 'store-game store-lead');
+  const btn = el('button', 'store-game store-lead store-card-enter');
   btn.dataset.nav = '';
   btn.dataset.storeKey = game.gameKey;
   btn.dataset.ringRadius = '.45rem';
@@ -188,6 +188,8 @@ function leadCard(game){
   img.alt = '';
   img.loading = 'eager';
   img.decoding = 'async';
+  img.addEventListener('load', () => img.classList.add('ready'), { once:true });
+  if (img.complete) requestAnimationFrame(() => img.classList.add('ready'));
   try { img.fetchPriority = 'high'; } catch {}
   art.append(img);
   if (Cloud.owns(game)) art.append(el('span', 'store-owned-badge', 'OWNED'));
@@ -474,7 +476,7 @@ function appendBrowseBatch(content, list, token){
   const frag = document.createDocumentFragment();
   list.slice(start, end).forEach((game, index) => {
     const card = storeCard(game, { deal:mode === 'deals' });
-    card.style.setProperty('--store-order', String(Math.min(index, 14)));
+    card.style.setProperty('--store-delay', `${Math.min(index, 14) * 14}ms`);
     frag.append(card);
   });
   grid.insertBefore(frag, sentinel);
