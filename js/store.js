@@ -628,7 +628,7 @@ async function enrichProductDetails(node, game){
     ['Release', rich.releaseDate],
     ['Developer', dev.join(', ')],
     ['Publisher', pubs.join(', ')],
-    ['Platforms', (rich.platforms || []).filter(Boolean).join(' · ')],
+    ['Platforms', (rich.platforms || []).filter(value => value && !/^trailer for\b/i.test(String(value))).join(' · ')],
     ['Genres', (rich.genres || []).filter(Boolean).join(' · ')],
     ['Modes', (rich.gameModes || []).filter(Boolean).join(' · ')],
     ['Themes', (rich.themes || []).filter(Boolean).join(' · ')],
