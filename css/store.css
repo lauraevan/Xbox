@@ -1076,8 +1076,8 @@ body[data-view="store"] .legend{
   will-change:transform;
 }
 .store-card-enter{
-  animation:xstoreCardIn .28s var(--store-ease-out) both;
-  animation-delay:calc(min(var(--store-order,0),14) * 14ms);
+  animation:xstoreCardIn .28s var(--store-ease-out) backwards;
+  animation-delay:var(--store-delay,0ms);
 }
 @keyframes xstoreCardIn{
   from{opacity:0;transform:translate3d(0,.85rem,0) scale(.992)}
