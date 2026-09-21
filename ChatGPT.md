@@ -1148,7 +1148,7 @@ The project succeeds when someone can look at it and immediately feel that it is
 
 ### 2026-09-20 — Xbox version snapshot boot notification
 
-Current snapshot: `ob6r2k`
+Current snapshot: `pp3v8m`
 
 After every successful Xbox boot, show a compact green-and-black build notification in the **bottom-right corner** of the screen. It must have a clearly visible Xbox-green outline, rounded corners, dark black surface, and restrained Windows/Xbox styling. The notification uses the repo-local Xbox logo and reads `Xbox Version 1.5` and `Snapshot <random-code>`.
 
@@ -1222,3 +1222,8 @@ The onboarding is intentionally much darker: near-black charcoal background, dar
 ### 2026-09-20 — onboarding reset workflow
 
 Until the user explicitly says to stop, every user-visible onboarding update must also create a fresh one-time fleet reset marker so all clients clear prior Xbox-local data and are forced through the latest onboarding. Current reset epoch: `ob6r2k`.
+
+
+### 2026-09-20 — pixel-match onboarding geometry pass
+
+The onboarding was re-tuned against the supplied photos rather than stylized from memory. Background brightness, panel opacity, border weight, title size, network spinner placement, Gamertag panel dimensions, keyboard proportions, color swatch geometry, privacy row heights, and controller legend positions were tightened to the reference. The color screen no longer shows an invented visible Next button. Current onboarding reset epoch is `pp3v8m`, per the standing rule to reset everyone after every onboarding update.
