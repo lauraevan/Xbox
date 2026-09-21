@@ -32,6 +32,7 @@ let mode = 'home';
 let filter = 'all';
 let query = '';
 let product = null;
+let checkout = null;
 let lastRoot = null;
 let selectedHomeGame = null;
 let autoRotateTimer = null;
@@ -555,7 +556,18 @@ function showCloudError(err){
   window.App?.toast?.('Cloud gaming', err?.message || 'Could not start this game.');
 }
 
+function closeCheckout(){
+  if (!checkout) return;
+  const node = checkout;
+  checkout = null;
+  node.classList.add('out');
+  setTimeout(() => node.remove(), 160);
+  try { window.Nav?.popLayer?.(); } catch {}
+  requestAnimationFrame(() => window.Nav?.repaint?.());
+}
+
 function closeProduct(){
+  closeCheckout();
   if (!product) return;
   const node = product;
   product = null;
@@ -690,6 +702,83 @@ async function enrichProductDetails(node, game){
   window.Nav?.repaint?.();
 }
 
+function openCheckout(game, productNode, acquireButton){
+  closeCheckout();
+
+  const offer = dealFor(game);
+  const priceText = offer ? money(offer.now) : 'Free';
+  const oldPrice = offer ? money(offer.was) : '';
+  const confirmLabel = offer ? `BUY ${priceText}` : 'GET';
+
+  const layer = el('div', 'xcheckout');
+  layer.innerHTML = `
+    <button class="xcheckout-scrim" aria-label="Cancel purchase"></button>
+    <section class="xcheckout-panel" role="dialog" aria-modal="true" aria-label="Confirm purchase">
+      <div class="xcheckout-head">
+        <div class="xcheckout-kicker">MICROSOFT STORE</div>
+        <h2>Buy game</h2>
+      </div>
+      <div class="xcheckout-game">
+        <img src="${escapeHtml(game.cover || game.image)}" alt="">
+        <div>
+          <strong>${escapeHtml(game.name)}</strong>
+          <span>Standard Edition · Digital</span>
+        </div>
+      </div>
+      <div class="xcheckout-line">
+        <span>Item</span>
+        <span>${oldPrice ? `<del>${oldPrice}</del>` : ''}<strong>${priceText}</strong></span>
+      </div>
+      <div class="xcheckout-line total">
+        <span>Total</span>
+        <span><strong>${priceText}</strong></span>
+      </div>
+      <div class="xcheckout-profile">
+        <span class="xcheckout-profile-dot"></span>
+        <div><strong>xboxtest</strong><small>Purchasing for this Xbox profile</small></div>
+      </div>
+      <div class="xcheckout-note">${offer ? 'Demo Store checkout. No real payment is processed.' : 'No payment required. This game will be added to My games & apps.'}</div>
+      <div class="xcheckout-actions">
+        <button class="xcheckout-confirm" data-nav data-checkout-confirm>${confirmLabel}</button>
+        <button class="xcheckout-cancel" data-nav data-checkout-cancel>CANCEL</button>
+      </div>
+    </section>`;
+
+  const finish = () => {
+    Cloud.acquire(game);
+    refreshProductOwnership(productNode, game);
+    window.Sound?.select?.();
+    window.App?.toast?.('Added to your library', game.name);
+    window.CloudLibrary?.refresh?.();
+    closeCheckout();
+    requestAnimationFrame(() => {
+      window.Nav?.repaint?.();
+      window.Nav?.focus?.(acquireButton, { silent:true });
+    });
+  };
+
+  const confirm = layer.querySelector('[data-checkout-confirm]');
+  const cancel = layer.querySelector('[data-checkout-cancel]');
+  confirm._navActivate = finish;
+  cancel._navActivate = closeCheckout;
+  layer.querySelector('.xcheckout-scrim').addEventListener('click', closeCheckout);
+  confirm.addEventListener('click', event => {
+    event.preventDefault();
+    event.stopPropagation();
+    finish();
+  });
+  cancel.addEventListener('click', event => {
+    event.preventDefault();
+    event.stopPropagation();
+    closeCheckout();
+  });
+
+  productNode.append(layer);
+  checkout = layer;
+  window.Nav?.pushLayer?.(layer);
+  requestAnimationFrame(() => window.Nav?.focusIn?.(layer, '[data-checkout-confirm]'));
+}
+
 function openProduct(game){
   closeProduct();
   const root = lastRoot || document.getElementById('view-store');
@@ -703,35 +792,44 @@ function openProduct(game){
     <div class="xproduct-scrim"></div>
     <button class="xproduct-back" data-nav data-store-back aria-label="Back">${icon('back')}</button>
     <div class="xproduct-body">
-      <div class="xproduct-cover-wrap"><img class="xproduct-cover" src="${escapeHtml(game.cover || game.image)}" alt=""></div>
-      <div class="xproduct-copy">
-        <div class="xproduct-type">XBOX CLOUD GAME</div>
-        <h1 class="xproduct-title">${escapeHtml(game.name)}</h1>
-        <div class="xproduct-publisher">Stratus Cloud • ${escapeHtml(game.tags[0] || 'Game')}</div>
-        <div class="xproduct-rating"><span>★★★★★</span><b>${rating}</b><small>${reviews} ratings</small></div>
-        <div class="xproduct-badges"><span>Cloud playable</span><span>Controller</span><span>Digital</span></div>
-        ${productDeal ? `<div class="xproduct-deal-strip"><b>SAVE ${productDeal.discount}%</b><span>Deals & specials</span></div>` : ''}
-        <p class="xproduct-desc">${escapeHtml(game.description || 'Play instantly from the cloud.')}</p>
+      <div class="xproduct-main">
+        <div class="xproduct-cover-wrap"><img class="xproduct-cover" src="${escapeHtml(game.cover || game.image)}" alt=""></div>
+        <div class="xproduct-copy">
+          <div class="xproduct-type">XBOX CLOUD GAME</div>
+          <h1 class="xproduct-title">${escapeHtml(game.name)}</h1>
+          <div class="xproduct-meta">
+            <div class="xproduct-publisher">Stratus Cloud • ${escapeHtml(game.tags[0] || 'Game')}</div>
+            <div class="xproduct-rating"><span>★★★★★</span><b>${rating}</b><small>${reviews} ratings</small></div>
+          </div>
+          <div class="xproduct-badges"><span>Cloud playable</span><span>Controller</span><span>Digital</span></div>
+          ${productDeal ? `<div class="xproduct-deal-strip"><b>SAVE ${productDeal.discount}%</b><span>Deals & specials</span></div>` : ''}
+          <p class="xproduct-desc">${escapeHtml(game.description || 'Play instantly from the cloud.')}</p>
+          <div class="xproduct-cloud-row">${CLOUD_ICON}<span>Streams instantly after purchase. No install required.</span></div>
+        </div>
+      </div>
+      <aside class="xproduct-buy-card">
+        <div class="xproduct-buy-kicker">STANDARD EDITION</div>
+        <div class="xproduct-buy-title">${escapeHtml(game.name)}</div>
         <div class="xproduct-price"></div>
         <div class="xproduct-ownership"></div>
+        <div class="xproduct-buy-rule"></div>
+        <div class="xproduct-buy-benefits">
+          <span>✓ Play with cloud gaming</span>
+          <span>✓ Added to My games & apps</span>
+          <span>✓ No download required</span>
+        </div>
         <div class="xproduct-actions">
           <button class="xproduct-action primary" data-nav data-store-acquire></button>
-          <button class="xproduct-action" data-nav data-store-wish>${wished(game) ? 'REMOVE FROM WISH LIST' : 'ADD TO WISH LIST'}</button>
+          <button class="xproduct-action secondary" data-nav data-store-wish>${wished(game) ? 'REMOVE FROM WISH LIST' : 'ADD TO WISH LIST'}</button>
         </div>
-        <div class="xproduct-cloud-row">${CLOUD_ICON}<span>No install required. After you get this game, it appears in My games & apps and can be streamed immediately.</span></div>
-      </div>
+        <div class="xproduct-buy-foot">Digital purchase · Xbox profile: xboxtest</div>
+      </aside>
     </div>`;
 
   const acquire = node.querySelector('[data-store-acquire]');
   acquire._navActivate = async () => {
     if (!Cloud.owns(game)){
-      Cloud.acquire(game);
-      refreshProductOwnership(node, game);
-      window.Sound?.select?.();
-      window.App?.toast?.('Added to your library', game.name);
-      window.CloudLibrary?.refresh?.();
-      window.Nav?.repaint?.();
-      window.Nav?.focus?.(acquire, { silent:true });
+      openCheckout(game, node, acquire);
       return;
     }
     try { await Cloud.play(game); } catch (err){ showCloudError(err); }
@@ -775,6 +873,7 @@ window.addEventListener('nav:focus', event => {
 });
 
 window.addEventListener('nav:button', event => {
+  if (event.detail?.button === 'b' && checkout){ closeCheckout(); return; }
   if (event.detail?.button === 'b' && product){ closeProduct(); return; }
   if (event.detail?.button === 'x' && document.body.dataset.view === 'store' && !product){
     switchMode('games');
