@@ -41,6 +41,7 @@ const DEFAULTS = {
   /* ── console-wide, shared by every profile ── */
   settings: {
     theme:     'dark',
+    onboardingComplete:false,
     accent:    '#4ade4a',
     sounds:    true,
     volume:    70,
