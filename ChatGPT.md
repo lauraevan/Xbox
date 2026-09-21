@@ -1148,7 +1148,7 @@ The project succeeds when someone can look at it and immediately feel that it is
 
 ### 2026-09-20 — Xbox version snapshot boot notification
 
-Current snapshot: `kb2x7d`
+Current snapshot: `ob6r2k`
 
 After every successful Xbox boot, show a compact green-and-black build notification in the **bottom-right corner** of the screen. It must have a clearly visible Xbox-green outline, rounded corners, dark black surface, and restrained Windows/Xbox styling. The notification uses the repo-local Xbox logo and reads `Xbox Version 1.5` and `Snapshot <random-code>`.
 
@@ -1217,3 +1217,8 @@ A new one-time global reset marker `xbox.reset.20260920.fw9q3n` clears every pri
 ### 2026-09-20 — dark onboarding + working on-screen keyboard
 
 The onboarding is intentionally much darker: near-black charcoal background, darker translucent Xbox panels, and darker keyboard keys while retaining the supplied screenshot geometry. The on-screen keyboard is now functional. Tapping letter/number/punctuation keys appends to the real Gamertag input, Backspace deletes, Shift/Caps toggles letter case, Space inserts a space, typing with the native keyboard still works, and Enter advances. The color screen now advances only through an explicit Next action instead of an automatic timeout.
+
+
+### 2026-09-20 — onboarding reset workflow
+
+Until the user explicitly says to stop, every user-visible onboarding update must also create a fresh one-time fleet reset marker so all clients clear prior Xbox-local data and are forced through the latest onboarding. Current reset epoch: `ob6r2k`.
