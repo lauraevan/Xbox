@@ -1,5 +1,5 @@
 name: Vendor GameNexus launcher details
-# selector pass 3
+# selector pass 4
 
 on:
   push:
@@ -46,4 +46,5 @@ jobs:
             exit 0
           fi
           git commit -m 'Vendor GameNexus launcher details'
+          git pull --rebase origin claude/xbox-web-replica-v4s0jk
           git push origin HEAD:claude/xbox-web-replica-v4s0jk
