@@ -1148,7 +1148,7 @@ The project succeeds when someone can look at it and immediately feel that it is
 
 ### 2026-09-20 — Xbox version snapshot boot notification
 
-Current snapshot: `sp8m2x`
+Current snapshot: `fg6n2k`
 
 After every successful Xbox boot, show a compact green-and-black build notification in the **bottom-right corner** of the screen. It must have a clearly visible Xbox-green outline, rounded corners, dark black surface, and restrained Windows/Xbox styling. The notification uses the repo-local Xbox logo and reads `Xbox Version 1.5` and `Snapshot <random-code>`.
 
@@ -1254,7 +1254,7 @@ Important: GameNexus and IGDB are source-time references only. The Xbox runtime 
 
 The launcher exposes every captured screenshot in a horizontal local gallery and uses the selected screenshot as the launcher hero. Do not replace this with a remote GameNexus embed or runtime API request.
 
-Current snapshot: `gn8r4k`.
+Current snapshot: `fg6n2k`.
 
 
 ### 2026-09-20 — rich details across the full Stratus catalog
@@ -1265,7 +1265,7 @@ The GameNexus vendor workflow now enumerates the entire Stratus catalog. It sear
 
 The rich launcher is now shared beyond the Home row. Stratus games opened from My games & apps use the same rich launcher before Play, and Microsoft Store product pages are asynchronously enriched with the local developer/publisher/release/platform/genre/mode/theme metadata plus a selectable local screenshot rail.
 
-Current snapshot: `rv6k2p`.
+Current snapshot: `fg6n2k`.
 
 
 ### 2026-09-21 — Store motion/performance rework
@@ -1276,4 +1276,13 @@ Motion is deliberately restrained and Xbox-like: fast page entrances, subtle car
 
 Browse images remain lazy/async so the full 225-title Stratus catalog does not decode at once. Rich local product metadata and screenshot galleries remain intact.
 
-Current snapshot: `sp8m2x`.
+Current snapshot: `fg6n2k`.
+
+
+### 2026-09-21 — Figure-clean Store refinement fg6n2k
+
+The Store was visually refined after studying Figure Cloud's public UI structure: strong artwork-first game discovery, clear named shelves, direct library/search hierarchy, and minimal surrounding chrome. The Xbox Store keeps its own Xbox identity and geometry rather than copying Figure.
+
+Changes reduce visual noise and perceived latency: darker flatter surfaces, denser rails, smaller gaps, quieter metadata, faster focus transitions, restrained scale, cleaner search/filter controls, simplified product detail surfaces, and fewer continuous decorative animations. Automatic progressive catalogue loading remains in place with no manual load-more control.
+
+Current snapshot: `fg6n2k`.
