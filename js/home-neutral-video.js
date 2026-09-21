@@ -18,14 +18,45 @@ video.setAttribute('playsinline', '');
 video.setAttribute('webkit-playsinline', '');
 
 /* Pick the encode before anything is fetched. index.html carries the 1080p
-   H.264 as the universally decodable fallback; upgrade to WebM where it is
-   supported, and drop to the 720p pair on phones and tablets - 1.0MB instead
-   of 3.7MB, and a far cheaper decode. */
+   H.264 as the universally decodable fallback.
+   Highest-quality local encodes only - no 720p downgrade. Both are 1080p of
+   the same clip; WebM is preferred where it decodes because it is half the
+   bytes (1.9MB against 3.7MB), and H.264 is the universal fallback Safari
+   and iOS need. Measured in a Chromium without proprietary codecs:
+   canPlayType('video/mp4; codecs="avc1.42E01E"') === '' and the mp4 raised
+   MEDIA_ERR_SRC_NOT_SUPPORTED (code 4), which used to hide the element for
+   good and leave Home flat black with no way back. */
+const SOURCES = [
+  { src:'assets/wallpaper/waves-1080.webm', type:'video/webm; codecs="vp9"' },
+  { src:'assets/wallpaper/waves-1080.mp4',  type:'video/mp4; codecs="avc1.42E01E"' }
+];
+let sourceIndex = -1;
+
+function orderedSources(){
+  const playable = SOURCES.filter(s => video.canPlayType?.(s.type));
+  /* canPlayType can answer '' for something the browser will in fact play,
+     so never end up with an empty list. */
+  return playable.length ? playable : SOURCES;
+}
+
 function chooseSource(){
-  /* Highest-quality local encode only. No 720p/mobile downgrade and no
-     smaller WebM substitution. */
-  const next = 'assets/wallpaper/waves-1080.mp4';
-  if (!video.src.endsWith(next)) video.src = next;
+  const list = orderedSources();
+  /* index.html already points at the mp4, so leave it alone on a browser
+     that can decode it rather than starting a second fetch. */
+  const current = list.findIndex(s => video.src.endsWith(s.src));
+  if (current >= 0){ sourceIndex = current; return; }
+  sourceIndex = 0;
+  video.src = list[0].src;
+}
+
+/* One retry on the other encode before giving up on the clip entirely. */
+function nextSource(){
+  const list = orderedSources();
+  if (sourceIndex < 0 || sourceIndex >= list.length - 1) return false;
+  sourceIndex += 1;
+  video.src = list[sourceIndex].src;
+  video.load();
+  return true;
 }
 
 /* Every one of these is a reason not to spend a phone's battery or data.
@@ -102,8 +133,12 @@ video.addEventListener('pause', () => {
 });
 
 video.addEventListener('error', () => {
-  failed = true;
   playPending = false;
+  if (permitted() && nextSource()){
+    sync();
+    return;
+  }
+  failed = true;
   document.body.classList.remove('home-neutral-video-active', 'home-neutral-video-ready');
   video.hidden = true;
 });
@@ -123,7 +158,11 @@ window.addEventListener('pagehide', () => {
 reducedMotion?.addEventListener?.('change', sync);
 window.State?.on?.(event => {
   if (event?.type !== 'settings') return;
-  if (!video.src && permitted()) chooseSource();
+  if (permitted() && (!video.src || failed)){
+    failed = false;
+    video.hidden = false;
+    chooseSource();
+  }
   sync();
 });
 

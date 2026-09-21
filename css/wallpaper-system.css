@@ -28,7 +28,10 @@ body.wallpaper-custom-active .wallpaper-custom-media{
   visibility:visible;
 }
 
-body[data-wallpaper-mode="waves"] .home-neutral-video{
+body[data-wallpaper-mode="waves"] .home-neutral-video,
+body[data-wallpaper-mode="waves-blue"] .home-neutral-video,
+body[data-wallpaper-mode="waves-red"] .home-neutral-video,
+body[data-wallpaper-mode="waves-gold"] .home-neutral-video{
   filter:brightness(var(--wallpaper-brightness)) blur(var(--wallpaper-blur)) !important;
   transform:scale(1.012) translateZ(0);
 }

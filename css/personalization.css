@@ -499,22 +499,39 @@ body[data-animation-strength="expressive"] .sysnav-btn{
 }
 
 
-/* Built-in Xbox Waves colorways. Reuse the single optimized motion asset so
-   switching colors is instant and does not triple video decode/memory cost. */
-body[data-home-background-mode="waves-blue"] .home-neutral-video{
+/* Built-in Xbox Waves colourways. One optimised motion asset under three CSS
+   filters, so switching colour is instant and never multiplies video decode
+   or memory cost.
+
+   These are keyed to data-wallpaper-mode, which wallpaper-system.js actually
+   writes; the earlier data-home-background-mode was set by nothing, so the
+   colours could not be selected at all.
+
+   The clip is "Waves Faded Dark Grey" and it is greyscale: measured on its own
+   poster frame, mean RGB 23.2/23.1/23.3 and mean HSV saturation 1.3 of 255.
+   saturate() and hue-rotate() therefore have nothing to work on - sepia(1)
+   first gives the grey a chroma to rotate. Measured mean hue and saturation of
+   the rendered 1920x1080 frame:
+     before  blue hue 60 sat .03, red hue 206 sat .03   (i.e. still grey)
+     after   blue hue 218 sat .62, red hue 9 sat .65, gold hue 41 sat .73
+   Brightness and blur stay on the user's knobs. */
+body[data-wallpaper-mode="waves-blue"] .home-neutral-video{
   visibility:visible !important;
   opacity:1 !important;
-  filter:brightness(.82) saturate(2.15) hue-rotate(160deg) contrast(1.08) blur(var(--personal-bg-blur)) !important;
+  filter:brightness(var(--wallpaper-brightness,.42)) blur(var(--wallpaper-blur,0px))
+         sepia(1) hue-rotate(175deg) saturate(3.2) !important;
 }
-body[data-home-background-mode="waves-red"] .home-neutral-video{
+body[data-wallpaper-mode="waves-red"] .home-neutral-video{
   visibility:visible !important;
   opacity:1 !important;
-  filter:brightness(.72) saturate(2.35) hue-rotate(305deg) contrast(1.1) blur(var(--personal-bg-blur)) !important;
+  filter:brightness(var(--wallpaper-brightness,.42)) blur(var(--wallpaper-blur,0px))
+         sepia(1) hue-rotate(-38deg) saturate(3.6) !important;
 }
-body[data-home-background-mode="waves-gold"] .home-neutral-video{
+body[data-wallpaper-mode="waves-gold"] .home-neutral-video{
   visibility:visible !important;
   opacity:1 !important;
-  filter:brightness(.78) saturate(2.15) sepia(.32) hue-rotate(350deg) contrast(1.08) blur(var(--personal-bg-blur)) !important;
+  filter:brightness(var(--wallpaper-brightness,.42)) blur(var(--wallpaper-blur,0px))
+         sepia(1) hue-rotate(5deg) saturate(2.6) !important;
 }
 
 

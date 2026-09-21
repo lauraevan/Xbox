@@ -479,7 +479,7 @@ function renderSettings(root){
     const W=window.WallpaperSystem;
     const P=window.Personalization;
     const accentOptions=['#4ade4a','#107c10','#2d7dff','#8c52ff','#e96b2c','#f2f2f2'];
-    const wallpaperModes=['waves','black','game','custom','random'];
+    const wallpaperModes=['waves','waves-blue','waves-red','waves-gold','black','game','custom','random'];
     const wallpaperBehaviors=['static','adaptive','dynamic'];
     const brightnessOptions=[25,42,55,70,85,100];
     const blurOptions=[0,2,4,8,12];

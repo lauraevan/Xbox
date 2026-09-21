@@ -240,10 +240,21 @@ async function restore(){
   stopMedia();
 }
 
+/* The four Waves colourways are one asset under four CSS filters, so every
+   check that means "is the Waves wallpaper on" has to accept all of them. */
+const WAVES_MODES = ['waves','waves-blue','waves-red','waves-gold'];
+const isWaves = mode => WAVES_MODES.includes(mode || 'waves');
+
 function shouldPaintGameArt(){
   const s = settings();
-  if ((s.wallpaperMode || 'waves') === 'game') return true;
-  return ['adaptive','dynamic'].includes(s.wallpaperBehavior || 'dynamic');
+  const mode = s.wallpaperMode || 'waves';
+  if (mode === 'game') return true;
+  /* The chosen wallpaper wins over per-tile hero art. Before this, 'dynamic'
+     painted game art in every mode, so picking Waves still gave you game art
+     the moment focus landed on a tile - the wallpaper was only ever visible
+     in the gap before the first focus. 'adaptive' is the mode that explicitly
+     asks for art on focus, so that one still reveals it. */
+  return (s.wallpaperBehavior || 'dynamic') === 'adaptive';
 }
 
 function onGameArtPaint(){
@@ -276,7 +287,16 @@ function set(key,value){
 }
 
 function modeLabel(v=settings().wallpaperMode){
-  return ({waves:'Waves',black:'Solid black',game:'Game artwork',custom:'Custom',random:'Random saved'})[v] || 'Waves';
+  return ({
+    waves:'Waves',
+    'waves-blue':'Waves (Blue)',
+    'waves-red':'Waves (Red)',
+    'waves-gold':'Waves (Gold)',
+    black:'Solid black',
+    game:'Game artwork',
+    custom:'Custom',
+    random:'Random saved'
+  })[v] || 'Waves';
 }
 function behaviorLabel(v=settings().wallpaperBehavior){
   return ({static:'Static',adaptive:'Adaptive',dynamic:'Dynamic'})[v] || 'Dynamic';

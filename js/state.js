@@ -38,7 +38,8 @@ const DEFAULTS = {
     profileCapsule:false, // optional black Home profile text capsule
     devMode:     false, // exposes disabled/test cloud titles in the catalogue
     wallpaper:   '',    // legacy image URL support
-    wallpaperMode:'waves',      // waves | black | game | custom | random
+    // waves | waves-blue | waves-red | waves-gold | black | game | custom | random
+    wallpaperMode:'waves',
     wallpaperBehavior:'dynamic',// static | adaptive | dynamic
     wallpaperId:'',             // original-quality file stored in IndexedDB
     wallpaperBrightness:42,     // percent

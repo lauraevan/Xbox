@@ -35,10 +35,6 @@
 .drawer-personal-control strong{max-width:16rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:1.3rem;font-weight:600;color:#fff;text-align:right}
 .drawer-personal-control:hover,.drawer-personal-control[data-focused]{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.12)}
 .drawer-personal-control[data-focused]{outline:.2rem solid var(--accent);outline-offset:.08rem}
-body[data-wave-theme="cool"] .home-neutral-video{filter:brightness(var(--personal-bg-brightness)) blur(var(--personal-bg-blur)) hue-rotate(185deg) saturate(1.18)!important}
-body[data-wave-theme="mono"] .home-neutral-video{filter:brightness(var(--personal-bg-brightness)) blur(var(--personal-bg-blur)) grayscale(1) saturate(0)!important}
-body[data-wave-theme="warm"] .home-neutral-video{filter:brightness(var(--personal-bg-brightness)) blur(var(--personal-bg-blur)) sepia(.28) hue-rotate(330deg) saturate(1.2)!important}
-body[data-wave-theme="original"] .home-neutral-video{filter:brightness(var(--personal-bg-brightness)) blur(var(--personal-bg-blur))!important}
 @media(max-width:720px){.time-drawer-panel{top:1.2rem;right:1.2rem;bottom:1.2rem;width:min(35rem,calc(100vw - 2.4rem));max-width:none;padding:3rem 1.5rem 2rem}.time-drawer-clock{font-size:4.7rem}.drawer-personal-control{min-height:5.4rem}}
 @media(prefers-reduced-motion:reduce){.time-drawer-panel{transition:transform .12s linear}}
 

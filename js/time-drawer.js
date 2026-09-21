@@ -77,6 +77,10 @@ async function updateWeather(force=false){
   cond.textContent=label;icon.innerHTML=iconSvg(kind);lastWeatherAt=Date.now();
  }catch{cond.textContent='Unavailable';}
 }
+/* Waves is one clip under four CSS filters; the colourway lives in
+   wallpaperMode so a single setting still decides what Home shows. */
+const WAVES=['waves','waves-gold','waves-red','waves-blue'];
+const baseMode=mode=>WAVES.includes(mode)?'waves':(mode||'waves');
 const cycle=(v,arr)=>arr[(Math.max(0,arr.indexOf(v))+1)%arr.length];
 function set(key,value){
  if(window.Personalization?.set) window.Personalization.set(key,value);
@@ -106,20 +110,29 @@ function refreshControls(){
   control('Theme',labelMap(s.theme||'dark',{dark:'Dark mode',light:'Light mode'}),()=>{
    applyTheme((s.theme||'dark')==='dark'?'light':'dark');
   },'theme'),
-  control('Background',labelMap(s.homeBackgroundMode||'waves',{waves:'Waves',black:'Black',game:'Game art',custom:'Custom',random:'Random'}),()=>{
-   set('homeBackgroundMode',cycle(s.homeBackgroundMode||'waves',['waves','black','game','custom','random']));
+  /* These five write the settings the rest of the app actually reads:
+     wallpaperMode / wallpaperBrightness / wallpaperBlur / wallpaperMotion.
+     They previously wrote homeBackgroundMode, waveTheme, backgroundBrightness,
+     backgroundBlur and backgroundMotion, which nothing in the repo ever read,
+     so every control in this drawer stored a value and changed nothing. */
+  control('Background',labelMap(baseMode(s.wallpaperMode),{waves:'Waves',black:'Black',game:'Game art',custom:'Custom',random:'Random'}),()=>{
+   const next=cycle(baseMode(s.wallpaperMode),['waves','black','game','custom','random']);
+   /* Coming back to Waves keeps the colourway you last picked. */
+   set('wallpaperMode',next==='waves'?(WAVES.includes(s.wallpaperMode)?s.wallpaperMode:'waves'):next);
   },'background'),
-  control('Waves',labelMap(s.waveTheme||'original',{original:'Original',cool:'Cool',mono:'Mono',warm:'Warm'}),()=>{
-   set('waveTheme',cycle(s.waveTheme||'original',['original','cool','mono','warm']));
+  control('Waves',labelMap(WAVES.includes(s.wallpaperMode)?s.wallpaperMode:'waves',
+   {waves:'Original','waves-gold':'Gold','waves-red':'Red','waves-blue':'Blue'}),()=>{
+   /* Picking a colour also turns Waves back on if it was off. */
+   set('wallpaperMode',cycle(WAVES.includes(s.wallpaperMode)?s.wallpaperMode:'waves',WAVES));
   },'waves'),
-  control('Brightness',(s.backgroundBrightness??42)+'%',()=>{
-   set('backgroundBrightness',cycle(s.backgroundBrightness??42,[25,42,55,70,85,100]));
+  control('Brightness',(s.wallpaperBrightness??42)+'%',()=>{
+   set('wallpaperBrightness',cycle(s.wallpaperBrightness??42,[25,42,55,70,85,100]));
   },'brightness'),
-  control('Blur',(s.backgroundBlur||0)?(s.backgroundBlur+'px'):'Off',()=>{
-   set('backgroundBlur',cycle(s.backgroundBlur||0,[0,2,4,8,12]));
+  control('Blur',(s.wallpaperBlur||0)?(s.wallpaperBlur+'px'):'Off',()=>{
+   set('wallpaperBlur',cycle(s.wallpaperBlur||0,[0,2,4,8,12]));
   },'blur'),
-  control('Motion',labelMap(s.backgroundMotion||'normal',{off:'Off',low:'Low',normal:'Normal'}),()=>{
-   set('backgroundMotion',cycle(s.backgroundMotion||'normal',['off','low','normal']));
+  control('Motion',labelMap(s.wallpaperMotion||'normal',{off:'Off',low:'Low',normal:'Normal'}),()=>{
+   set('wallpaperMotion',cycle(s.wallpaperMotion||'normal',['off','low','normal']));
   },'motion'),
   control('Style',labelMap(s.personalizationPreset||'synapse',{synapse:'Synapse',xbox:'Xbox',minimal:'Minimal',custom:'Custom'}),()=>{
    const next=cycle(s.personalizationPreset||'synapse',['synapse','xbox','minimal']);
