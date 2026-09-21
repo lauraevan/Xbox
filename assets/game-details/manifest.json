@@ -1,0 +1,465 @@
+{
+  "version": 1,
+  "source": "GameNexus / IGDB",
+  "games": {
+    "Forza Horizon 5": {
+      "id": 141503,
+      "name": "Forza Horizon 5",
+      "rating": 89,
+      "releaseDate": "November 9, 2021",
+      "developers": [
+        "Playground Games"
+      ],
+      "publishers": [
+        "Xbox Game Studios",
+        "Microsoft Corporation"
+      ],
+      "platforms": [
+        "Xbox Series X|S",
+        "PC (Microsoft Windows)",
+        "PlayStation 5",
+        "Xbox One",
+        "Trailer for Forza Horizon 5"
+      ],
+      "genres": [
+        "Racing"
+      ],
+      "franchises": [
+        "Forza"
+      ],
+      "gameModes": [
+        "Single player",
+        "Multiplayer",
+        "Co-operative"
+      ],
+      "themes": [
+        "Action",
+        "Open world"
+      ],
+      "trailerId": "7fytkGUU7jk",
+      "cover": "assets/game-details/forza-horizon-5/cover.jpg",
+      "screenshots": [
+        "assets/game-details/forza-horizon-5/screenshots/01.jpg",
+        "assets/game-details/forza-horizon-5/screenshots/02.jpg",
+        "assets/game-details/forza-horizon-5/screenshots/03.jpg",
+        "assets/game-details/forza-horizon-5/screenshots/04.jpg",
+        "assets/game-details/forza-horizon-5/screenshots/05.jpg",
+        "assets/game-details/forza-horizon-5/screenshots/06.jpg",
+        "assets/game-details/forza-horizon-5/screenshots/07.jpg",
+        "assets/game-details/forza-horizon-5/screenshots/08.jpg",
+        "assets/game-details/forza-horizon-5/screenshots/09.jpg",
+        "assets/game-details/forza-horizon-5/screenshots/10.jpg",
+        "assets/game-details/forza-horizon-5/screenshots/11.jpg",
+        "assets/game-details/forza-horizon-5/screenshots/12.jpg",
+        "assets/game-details/forza-horizon-5/screenshots/13.jpg",
+        "assets/game-details/forza-horizon-5/screenshots/14.jpg",
+        "assets/game-details/forza-horizon-5/screenshots/15.jpg",
+        "assets/game-details/forza-horizon-5/screenshots/16.jpg",
+        "assets/game-details/forza-horizon-5/screenshots/17.jpg",
+        "assets/game-details/forza-horizon-5/screenshots/18.jpg",
+        "assets/game-details/forza-horizon-5/screenshots/19.jpg",
+        "assets/game-details/forza-horizon-5/screenshots/20.jpg"
+      ]
+    },
+    "Grand Theft Auto V": {
+      "id": 1020,
+      "name": "Grand Theft Auto V",
+      "rating": 89,
+      "releaseDate": "September 17, 2013",
+      "developers": [
+        "Rockstar North"
+      ],
+      "publishers": [
+        "Take-Two Interactive",
+        "Rockstar Games"
+      ],
+      "platforms": [
+        "Xbox Series X|S",
+        "PlayStation 3",
+        "PlayStation 4",
+        "PC (Microsoft Windows)",
+        "PlayStation 5",
+        "Xbox 360",
+        "Xbox One",
+        "Trailer for Grand Theft Auto V"
+      ],
+      "genres": [
+        "Shooter",
+        "Racing",
+        "Adventure"
+      ],
+      "franchises": [
+        "Grand Theft Auto"
+      ],
+      "gameModes": [
+        "Single player",
+        "Multiplayer",
+        "Co-operative"
+      ],
+      "themes": [
+        "Action",
+        "Comedy",
+        "Sandbox",
+        "Open world"
+      ],
+      "trailerId": "PIF_fqFZEuk",
+      "cover": "assets/game-details/grand-theft-auto-v/cover.jpg",
+      "screenshots": [
+        "assets/game-details/grand-theft-auto-v/screenshots/01.jpg",
+        "assets/game-details/grand-theft-auto-v/screenshots/02.jpg",
+        "assets/game-details/grand-theft-auto-v/screenshots/03.jpg",
+        "assets/game-details/grand-theft-auto-v/screenshots/04.jpg",
+        "assets/game-details/grand-theft-auto-v/screenshots/05.jpg",
+        "assets/game-details/grand-theft-auto-v/screenshots/06.jpg",
+        "assets/game-details/grand-theft-auto-v/screenshots/07.jpg",
+        "assets/game-details/grand-theft-auto-v/screenshots/08.jpg",
+        "assets/game-details/grand-theft-auto-v/screenshots/09.jpg",
+        "assets/game-details/grand-theft-auto-v/screenshots/10.jpg",
+        "assets/game-details/grand-theft-auto-v/screenshots/11.jpg",
+        "assets/game-details/grand-theft-auto-v/screenshots/12.jpg",
+        "assets/game-details/grand-theft-auto-v/screenshots/13.jpg",
+        "assets/game-details/grand-theft-auto-v/screenshots/14.jpg",
+        "assets/game-details/grand-theft-auto-v/screenshots/15.jpg",
+        "assets/game-details/grand-theft-auto-v/screenshots/16.jpg",
+        "assets/game-details/grand-theft-auto-v/screenshots/17.jpg",
+        "assets/game-details/grand-theft-auto-v/screenshots/18.jpg"
+      ]
+    },
+    "Hollow Knight: Silksong": {
+      "id": 115289,
+      "name": "Hollow Knight: Silksong",
+      "rating": 91,
+      "releaseDate": "September 4, 2025",
+      "developers": [
+        "Team Cherry"
+      ],
+      "publishers": [
+        "Team Cherry"
+      ],
+      "platforms": [
+        "Xbox Series X|S",
+        "PlayStation 4",
+        "Linux",
+        "Nintendo Switch 2",
+        "PC (Microsoft Windows)",
+        "PlayStation 5",
+        "Mac",
+        "Xbox One",
+        "Nintendo Switch",
+        "Trailer for Hollow Knight: Silksong"
+      ],
+      "genres": [
+        "Platform",
+        "Adventure",
+        "Indie"
+      ],
+      "franchises": [],
+      "gameModes": [
+        "Single player"
+      ],
+      "themes": [
+        "Action",
+        "Fantasy"
+      ],
+      "trailerId": "pFAknD_9U7c",
+      "cover": "assets/game-details/hollow-knight-silksong/cover.jpg",
+      "screenshots": [
+        "assets/game-details/hollow-knight-silksong/screenshots/01.jpg",
+        "assets/game-details/hollow-knight-silksong/screenshots/02.jpg",
+        "assets/game-details/hollow-knight-silksong/screenshots/03.jpg",
+        "assets/game-details/hollow-knight-silksong/screenshots/04.jpg",
+        "assets/game-details/hollow-knight-silksong/screenshots/05.jpg",
+        "assets/game-details/hollow-knight-silksong/screenshots/06.jpg"
+      ]
+    },
+    "Elden Ring": {
+      "id": 119133,
+      "name": "Elden Ring",
+      "rating": 95,
+      "releaseDate": "February 25, 2022",
+      "developers": [
+        "FromSoftware"
+      ],
+      "publishers": [
+        "Bandai Namco Entertainment",
+        "FromSoftware"
+      ],
+      "platforms": [
+        "Xbox Series X|S",
+        "PlayStation 4",
+        "Nintendo Switch 2",
+        "PC (Microsoft Windows)",
+        "PlayStation 5",
+        "Xbox One",
+        "Trailer for Elden Ring"
+      ],
+      "genres": [
+        "Role-playing (RPG)",
+        "Adventure"
+      ],
+      "franchises": [
+        "Elden Ring"
+      ],
+      "gameModes": [
+        "Single player",
+        "Multiplayer",
+        "Co-operative"
+      ],
+      "themes": [
+        "Action",
+        "Fantasy",
+        "Open world"
+      ],
+      "trailerId": "D1mDo1CEMuE",
+      "cover": "assets/game-details/elden-ring/cover.jpg",
+      "screenshots": [
+        "assets/game-details/elden-ring/screenshots/01.jpg",
+        "assets/game-details/elden-ring/screenshots/02.jpg",
+        "assets/game-details/elden-ring/screenshots/03.jpg",
+        "assets/game-details/elden-ring/screenshots/04.jpg",
+        "assets/game-details/elden-ring/screenshots/05.jpg",
+        "assets/game-details/elden-ring/screenshots/06.jpg",
+        "assets/game-details/elden-ring/screenshots/07.jpg",
+        "assets/game-details/elden-ring/screenshots/08.jpg",
+        "assets/game-details/elden-ring/screenshots/09.jpg",
+        "assets/game-details/elden-ring/screenshots/10.jpg"
+      ]
+    },
+    "Red Dead Redemption": {
+      "id": 434,
+      "name": "Red Dead Redemption",
+      "rating": 91,
+      "releaseDate": "May 18, 2010",
+      "developers": [
+        "Rockstar North",
+        "Rockstar San Diego"
+      ],
+      "publishers": [
+        "Rockstar Games",
+        "Take-Two Interactive"
+      ],
+      "platforms": [
+        "PlayStation 3",
+        "PC (Microsoft Windows)",
+        "Xbox 360",
+        "Trailer for Red Dead Redemption"
+      ],
+      "genres": [
+        "Shooter",
+        "Role-playing (RPG)",
+        "Adventure"
+      ],
+      "franchises": [],
+      "gameModes": [
+        "Single player",
+        "Multiplayer"
+      ],
+      "themes": [
+        "Action",
+        "Sandbox",
+        "Open world"
+      ],
+      "trailerId": "PD24MkbHQrc",
+      "cover": "assets/game-details/red-dead-redemption/cover.jpg",
+      "screenshots": [
+        "assets/game-details/red-dead-redemption/screenshots/01.jpg",
+        "assets/game-details/red-dead-redemption/screenshots/02.jpg",
+        "assets/game-details/red-dead-redemption/screenshots/03.jpg",
+        "assets/game-details/red-dead-redemption/screenshots/04.jpg",
+        "assets/game-details/red-dead-redemption/screenshots/05.jpg",
+        "assets/game-details/red-dead-redemption/screenshots/06.jpg",
+        "assets/game-details/red-dead-redemption/screenshots/07.jpg"
+      ]
+    },
+    "Minecraft": {
+      "id": 135400,
+      "name": "Minecraft",
+      "rating": 82,
+      "releaseDate": "December 19, 2016",
+      "developers": [
+        "Mojang Studios"
+      ],
+      "publishers": [
+        "Mojang Studios"
+      ],
+      "platforms": [
+        "Amazon Fire TV",
+        "Xbox Series X|S",
+        "PlayStation 4",
+        "Linux",
+        "Nintendo Switch 2",
+        "Gear VR",
+        "Windows Phone",
+        "Android",
+        "PC (Microsoft Windows)",
+        "iOS",
+        "PlayStation 5",
+        "Mac",
+        "Xbox One",
+        "Nintendo Switch",
+        "Trailer for Minecraft"
+      ],
+      "genres": [
+        "Simulator",
+        "Adventure",
+        "Arcade"
+      ],
+      "franchises": [
+        "Minecraft"
+      ],
+      "gameModes": [
+        "Single player",
+        "Multiplayer",
+        "Co-operative",
+        "Split screen",
+        "Massively Multiplayer Online (MMO)"
+      ],
+      "themes": [
+        "Action",
+        "Fantasy",
+        "Survival",
+        "Sandbox",
+        "Kids",
+        "Open world",
+        "4X (explore, expand, exploit, and exterminate)"
+      ],
+      "trailerId": "5nWMr2njHiA",
+      "cover": "assets/game-details/minecraft/cover.jpg",
+      "screenshots": [
+        "assets/game-details/minecraft/screenshots/01.jpg",
+        "assets/game-details/minecraft/screenshots/02.jpg",
+        "assets/game-details/minecraft/screenshots/03.jpg",
+        "assets/game-details/minecraft/screenshots/04.jpg",
+        "assets/game-details/minecraft/screenshots/05.jpg",
+        "assets/game-details/minecraft/screenshots/06.jpg",
+        "assets/game-details/minecraft/screenshots/07.jpg",
+        "assets/game-details/minecraft/screenshots/08.jpg",
+        "assets/game-details/minecraft/screenshots/09.jpg",
+        "assets/game-details/minecraft/screenshots/10.jpg",
+        "assets/game-details/minecraft/screenshots/11.jpg",
+        "assets/game-details/minecraft/screenshots/12.jpg"
+      ]
+    },
+    "Fortnite": {
+      "id": 1905,
+      "name": "Fortnite",
+      "rating": 77,
+      "releaseDate": "June 29, 2020",
+      "developers": [
+        "Epic Games"
+      ],
+      "publishers": [
+        "Epic Games"
+      ],
+      "platforms": [
+        "Xbox Series X|S",
+        "PlayStation 4",
+        "Nintendo Switch 2",
+        "Android",
+        "PC (Microsoft Windows)",
+        "iOS",
+        "PlayStation 5",
+        "Mac",
+        "Xbox One",
+        "Nintendo Switch",
+        "Trailer for Fortnite"
+      ],
+      "genres": [
+        "Shooter",
+        "Simulator"
+      ],
+      "franchises": [
+        "Fortnite"
+      ],
+      "gameModes": [
+        "Single player",
+        "Multiplayer",
+        "Co-operative",
+        "Split screen",
+        "Battle Royale"
+      ],
+      "themes": [
+        "Action",
+        "Survival",
+        "Sandbox",
+        "Open world"
+      ],
+      "trailerId": "2GSfjeYVpkQ",
+      "cover": "assets/game-details/fortnite/cover.jpg",
+      "screenshots": [
+        "assets/game-details/fortnite/screenshots/01.jpg",
+        "assets/game-details/fortnite/screenshots/02.jpg",
+        "assets/game-details/fortnite/screenshots/03.jpg",
+        "assets/game-details/fortnite/screenshots/04.jpg",
+        "assets/game-details/fortnite/screenshots/05.jpg",
+        "assets/game-details/fortnite/screenshots/06.jpg",
+        "assets/game-details/fortnite/screenshots/07.jpg",
+        "assets/game-details/fortnite/screenshots/08.jpg",
+        "assets/game-details/fortnite/screenshots/09.jpg",
+        "assets/game-details/fortnite/screenshots/10.jpg",
+        "assets/game-details/fortnite/screenshots/11.jpg",
+        "assets/game-details/fortnite/screenshots/12.jpg",
+        "assets/game-details/fortnite/screenshots/13.jpg"
+      ]
+    },
+    "Cyberpunk 2077": {
+      "id": 1877,
+      "name": "Cyberpunk 2077",
+      "rating": 79,
+      "releaseDate": "December 10, 2020",
+      "developers": [
+        "CD Projekt RED"
+      ],
+      "publishers": [
+        "CD Projekt"
+      ],
+      "platforms": [
+        "Google Stadia",
+        "Xbox Series X|S",
+        "PlayStation 4",
+        "Nintendo Switch 2",
+        "PC (Microsoft Windows)",
+        "PlayStation 5",
+        "Mac",
+        "Xbox One",
+        "Trailer for Cyberpunk 2077"
+      ],
+      "genres": [
+        "Shooter",
+        "Role-playing (RPG)",
+        "Adventure"
+      ],
+      "franchises": [
+        "Cyberpunk"
+      ],
+      "gameModes": [
+        "Single player"
+      ],
+      "themes": [
+        "Action",
+        "Science fiction",
+        "Sandbox",
+        "Open world"
+      ],
+      "trailerId": "vjF9GgrY9c0",
+      "cover": "assets/game-details/cyberpunk-2077/cover.jpg",
+      "screenshots": [
+        "assets/game-details/cyberpunk-2077/screenshots/01.jpg",
+        "assets/game-details/cyberpunk-2077/screenshots/02.jpg",
+        "assets/game-details/cyberpunk-2077/screenshots/03.jpg",
+        "assets/game-details/cyberpunk-2077/screenshots/04.jpg",
+        "assets/game-details/cyberpunk-2077/screenshots/05.jpg",
+        "assets/game-details/cyberpunk-2077/screenshots/06.jpg",
+        "assets/game-details/cyberpunk-2077/screenshots/07.jpg",
+        "assets/game-details/cyberpunk-2077/screenshots/08.jpg",
+        "assets/game-details/cyberpunk-2077/screenshots/09.jpg",
+        "assets/game-details/cyberpunk-2077/screenshots/10.jpg",
+        "assets/game-details/cyberpunk-2077/screenshots/11.jpg",
+        "assets/game-details/cyberpunk-2077/screenshots/12.jpg",
+        "assets/game-details/cyberpunk-2077/screenshots/13.jpg",
+        "assets/game-details/cyberpunk-2077/screenshots/14.jpg",
+        "assets/game-details/cyberpunk-2077/screenshots/15.jpg"
+      ]
+    }
+  }
+}
