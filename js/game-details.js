@@ -43,7 +43,7 @@ function canonical(value){
 
 async function load(){
   if (!manifestPromise){
-    manifestPromise = fetch('assets/game-details/manifest.json', { cache:'default' })
+    manifestPromise = fetch('assets/game-details/manifest.json', { cache:'no-store' })
       .then(res => {
         if (!res.ok) throw new Error('Game details manifest ' + res.status);
         return res.json();
