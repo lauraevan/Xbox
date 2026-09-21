@@ -1157,7 +1157,7 @@ async function boot(){
   // Version stamp shown once after every full console boot.
   setTimeout(() => {
     const node = el('div', 'version-snapshot-toast');
-    node.innerHTML = '<div class="version-snapshot-mark"><img src="assets/pwa/xbox-logo.svg" alt="" aria-hidden="true"></div><div class="version-snapshot-copy"><strong>Xbox Version 1.5</strong><span>Snapshot hv7q2m</span></div>';
+    node.innerHTML = '<div class="version-snapshot-mark"><img src="assets/pwa/xbox-logo.svg" alt="" aria-hidden="true"></div><div class="version-snapshot-copy"><strong>Xbox Version 1.5</strong><span>Snapshot m8d4bx</span></div>';
     $('#toasts').append(node);
     requestAnimationFrame(() => node.classList.add('show'));
     setTimeout(() => {
