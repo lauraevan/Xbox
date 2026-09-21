@@ -183,21 +183,25 @@ function previewFact(icon, label, value){
   return row;
 }
 
-async function openGamePreview(title){
+async function openGamePreview(input){
   closeGamePreview();
   window.Sound?.gameSelect?.();
 
+  const suppliedGame = input && typeof input === 'object' ? input : null;
+  const title = suppliedGame?.name || String(input || 'Game');
   const known = canonicalTitle(title) || window.GameDetails?.canonical?.(title) || title;
   previewBackdropTitle = title;
-  const defaultHero = HERO[known] || '';
+  const defaultHero = HERO[known] || suppliedGame?.image || suppliedGame?.cover || '';
   if (defaultHero) paintSelectedGameBackdrop(title, defaultHero);
 
-  const [cloud, local] = await Promise.all([
-    cloudGame(title),
-    Promise.resolve(localGame(title))
-  ]);
+  const [cloud, local] = suppliedGame?.gameKey
+    ? [suppliedGame, null]
+    : await Promise.all([
+        cloudGame(title),
+        Promise.resolve(localGame(title))
+      ]);
 
-  const game = cloud || local || { name:title };
+  const game = cloud || local || suppliedGame || { name:title };
   const rich = await (window.GameDetails?.get?.(game) || window.GameDetails?.get?.(known) || Promise.resolve(null));
   const screenshots = Array.isArray(rich?.screenshots) ? rich.screenshots.filter(Boolean) : [];
   const cover = rich?.cover || COVER[known] || game.cover || game.image || '';
