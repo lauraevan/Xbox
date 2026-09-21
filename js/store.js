@@ -27,6 +27,81 @@ const CLOUD_ICON = `
   <path fill="currentColor" d="M7.4 18.5a4.9 4.9 0 0 1-.65-9.76A6.45 6.45 0 0 1 19 10.82a3.85 3.85 0 0 1-.7 7.68H7.4Z"/>
 </svg>`;
 
+
+const MANUAL_STORE_GAMES = {
+  blizzcon: {
+    name:'BlizzCon 2026',
+    gameKey:'manual-blizzcon-2026',
+    description:'Blizzard’s community celebration returns with the Opening Ceremony, developer panels, hands-on games, esports, Community Night, the Darkmoon Faire, and more.',
+    image:'assets/store/blizzcon-2026.svg',
+    cover:'assets/store/blizzcon-2026.svg',
+    tags:['Event','Blizzard'],
+    storeOnly:true,
+    storeLabel:'Event',
+    manualRich:{
+      source:'Manual local entry',
+      description:'Blizzard’s community celebration returns with the Opening Ceremony, developer panels, hands-on games, esports, Community Night, the Darkmoon Faire, and more.',
+      releaseDate:'September 12–13, 2026',
+      developers:['Blizzard Entertainment'],
+      publishers:['Blizzard Entertainment'],
+      platforms:['Anaheim Convention Center','Official livestream'],
+      genres:['Gaming event'],
+      franchises:['Blizzard Entertainment'],
+      gameModes:['Live event'],
+      themes:['Blizzard community'],
+      trailerId:'',
+      cover:'assets/store/blizzcon-2026.svg',
+      hero:'assets/store/blizzcon-2026.svg',
+      screenshots:[]
+    }
+  },
+  dungeons:{
+    description:'Fight your way through an action-adventure game inspired by classic dungeon crawlers and set in the Minecraft universe. Brave the dungeons alone or team up with friends.',
+    image:'games/minecraft-launcher/assets/dungeons-hero.webp',
+    cover:'games/minecraft-launcher/assets/icons/dungeons.webp',
+    tags:['Action','Adventure','RPG','Multiplayer'],
+    manualRich:{
+      source:'Manual local entry',
+      description:'Fight your way through an action-adventure game inspired by classic dungeon crawlers and set in the Minecraft universe. Brave the dungeons alone or team up with friends.',
+      releaseDate:'May 26, 2020',
+      developers:['Mojang Studios'],
+      publishers:['Xbox Game Studios'],
+      platforms:['Xbox One','Windows','Nintendo Switch','PlayStation 4'],
+      genres:['Action','Adventure','Role-playing (RPG)','Dungeon crawler'],
+      franchises:['Minecraft'],
+      gameModes:['Single player','Multiplayer','Co-op'],
+      themes:['Minecraft','Fantasy adventure'],
+      trailerId:'',
+      cover:'games/minecraft-launcher/assets/icons/dungeons.webp',
+      hero:'games/minecraft-launcher/assets/dungeons-hero.webp',
+      screenshots:[]
+    }
+  }
+};
+
+function applyManualStoreEntries(source){
+  const list = Array.isArray(source) ? source.map(game => ({...game})) : [];
+  const dungeonsIndex = list.findIndex(game => lower(game.name).replace(/[^a-z0-9]/g,'') === 'minecraftdungeons');
+  if (dungeonsIndex >= 0){
+    list[dungeonsIndex] = {
+      ...list[dungeonsIndex],
+      ...MANUAL_STORE_GAMES.dungeons,
+      name:'Minecraft Dungeons',
+      gameKey:list[dungeonsIndex].gameKey || list[dungeonsIndex].game_key || 'jy0402'
+    };
+  } else {
+    list.push({
+      name:'Minecraft Dungeons',
+      gameKey:'jy0402',
+      ...MANUAL_STORE_GAMES.dungeons
+    });
+  }
+  if (!list.some(game => game.gameKey === MANUAL_STORE_GAMES.blizzcon.gameKey)){
+    list.unshift({...MANUAL_STORE_GAMES.blizzcon});
+  }
+  return list;
+}
+
 let games = [];
 let mode = 'home';
 let filter = 'all';
@@ -107,6 +182,7 @@ function starsFor(game){
 }
 
 function dealFor(game){
+  if (game?.storeOnly) return null;
   const key = String(game?.gameKey || game?.name || '');
   let hash = 2166136261;
   for (const ch of key){
@@ -137,7 +213,7 @@ function storeCard(game, { compact=false, wide=false, deal=false } = {}){
   btn.dataset.nav = '';
   btn.dataset.storeKey = game.gameKey;
   btn.dataset.ringRadius = '.35rem';
-  btn.setAttribute('aria-label', `${game.name}, ${Cloud.owns(game) ? 'owned' : 'free'}`);
+  btn.setAttribute('aria-label', `${game.name}, ${game.storeLabel || (Cloud.owns(game) ? 'owned' : 'free')}`);
 
   const art = el('span', 'store-cover');
   const img = document.createElement('img');
@@ -151,15 +227,19 @@ function storeCard(game, { compact=false, wide=false, deal=false } = {}){
   art.append(img);
 
   if (offer && !Cloud.owns(game)) art.append(el('span', 'store-deal-badge', `SAVE ${offer.discount}%`));
-  if (Cloud.owns(game)) art.append(el('span', 'store-owned-badge', 'OWNED'));
-  const cloud = el('span', 'store-cloud-mark', CLOUD_ICON);
-  cloud.title = 'Cloud playable';
-  art.append(cloud);
+  if (!game.storeOnly && Cloud.owns(game)) art.append(el('span', 'store-owned-badge', 'OWNED'));
+  if (!game.storeOnly){
+    const cloud = el('span', 'store-cloud-mark', CLOUD_ICON);
+    cloud.title = 'Cloud playable';
+    art.append(cloud);
+  }
 
   const meta = el('span', 'store-game-meta');
   meta.append(el('span', 'store-game-title', escapeHtml(game.name)));
 
-  if (offer && !Cloud.owns(game)){
+  if (game.storeOnly){
+    meta.append(el('span', 'store-game-price', game.storeLabel || 'Event'));
+  } else if (offer && !Cloud.owns(game)){
     const price = el('span', 'store-game-price store-price-deal');
     price.append(
       el('span', 'store-price-old', money(offer.was)),
@@ -682,12 +762,18 @@ function closeProduct(){
 }
 
 function refreshProductOwnership(node, game){
-  const owned = Cloud.owns(game);
+  const owned = game.storeOnly ? false : Cloud.owns(game);
   node.classList.toggle('owned', owned);
   const ownership = node.querySelector('.xproduct-ownership');
   const price = node.querySelector('.xproduct-price');
   const acquire = node.querySelector('[data-store-acquire]');
   const offer = dealFor(game);
+  if (game.storeOnly){
+    if (ownership) ownership.textContent = 'Blizzard community event';
+    if (price) price.textContent = game.storeLabel || 'Event';
+    if (acquire) acquire.textContent = 'EVENT DETAILS';
+    return;
+  }
   if (ownership) ownership.textContent = owned
     ? 'You own this'
     : offer ? `Store deal • Save ${offer.discount}%` : 'Available to get';
@@ -709,7 +795,7 @@ function refreshProductOwnership(node, game){
 }
 
 async function enrichProductDetails(node, game){
-  const rich = await window.GameDetails?.get?.(game);
+  const rich = game.manualRich || await window.GameDetails?.get?.(game);
   if (!rich || !node?.isConnected || node.dataset.richDetails === '1') return;
   node.dataset.richDetails = '1';
 
@@ -902,39 +988,43 @@ function openProduct(game){
       <div class="xproduct-main">
         <div class="xproduct-cover-wrap"><img class="xproduct-cover" src="${escapeHtml(game.cover || game.image)}" alt=""></div>
         <div class="xproduct-copy">
-          <div class="xproduct-type">XBOX CLOUD GAME</div>
+          <div class="xproduct-type">${game.storeOnly ? 'XBOX EVENT' : 'XBOX CLOUD GAME'}</div>
           <h1 class="xproduct-title">${escapeHtml(game.name)}</h1>
           <div class="xproduct-meta">
             <div class="xproduct-publisher">Stratus Cloud • ${escapeHtml(game.tags[0] || 'Game')}</div>
             <div class="xproduct-rating"><span>★★★★★</span><b>${rating}</b><small>${reviews} ratings</small></div>
           </div>
-          <div class="xproduct-badges"><span>Cloud playable</span><span>Controller</span><span>Digital</span></div>
+          <div class="xproduct-badges">${game.storeOnly ? '<span>Live event</span><span>Community</span><span>Blizzard</span>' : '<span>Cloud playable</span><span>Controller</span><span>Digital</span>'}</div>
           ${productDeal ? `<div class="xproduct-deal-strip"><b>SAVE ${productDeal.discount}%</b><span>Deals & specials</span></div>` : ''}
           <p class="xproduct-desc">${escapeHtml(game.description || 'Play instantly from the cloud.')}</p>
-          <div class="xproduct-cloud-row">${CLOUD_ICON}<span>Streams instantly after purchase. No install required.</span></div>
+          <div class="xproduct-cloud-row">${game.storeOnly ? '<span>Locally curated Store entry. No external catalog source is loaded at runtime.</span>' : CLOUD_ICON + '<span>Streams instantly after purchase. No install required.</span>'}</div>
         </div>
       </div>
       <aside class="xproduct-buy-card">
-        <div class="xproduct-buy-kicker">STANDARD EDITION</div>
+        <div class="xproduct-buy-kicker">${game.storeOnly ? 'EVENT' : 'STANDARD EDITION'}</div>
         <div class="xproduct-buy-title">${escapeHtml(game.name)}</div>
         <div class="xproduct-price"></div>
         <div class="xproduct-ownership"></div>
         <div class="xproduct-buy-rule"></div>
         <div class="xproduct-buy-benefits">
-          <span>✓ Play with cloud gaming</span>
-          <span>✓ Added to My games & apps</span>
-          <span>✓ No download required</span>
+          ${game.storeOnly
+            ? '<span>✓ September 12–13, 2026</span><span>✓ Anaheim + livestream</span><span>✓ Blizzard community celebration</span>'
+            : '<span>✓ Play with cloud gaming</span><span>✓ Added to My games & apps</span><span>✓ No download required</span>'}
         </div>
         <div class="xproduct-actions">
           <button class="xproduct-action primary" data-nav data-store-acquire></button>
           <button class="xproduct-action secondary" data-nav data-store-wish>${wished(game) ? 'REMOVE FROM WISH LIST' : 'ADD TO WISH LIST'}</button>
         </div>
-        <div class="xproduct-buy-foot">Digital purchase · Xbox profile: xboxtest</div>
+        <div class="xproduct-buy-foot">${game.storeOnly ? 'Manual local Store entry' : 'Digital purchase · Xbox profile: xboxtest'}</div>
       </aside>
     </div>`;
 
   const acquire = node.querySelector('[data-store-acquire]');
   acquire._navActivate = async () => {
+    if (game.storeOnly){
+      window.App?.toast?.('BlizzCon 2026', 'September 12–13 · Anaheim + livestream');
+      return;
+    }
     if (!Cloud.owns(game)){
       openCheckout(game, node, acquire);
       return;
@@ -964,7 +1054,7 @@ async function render(root){
   root.classList.add('reference-store');
   root.innerHTML = '<div class="xstore-loading"><div>Microsoft Store</div><span>Loading…</span></div>';
   try {
-    games = await Cloud.loadCatalogue();
+    games = applyManualStoreEntries(await Cloud.loadCatalogue());
     renderShell(root);
   } catch (err){
     root.innerHTML = `<div class="xstore-loading error"><div>Microsoft Store</div><span>Could not load Store: ${escapeHtml(err?.message || 'Unknown error')}</span></div>`;
