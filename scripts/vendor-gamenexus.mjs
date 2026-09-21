@@ -19,9 +19,9 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 function unwrapImage(src) {
   if (!src) return '';
   try {
-    const u = new URL(src);
+    const u = new URL(src, 'https://gamenexus.geek-factory.xyz');
     const nested = u.searchParams.get('url');
-    return nested ? decodeURIComponent(nested) : src;
+    return nested || u.href;
   } catch {
     return src;
   }
