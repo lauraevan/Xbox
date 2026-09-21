@@ -7,7 +7,7 @@
 'use strict';
 
 const KEY = 'xbox.web.profile.v1';
-const GLOBAL_RESET_MARKER = 'xbox.reset.20260920.rs8k2v';
+const GLOBAL_RESET_MARKER = 'xbox.reset.20260920.fw9q3n';
 
 /* One-time fleet reset. Every browser that loads this build clears all prior
    Xbox-local state before defaults are read, then records this reset marker. */
