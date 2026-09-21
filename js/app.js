@@ -951,17 +951,10 @@ async function runXboxOnboarding(){
     content.innerHTML=html;
     requestAnimationFrame(()=>content.classList.add('ready'));
   };
-  const press=(selector='[data-onboard-next]')=>new Promise(resolve=>{
+  const waitClick=selector=>new Promise(resolve=>{
     const node=content.querySelector(selector);
     if(!node) return resolve();
-    const done=()=>resolve();
-    node.addEventListener('click',done,{once:true});
-    const key=e=>{
-      if(e.key==='Enter' || e.key==='a' || e.key==='A'){
-        document.removeEventListener('keydown',key); done();
-      }
-    };
-    document.addEventListener('keydown',key,{once:true});
+    node.addEventListener('click',resolve,{once:true});
   });
 
   show(`
@@ -978,12 +971,12 @@ async function runXboxOnboarding(){
     <div class="onboard-panel gamertag-panel">
       <h1>Choose your Gamertag</h1>
       <p>This is how you'll be known on Xbox.</p>
-      <button class="gamertag-box" data-onboard-next aria-label="Open keyboard"></button>
+      <button class="gamertag-box" id="gamertag-open" aria-label="Open keyboard"></button>
       <div class="keyboard-hint">Press A to open keyboard</div>
     </div>
     <div class="onboard-legend"><span><i class="b">B</i>Back</span></div>
   `,'gamertag');
-  await press();
+  await waitClick('#gamertag-open');
 
   const initial=window.State.data.gamertag==='NewSasquatch'?'Xboxtest':window.State.data.gamertag;
   show(`
@@ -991,25 +984,50 @@ async function runXboxOnboarding(){
       <h1>Choose your Gamertag</h1>
       <p>This is how you'll be known on Xbox.</p>
       <label class="gamertag-box input-box">
-        <input id="onboard-gamertag" maxlength="15" value="${escapeHtml(initial)}" autocomplete="off" autocapitalize="off">
+        <input id="onboard-gamertag" maxlength="15" value="${escapeHtml(initial)}" autocomplete="off" autocapitalize="off" spellcheck="false">
       </label>
       <div class="keyboard-hint">Press A to open keyboard</div>
     </div>
     <div class="xbox-keyboard">
       <div class="keyboard-title">☰ Enter</div>
-      <div class="keyboard-grid">
-        <button>&+=</button><button>1</button><button>2</button><button>3</button><button>4</button><button>5</button><button>6</button><button>7</button><button>8</button><button>9</button>
-        <button>&lt;</button><button>q</button><button>w</button><button>e</button><button>r</button><button>t</button><button>y</button><button>u</button><button>i</button><button>o</button>
-        <button>⇧</button><button>a</button><button class="key-selected">s</button><button>d</button><button>f</button><button>g</button><button>h</button><button>j</button><button>k</button><button>l</button>
-        <button>Caps</button><button>z</button><button>x</button><button>c</button><button>v</button><button>b</button><button>n</button><button>m</button><button>.</button><button>?</button>
+      <div class="keyboard-grid" id="onboard-keyboard">
+        <button data-key="&+=">&+=</button><button data-key="1">1</button><button data-key="2">2</button><button data-key="3">3</button><button data-key="4">4</button><button data-key="5">5</button><button data-key="6">6</button><button data-key="7">7</button><button data-key="8">8</button><button data-key="9">9</button>
+        <button data-action="backspace">⌫</button><button data-key="q">q</button><button data-key="w">w</button><button data-key="e">e</button><button data-key="r">r</button><button data-key="t">t</button><button data-key="y">y</button><button data-key="u">u</button><button data-key="i">i</button><button data-key="o">o</button>
+        <button data-action="shift">⇧</button><button data-key="a">a</button><button class="key-selected" data-key="s">s</button><button data-key="d">d</button><button data-key="f">f</button><button data-key="g">g</button><button data-key="h">h</button><button data-key="j">j</button><button data-key="k">k</button><button data-key="l">l</button>
+        <button data-action="caps">Caps</button><button data-key="z">z</button><button data-key="x">x</button><button data-key="c">c</button><button data-key="v">v</button><button data-key="b">b</button><button data-key="n">n</button><button data-key="m">m</button><button data-key=".">.</button><button data-key="?">?</button>
       </div>
-      <button class="keyboard-space" type="button">— <i></i></button>
-      <button class="keyboard-done" data-onboard-next>Enter</button>
+      <button class="keyboard-space" data-action="space">— <i></i></button>
+      <button class="keyboard-done" id="keyboard-done">Enter</button>
     </div>
   `,'keyboard');
+
   const field=content.querySelector('#onboard-gamertag');
-  field?.focus();
-  await press('.keyboard-done');
+  const keys=[...content.querySelectorAll('#onboard-keyboard button')];
+  const space=content.querySelector('.keyboard-space');
+  let caps=false;
+  const paintKeys=()=>keys.forEach(btn=>{
+    const k=btn.dataset.key;
+    if(k && /^[a-z]$/.test(k)) btn.textContent=caps?k.toUpperCase():k;
+  });
+  const appendKey=k=>{
+    if(!field || field.value.length>=15) return;
+    field.value += caps && /^[a-z]$/.test(k) ? k.toUpperCase() : k;
+    field.dispatchEvent(new Event('input',{bubbles:true}));
+    field.focus();
+  };
+  keys.forEach(btn=>btn.addEventListener('click',()=>{
+    const key=btn.dataset.key, action=btn.dataset.action;
+    if(key){ appendKey(key); return; }
+    if(action==='backspace'){ field.value=field.value.slice(0,-1); field.focus(); }
+    if(action==='caps' || action==='shift'){ caps=!caps; paintKeys(); }
+  }));
+  space?.addEventListener('click',()=>appendKey(' '));
+  field?.addEventListener('keydown',e=>{
+    if(e.key==='Enter'){ e.preventDefault(); content.querySelector('#keyboard-done')?.click(); }
+  });
+  setTimeout(()=>field?.focus(),50);
+  await waitClick('#keyboard-done');
+
   const tag=(field?.value||'Xboxtest').trim().slice(0,15)||'Xboxtest';
   window.State.setGamertag(tag);
 
@@ -1029,6 +1047,7 @@ async function runXboxOnboarding(){
         <button class="selected" data-color="#efb249" style="--sw:#efb249"></button>
         <button data-color="#62d4d8" style="--sw:#62d4d8"></button>
       </div>
+      <button class="color-next" id="color-next">Next</button>
     </div>
     <div class="onboard-legend"><span><i class="a">A</i>Select</span><span><i class="b">B</i>Back</span></div>
   `,'color');
@@ -1039,17 +1058,7 @@ async function runXboxOnboarding(){
     btn.classList.add('selected');
     chosen=btn.dataset.color;
   }));
-  await new Promise(resolve=>{
-    const dbl=()=>resolve();
-    content.querySelector('.color-grid')?.addEventListener('dblclick',dbl,{once:true});
-    const key=e=>{
-      if(e.key==='Enter' || e.key==='a' || e.key==='A'){
-        document.removeEventListener('keydown',key); resolve();
-      }
-    };
-    document.addEventListener('keydown',key);
-    setTimeout(()=>{document.removeEventListener('keydown',key);resolve();},2600);
-  });
+  await waitClick('#color-next');
   window.State.setSetting('accent',chosen);
 
   show(`
@@ -1061,12 +1070,11 @@ async function runXboxOnboarding(){
         <button class="privacy-row checked"><span>Share game history</span><i></i></button>
         <button class="privacy-row"><span>Allow messages from everyone</span><i></i></button>
       </div>
-      <button class="complete-setup" data-onboard-next>Complete Setup</button>
+      <button class="complete-setup" id="complete-setup">Complete Setup</button>
     </div>
-    <div class="onboard-legend"><span><i class="a">A</i>Select</span><span><i class="b">B</i>Back</span></div>
   `,'privacy');
   content.querySelectorAll('.privacy-row').forEach(row=>row.addEventListener('click',()=>row.classList.toggle('checked')));
-  await press();
+  await waitClick('#complete-setup');
 
   window.State.setSetting('onboardingComplete',true);
   root.classList.add('out');
@@ -1133,7 +1141,7 @@ async function boot(){
   // Version stamp shown once after every full console boot.
   setTimeout(() => {
     const node = el('div', 'version-snapshot-toast');
-    node.innerHTML = '<div class="version-snapshot-mark"><img src="assets/pwa/xbox-logo.svg" alt="" aria-hidden="true"></div><div class="version-snapshot-copy"><strong>Xbox Version 1.5</strong><span>Snapshot fw9q3n</span></div>';
+    node.innerHTML = '<div class="version-snapshot-mark"><img src="assets/pwa/xbox-logo.svg" alt="" aria-hidden="true"></div><div class="version-snapshot-copy"><strong>Xbox Version 1.5</strong><span>Snapshot kb2x7d</span></div>';
     $('#toasts').append(node);
     requestAnimationFrame(() => node.classList.add('show'));
     setTimeout(() => {
