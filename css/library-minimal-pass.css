@@ -360,3 +360,63 @@ body:has(#view-library .console-poster[data-focused]) .focus-ring.on{
     height:21.8rem !important;
   }
 }
+
+
+/* Ultrawide library scaling ---------------------------------------------- */
+@media (min-width:2200px) and (min-aspect-ratio:2/1){
+  #view-library .console-main{
+    padding:5.8rem clamp(7rem,4.5vw,15rem) 4.5rem!important;
+  }
+
+  #view-library .console-poster-grid,
+  #view-library .console-horizontal-row{
+    grid-auto-columns:clamp(16.5rem,6.1vw,19rem)!important;
+    gap:clamp(1.6rem,.85vw,2.5rem)!important;
+    padding-top:1.25rem!important;
+  }
+
+  #view-library .console-poster,
+  #view-library .console-poster-art{
+    width:clamp(16.5rem,6.1vw,19rem)!important;
+  }
+
+  #view-library .console-poster-art{
+    height:clamp(20.6rem,7.6vw,23.7rem)!important;
+  }
+
+  #view-library.stratus-only-library .stratus-library-row{
+    grid-auto-columns:clamp(17.5rem,6.35vw,20rem)!important;
+    gap:clamp(1.8rem,.9vw,2.7rem)!important;
+  }
+
+  #view-library.stratus-only-library .stratus-poster,
+  #view-library.stratus-only-library .stratus-poster .console-poster-art{
+    width:clamp(17.5rem,6.35vw,20rem)!important;
+    min-width:clamp(17.5rem,6.35vw,20rem)!important;
+  }
+
+  #view-library.stratus-only-library .stratus-poster .console-poster-art{
+    height:clamp(25.5rem,9vw,29rem)!important;
+  }
+}
+
+@media (min-width:3000px) and (min-aspect-ratio:2.25/1){
+  #view-library .console-main{
+    padding-left:clamp(10rem,4.8vw,18rem)!important;
+    padding-right:clamp(10rem,4.8vw,18rem)!important;
+  }
+
+  #view-library .console-poster-grid,
+  #view-library .console-horizontal-row{
+    grid-auto-columns:clamp(18rem,5.4vw,20.5rem)!important;
+  }
+
+  #view-library .console-poster,
+  #view-library .console-poster-art{
+    width:clamp(18rem,5.4vw,20.5rem)!important;
+  }
+
+  #view-library .console-poster-art{
+    height:clamp(22.5rem,6.75vw,25.5rem)!important;
+  }
+}
