@@ -26,7 +26,13 @@ const ALIASES = {
   'cyberpunk2077':'Cyberpunk 2077'
 };
 
-const normal = value => String(value || '').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();
+const normal = value => String(value || '')
+  .toLowerCase()
+  .normalize('NFKD')
+  .replace(/[™®©]/g,' ')
+  .replace(/[^a-z0-9]+/g,' ')
+  .trim();
+
 let manifestPromise = null;
 
 function canonical(value){
@@ -42,25 +48,54 @@ async function load(){
         if (!res.ok) throw new Error('Game details manifest ' + res.status);
         return res.json();
       })
-      .then(data => data?.games || {})
+      .then(data => {
+        if (!data || typeof data !== 'object') return { games:{}, byName:{} };
+        if (data.byName) return data;
+
+        // v1 compatibility. Older manifests keyed games directly by title.
+        const games = data.games || {};
+        const byName = {};
+        for (const [name,row] of Object.entries(games)) byName[normal(name)] = name;
+        return { ...data, games, byName };
+      })
       .catch(err => {
         console.warn('Local GameNexus details unavailable', err);
-        return {};
+        return { games:{}, byName:{} };
       });
   }
   return manifestPromise;
 }
 
-async function get(name){
-  const key = canonical(name);
-  const games = await load();
-  const row = games[key] || null;
+async function get(input){
+  const manifest = await load();
+  const games = manifest.games || {};
+  const gameKey = input && typeof input === 'object' ? String(input.gameKey || '') : '';
+  const requestedName = input && typeof input === 'object'
+    ? String(input.name || '')
+    : String(input || '');
+
+  let row = gameKey ? games[gameKey] : null;
+  let key = gameKey;
+
+  if (!row){
+    const canonicalName = canonical(requestedName);
+    const lookup = manifest.byName?.[normal(canonicalName)] || manifest.byName?.[normal(requestedName)] || canonicalName;
+    row = games[lookup] || null;
+    key = lookup;
+  }
   if (!row) return null;
+
+  const name = row.name || requestedName || key;
+  const summary = SUMMARIES[canonical(name)] || row.summary || row.description || '';
+  const screenshots = Array.isArray(row.screenshots) ? row.screenshots.filter(Boolean) : [];
+
   return {
     ...row,
-    summary: SUMMARIES[key] || '',
-    hero: row.screenshots?.[0] || row.cover || '',
-    source: 'local'
+    name,
+    summary,
+    screenshots,
+    hero: row.hero || screenshots[0] || row.cover || '',
+    source: row.source || 'local'
   };
 }
 
