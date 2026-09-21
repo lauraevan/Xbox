@@ -32,6 +32,10 @@ function imageForCatalog(game, priority = false){
 function poster(game, opts = {}){
   const btn = nav(el('button', 'console-poster'), () => {
     if (opts.cloud){
+      if (window.RichGameLauncher?.open){
+        window.RichGameLauncher.open(game);
+        return;
+      }
       Cloud()?.play?.(game).catch(err => window.App?.toast?.('Cloud gaming', err?.message || 'Could not start game.'));
       return;
     }
