@@ -945,44 +945,116 @@ async function runXboxOnboarding(){
   root.hidden=false;
 
   const wait=ms=>new Promise(r=>setTimeout(r,ms));
-  const screen=(eyebrow,title,body,inner='')=>{
-    content.classList.remove('ready'); void content.offsetWidth;
-    content.innerHTML='<div class="onboard-eyebrow">'+eyebrow+'</div><h1>'+title+'</h1><p>'+body+'</p>'+inner;
+  const setScreen=(html, cls='')=>{
+    root.className='xbox-onboarding '+cls;
+    content.className='onboard-content';
+    content.innerHTML=html;
     requestAnimationFrame(()=>content.classList.add('ready'));
   };
-  const nextClick=()=>new Promise(resolve=>{
-    const btn=content.querySelector('[data-onboard-next]');
-    btn?.addEventListener('click',resolve,{once:true});
+  const next=()=>new Promise(resolve=>{
+    content.querySelector('[data-onboard-next]')?.addEventListener('click',resolve,{once:true});
   });
 
-  screen('SETUP','Connecting to network','Checking your connection…','<div class="onboard-loader"><i></i><i></i><i></i><i></i></div>');
-  await wait(1500);
-  screen('YOU’RE CONNECTED','Let’s get you signed in','Your console is online and ready to finish setup.','<button class="onboard-primary" data-onboard-next>Next</button>');
-  await nextClick();
+  setScreen(`
+    <div class="onboard-panel network-panel">
+      <h1>Checking Network</h1>
+      <p>Connecting to Xbox network...</p>
+      <div class="onboard-spinner" aria-hidden="true"></div>
+    </div>
+    <div class="onboard-legend"><span><i class="a">A</i>Select</span><span><i class="b">B</i>Back</span></div>
+  `,'screen-network');
+  await wait(1700);
 
-  screen('YOUR XBOX','Choose your gamertag','This is the name people will see when you play.','<label class="onboard-field"><span>Gamertag</span><input id="onboard-gamertag" maxlength="15" value="'+escapeHtml(window.State.data.gamertag==='NewSasquatch'?'Xboxtest':window.State.data.gamertag)+'"></label><button class="onboard-primary" data-onboard-next>Next</button>');
-  await nextClick();
+  setScreen(`
+    <div class="onboard-panel gamertag-panel">
+      <h1>Choose your Gamertag</h1>
+      <p>This is how you'll be known on Xbox.</p>
+      <button class="gamertag-box" data-onboard-next aria-label="Choose gamertag"><span id="gt-preview"></span></button>
+      <div class="keyboard-hint">Press A to open keyboard</div>
+    </div>
+    <div class="onboard-legend"><span><i class="b">B</i>Back</span></div>
+  `,'screen-gamertag');
+  await next();
+
+  const panel=content.querySelector('.gamertag-panel');
+  panel.classList.add('keyboard-open');
+  const initial=window.State.data.gamertag==='NewSasquatch'?'Xboxtest':window.State.data.gamertag;
+  panel.insertAdjacentHTML('beforeend',`
+    <div class="xbox-keyboard">
+      <div class="keyboard-title">☰ Enter</div>
+      <div class="keyboard-grid">
+        <button>&+=</button><button>1</button><button>2</button><button>3</button><button>4</button><button>5</button><button>6</button><button>7</button><button>8</button><button>9</button>
+        <button>&lt;</button><button>q</button><button>w</button><button>e</button><button>r</button><button>t</button><button>y</button><button>u</button><button>i</button><button>o</button>
+        <button>⇧</button><button>a</button><button class="key-selected">s</button><button>d</button><button>f</button><button>g</button><button>h</button><button>j</button><button>k</button><button>l</button>
+        <button>Caps</button><button>z</button><button>x</button><button>c</button><button>v</button><button>b</button><button>n</button><button>m</button><button>.</button><button>?</button>
+      </div>
+      <div class="keyboard-space"><span>—</span><i></i></div>
+      <input id="onboard-gamertag" maxlength="15" value="${escapeHtml(initial)}" autocomplete="off" autocapitalize="off">
+      <button class="keyboard-done" data-onboard-next>Enter</button>
+    </div>
+  `);
+  content.querySelector('#onboard-gamertag')?.focus();
+  await next();
   const tag=(content.querySelector('#onboard-gamertag')?.value||'Xboxtest').trim().slice(0,15)||'Xboxtest';
   window.State.setGamertag(tag);
 
-  let seed=window.State.data.avatarSeed;
-  const avatar=()=>window.State.avatarFor(seed);
-  screen('YOUR PROFILE','Choose your gamerpic','Pick the profile picture you want to use on this Xbox.','<div class="onboard-profile"><img id="onboard-avatar" src="'+avatar()+'" alt=""><strong>'+escapeHtml(tag)+'</strong></div><div class="onboard-actions"><button class="onboard-secondary" id="onboard-reroll">Try another</button><button class="onboard-primary" data-onboard-next>Use this gamerpic</button></div>');
-  content.querySelector('#onboard-reroll')?.addEventListener('click',()=>{ window.State.rerollAvatar(); seed=window.State.data.avatarSeed; content.querySelector('#onboard-avatar').src=window.State.avatar(); });
-  await nextClick();
+  setScreen(`
+    <div class="onboard-panel color-panel">
+      <h1>Pick a color</h1>
+      <p>This shows up on your profile and menus.</p>
+      <div class="color-grid">
+        <button data-color="#52d726" style="--sw:#52d726"></button>
+        <button data-color="#63d7da" style="--sw:#63d7da"></button>
+        <button data-color="#ff6b35" style="--sw:#ff6b35"></button>
+        <button data-color="#f5df4d" style="--sw:#f5df4d"></button>
+        <button data-color="#9fb9ff" style="--sw:#9fb9ff"></button>
+        <button data-color="#ef8eea" style="--sw:#ef8eea"></button>
+        <button data-color="#b9f3ee" style="--sw:#b9f3ee"></button>
+        <button data-color="#ffffff" style="--sw:#ffffff"></button>
+        <button class="selected" data-color="#f1b347" style="--sw:#f1b347"></button>
+        <button data-color="#58d6db" style="--sw:#58d6db"></button>
+      </div>
+    </div>
+    <div class="onboard-legend"><span><i class="a">A</i>Select</span><span><i class="b">B</i>Back</span></div>
+  `,'screen-color');
+  let chosen='#f1b347';
+  content.querySelectorAll('.color-grid button').forEach(btn=>btn.addEventListener('click',()=>{
+    content.querySelectorAll('.color-grid button').forEach(b=>b.classList.remove('selected'));
+    btn.classList.add('selected'); chosen=btn.dataset.color;
+  }));
+  await new Promise(resolve=>{
+    const handler=e=>{
+      if(e.key==='Enter' || e.key==='a' || e.key==='A'){
+        document.removeEventListener('keydown',handler); resolve();
+      }
+    };
+    document.addEventListener('keydown',handler);
+    content.querySelector('.color-grid')?.addEventListener('dblclick',resolve,{once:true});
+    setTimeout(()=>resolve(),2200);
+  });
+  window.State.setSetting('accent',chosen);
 
-  screen('PREFERENCES','How do you want to play?','You can change these options later in Settings.','<div class="onboard-choice-grid"><button class="onboard-choice selected"><b>Xbox theme</b><span>Xbox Waves, standard layout</span></button><button class="onboard-choice"><b>Keep games updated</b><span>Recommended</span></button><button class="onboard-choice"><b>Allow notifications</b><span>Game and system alerts</span></button></div><button class="onboard-primary" data-onboard-next>Next</button>');
-  await nextClick();
+  setScreen(`
+    <div class="onboard-panel privacy-panel">
+      <h1>Privacy settings</h1>
+      <p>Choose who sees your activity.</p>
+      <div class="privacy-list">
+        <button class="privacy-row checked"><span>Show my real name</span><i></i></button>
+        <button class="privacy-row checked"><span>Share game history</span><i></i></button>
+        <button class="privacy-row"><span>Allow messages from everyone</span><i></i></button>
+      </div>
+      <button class="complete-setup" data-onboard-next>Complete Setup</button>
+    </div>
+  `,'screen-privacy');
+  content.querySelectorAll('.privacy-row').forEach(row=>row.addEventListener('click',()=>row.classList.toggle('checked')));
+  await next();
 
-  screen('ALL DONE','Welcome to Xbox, '+escapeHtml(tag),'Your profile and console are ready.','<button class="onboard-primary" data-onboard-next>Take me home</button>');
-  await nextClick();
   window.State.setSetting('onboardingComplete',true);
   root.classList.add('out');
   await wait(260);
   root.remove();
   syncProfile();
 }
-
 async function boot(){
   applySettings();
   paintIcons();
@@ -1042,7 +1114,7 @@ async function boot(){
   // Version stamp shown once after every full console boot.
   setTimeout(() => {
     const node = el('div', 'version-snapshot-toast');
-    node.innerHTML = '<div class="version-snapshot-mark"><img src="assets/pwa/xbox-logo.svg" alt="" aria-hidden="true"></div><div class="version-snapshot-copy"><strong>Xbox Version 1.5</strong><span>Snapshot xb5n8w</span></div>';
+    node.innerHTML = '<div class="version-snapshot-mark"><img src="assets/pwa/xbox-logo.svg" alt="" aria-hidden="true"></div><div class="version-snapshot-copy"><strong>Xbox Version 1.5</strong><span>Snapshot px9r4c</span></div>';
     $('#toasts').append(node);
     requestAnimationFrame(() => node.classList.add('show'));
     setTimeout(() => {
