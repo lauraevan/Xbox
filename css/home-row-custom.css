@@ -121,10 +121,9 @@
 }
 
 
-/* Keep the Home row stable while moving focus.
-   The previous 18rem -> 22.5rem geometry jump made selection feel like a
-   violent bounce and forced the whole row to reflow. Focus is now carried by
-   the Xbox focus ring/label without resizing the game tile. */
+/* Selected Home games still grow to the large Xbox-style size, but only
+   visually. Using transform keeps the 18rem layout box fixed so adjacent games
+   do not get shoved around and there is no reflow/bounce on selection. */
 .reference-home .ref-strip{
   align-items:flex-end!important;
 }
@@ -138,8 +137,14 @@
   width:18rem!important;
   height:18rem!important;
 }
-.reference-home .ref-tile[data-focused],
-.reference-home .ref-tile:hover{
+.reference-home .ref-tile[data-ref-title]{
+  transform-origin:center bottom!important;
+  transition:transform .17s cubic-bezier(.2,.8,.2,1), box-shadow .17s ease!important;
+  will-change:transform;
+}
+.reference-home .ref-tile[data-ref-title][data-focused],
+.reference-home .ref-tile[data-ref-title]:hover{
+  transform:scale(1.25)!important;
   z-index:12!important;
 }
 
