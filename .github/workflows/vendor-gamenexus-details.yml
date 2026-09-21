@@ -41,11 +41,20 @@ jobs:
           set -euo pipefail
           git config user.name 'xbox-build-bot'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+          # Preserve the freshly generated asset tree, move onto the newest
+          # branch head, then restore the generated tree. This avoids rebase
+          # conflicts when UI work lands while the 225-game crawl is running.
+          tar -czf /tmp/game-details.tgz assets/game-details
+          git fetch origin claude/xbox-web-replica-v4s0jk
+          git reset --hard origin/claude/xbox-web-replica-v4s0jk
+          rm -rf assets/game-details
+          tar -xzf /tmp/game-details.tgz
+
           git add assets/game-details
           if git diff --cached --quiet; then
             echo 'GameNexus assets already match.'
             exit 0
           fi
           git commit -m 'Vendor GameNexus launcher details'
-          git pull --rebase origin claude/xbox-web-replica-v4s0jk
           git push origin HEAD:claude/xbox-web-replica-v4s0jk
