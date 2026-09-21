@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1200" role="img" aria-label="BlizzCon 2026">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#071018"/>
+      <stop offset=".48" stop-color="#0c2032"/>
+      <stop offset="1" stop-color="#020609"/>
+    </linearGradient>
+    <radialGradient id="glow" cx=".72" cy=".18" r=".7">
+      <stop offset="0" stop-color="#2da9ff" stop-opacity=".42"/>
+      <stop offset=".5" stop-color="#1168aa" stop-opacity=".12"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="900" height="1200" fill="url(#bg)"/>
+  <rect width="900" height="1200" fill="url(#glow)"/>
+  <path d="M-70 950 330 210l145 0L78 950Zm380 0L655 320h132L462 950Z" fill="#53baff" opacity=".08"/>
+  <path d="M520 105 880 760" stroke="#7fd0ff" stroke-opacity=".08" stroke-width="26"/>
+  <g fill="#fff">
+    <text x="64" y="765" font-family="Arial,Helvetica,sans-serif" font-size="112" font-weight="800" letter-spacing="-5">BLIZZCON</text>
+    <text x="70" y="845" font-family="Arial,Helvetica,sans-serif" font-size="38" font-weight="700" letter-spacing="12" fill="#63c3ff">2026</text>
+  </g>
+  <rect x="68" y="895" width="112" height="8" rx="4" fill="#45b7ff"/>
+  <text x="68" y="970" font-family="Arial,Helvetica,sans-serif" font-size="31" font-weight="600" fill="#d8eaf7">BLIZZARD COMMUNITY EVENT</text>
+  <text x="68" y="1020" font-family="Arial,Helvetica,sans-serif" font-size="25" fill="#8fa9ba">SEPTEMBER 12–13</text>
+</svg>
