@@ -585,7 +585,7 @@ function showNowggPlayer(game){
 
 async function playNowgg(game){
   if (starting) return;
-  if (!owns(game)) throw new Error('This game is not in your library yet.');
+  if (!(window.StratusCloud?.owns || owns)(game)) throw new Error('This game is not in your library yet.');
   if (active) await quit();
 
   starting = true;
@@ -614,7 +614,7 @@ async function play(game){
   if (game?.nowgg) return playNowgg(game);
   if (!game?.gameKey) throw new Error('This title has no Stratus game key.');
   if (starting) return;
-  if (!owns(game)) throw new Error('This game is not in your library yet.');
+  if (!(window.StratusCloud?.owns || owns)(game)) throw new Error('This game is not in your library yet.');
   if (active) await quit();
 
   starting = true;
