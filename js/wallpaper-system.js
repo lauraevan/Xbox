@@ -248,13 +248,14 @@ const isWaves = mode => WAVES_MODES.includes(mode || 'waves');
 function shouldPaintGameArt(){
   const s = settings();
   const mode = s.wallpaperMode || 'waves';
+  const behavior = s.wallpaperBehavior || 'dynamic';
+
+  /* Xbox Home behavior: Waves is the neutral canvas, then the selected game's
+     key art temporarily takes over. This restores the original focus-driven
+     background pipeline from the earlier Home implementation. */
   if (mode === 'game') return true;
-  /* The chosen wallpaper wins over per-tile hero art. Before this, 'dynamic'
-     painted game art in every mode, so picking Waves still gave you game art
-     the moment focus landed on a tile - the wallpaper was only ever visible
-     in the gap before the first focus. 'adaptive' is the mode that explicitly
-     asks for art on focus, so that one still reveals it. */
-  return (s.wallpaperBehavior || 'dynamic') === 'adaptive';
+  if (isWaves(mode) && behavior === 'dynamic') return true;
+  return behavior === 'adaptive';
 }
 
 function onGameArtPaint(){
