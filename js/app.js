@@ -958,6 +958,18 @@ async function boot(){
 
   $('#boot').classList.add('out');
   setTimeout(() => { $('#boot').remove(); }, 620);
+
+  // 1.45s Microsoft credit screen shown between the startup movie and dashboard.
+  const credit = $('#microsoft-credit');
+  if (credit){
+    credit.hidden = false;
+    credit.classList.add('show');
+    await new Promise(resolve => setTimeout(resolve, 1450));
+    credit.classList.add('out');
+    await new Promise(resolve => setTimeout(resolve, 220));
+    credit.remove();
+  }
+
   $('#stage').hidden = false;
 
   if (loadError){
@@ -983,7 +995,7 @@ async function boot(){
   // Version stamp shown once after every full console boot.
   setTimeout(() => {
     const node = el('div', 'version-snapshot-toast');
-    node.innerHTML = '<div class="version-snapshot-mark"><img src="assets/pwa/xbox-logo.svg" alt="" aria-hidden="true"></div><div class="version-snapshot-copy"><strong>Xbox Version 1.5</strong><span>Snapshot r2v7kc</span></div>';
+    node.innerHTML = '<div class="version-snapshot-mark"><img src="assets/pwa/xbox-logo.svg" alt="" aria-hidden="true"></div><div class="version-snapshot-copy"><strong>Xbox Version 1.5</strong><span>Snapshot ms8q4t</span></div>';
     $('#toasts').append(node);
     requestAnimationFrame(() => node.classList.add('show'));
     setTimeout(() => {
