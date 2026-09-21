@@ -40,6 +40,35 @@ function sendJson(res, status, body) {
   res.end(JSON.stringify(body));
 }
 
+function configuredTurnServers() {
+  const json = String(process.env.XBOX_TURN_SERVERS_JSON || "").trim();
+  if (json) {
+    try {
+      const parsed = JSON.parse(json);
+      const list = Array.isArray(parsed) ? parsed : parsed?.ice_servers;
+      if (Array.isArray(list)) {
+        return list.filter((server) => server && (server.urls || server.url));
+      }
+    } catch (error) {
+      console.warn("Invalid XBOX_TURN_SERVERS_JSON", error?.message || error);
+    }
+  }
+
+  const urls = String(process.env.XBOX_TURN_URLS || "")
+    .split(/[\n,]+/)
+    .map((value) => value.trim())
+    .filter(Boolean);
+  const username = String(process.env.XBOX_TURN_USERNAME || "");
+  const credential = String(process.env.XBOX_TURN_CREDENTIAL || "");
+
+  if (!urls.length || !username || !credential) return [];
+  return [{
+    urls: urls.length === 1 ? urls[0] : urls,
+    username,
+    credential
+  }];
+}
+
 async function bodyOf(req) {
   if (req.body && typeof req.body === "object") return req.body;
   if (typeof req.body === "string" && req.body) return JSON.parse(req.body);
@@ -66,9 +95,14 @@ export default async function handler(req, res) {
     res.statusCode = 204;
     return res.end();
   }
+  const action = String(req.query?.action || "");
+
+  if (action === "turn") {
+    return sendJson(res, 200, { ice_servers: configuredTurnServers() });
+  }
+
   if (!API_KEY) return sendJson(res, 503, { error: "Stratus server credential is not configured." });
 
-  const action = String(req.query?.action || "");
   const headers = { "content-type": "application/json", "x-api-key": API_KEY };
 
   try {

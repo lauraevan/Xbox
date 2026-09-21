@@ -183,51 +183,266 @@
         let pc   = null;
         let _dc  = null;
         let sigWs = null;
+        let allIceServers = [];
+        let relayRetryStarted = false;
+        let relayTimer = null;
+        let live = false;
+        const forceRelay = new URLSearchParams(location.search).get("relay") === "1";
+
         function sigSend(obj) {
             if (sigWs && sigWs.readyState === WebSocket.OPEN) sigWs.send(JSON.stringify(obj));
         }
+
+        function urlList(server) {
+            const value = server?.urls;
+            if (Array.isArray(value)) return value.map(String).filter(Boolean);
+            return value ? [String(value)] : [];
+        }
+
+        function isTurnUrl(url) {
+            return /^turns?:/i.test(String(url || ""));
+        }
+
+        function networkUrlScore(url) {
+            const value = String(url || "").toLowerCase();
+            if (/^turns:/.test(value) && /:443(?:\?|$)/.test(value)) return 0;
+            if (/^turn:/.test(value) && /:443(?:\?|$)/.test(value) && /transport=tcp/.test(value)) return 1;
+            if (/^turns:/.test(value)) return 2;
+            if (/^turn:/.test(value) && /transport=tcp/.test(value)) return 3;
+            if (/^turn:/.test(value)) return 4;
+            if (/^stuns?:/.test(value)) return 5;
+            return 6;
+        }
+
+        function normalizeIceServers(servers) {
+            if (!Array.isArray(servers)) return [];
+            return servers
+                .filter(server => server && urlList(server).length)
+                .map(server => {
+                    const urls = urlList(server).sort((a, b) => networkUrlScore(a) - networkUrlScore(b));
+                    return {
+                        ...server,
+                        urls: Array.isArray(server.urls) ? urls : urls[0]
+                    };
+                });
+        }
+
+        function relayIceServers(servers) {
+            return normalizeIceServers(servers)
+                .map(server => {
+                    const urls = urlList(server)
+                        .filter(isTurnUrl)
+                        .sort((a, b) => networkUrlScore(a) - networkUrlScore(b));
+                    if (!urls.length) return null;
+                    return {
+                        ...server,
+                        urls: urls.length === 1 ? urls[0] : urls
+                    };
+                })
+                .filter(Boolean);
+        }
+
+        function mergeIceServers(primary, extra) {
+            const out = [];
+            const seen = new Set();
+            for (const server of [...normalizeIceServers(primary), ...normalizeIceServers(extra)]) {
+                const key = JSON.stringify({
+                    urls: urlList(server).slice().sort(),
+                    username: server.username || "",
+                    credential: server.credential || ""
+                });
+                if (seen.has(key)) continue;
+                seen.add(key);
+                out.push(server);
+            }
+            return out;
+        }
+
+        async function loadXboxTurnServers() {
+            try {
+                const res = await fetch("/api/stratus?action=turn", {
+                    cache: "no-store",
+                    headers: { "Accept": "application/json" }
+                });
+                if (!res.ok) return [];
+                const data = await res.json();
+                return normalizeIceServers(data?.ice_servers);
+            } catch (error) {
+                console.warn("[Stratus/Xbox] TURN config unavailable", error);
+                return [];
+            }
+        }
+
+        function clearRelayTimer() {
+            if (relayTimer !== null) {
+                clearTimeout(relayTimer);
+                relayTimer = null;
+            }
+        }
+
+        function setEndedText(text) {
+            const label = endedOverlay?.querySelector("span");
+            if (label && text) label.textContent = text;
+        }
+
+        function scheduleRelayFallback(delay = 8500) {
+            clearRelayTimer();
+            if (relayRetryStarted || !relayIceServers(allIceServers).length) return;
+            relayTimer = setTimeout(() => {
+                if (!live) void retryWithRelay("ICE timeout");
+            }, delay);
+        }
+
+        function candidateType(candidate) {
+            const text = String(candidate?.candidate || "");
+            return text.match(/\styp\s(\w+)/i)?.[1] || "unknown";
+        }
+
+        async function startPeer(mode = "all") {
+            const relayOnly = mode === "relay";
+            const servers = relayOnly ? relayIceServers(allIceServers) : normalizeIceServers(allIceServers);
+            if (relayOnly && !servers.length) throw new Error("No TURN relay is configured.");
+
+            clearRelayTimer();
+            live = false;
+            _dc = null;
+            try { pc?.close?.(); } catch {}
+
+            pc = new RTCPeerConnection({
+                iceServers: servers,
+                iceTransportPolicy: relayOnly ? "relay" : "all",
+                bundlePolicy: "max-bundle",
+                rtcpMuxPolicy: "require",
+                iceCandidatePoolSize: 4
+            });
+
+            pc.addTransceiver("audio", { direction: "recvonly" });
+            pc.addTransceiver("video", { direction: "recvonly" });
+            const dc = pc.createDataChannel("JYSDK", { id: 1, ordered: false, maxRetransmits: 0 });
+            dc.onopen = () => { _dc = dc; setupCursorHandling(dc); };
+            pc.ondatachannel = (ev) => { if (ev.channel.label === "JYSDK") _dc = ev.channel; };
+            pc.ontrack = (ev) => {
+                if (!streamEl.srcObject) streamEl.srcObject = new MediaStream();
+                streamEl.srcObject.addTrack(ev.track);
+            };
+            pc.onicecandidate = (ev) => {
+                if (!ev.candidate) return;
+                console.debug("[Stratus/Xbox] ICE candidate", mode, candidateType(ev.candidate), ev.candidate.protocol || "");
+                sigSend({ type: "rtc_candidate", candidate: ev.candidate.toJSON() });
+            };
+            pc.onicecandidateerror = (ev) => {
+                console.warn("[Stratus/Xbox] ICE candidate error", ev?.errorCode, ev?.errorText || "");
+            };
+            pc.oniceconnectionstatechange = () => {
+                const state = pc?.iceConnectionState;
+                console.debug("[Stratus/Xbox] ICE state", mode, state);
+                if (state === "connected" || state === "completed") {
+                    clearRelayTimer();
+                    if (!live) {
+                        live = true;
+                        onLive();
+                    }
+                    return;
+                }
+                if (state === "failed") {
+                    live = false;
+                    if (!relayOnly) void retryWithRelay("ICE failed");
+                    else showEnded();
+                    return;
+                }
+                if (state === "disconnected") {
+                    clearRelayTimer();
+                    relayTimer = setTimeout(() => {
+                        if (pc?.iceConnectionState === "disconnected") {
+                            live = false;
+                            if (!relayOnly) void retryWithRelay("ICE disconnected");
+                            else showEnded();
+                        }
+                    }, 3500);
+                }
+            };
+            pc.onconnectionstatechange = () => {
+                const state = pc?.connectionState;
+                console.debug("[Stratus/Xbox] peer state", mode, state);
+                if (state === "failed") {
+                    live = false;
+                    if (!relayOnly) void retryWithRelay("peer connection failed");
+                    else showEnded();
+                }
+            };
+
+            const offer = await pc.createOffer();
+            await pc.setLocalDescription(offer);
+            sigSend({ type: "rtc_offer", sdp: pc.localDescription?.sdp || offer.sdp });
+
+            if (!relayOnly) scheduleRelayFallback();
+        }
+
+        async function retryWithRelay(reason) {
+            if (relayRetryStarted) return;
+            const relays = relayIceServers(allIceServers);
+            if (!relays.length) {
+                console.warn("[Stratus/Xbox] direct WebRTC failed and no TURN relay is available", reason);
+                setEndedText("Network blocked the direct stream and no TURN relay is configured");
+                showEnded();
+                return;
+            }
+
+            relayRetryStarted = true;
+            clearRelayTimer();
+            console.warn("[Stratus/Xbox] retrying through TURN relay", reason);
+            try {
+                await startPeer("relay");
+            } catch (error) {
+                console.error("[Stratus/Xbox] TURN relay retry failed", error);
+                setEndedText("Could not establish the TURN relay");
+                showEnded();
+            }
+        }
+
         async function setupWebRTC(iceServers, signaling_ws) {
+            const extraTurn = await loadXboxTurnServers();
+            allIceServers = mergeIceServers(iceServers, extraTurn);
+            console.info("[Stratus/Xbox] ICE servers", {
+                total: allIceServers.length,
+                relay: relayIceServers(allIceServers).length,
+                forceRelay
+            });
+
             sigWs = new WebSocket(signaling_ws);
             sigWs.onmessage = async (e) => {
                 let msg;
                 try { msg = JSON.parse(e.data); } catch { return; }
                 switch (msg.type) {
                     case "game_ready":
-                        pc = new RTCPeerConnection({ iceServers });
-                        pc.addTransceiver("audio", { direction: "recvonly" });
-                        pc.addTransceiver("video", { direction: "recvonly" });
-                        const dc = pc.createDataChannel("JYSDK", { id: 1, ordered: false, maxRetransmits: 0 });
-                        dc.onopen = () => { _dc = dc; setupCursorHandling(dc); };
-                        pc.ondatachannel = (ev) => { if (ev.channel.label === "JYSDK") _dc = ev.channel; };
-                        pc.ontrack = (ev) => {
-                            if (!streamEl.srcObject) streamEl.srcObject = new MediaStream();
-                            streamEl.srcObject.addTrack(ev.track);
-                        };
-                        pc.onicecandidate = (ev) => {
-                            if (ev.candidate) sigSend({ type: "rtc_candidate", candidate: ev.candidate.toJSON() });
-                        };
-                        pc.oniceconnectionstatechange = () => {
-                            const s = pc.iceConnectionState;
-                            if (s === "connected" || s === "completed") onLive();
-                            if (s === "failed") showEnded();
-                        };
-                        const offer = await pc.createOffer();
-                        await pc.setLocalDescription(offer);
-                        sigSend({ type: "rtc_offer", sdp: offer.sdp });
+                        relayRetryStarted = false;
+                        if (forceRelay && relayIceServers(allIceServers).length) {
+                            relayRetryStarted = true;
+                            await startPeer("relay");
+                        } else {
+                            await startPeer("all");
+                        }
                         break;
                     case "rtc_answer":
-                        if (pc) pc.setRemoteDescription(new RTCSessionDescription(msg.sdp)).catch(() => {});
+                        if (pc) pc.setRemoteDescription(new RTCSessionDescription(msg.sdp)).catch((error) => {
+                            console.warn("[Stratus/Xbox] remote description failed", error);
+                        });
                         break;
                     case "rtc_candidate":
                         if (pc && msg.candidate) {
                             const c = typeof msg.candidate === "string" ? { candidate: msg.candidate } : msg.candidate;
-                            pc.addIceCandidate(new RTCIceCandidate(c)).catch(() => {});
+                            pc.addIceCandidate(new RTCIceCandidate(c)).catch((error) => {
+                                console.warn("[Stratus/Xbox] remote ICE candidate failed", error);
+                            });
                         }
                         break;
                 }
             };
             sigWs.onclose = () => showEnded();
-            sigWs.onerror = () => showEnded();
+            sigWs.onerror = () => {
+                setEndedText("Signaling connection failed");
+                showEnded();
+            };
         }
         function onLive() {
             hideConnecting();
@@ -242,6 +457,7 @@
             }, { once: true });
         }
         function showEnded() {
+            clearRelayTimer();
             hideConnecting();
             streamEl.classList.remove("visible");
             stopAmbient();
