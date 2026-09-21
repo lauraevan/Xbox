@@ -480,95 +480,185 @@ body[data-transparency="reduced"] .backdrop-layer{ filter:none; opacity:.18; }
 
 
 
+
+/* Xbox OOBE reference pass.
+   IMPORTANT: this project uses a 1920x1080 TV coordinate system where 1rem≈10px.
+   The photographed Xbox panels occupy about 70% of the TV width, so they need
+   ~136-140rem widths here, not 70rem web-card widths. */
 .xbox-onboarding{
   position:fixed;inset:0;z-index:198;overflow:hidden;color:#fff;
   font-family:"Segoe UI",system-ui,-apple-system,sans-serif;
   background:
-    radial-gradient(circle at 79% 26%,rgba(44,94,60,.18),transparent 36%),
-    radial-gradient(circle at 20% 18%,rgba(111,55,48,.10),transparent 30%),
-    linear-gradient(180deg,#3b4348 0%,#59696f 58%,#81989d 100%);
-  filter:brightness(.62) saturate(.88);
+    radial-gradient(ellipse at 82% 22%,rgba(54,102,70,.22),transparent 34%),
+    radial-gradient(ellipse at 15% 8%,rgba(100,47,46,.13),transparent 34%),
+    linear-gradient(180deg,#272e33 0%,#3c484e 53%,#607277 100%);
   transition:opacity .18s ease;
 }
-.xbox-onboarding::before{content:"";position:absolute;inset:0;background:rgba(0,0,0,.22);pointer-events:none}
+.xbox-onboarding::before{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(0,0,0,.22),rgba(0,0,0,.09));
+  pointer-events:none;
+}
 .xbox-onboarding.out{opacity:0}
-.onboard-shell{position:absolute;inset:0}.onboard-xbox{display:none}
-.onboard-content{position:absolute;inset:0;opacity:0}.onboard-content.ready{animation:onboardIn .16s ease-out forwards}
+.onboard-shell{position:absolute;inset:0}
+.onboard-xbox{display:none}
+.onboard-content{position:absolute;inset:0;opacity:0}
+.onboard-content.ready{animation:onboardIn .16s ease-out forwards}
 @keyframes onboardIn{to{opacity:1}}
+
 .onboard-panel{
   position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
-  width:72.3rem;max-width:72vw;box-sizing:border-box;
-  background:rgba(87,88,108,.58);
-  border:.12rem solid rgba(255,255,255,.62);
-  box-shadow:none;
+  width:138rem;max-width:calc(100vw - 18rem);box-sizing:border-box;
+  background:rgba(79,80,101,.58);
+  border:.22rem solid rgba(255,255,255,.60);
+  box-shadow:0 1.8rem 5.2rem rgba(0,0,0,.18);
   text-align:center;color:#fff;
 }
-.onboard-panel h1{margin:0;font-size:4.6rem;line-height:1.03;font-weight:400;letter-spacing:-.06rem}
-.onboard-panel p{margin:1.05rem 0 0;font-size:1.82rem;line-height:1.2;font-weight:600;color:#fff}
-.network-panel{height:36.2rem;padding-top:6.3rem}
-.onboard-spinner{
-  width:5.15rem;height:5.15rem;margin:7.5rem auto 0;border-radius:50%;
-  border:.5rem solid rgba(255,255,255,.55);border-right-color:#62df3f;border-bottom-color:#62df3f;
+.onboard-panel h1{
+  margin:0;font-size:7.5rem;line-height:1.02;font-weight:400;letter-spacing:-.16rem;
+  text-shadow:0 .18rem .32rem rgba(0,0,0,.18);
+}
+.onboard-panel p{
+  margin:1.6rem 0 0;font-size:3.15rem;line-height:1.18;font-weight:600;color:#fff;
+}
+
+/* Checking Network */
+.network-panel{height:57rem;padding-top:10.4rem}
+.network-panel .onboard-spinner{
+  width:8.9rem;height:8.9rem;margin:12.2rem auto 0;border-radius:50%;
+  border:.82rem solid rgba(255,255,255,.56);
+  border-right-color:#62df3f;border-bottom-color:#62df3f;
   animation:onboardSpin .86s linear infinite;
 }
 @keyframes onboardSpin{to{transform:rotate(360deg)}}
-.gamertag-panel{height:35.9rem;padding:6.25rem 6.45rem 4rem}
-.gamertag-panel h1{font-size:4.45rem}.gamertag-panel p{font-size:1.75rem}
+
+/* Choose your Gamertag */
+.gamertag-panel{height:57rem;padding:10.1rem 10.7rem 6rem}
+.gamertag-panel h1{font-size:7.25rem}
+.gamertag-panel p{font-size:2.95rem}
 .gamertag-box{
-  display:block;width:100%;height:7.55rem;margin:4.15rem auto 0;box-sizing:border-box;
-  background:rgba(161,171,194,.58);border:.4rem solid #fff;color:#fff;text-align:left;
+  display:block;width:100%;height:12.9rem;margin:6.8rem auto 0;box-sizing:border-box;
+  background:rgba(156,167,191,.58);
+  border:.68rem solid #fff;color:#fff;text-align:left;
+  box-shadow:inset 0 0 0 .12rem rgba(255,255,255,.35);
 }
-.input-box{padding:0}.input-box input{
+.input-box{padding:0}
+.input-box input{
   width:100%;height:100%;box-sizing:border-box;border:0;outline:0;background:transparent;color:#fff;
-  padding:0 1.4rem;font:400 2.2rem "Segoe UI",sans-serif;caret-color:#fff;
+  padding:0 2.4rem;font:400 3.7rem "Segoe UI",sans-serif;caret-color:#fff;
 }
-.keyboard-hint{margin-top:1.55rem;font-size:1.4rem;font-weight:500}
-.keyboard-state{top:1.2rem;transform:translate(-50%,0);height:35rem}
+.keyboard-hint{margin-top:2.7rem;font-size:2.35rem;font-weight:500;color:#fff}
+
+/* Xbox software keyboard. In the reference the OOBE panel is pushed partly
+   off the top while the keyboard owns the lower half of the display. */
+.keyboard-state{
+  top:-7rem;transform:translate(-50%,0);height:57rem;
+}
 .xbox-keyboard{
-  position:absolute;left:1.8rem;right:1.8rem;bottom:1.2rem;height:39.4rem;
-  background:rgba(96,109,128,.94);border-top:.1rem solid rgba(255,255,255,.18);
-  padding:1.35rem 1.55rem 1rem;box-sizing:border-box;
+  position:absolute;left:2rem;right:0;bottom:1.1rem;height:69.5rem;
+  background:rgba(89,102,121,.97);
+  border-top:.18rem solid rgba(255,255,255,.18);
+  padding:2.2rem 2rem 1.4rem;box-sizing:border-box;
 }
-.keyboard-title{font-size:1.55rem;font-weight:600;margin-bottom:1.1rem;text-align:left}
-.keyboard-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:.36rem}
+.keyboard-title{
+  font-size:2.55rem;font-weight:600;margin-bottom:2rem;text-align:left;
+}
+.keyboard-grid{
+  display:grid;grid-template-columns:repeat(10,1fr);gap:.65rem;
+}
 .keyboard-grid button{
-  height:5.8rem;border:0;background:#77879b;color:#fff;font:600 1.66rem "Segoe UI",sans-serif;
+  height:9.5rem;border:0;background:#74849a;color:#fff;
+  font:600 2.8rem "Segoe UI",sans-serif;
 }
-.keyboard-grid button:focus,.keyboard-grid button:hover{outline:.32rem solid #fff;outline-offset:0;background:#8897aa}
-.keyboard-grid .key-selected{background:#fff;color:#56606d;box-shadow:0 0 2.2rem rgba(255,255,255,.55)}
-.keyboard-space{display:block;width:46%;height:4.8rem;margin:1.05rem auto 0;border:0;background:#7a899d;color:#fff;font:600 1.45rem "Segoe UI",sans-serif}
-.keyboard-space i{display:inline-block;width:1.1rem;height:1.1rem;border-radius:50%;background:#e5d819;margin-left:.65rem;vertical-align:-.05rem}
-.keyboard-done{position:absolute;top:1.05rem;right:1.2rem;height:3rem;padding:0 1rem;border:0;background:transparent;color:#fff;font:600 1.25rem "Segoe UI",sans-serif}
-.color-panel{height:47.2rem;padding:5rem 3.9rem 4rem}
-.color-panel h1{font-size:4.6rem}.color-panel p{font-size:1.75rem}
-.color-grid{display:grid;grid-template-columns:repeat(5,10.2rem);gap:2rem 3.1rem;justify-content:center;margin-top:4rem}
+.keyboard-grid button:focus,.keyboard-grid button:hover{
+  outline:.5rem solid #fff;outline-offset:0;background:#8897aa;
+}
+.keyboard-grid .key-selected{
+  background:#fff;color:#59636f;box-shadow:0 0 3.4rem rgba(255,255,255,.55);
+}
+.keyboard-space{
+  display:block;width:46%;height:7.8rem;margin:2rem auto 0;border:0;
+  background:#7a899d;color:#fff;font:600 2.35rem "Segoe UI",sans-serif;
+}
+.keyboard-space i{
+  display:inline-block;width:1.7rem;height:1.7rem;border-radius:50%;
+  background:#e5d819;margin-left:1rem;vertical-align:-.1rem;
+}
+.keyboard-done{
+  position:absolute;top:1.9rem;left:1.9rem;height:3.5rem;width:13rem;
+  opacity:0;cursor:pointer;
+}
+
+/* Pick a color */
+.color-panel{height:72rem;padding:8rem 6rem 6rem}
+.color-panel h1{font-size:7.35rem}
+.color-panel p{font-size:3rem}
+.color-grid{
+  display:grid;grid-template-columns:repeat(5,15.4rem);
+  gap:3.9rem 5rem;justify-content:center;margin-top:7.4rem;
+}
 .color-grid button{
-  width:10.2rem;height:10.2rem;border-radius:50%;border:.3rem solid rgba(255,255,255,.34);
-  background:var(--sw);box-shadow:inset 0 0 1rem rgba(255,255,255,.22);
+  width:15.4rem;height:15.4rem;border-radius:50%;
+  border:.42rem solid rgba(255,255,255,.36);
+  background:var(--sw);
+  box-shadow:inset 0 0 1.5rem rgba(255,255,255,.24),0 .35rem .8rem rgba(0,0,0,.14);
 }
-.color-grid button.selected{outline:.52rem solid #fff;outline-offset:.45rem}
+.color-grid button.selected{outline:.8rem solid #fff;outline-offset:.85rem}
 .color-next{position:absolute;opacity:0;pointer-events:none}
-.privacy-panel{height:56rem;padding:4.1rem 5.6rem 4.6rem}
-.privacy-panel h1{font-size:4.45rem}.privacy-panel p{font-size:1.72rem}
-.privacy-list{display:grid;gap:1.15rem;margin-top:4.55rem}
+
+/* Privacy */
+.privacy-panel{height:84rem;padding:6.8rem 9rem 7rem}
+.privacy-panel h1{font-size:7.15rem}
+.privacy-panel p{font-size:2.9rem}
+.privacy-list{display:grid;gap:2rem;margin-top:7.2rem}
 .privacy-row{
-  height:8.65rem;padding:0 2rem 0 2.55rem;border:0;background:rgba(175,188,210,.48);color:#fff;
-  display:flex;align-items:center;justify-content:space-between;text-align:left;font:600 1.9rem "Segoe UI",sans-serif;
+  height:13.8rem;padding:0 3.2rem 0 4.2rem;border:0;
+  background:rgba(174,187,209,.48);color:#fff;
+  display:flex;align-items:center;justify-content:space-between;text-align:left;
+  font:600 3.15rem "Segoe UI",sans-serif;
 }
-.privacy-row:focus,.privacy-row:hover{outline:.4rem solid #fff;outline-offset:0}
-.privacy-row i{width:2.75rem;height:2.75rem;border:.32rem solid #fff;box-sizing:border-box}
-.privacy-row.checked i{background:#56d62d;box-shadow:inset 0 0 0 .28rem rgba(255,255,255,.12)}
-.complete-setup{width:100%;height:8.35rem;margin-top:1.9rem;border:0;background:#62dd38;color:#fff;font:700 1.72rem "Segoe UI",sans-serif}
-.complete-setup:focus,.complete-setup:hover{outline:.4rem solid #fff;outline-offset:0}
-.onboard-legend{position:absolute;left:3.1rem;bottom:1.85rem;display:flex;gap:2.1rem;font-size:1.28rem;font-weight:600}
-.onboard-legend span{display:flex;align-items:center;gap:.48rem}
-.onboard-legend i{display:grid;place-items:center;width:1.9rem;height:1.9rem;border-radius:50%;font-style:normal;font-size:1.02rem;color:#fff}
-.onboard-legend .a{background:#53c931}.onboard-legend .b{background:#e54b59}
+.privacy-row:focus,.privacy-row:hover{outline:.65rem solid #fff;outline-offset:0}
+.privacy-row i{
+  width:4.4rem;height:4.4rem;border:.5rem solid #fff;box-sizing:border-box;
+}
+.privacy-row.checked i{
+  background:#56d62d;box-shadow:inset 0 0 0 .42rem rgba(255,255,255,.14);
+}
+.complete-setup{
+  width:100%;height:12.8rem;margin-top:3rem;border:0;
+  background:#62dd38;color:#fff;font:700 2.9rem "Segoe UI",sans-serif;
+}
+.complete-setup:focus,.complete-setup:hover{outline:.65rem solid #fff;outline-offset:0}
+
+/* TV controller legend */
+.onboard-legend{
+  position:absolute;left:5.2rem;bottom:2.6rem;display:flex;gap:3.8rem;
+  font-size:2.1rem;font-weight:600;
+}
+.onboard-legend span{display:flex;align-items:center;gap:.8rem}
+.onboard-legend i{
+  display:grid;place-items:center;width:3.2rem;height:3.2rem;border-radius:50%;
+  font-style:normal;font-size:1.7rem;color:#fff;
+}
+.onboard-legend .a{background:#53c931}
+.onboard-legend .b{background:#e54b59}
+
+/* Narrow/touch screens preserve the same TV composition, only scale it to fit. */
 @media(max-width:720px){
-  .onboard-panel{width:86vw;max-width:86vw}.onboard-panel h1{font-size:3.35rem}.onboard-panel p{font-size:1.4rem}
-  .gamertag-panel{padding-left:3rem;padding-right:3rem}.keyboard-state{top:0}
-  .xbox-keyboard{left:0;right:0;bottom:0;height:48vh}
-  .keyboard-grid button{height:4.5rem}
-  .color-grid{grid-template-columns:repeat(5,6.1rem);gap:1.6rem 1.4rem}.color-grid button{width:6.1rem;height:6.1rem}
-  .privacy-panel{height:54rem;padding:3.2rem 2.7rem}.privacy-row{height:7.6rem;font-size:1.48rem}
+  .onboard-panel{width:86vw;max-width:86vw}
+  .onboard-panel h1{font-size:5rem}
+  .onboard-panel p{font-size:2.1rem}
+  .network-panel{height:48rem;padding-top:8rem}
+  .network-panel .onboard-spinner{width:7rem;height:7rem;margin-top:9rem}
+  .gamertag-panel{height:49rem;padding:8rem 5rem 4rem}
+  .gamertag-box{height:10rem;margin-top:5rem}
+  .keyboard-state{top:-4rem}
+  .xbox-keyboard{left:0;right:0;bottom:0;height:53vh}
+  .keyboard-grid button{height:6.4rem;font-size:2.1rem}
+  .color-panel{height:64rem;padding-top:6rem}
+  .color-grid{grid-template-columns:repeat(5,8.2rem);gap:2.8rem 2rem;margin-top:5rem}
+  .color-grid button{width:8.2rem;height:8.2rem}
+  .privacy-panel{height:72rem;padding:5rem 4rem}
+  .privacy-row{height:10rem;font-size:2.2rem}
+  .complete-setup{height:9.5rem;font-size:2.2rem}
 }
