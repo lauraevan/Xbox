@@ -1866,3 +1866,48 @@ body[data-view="store"] .legend{
     gap:1.4rem .75rem;
   }
 }
+
+
+/* ───────── Catalog reference correction ─────────
+   Match the supplied Xbox Store catalog proportions: five portrait cards across
+   at the reference viewport, with the original cover ratio and text underneath. */
+.xstore-browse{
+  padding-top:2.65rem;
+}
+.xstore-browse .xstore-page-head{
+  margin-bottom:1.65rem;
+}
+.xstore-browse .xstore-grid{
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:1.7rem .9rem;
+}
+.xstore-browse .store-grid-card .store-cover{
+  aspect-ratio:3/4;
+  border-radius:.62rem;
+}
+.xstore-browse .store-grid-card .store-game-meta{
+  min-height:4.15rem;
+  padding:.62rem .08rem .15rem;
+  gap:.12rem;
+}
+.xstore-browse .store-grid-card .store-game-title{
+  font-size:1.18rem;
+}
+.xstore-browse .store-grid-card .store-game-price{
+  font-size:1rem;
+}
+.xstore-browse .store-grid-card .store-game-sub{
+  font-size:.92rem;
+}
+@media(max-width:1080px){
+  .xstore-browse .xstore-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media(max-width:820px){
+  .xstore-browse .xstore-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:560px){
+  .xstore-browse .xstore-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:1.25rem .7rem;
+  }
+}
