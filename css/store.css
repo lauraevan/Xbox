@@ -1911,3 +1911,111 @@ body[data-view="store"] .legend{
     gap:1.25rem .7rem;
   }
 }
+
+
+/* ───────── Catalog metadata lives on artwork, reveal on hover/focus ───────── */
+.xstore-browse .store-catalog-hover-card{
+  width:100%;
+  min-width:0;
+  padding:0;
+  background:transparent;
+}
+.xstore-browse .store-catalog-hover-card .store-cover{
+  position:relative;
+  width:100%;
+  height:auto;
+  aspect-ratio:3/4;
+  overflow:hidden;
+  border-radius:.62rem;
+}
+.xstore-browse .store-catalog-hover-card .store-cover::after{
+  content:"";
+  display:block;
+  position:absolute;
+  z-index:1;
+  inset:34% 0 0;
+  background:linear-gradient(180deg,transparent 0%,rgba(0,0,0,.22) 22%,rgba(0,0,0,.9) 100%);
+  opacity:0;
+  transition:opacity .14s ease;
+  pointer-events:none;
+}
+.xstore-browse .store-catalog-hover-card .store-game-meta{
+  position:absolute;
+  z-index:2;
+  left:0;
+  right:0;
+  bottom:0;
+  min-height:0;
+  padding:3.6rem .9rem .8rem;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:.14rem;
+  background:transparent;
+  opacity:0;
+  transform:translate3d(0,.35rem,0);
+  transition:opacity .13s ease,transform .16s var(--store-ease-out);
+  pointer-events:none;
+}
+.xstore-browse .store-catalog-hover-card:hover .store-cover::after,
+.xstore-browse .store-catalog-hover-card[data-focused] .store-cover::after,
+.xstore-browse .store-catalog-hover-card:focus-visible .store-cover::after,
+.xstore-browse .store-catalog-hover-card:hover .store-game-meta,
+.xstore-browse .store-catalog-hover-card[data-focused] .store-game-meta,
+.xstore-browse .store-catalog-hover-card:focus-visible .store-game-meta{
+  opacity:1;
+}
+.xstore-browse .store-catalog-hover-card:hover .store-game-meta,
+.xstore-browse .store-catalog-hover-card[data-focused] .store-game-meta,
+.xstore-browse .store-catalog-hover-card:focus-visible .store-game-meta{
+  transform:translate3d(0,0,0);
+}
+.xstore-browse .store-catalog-hover-card .store-game-title{
+  width:100%;
+  overflow:hidden;
+  color:#fff;
+  font-size:1.2rem;
+  font-weight:620;
+  line-height:1.18;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  text-shadow:0 .1rem .32rem rgba(0,0,0,.8);
+}
+.xstore-browse .store-catalog-hover-card .store-game-price{
+  color:rgba(255,255,255,.86);
+  font-size:.98rem;
+}
+.xstore-browse .store-catalog-hover-card .store-game-sub{
+  width:100%;
+  overflow:hidden;
+  color:rgba(255,255,255,.62);
+  font-size:.9rem;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.xstore-browse .store-catalog-hover-card .store-cloud-mark{
+  z-index:3;
+  opacity:0;
+  transform:scale(.92);
+  transition:opacity .13s ease,transform .15s var(--store-ease-out);
+}
+.xstore-browse .store-catalog-hover-card:hover .store-cloud-mark,
+.xstore-browse .store-catalog-hover-card[data-focused] .store-cloud-mark,
+.xstore-browse .store-catalog-hover-card:focus-visible .store-cloud-mark{
+  opacity:1;
+  transform:scale(1);
+}
+.xstore-browse .store-catalog-hover-card .store-owned-badge,
+.xstore-browse .store-catalog-hover-card .store-deal-badge{
+  z-index:3;
+  opacity:0;
+  transition:opacity .13s ease;
+}
+.xstore-browse .store-catalog-hover-card:hover .store-owned-badge,
+.xstore-browse .store-catalog-hover-card[data-focused] .store-owned-badge,
+.xstore-browse .store-catalog-hover-card:focus-visible .store-owned-badge,
+.xstore-browse .store-catalog-hover-card:hover .store-deal-badge,
+.xstore-browse .store-catalog-hover-card[data-focused] .store-deal-badge,
+.xstore-browse .store-catalog-hover-card:focus-visible .store-deal-badge{
+  opacity:1;
+}
