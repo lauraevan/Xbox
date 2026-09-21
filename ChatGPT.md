@@ -1148,7 +1148,7 @@ The project succeeds when someone can look at it and immediately feel that it is
 
 ### 2026-09-20 — Xbox version snapshot boot notification
 
-Current snapshot: `ms8q4t`
+Current snapshot: `bk9t2m`
 
 After every successful Xbox boot, show a compact green-and-black build notification in the **bottom-right corner** of the screen. It must have a clearly visible Xbox-green outline, rounded corners, dark black surface, and restrained Windows/Xbox styling. The notification uses the repo-local Xbox logo and reads `Xbox Version 1.5` and `Snapshot <random-code>`.
 
@@ -1159,12 +1159,12 @@ Important workflow rule:
 - Keep this notification in the bottom-right corner. Do not move it to the top or center it unless the user explicitly asks.
 
 
-### 2026-09-20 — 1.45 second Microsoft credit interstitial
+### 2026-09-20 — 2 second Microsoft credit interstitial
 
-After the Xbox startup movie finishes, show a full-screen Microsoft credit screen for exactly about 1.45 seconds before revealing the dashboard. It should match the supplied reference: muted charcoal/gray textured background, centered classic four-square Microsoft mark, and white Microsoft wordmark. The dashboard remains hidden until this interstitial completes.
+After the Xbox startup movie finishes, show a full-screen Microsoft credit screen for 2 seconds before revealing the dashboard. It should match the supplied reference: pure black background, centered classic four-square Microsoft mark, and white Microsoft wordmark. The dashboard remains hidden until this interstitial completes.
 
 Keep this as a distinct boot phase:
 1. Xbox startup movie
-2. Microsoft credit interstitial, ~1.45 seconds
+2. Microsoft credit interstitial, 2 seconds
 3. Dashboard reveal
 4. Existing post-boot greeting / version snapshot behavior
