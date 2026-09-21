@@ -1148,7 +1148,7 @@ The project succeeds when someone can look at it and immediately feel that it is
 
 ### 2026-09-20 — Xbox version snapshot boot notification
 
-Current snapshot: `zr6p1d`
+Current snapshot: `on7x3f`
 
 After every successful Xbox boot, show a compact green-and-black build notification in the **bottom-right corner** of the screen. It must have a clearly visible Xbox-green outline, rounded corners, dark black surface, and restrained Windows/Xbox styling. The notification uses the repo-local Xbox logo and reads `Xbox Version 1.5` and `Snapshot <random-code>`.
 
@@ -1180,3 +1180,10 @@ The Microsoft credit interstitial uses the standard four-square Microsoft palett
 Reset epoch: `zr6p1d`.
 
 On the first load of this build, every client removes prior `xbox.*` localStorage state before State defaults are read. This resets Home game layout/order, personalization/layout mode, profile-local state, settings, pins/recents, and other Xbox-local persisted state back to current defaults. A reset marker prevents the wipe from repeating on every reload. Do not remove or rename the marker unless another intentional global reset is requested.
+
+
+### 2026-09-20 — first-run Xbox onboarding
+
+First run after the reset now includes a dedicated Xbox-styled onboarding phase after the Microsoft credit screen and before Home. Sequence: Connecting to network → connected confirmation → choose gamertag → choose gamerpic/profile → Xbox preferences → welcome/finish. It uses Xbox green, black surfaces, square controls, Segoe-style typography, and the repo Xbox logo. Completion is persisted with `settings.onboardingComplete`.
+
+The Xbox personalization preset must retain Xbox Waves. Do not change the Xbox preset back to game artwork unless explicitly requested.
