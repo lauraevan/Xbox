@@ -1298,3 +1298,350 @@ body[data-view="store"] .legend{
     transition-duration:.01ms!important;
   }
 }
+
+
+/* ───────── Figure-clean Store refinement ─────────
+   Figure's useful lesson is hierarchy: quiet chrome, strong artwork, immediate
+   rows and low-latency focus feedback. Keep Xbox geometry and identity. */
+.view-store{
+  --store-surface:#101112;
+  --store-panel:#171819;
+  --store-panel-2:#1d1f20;
+  --store-muted:rgba(255,255,255,.58);
+}
+.xstore-shell,
+.xstore-main{
+  background:var(--store-surface);
+}
+.xstore-main{
+  background:
+    radial-gradient(circle at 72% 18%,rgba(255,255,255,.025),transparent 30%),
+    var(--store-surface);
+}
+.xstore-main::before{
+  display:none;
+}
+.xstore-rail{
+  background:#151617;
+  box-shadow:inset -1px 0 rgba(255,255,255,.055);
+}
+.xstore-content{
+  padding-top:3rem;
+}
+.xstore-context{
+  margin-bottom:.75rem;
+  font-size:1.18rem;
+  color:var(--store-muted);
+}
+.xstore-title-row{
+  margin-bottom:1.35rem;
+}
+.xstore-title-row h1{
+  font-size:3.05rem;
+  font-weight:520;
+  letter-spacing:-.055rem;
+}
+.xstore-hints{
+  opacity:.55;
+}
+.xstore-feature{
+  padding:.5rem .55rem 1rem;
+  margin-left:-.55rem;
+  margin-right:0;
+  border-radius:.55rem;
+}
+.xstore-feature::before{
+  top:-8%;
+  right:-2%;
+  width:55%;
+  height:86%;
+  opacity:.1;
+  filter:saturate(.72) brightness(.58);
+  animation-duration:22s;
+}
+.xstore-feature::after{
+  background:
+    linear-gradient(90deg,var(--store-surface) 0%,rgba(16,17,18,.96) 48%,rgba(16,17,18,.62) 78%,rgba(16,17,18,.9) 100%);
+}
+.xstore-gallery{
+  gap:.85rem;
+}
+.store-lead{
+  width:34rem;
+  flex-basis:34rem;
+}
+.store-lead-art{
+  height:19.2rem;
+  border-radius:.7rem;
+}
+.xstore-gallery-small{
+  grid-auto-columns:12.8rem;
+  gap:.85rem;
+}
+.store-compact{
+  width:12.8rem;
+  min-width:12.8rem;
+  background:transparent;
+}
+.store-compact .store-cover{
+  height:12.5rem;
+  border-radius:.65rem;
+}
+.store-compact .store-game-meta{
+  min-height:3.7rem;
+  padding:.68rem .12rem .35rem;
+  background:transparent;
+}
+.xstore-selected{
+  min-height:9rem;
+}
+.xstore-selected-title{
+  margin-top:1.2rem;
+  font-size:2rem;
+  font-weight:540;
+}
+.xstore-selected-meta{
+  margin-top:.72rem;
+}
+.xstore-selected-rating{
+  background:rgba(255,255,255,.075);
+}
+.xstore-selected-genre{
+  background:rgba(255,255,255,.11);
+}
+.xstore-selected-buy{
+  margin-top:.9rem;
+}
+.xstore-selected-price{
+  color:#fff;
+}
+.xstore-selected-offer{
+  color:var(--store-muted);
+}
+.xstore-shelf{
+  margin-bottom:3.2rem;
+}
+.xstore-shelf-head{
+  margin-bottom:.9rem;
+}
+.xstore-shelf-kicker{
+  opacity:.62;
+}
+.xstore-shelf-title{
+  font-size:1.72rem;
+  font-weight:580;
+}
+.xstore-shelf-sub{
+  color:rgba(255,255,255,.46);
+}
+.xstore-row{
+  grid-auto-columns:12.7rem;
+  gap:.9rem;
+  padding-bottom:.9rem;
+}
+.xstore-row.wide{
+  grid-auto-columns:23rem;
+}
+.store-cover{
+  border-radius:.7rem;
+  background:#1a1b1c;
+}
+.store-game-meta{
+  padding-top:.58rem;
+}
+.store-game-title{
+  font-size:1.2rem;
+  font-weight:570;
+}
+.store-game-price{
+  color:rgba(255,255,255,.8);
+  font-size:1.05rem;
+}
+.store-game-sub{
+  color:rgba(255,255,255,.43);
+  font-size:.98rem;
+}
+.store-cloud-mark{
+  width:2.05rem;
+  height:2.05rem;
+  background:rgba(0,0,0,.68);
+}
+.store-cloud-mark svg{
+  width:1.2rem;
+  height:1.2rem;
+}
+.store-owned-badge{
+  padding:.34rem .52rem;
+  border-radius:.32rem;
+}
+
+/* Figure-like immediacy: focus is obvious, but movement is tiny and never bouncy. */
+.store-game{
+  transition:transform .145s var(--store-ease-out),opacity .12s ease;
+}
+.store-game:hover,
+.store-game[data-focused]{
+  transform:translate3d(0,-.14rem,0) scale(1.012);
+}
+.store-cover,
+.store-lead-art{
+  transition:box-shadow .15s ease,outline-color .12s ease;
+}
+.store-game:hover .store-cover img,
+.store-game[data-focused] .store-cover img,
+.store-lead:hover .store-lead-art img,
+.store-lead[data-focused] .store-lead-art img{
+  transform:scale(1.025);
+}
+.store-cover img,
+.store-lead-art img{
+  transition:opacity .16s ease,transform .26s var(--store-ease-soft);
+}
+.store-compact[data-focused] .store-cover,
+.store-grid-card[data-focused] .store-cover,
+.store-wide[data-focused] .store-cover,
+.store-lead[data-focused] .store-lead-art{
+  outline:.22rem solid rgba(255,255,255,.94);
+  outline-offset:.2rem;
+  box-shadow:0 .55rem 1.7rem rgba(0,0,0,.34);
+}
+
+/* Discovery pages are dense and immediate, like a real library rather than cards floating in space. */
+.xstore-browse{
+  padding-top:3.3rem;
+}
+.xstore-page-head{
+  margin-bottom:1.55rem;
+}
+.xstore-page-title{
+  font-size:3.15rem;
+  font-weight:540;
+}
+.xstore-page-count{
+  color:rgba(255,255,255,.44);
+}
+.xstore-filters{
+  gap:.55rem;
+  margin-bottom:1.5rem;
+}
+.xstore-filter{
+  min-height:3.25rem;
+  padding:0 1.15rem;
+  border-radius:.55rem;
+  background:#1d1f20;
+  font-size:1.08rem;
+}
+.xstore-filter.active{
+  background:#f2f2f2;
+}
+.xstore-search-wrap{
+  max-width:64rem;
+  height:4.45rem;
+  margin-bottom:1.7rem;
+  border:.1rem solid rgba(255,255,255,.16);
+  border-radius:.65rem;
+  background:#191b1c;
+  overflow:hidden;
+}
+.xstore-search{
+  font-size:1.35rem;
+}
+.xstore-grid{
+  grid-template-columns:repeat(auto-fill,minmax(13.2rem,1fr));
+  gap:1.8rem .9rem;
+  padding-bottom:5rem;
+}
+.store-grid-card .store-cover{
+  aspect-ratio:3/4;
+}
+.xstore-autoload-sentinel{
+  height:3.7rem;
+}
+
+/* Product page: fewer boxes, clearer hierarchy, artwork does the visual work. */
+.xproduct{
+  background:#090a0a;
+}
+.xproduct-scrim{
+  background:
+    linear-gradient(90deg,#090a0a 0%,rgba(9,10,10,.985) 35%,rgba(9,10,10,.74) 59%,rgba(9,10,10,.2) 100%),
+    linear-gradient(0deg,rgba(0,0,0,.64),transparent 52%);
+}
+.xproduct-body{
+  padding:5.8rem 6rem 4.8rem;
+  gap:2.8rem;
+}
+.xproduct-cover{
+  width:21.5rem;
+  border-radius:.75rem;
+  box-shadow:0 1.4rem 4rem rgba(0,0,0,.45);
+}
+.xproduct-title{
+  font-size:4.15rem;
+  font-weight:570;
+}
+.xproduct-type{
+  color:rgba(255,255,255,.55);
+  letter-spacing:.1rem;
+}
+.xproduct-badges{
+  margin:1rem 0 1.15rem;
+}
+.xproduct-badges span{
+  min-height:2.3rem;
+  border-radius:.45rem;
+  background:rgba(255,255,255,.085);
+}
+.xproduct-desc{
+  color:rgba(255,255,255,.76);
+  font-size:1.34rem;
+}
+.xproduct-rich-details{
+  margin-top:1.25rem;
+}
+.xproduct-rich-facts{
+  gap:.55rem;
+}
+.xproduct-rich-fact{
+  min-height:4.45rem;
+  padding:.65rem .8rem;
+  border-color:rgba(255,255,255,.06);
+  border-radius:.55rem;
+  background:rgba(255,255,255,.045);
+}
+.xproduct-rich-shot{
+  border-radius:.55rem;
+  opacity:.78;
+}
+.xproduct-action{
+  min-height:4.25rem;
+  border-radius:.55rem;
+}
+.xproduct-action.primary{
+  background:#107c10;
+}
+
+/* Prevent constant decorative motion from making the Store feel busy or slower. */
+.xstore-feature::before,
+.xproduct-art{
+  animation-iteration-count:1;
+}
+.xstore-shelf,
+.xstore-deals{
+  animation-duration:.24s;
+}
+.store-card-enter{
+  animation-duration:.2s;
+}
+@media(max-width:720px){
+  .xstore-content{
+    padding:2rem 1.15rem 5rem;
+  }
+  .xstore-page-title{
+    font-size:2.5rem;
+  }
+  .xstore-grid{
+    grid-template-columns:repeat(auto-fill,minmax(10.5rem,1fr));
+    gap:1.35rem .7rem;
+  }
+}
