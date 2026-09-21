@@ -1058,7 +1058,7 @@ async function runXboxOnboarding(){
     btn.classList.add('selected');
     chosen=btn.dataset.color;
   }));
-  await waitClick('#color-next');
+  await new Promise(resolve=>{ const grid=content.querySelector('.color-grid'); const done=()=>resolve(); grid?.addEventListener('dblclick',done,{once:true}); const key=e=>{ if(e.key==='Enter'||e.key==='a'||e.key==='A'){document.removeEventListener('keydown',key); resolve();} }; document.addEventListener('keydown',key); });
   window.State.setSetting('accent',chosen);
 
   show(`
@@ -1141,7 +1141,7 @@ async function boot(){
   // Version stamp shown once after every full console boot.
   setTimeout(() => {
     const node = el('div', 'version-snapshot-toast');
-    node.innerHTML = '<div class="version-snapshot-mark"><img src="assets/pwa/xbox-logo.svg" alt="" aria-hidden="true"></div><div class="version-snapshot-copy"><strong>Xbox Version 1.5</strong><span>Snapshot ob6r2k</span></div>';
+    node.innerHTML = '<div class="version-snapshot-mark"><img src="assets/pwa/xbox-logo.svg" alt="" aria-hidden="true"></div><div class="version-snapshot-copy"><strong>Xbox Version 1.5</strong><span>Snapshot pp3v8m</span></div>';
     $('#toasts').append(node);
     requestAnimationFrame(() => node.classList.add('show'));
     setTimeout(() => {
