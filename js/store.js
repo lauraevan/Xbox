@@ -596,7 +596,9 @@ function refreshProductOwnership(node, game){
     }
   }
   if (acquire){
-    acquire.textContent = owned ? 'PLAY WITH CLOUD GAMING' : 'GET';
+    acquire.textContent = owned
+      ? 'PLAY WITH CLOUD GAMING'
+      : offer ? `BUY ${money(offer.now)}` : 'GET';
     acquire.classList.toggle('play', owned);
   }
 }
