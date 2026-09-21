@@ -15,8 +15,8 @@ const norm = value => String(value || '').toLowerCase().replace(/[^a-z0-9]/g,'')
 const PRESETS = {
   xbox: {
     personalizationPreset:'xbox',
-    wallpaperMode:'game',
-    wallpaperBehavior:'adaptive',
+    wallpaperMode:'waves',
+    wallpaperBehavior:'dynamic',
     wallpaperBrightness:100,
     wallpaperBlur:0,
     wallpaperMotion:'normal',
