@@ -1148,7 +1148,7 @@ The project succeeds when someone can look at it and immediately feel that it is
 
 ### 2026-09-20 — Xbox version snapshot boot notification
 
-Current snapshot: `q9m4zc`
+Current snapshot: `sp8m2x`
 
 After every successful Xbox boot, show a compact green-and-black build notification in the **bottom-right corner** of the screen. It must have a clearly visible Xbox-green outline, rounded corners, dark black surface, and restrained Windows/Xbox styling. The notification uses the repo-local Xbox logo and reads `Xbox Version 1.5` and `Snapshot <random-code>`.
 
@@ -1266,3 +1266,14 @@ The GameNexus vendor workflow now enumerates the entire Stratus catalog. It sear
 The rich launcher is now shared beyond the Home row. Stratus games opened from My games & apps use the same rich launcher before Play, and Microsoft Store product pages are asynchronously enriched with the local developer/publisher/release/platform/genre/mode/theme metadata plus a selectable local screenshot rail.
 
 Current snapshot: `rv6k2p`.
+
+
+### 2026-09-21 — Store motion/performance rework
+
+The Store now reuses its persistent shell and navigation rail between sections instead of tearing down and rebuilding the entire surface on every tab change. Games/Search/Deals/Wishlist/Owned use automatic progressive catalog loading in 36-card batches with IntersectionObserver prefetching and controller-focus preloading. The old clickable "Show more" / load-more control is removed.
+
+Motion is deliberately restrained and Xbox-like: fast page entrances, subtle card lift/scale, image reveal/zoom, smooth horizontal rails, animated Home feature artwork tied to the focused game, responsive filters/search focus, and a cinematic but lightweight product-page entrance with slow hero drift. Reduced-motion preferences disable the nonessential animation.
+
+Browse images remain lazy/async so the full 225-title Stratus catalog does not decode at once. Rich local product metadata and screenshot galleries remain intact.
+
+Current snapshot: `sp8m2x`.
