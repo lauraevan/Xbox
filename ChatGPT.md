@@ -1148,7 +1148,7 @@ The project succeeds when someone can look at it and immediately feel that it is
 
 ### 2026-09-20 — Xbox version snapshot boot notification
 
-Current snapshot: `xb5n8w`
+Current snapshot: `px9r4c`
 
 After every successful Xbox boot, show a compact green-and-black build notification in the **bottom-right corner** of the screen. It must have a clearly visible Xbox-green outline, rounded corners, dark black surface, and restrained Windows/Xbox styling. The notification uses the repo-local Xbox logo and reads `Xbox Version 1.5` and `Snapshot <random-code>`.
 
@@ -1192,3 +1192,8 @@ The Xbox personalization preset must retain Xbox Waves. Do not change the Xbox p
 ### 2026-09-20 — Xbox is the default theme + onboarding reset
 
 Default personalization preset is now `xbox`, with Xbox green and Xbox Waves retained as the default wallpaper. A new fleet reset marker `xb5n8w` intentionally clears existing `xbox.*` local state once on every client so onboarding runs again for everyone. After that first reset/load, state persists normally.
+
+
+### 2026-09-20 — screenshot-matched Xbox onboarding
+
+The onboarding UI was rebuilt around the supplied Xbox setup reference photos. Treat these screenshots as the visual authority for onboarding. The first-run flow now mirrors the photographed presentation: translucent blue-gray centered panels over a soft gray/green console backdrop, thin white panel borders, centered Segoe UI headings, controller legends at bottom-left, Xbox-style loading ring, the large outlined Gamertag field, an on-screen keyboard treatment, the 10-circle Pick a color screen, and the three-row Privacy settings screen with a bright green Complete Setup button. Avoid generic web-app cards, rounded Material components, or invented decorative onboarding chrome.
