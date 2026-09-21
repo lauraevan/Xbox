@@ -340,7 +340,7 @@ async function play(game){
 
   if (!game?.gameKey) throw new Error('This title has no Stratus game key.');
   if (starting) return;
-  if (!original.owns?.(game)) throw new Error('This game is not in your library yet.');
+  if (!(window.StratusCloud?.owns || original.owns)?.(game)) throw new Error('This game is not in your library yet.');
   if (active || pending) await quit();
 
   starting = true;
