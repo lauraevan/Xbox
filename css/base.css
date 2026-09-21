@@ -426,3 +426,54 @@ body[data-transparency="reduced"] .backdrop-layer{ filter:none; opacity:.18; }
     touch-action:pan-y;
   }
 }
+
+
+/* Microsoft credit interstitial shown after the Xbox boot movie. */
+.microsoft-credit{
+  position:fixed;inset:0;z-index:199;
+  display:grid;place-items:center;
+  background:
+    radial-gradient(circle at 50% 47%,rgba(255,255,255,.08),transparent 34%),
+    linear-gradient(180deg,#54585d 0%,#474b50 48%,#34383d 100%);
+  overflow:hidden;
+  opacity:0;
+  transition:opacity .18s ease;
+}
+.microsoft-credit::before{
+  content:"";position:absolute;inset:0;
+  background:
+    radial-gradient(circle at 14% 22%,rgba(255,255,255,.12) 0 .12rem,transparent .15rem),
+    radial-gradient(circle at 72% 38%,rgba(255,255,255,.08) 0 .1rem,transparent .13rem),
+    radial-gradient(circle at 39% 71%,rgba(255,255,255,.08) 0 .11rem,transparent .14rem),
+    radial-gradient(circle at 88% 63%,rgba(255,255,255,.06) 0 .1rem,transparent .14rem);
+  background-size:19rem 17rem,23rem 21rem,31rem 27rem,29rem 25rem;
+  opacity:.42;filter:blur(.25rem);pointer-events:none;
+}
+.microsoft-credit.show{opacity:1}
+.microsoft-credit.out{opacity:0}
+.microsoft-credit-brand{
+  position:relative;z-index:1;
+  display:flex;align-items:center;gap:1.55rem;
+  transform:translateY(-.2rem);
+  color:#fff;
+  font-family:"Segoe UI",system-ui,-apple-system,sans-serif;
+}
+.microsoft-credit-grid{
+  width:6.2rem;height:6.2rem;
+  display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;
+  gap:.3rem;filter:drop-shadow(0 .12rem .2rem rgba(0,0,0,.2));
+}
+.microsoft-credit-grid i{display:block}
+.microsoft-credit-grid i:nth-child(1){background:#f25f5c}
+.microsoft-credit-grid i:nth-child(2){background:#f2d84f}
+.microsoft-credit-grid i:nth-child(3){background:#44c7c9}
+.microsoft-credit-grid i:nth-child(4){background:#d9e35f}
+.microsoft-credit-word{
+  font-size:5.5rem;line-height:1;font-weight:600;letter-spacing:-.12rem;
+  text-shadow:0 .12rem .32rem rgba(0,0,0,.28);
+}
+@media(max-width:720px){
+  .microsoft-credit-brand{gap:1rem}
+  .microsoft-credit-grid{width:4.2rem;height:4.2rem;gap:.2rem}
+  .microsoft-credit-word{font-size:3.7rem}
+}
