@@ -192,13 +192,13 @@ async function openGamePreview(title){
   const defaultHero = HERO[known] || '';
   if (defaultHero) paintSelectedGameBackdrop(title, defaultHero);
 
-  const [cloud, local, rich] = await Promise.all([
+  const [cloud, local] = await Promise.all([
     cloudGame(title),
-    Promise.resolve(localGame(title)),
-    window.GameDetails?.get?.(known) || Promise.resolve(null)
+    Promise.resolve(localGame(title))
   ]);
 
   const game = cloud || local || { name:title };
+  const rich = await (window.GameDetails?.get?.(game) || window.GameDetails?.get?.(known) || Promise.resolve(null));
   const screenshots = Array.isArray(rich?.screenshots) ? rich.screenshots.filter(Boolean) : [];
   const cover = rich?.cover || COVER[known] || game.cover || game.image || '';
   const hero = rich?.hero || screenshots[0] || HERO[known] || game.image || game.cover || cover;
@@ -433,6 +433,8 @@ async function openGamePreview(title){
     window.Nav?.focusIn?.(layer, '.home-game-preview-start');
   });
 }
+
+window.RichGameLauncher = { open:openGamePreview, close:closeGamePreview };
 
 function ensureBadge(face, text){
   face.querySelectorAll('.ref-platform, .ref-gamepass-badge').forEach(node => node.remove());
