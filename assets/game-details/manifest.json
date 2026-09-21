@@ -354,27 +354,57 @@
     "bs0083": {
       "gameKey": "bs0083",
       "name": "INDUSTRIA 2",
-      "matchName": "",
-      "gameNexusId": null,
-      "source": "Stratus fallback",
-      "description": "INDUSTRIA 2 is a narrative FPS adventure about a woman stranded in a parallel dimension. Explore, scavenge and fight your way through a mysterious boreal landscape consumed by an ever-hungry artificial intelligence to find a way home.",
-      "rating": null,
-      "releaseDate": "",
-      "developers": [],
-      "publishers": [],
-      "platforms": [],
+      "matchName": "Portal 2",
+      "gameNexusId": 72,
+      "source": "GameNexus / IGDB",
+      "description": "Sequel to the acclaimed Portal (2007), Portal 2 pits the protagonist of the original game, Chell, and her new robot friend, Wheatley, against more puzzles conceived by GLaDOS, an A.I. with the sole purpose of testing the Portal Gun's mechanics and taking revenge on Chell for the events of Portal. As a result of several interactions and revelations, Chell once again pushes to escape Aperture Science Labs.",
+      "rating": 92,
+      "releaseDate": "April 18, 2011",
+      "developers": [
+        "Valve"
+      ],
+      "publishers": [
+        "Valve",
+        "Electronic Arts"
+      ],
+      "platforms": [
+        "PlayStation 3",
+        "Linux",
+        "PC (Microsoft Windows)",
+        "Mac",
+        "Xbox 360",
+        "Nintendo Switch",
+        "Trailer for Portal 2"
+      ],
       "genres": [
-        "Action",
-        "Indie",
+        "Platform",
+        "Puzzle",
         "Adventure"
       ],
-      "franchises": [],
-      "gameModes": [],
-      "themes": [],
-      "trailerId": "",
-      "cover": "assets/stratus-covers/bs0083.jpg",
-      "hero": "assets/game-details/bs0083/hero.webp",
-      "screenshots": []
+      "franchises": [
+        "Portal"
+      ],
+      "gameModes": [
+        "Single player",
+        "Multiplayer",
+        "Co-operative",
+        "Split screen"
+      ],
+      "themes": [
+        "Action",
+        "Science fiction",
+        "Comedy"
+      ],
+      "trailerId": "mC_u9ZwlIUc",
+      "cover": "assets/game-details/bs0083/cover.webp",
+      "hero": "assets/game-details/bs0083/screenshots/01.webp",
+      "screenshots": [
+        "assets/game-details/bs0083/screenshots/01.webp",
+        "assets/game-details/bs0083/screenshots/02.webp",
+        "assets/game-details/bs0083/screenshots/03.webp",
+        "assets/game-details/bs0083/screenshots/04.webp",
+        "assets/game-details/bs0083/screenshots/05.webp"
+      ]
     },
     "bs0082": {
       "gameKey": "bs0082",
@@ -2087,27 +2117,60 @@
     "bs0024": {
       "gameKey": "bs0024",
       "name": "Schedule 1",
-      "matchName": "",
-      "gameNexusId": null,
-      "source": "Stratus fallback",
-      "description": "From small-time dope pusher to kingpin - manufacture and distribute a range of drugs throughout the grungy city of Hyland Point. Expand your empire with properties, businesses, employees and more.",
-      "rating": null,
-      "releaseDate": "",
-      "developers": [],
-      "publishers": [],
-      "platforms": [],
+      "matchName": "Schedule I",
+      "gameNexusId": 328373,
+      "source": "GameNexus / IGDB",
+      "description": "Schedule I is a first-person open-world crime simulation game where players build and manage a drug trafficking operation in the fictional city of Hyland Point. Gameplay combines business management with tactical strategy, as players grow and manufacture various substances, sell to residents while avoiding police, and expand through hiring employees and purchasing properties. Drugs can be mixed with various ingredients to alter their effects and increase sell value. Players must contend with law enforcement mechanics including random searches, roadblocks, and a wanted system. The game also features an active modding community and cooperative multiplayer.",
+      "rating": 73,
+      "releaseDate": "March 24, 2025",
+      "developers": [
+        "TVGS"
+      ],
+      "publishers": [
+        "TVGS"
+      ],
+      "platforms": [
+        "PC (Microsoft Windows)",
+        "Trailer for Schedule I"
+      ],
       "genres": [
-        "Simulation",
-        "Adventure",
-        "RPG"
+        "Simulator",
+        "Strategy",
+        "Indie"
       ],
       "franchises": [],
-      "gameModes": [],
-      "themes": [],
-      "trailerId": "",
-      "cover": "assets/stratus-covers/bs0024.jpg",
-      "hero": "assets/game-details/bs0024/hero.webp",
-      "screenshots": []
+      "gameModes": [
+        "Single player",
+        "Multiplayer",
+        "Co-operative"
+      ],
+      "themes": [
+        "Action",
+        "Open world"
+      ],
+      "trailerId": "fR1-GXVPbuo",
+      "cover": "assets/game-details/bs0024/cover.webp",
+      "hero": "assets/game-details/bs0024/screenshots/01.webp",
+      "screenshots": [
+        "assets/game-details/bs0024/screenshots/01.webp",
+        "assets/game-details/bs0024/screenshots/02.webp",
+        "assets/game-details/bs0024/screenshots/03.webp",
+        "assets/game-details/bs0024/screenshots/04.webp",
+        "assets/game-details/bs0024/screenshots/05.webp",
+        "assets/game-details/bs0024/screenshots/06.webp",
+        "assets/game-details/bs0024/screenshots/07.webp",
+        "assets/game-details/bs0024/screenshots/08.webp",
+        "assets/game-details/bs0024/screenshots/09.webp",
+        "assets/game-details/bs0024/screenshots/10.webp",
+        "assets/game-details/bs0024/screenshots/11.webp",
+        "assets/game-details/bs0024/screenshots/12.webp",
+        "assets/game-details/bs0024/screenshots/13.webp",
+        "assets/game-details/bs0024/screenshots/14.webp",
+        "assets/game-details/bs0024/screenshots/15.webp",
+        "assets/game-details/bs0024/screenshots/16.webp",
+        "assets/game-details/bs0024/screenshots/17.webp",
+        "assets/game-details/bs0024/screenshots/18.webp"
+      ]
     },
     "kj0599": {
       "gameKey": "kj0599",
@@ -2218,27 +2281,47 @@
     "dg0364": {
       "gameKey": "dg0364",
       "name": "Cities: Skylines 2",
-      "matchName": "",
-      "gameNexusId": null,
-      "source": "Stratus fallback",
-      "description": "Raise a city from the ground up and transform it into a thriving metropolis with the most realistic city builder ever. Push your creativity and problem-solving to build on a scale you've never experienced. With deep simulation and a living economy, this is world-building without limits.",
-      "rating": null,
-      "releaseDate": "",
-      "developers": [],
-      "publishers": [],
-      "platforms": [],
+      "matchName": "Cities: Skylines II",
+      "gameNexusId": 240902,
+      "source": "GameNexus / IGDB",
+      "description": "Create and manage your own city without restrictions. Offering a deep simulation and a living economy, Cities: Skylines II will challenge your decision-making skills and allow you to build the cities of your dreams. Get ready for a new epic scale in the most realistic city builder - ever.",
+      "rating": 73,
+      "releaseDate": "October 24, 2023",
+      "developers": [
+        "Colossal Order",
+        "Iceflake Studios"
+      ],
+      "publishers": [
+        "Paradox Interactive"
+      ],
+      "platforms": [
+        "Xbox Series X|S",
+        "PC (Microsoft Windows)",
+        "PlayStation 5",
+        "Trailer for Cities: Skylines II"
+      ],
       "genres": [
-        "Easy",
-        "Challenge",
-        "3A"
+        "Simulator",
+        "Strategy"
       ],
       "franchises": [],
-      "gameModes": [],
-      "themes": [],
-      "trailerId": "",
-      "cover": "assets/stratus-covers/dg0364.jpg",
-      "hero": "assets/game-details/dg0364/hero.webp",
-      "screenshots": []
+      "gameModes": [
+        "Single player"
+      ],
+      "themes": [
+        "Sandbox"
+      ],
+      "trailerId": "WdD66WGBVHM",
+      "cover": "assets/game-details/dg0364/cover.webp",
+      "hero": "assets/game-details/dg0364/screenshots/01.webp",
+      "screenshots": [
+        "assets/game-details/dg0364/screenshots/01.webp",
+        "assets/game-details/dg0364/screenshots/02.webp",
+        "assets/game-details/dg0364/screenshots/03.webp",
+        "assets/game-details/dg0364/screenshots/04.webp",
+        "assets/game-details/dg0364/screenshots/05.webp",
+        "assets/game-details/dg0364/screenshots/06.webp"
+      ]
     },
     "bs0020": {
       "gameKey": "bs0020",
@@ -2581,27 +2664,55 @@
     "kj0615": {
       "gameKey": "kj0615",
       "name": "Dead Space™ 3",
-      "matchName": "",
-      "gameNexusId": null,
-      "source": "Stratus fallback",
-      "description": "Journey across space to the icy planet of Tau Volantis with Isaac Clarke and Sgt. John Carver to discover and destroy the source of the Necromorph outbreak.",
-      "rating": null,
-      "releaseDate": "",
-      "developers": [],
-      "publishers": [],
-      "platforms": [],
-      "genres": [
-        "RPG",
-        "Adventure",
-        "3A"
+      "matchName": "Dead Space 3",
+      "gameNexusId": 1216,
+      "source": "GameNexus / IGDB",
+      "description": "Dead Space 3 is a 2013 survival horror action video game developed by Visceral Games and published by Electronic Arts for PlayStation 3, Windows, and Xbox 360. It is the third and final main entry in the Dead Space series. The game supports online cooperative multiplayer sessions in which a second player takes the role of new character John Carver.",
+      "rating": 73,
+      "releaseDate": "February 5, 2013",
+      "developers": [
+        "Visceral Games"
       ],
-      "franchises": [],
-      "gameModes": [],
-      "themes": [],
-      "trailerId": "",
-      "cover": "assets/stratus-covers/kj0615.jpg",
-      "hero": "assets/game-details/kj0615/hero.webp",
-      "screenshots": []
+      "publishers": [
+        "Electronic Arts"
+      ],
+      "platforms": [
+        "PlayStation 3",
+        "PC (Microsoft Windows)",
+        "Xbox 360",
+        "Xbox One",
+        "Trailer for Dead Space 3"
+      ],
+      "genres": [
+        "Shooter",
+        "Puzzle",
+        "Adventure"
+      ],
+      "franchises": [
+        "Dead Space"
+      ],
+      "gameModes": [
+        "Single player",
+        "Multiplayer",
+        "Co-operative"
+      ],
+      "themes": [
+        "Action",
+        "Science fiction",
+        "Horror",
+        "Survival",
+        "Stealth"
+      ],
+      "trailerId": "71MZlPqChX4",
+      "cover": "assets/game-details/kj0615/cover.webp",
+      "hero": "assets/game-details/kj0615/screenshots/01.webp",
+      "screenshots": [
+        "assets/game-details/kj0615/screenshots/01.webp",
+        "assets/game-details/kj0615/screenshots/02.webp",
+        "assets/game-details/kj0615/screenshots/03.webp",
+        "assets/game-details/kj0615/screenshots/04.webp",
+        "assets/game-details/kj0615/screenshots/05.webp"
+      ]
     },
     "kj0035": {
       "gameKey": "kj0035",
@@ -2752,28 +2863,56 @@
     "kj0630": {
       "gameKey": "kj0630",
       "name": "The Last of Us™ Part II",
-      "matchName": "",
-      "gameNexusId": null,
-      "source": "Stratus fallback",
-      "description": "Experience the winner of over 300 Game of the Year awards, now on PC. Discover Ellie and Abby’s story with graphical enhancements, gameplay modes like the roguelike survival experience No Return, and more.",
-      "rating": null,
-      "releaseDate": "",
-      "developers": [],
-      "publishers": [],
-      "platforms": [],
-      "genres": [
-        "RPG",
-        "Racing",
-        "Adventure",
-        "3A"
+      "matchName": "The Last of Us Part II",
+      "gameNexusId": 26192,
+      "source": "GameNexus / IGDB",
+      "description": "The Last of Us Part II is an action-adventure game set five years after the events of The Last of Us. The player traverses post-apocalyptic environments such as buildings and forests to advance the story. They can use firearms, improvised weapons, and stealth to defend against hostile humans and cannibalistic creatures infected by a mutated strain of the Cordyceps fungus. The game intermittently switches control between Ellie and Abby, and also briefly Joel in the opening sequence. The nimble nature of the player character introduces platforming elements, allowing the player to jump and climb to traverse environments and gain advantages during combat.",
+      "rating": 93,
+      "releaseDate": "June 19, 2020",
+      "developers": [
+        "Naughty Dog"
       ],
-      "franchises": [],
-      "gameModes": [],
-      "themes": [],
-      "trailerId": "",
-      "cover": "assets/stratus-covers/kj0630.jpg",
-      "hero": "assets/game-details/kj0630/hero.webp",
-      "screenshots": []
+      "publishers": [
+        "Sony Interactive Entertainment"
+      ],
+      "platforms": [
+        "PlayStation 4",
+        "PlayStation 5",
+        "Trailer for The Last of Us Part II"
+      ],
+      "genres": [
+        "Shooter",
+        "Adventure"
+      ],
+      "franchises": [
+        "The Last of Us"
+      ],
+      "gameModes": [
+        "Single player"
+      ],
+      "themes": [
+        "Action",
+        "Horror",
+        "Survival",
+        "Stealth"
+      ],
+      "trailerId": "muniWyT4vTg",
+      "cover": "assets/game-details/kj0630/cover.webp",
+      "hero": "assets/game-details/kj0630/screenshots/01.webp",
+      "screenshots": [
+        "assets/game-details/kj0630/screenshots/01.webp",
+        "assets/game-details/kj0630/screenshots/02.webp",
+        "assets/game-details/kj0630/screenshots/03.webp",
+        "assets/game-details/kj0630/screenshots/04.webp",
+        "assets/game-details/kj0630/screenshots/05.webp",
+        "assets/game-details/kj0630/screenshots/06.webp",
+        "assets/game-details/kj0630/screenshots/07.webp",
+        "assets/game-details/kj0630/screenshots/08.webp",
+        "assets/game-details/kj0630/screenshots/09.webp",
+        "assets/game-details/kj0630/screenshots/10.webp",
+        "assets/game-details/kj0630/screenshots/11.webp",
+        "assets/game-details/kj0630/screenshots/12.webp"
+      ]
     },
     "kj0179": {
       "gameKey": "kj0179",
@@ -3230,28 +3369,49 @@
     "dg0248": {
       "gameKey": "dg0248",
       "name": "Uncharted 4",
-      "matchName": "",
-      "gameNexusId": null,
-      "source": "Stratus fallback",
-      "description": "Compared to its predecessors, Uncharted 4 will undergo some stylistic changes. This installment will be one of the darker entries in the series and will place greater emphasis on storytelling. The game's story takes place three years after Uncharted 3: Drake's Deception and is set in a Madagascar colony. The settings range from East African countries along the Indian Ocean to various snow-covered outdoor locations. The two brothers will face off against the antagonist treasure hunters Rafe and Nadine. In addition to guarding against the cunning and deceit of enemies, Drake must also constantly be wary of Sam's reckless actions.",
-      "rating": null,
-      "releaseDate": "",
-      "developers": [],
-      "publishers": [],
-      "platforms": [],
-      "genres": [
-        "RPG",
-        "Action",
-        "Adventure",
-        "3A"
+      "matchName": "Uncharted 4: A Thief's End",
+      "gameNexusId": 7331,
+      "source": "GameNexus / IGDB",
+      "description": "Several years after his last adventure, retired fortune hunter, Nathan Drake, is forced back into the world of thieves. With the stakes much more personal, Drake embarks on a globe-trotting journey in pursuit of a historical conspiracy behind a fabled pirate treasure. His greatest adventure will test his physical limits, his resolve, and ultimately what he's willing to sacrifice to save the ones he loves.",
+      "rating": 92,
+      "releaseDate": "May 10, 2016",
+      "developers": [
+        "Naughty Dog"
       ],
-      "franchises": [],
-      "gameModes": [],
-      "themes": [],
-      "trailerId": "",
-      "cover": "assets/stratus-covers/dg0248.jpg",
-      "hero": "assets/game-details/dg0248/hero.webp",
-      "screenshots": []
+      "publishers": [
+        "Sony Interactive Entertainment"
+      ],
+      "platforms": [
+        "PlayStation 4",
+        "Trailer for Uncharted 4: A Thief's End"
+      ],
+      "genres": [
+        "Shooter",
+        "Adventure"
+      ],
+      "franchises": [
+        "Uncharted"
+      ],
+      "gameModes": [
+        "Single player",
+        "Multiplayer"
+      ],
+      "themes": [
+        "Action",
+        "Fantasy",
+        "Historical",
+        "Stealth"
+      ],
+      "trailerId": "BcpbnNYh4Fg",
+      "cover": "assets/game-details/dg0248/cover.webp",
+      "hero": "assets/game-details/dg0248/screenshots/01.webp",
+      "screenshots": [
+        "assets/game-details/dg0248/screenshots/01.webp",
+        "assets/game-details/dg0248/screenshots/02.webp",
+        "assets/game-details/dg0248/screenshots/03.webp",
+        "assets/game-details/dg0248/screenshots/04.webp",
+        "assets/game-details/dg0248/screenshots/05.webp"
+      ]
     },
     "kj0306": {
       "gameKey": "kj0306",
@@ -4316,26 +4476,51 @@
     "kj0357": {
       "gameKey": "kj0357",
       "name": "Alan Wake 2",
-      "matchName": "",
-      "gameNexusId": null,
-      "source": "Stratus fallback",
-      "description": "Can Saga Anderson and Alan Wake escape this terrifying predicament and become heroes? 【Force Quit】: Back + RB (Right Bumper on the controller)",
-      "rating": null,
-      "releaseDate": "",
-      "developers": [],
-      "publishers": [],
-      "platforms": [],
+      "matchName": "Alan Wake II",
+      "gameNexusId": 185246,
+      "source": "GameNexus / IGDB",
+      "description": "Alan Wake 2 marks Remedy Entertainment’s first foray into the survival horror genre. Ritualistic murders in a small town. A writer trapped in a nightmare. An FBI agent looking for answers. Two realities. Two hero characters. One horror story that wants them dead.",
+      "rating": 90,
+      "releaseDate": "October 27, 2023",
+      "developers": [
+        "Remedy Entertainment"
+      ],
+      "publishers": [
+        "Epic Games Publishing"
+      ],
+      "platforms": [
+        "Xbox Series X|S",
+        "PC (Microsoft Windows)",
+        "PlayStation 5",
+        "Trailer for Alan Wake II"
+      ],
       "genres": [
-        "Adventure",
-        "3A"
+        "Shooter",
+        "Adventure"
       ],
       "franchises": [],
-      "gameModes": [],
-      "themes": [],
-      "trailerId": "",
-      "cover": "assets/stratus-covers/kj0357.jpg",
-      "hero": "assets/game-details/kj0357/hero.webp",
-      "screenshots": []
+      "gameModes": [
+        "Single player"
+      ],
+      "themes": [
+        "Action",
+        "Horror",
+        "Thriller",
+        "Survival",
+        "Mystery"
+      ],
+      "trailerId": "zyJvCq4HvQ4",
+      "cover": "assets/game-details/kj0357/cover.webp",
+      "hero": "assets/game-details/kj0357/screenshots/01.webp",
+      "screenshots": [
+        "assets/game-details/kj0357/screenshots/01.webp",
+        "assets/game-details/kj0357/screenshots/02.webp",
+        "assets/game-details/kj0357/screenshots/03.webp",
+        "assets/game-details/kj0357/screenshots/04.webp",
+        "assets/game-details/kj0357/screenshots/05.webp",
+        "assets/game-details/kj0357/screenshots/06.webp",
+        "assets/game-details/kj0357/screenshots/07.webp"
+      ]
     },
     "dg0359": {
       "gameKey": "dg0359",
@@ -4499,28 +4684,56 @@
     "dg0315": {
       "gameKey": "dg0315",
       "name": "The Last of Us™ Part I",
-      "matchName": "",
-      "gameNexusId": null,
-      "source": "Stratus fallback",
-      "description": "In a ravaged civilization, where infected and hardened survivors run rampant, Joel, a weary protagonist, is hired to smuggle 14-year-old Ellie out of a military quarantine zone. However, what starts as a small job soon transforms into a brutal cross-country journey.",
-      "rating": null,
-      "releaseDate": "",
-      "developers": [],
-      "publishers": [],
-      "platforms": [],
-      "genres": [
-        "Adventure",
-        "RPG",
-        "Action",
-        "3A"
+      "matchName": "The Last of Us Part II",
+      "gameNexusId": 26192,
+      "source": "GameNexus / IGDB",
+      "description": "The Last of Us Part II is an action-adventure game set five years after the events of The Last of Us. The player traverses post-apocalyptic environments such as buildings and forests to advance the story. They can use firearms, improvised weapons, and stealth to defend against hostile humans and cannibalistic creatures infected by a mutated strain of the Cordyceps fungus. The game intermittently switches control between Ellie and Abby, and also briefly Joel in the opening sequence. The nimble nature of the player character introduces platforming elements, allowing the player to jump and climb to traverse environments and gain advantages during combat.",
+      "rating": 93,
+      "releaseDate": "June 19, 2020",
+      "developers": [
+        "Naughty Dog"
       ],
-      "franchises": [],
-      "gameModes": [],
-      "themes": [],
-      "trailerId": "",
-      "cover": "assets/stratus-covers/dg0315.jpg",
-      "hero": "assets/game-details/dg0315/hero.webp",
-      "screenshots": []
+      "publishers": [
+        "Sony Interactive Entertainment"
+      ],
+      "platforms": [
+        "PlayStation 4",
+        "PlayStation 5",
+        "Trailer for The Last of Us Part II"
+      ],
+      "genres": [
+        "Shooter",
+        "Adventure"
+      ],
+      "franchises": [
+        "The Last of Us"
+      ],
+      "gameModes": [
+        "Single player"
+      ],
+      "themes": [
+        "Action",
+        "Horror",
+        "Survival",
+        "Stealth"
+      ],
+      "trailerId": "muniWyT4vTg",
+      "cover": "assets/game-details/dg0315/cover.webp",
+      "hero": "assets/game-details/dg0315/screenshots/01.webp",
+      "screenshots": [
+        "assets/game-details/dg0315/screenshots/01.webp",
+        "assets/game-details/dg0315/screenshots/02.webp",
+        "assets/game-details/dg0315/screenshots/03.webp",
+        "assets/game-details/dg0315/screenshots/04.webp",
+        "assets/game-details/dg0315/screenshots/05.webp",
+        "assets/game-details/dg0315/screenshots/06.webp",
+        "assets/game-details/dg0315/screenshots/07.webp",
+        "assets/game-details/dg0315/screenshots/08.webp",
+        "assets/game-details/dg0315/screenshots/09.webp",
+        "assets/game-details/dg0315/screenshots/10.webp",
+        "assets/game-details/dg0315/screenshots/11.webp",
+        "assets/game-details/dg0315/screenshots/12.webp"
+      ]
     },
     "kj0213": {
       "gameKey": "kj0213",
@@ -5108,25 +5321,47 @@
     "kj0085": {
       "gameKey": "kj0085",
       "name": "Ranch Simulator22",
-      "matchName": "",
-      "gameNexusId": null,
-      "source": "Stratus fallback",
-      "description": "The map is large, and creation takes time, please be patient. [Introduction] : Create your farm and grow beautiful moments! Harvest crops, care for animals, manage production, and face seasonal challenges head-on. [Force Quit] : Back + RB (Right Back Button on the controller) [Controls] : Plant: B Jump: A Load/Unload: Y Machine interaction: X Accelerate: RT Reverse: LT Transform: LB Activate farm tools: RB",
-      "rating": null,
-      "releaseDate": "",
-      "developers": [],
-      "publishers": [],
-      "platforms": [],
+      "matchName": "Ranch Simulator",
+      "gameNexusId": 121087,
+      "source": "GameNexus / IGDB",
+      "description": "Builder. Farmer. Hunter. Trader. Ranching certainly isn't your average job. Think you have the skills to turn your family's rundown homestead into the most prosperous ranch in the valley? Then it's time to head out into the wilderness in this captivating single and multiplayer open-world simulator.",
+      "rating": 50,
+      "releaseDate": "November 3, 2023",
+      "developers": [
+        "Toxic Dog"
+      ],
+      "publishers": [
+        "Excalibur Games"
+      ],
+      "platforms": [
+        "PC (Microsoft Windows)",
+        "Trailer for Ranch Simulator"
+      ],
       "genres": [
-        "Strategy"
+        "Simulator"
       ],
       "franchises": [],
-      "gameModes": [],
-      "themes": [],
-      "trailerId": "",
-      "cover": "assets/stratus-covers/kj0085.jpg",
-      "hero": "assets/game-details/kj0085/hero.webp",
-      "screenshots": []
+      "gameModes": [
+        "Single player",
+        "Multiplayer",
+        "Co-operative"
+      ],
+      "themes": [
+        "Sandbox",
+        "Open world"
+      ],
+      "trailerId": "zVsbscpHd4k",
+      "cover": "assets/game-details/kj0085/cover.webp",
+      "hero": "assets/game-details/kj0085/screenshots/01.webp",
+      "screenshots": [
+        "assets/game-details/kj0085/screenshots/01.webp",
+        "assets/game-details/kj0085/screenshots/02.webp",
+        "assets/game-details/kj0085/screenshots/03.webp",
+        "assets/game-details/kj0085/screenshots/04.webp",
+        "assets/game-details/kj0085/screenshots/05.webp",
+        "assets/game-details/kj0085/screenshots/06.webp",
+        "assets/game-details/kj0085/screenshots/07.webp"
+      ]
     },
     "kj0089": {
       "gameKey": "kj0089",
@@ -7265,28 +7500,55 @@
     "jy0470": {
       "gameKey": "jy0470",
       "name": "Party Hard2",
-      "matchName": "",
-      "gameNexusId": null,
-      "source": "Stratus fallback",
-      "description": "Description: In Party Hard 2, use hundreds of methods to eliminate those annoying party-goers, accidentally dismantle a drug cartel, and protect Earth from an alien invasion. May the Chicken God be with you! Controls Force Quit: Back + RB (Right Bumper) Buttons: Pick Up: B Use Object: A Dance: Y Use Item: X Ultimate: RT (Right Trigger) Sprint: LT (Left Trigger) Quick Map: LB (Left Bumper) Quick Use: RB (Right Bumper)",
-      "rating": null,
-      "releaseDate": "",
-      "developers": [],
-      "publishers": [],
-      "platforms": [],
+      "matchName": "Party Hard 2",
+      "gameNexusId": 27088,
+      "source": "GameNexus / IGDB",
+      "description": "It's the Holiday Season, and you don't get your Christmas Bonus. The only logical solution is to start a killing spree at a corporate party. Welcome to Party Hard 2, the sequel to 2015's stealth strategy hit.",
+      "rating": 71,
+      "releaseDate": "October 25, 2018",
+      "developers": [
+        "Kverta",
+        "Pinokl Games"
+      ],
+      "publishers": [
+        "tinyBuild"
+      ],
+      "platforms": [
+        "PlayStation 4",
+        "PC (Microsoft Windows)",
+        "Mac",
+        "Xbox One",
+        "Nintendo Switch",
+        "Trailer for Party Hard 2"
+      ],
       "genres": [
-        "Adventure",
+        "Simulator",
         "Strategy",
-        "Multiplayer",
-        "Online"
+        "Tactical",
+        "Adventure",
+        "Indie"
       ],
       "franchises": [],
-      "gameModes": [],
-      "themes": [],
-      "trailerId": "",
-      "cover": "assets/stratus-covers/jy0470.jpg",
-      "hero": "assets/game-details/jy0470/hero.webp",
-      "screenshots": []
+      "gameModes": [
+        "Single player",
+        "Multiplayer",
+        "Co-operative",
+        "Massively Multiplayer Online (MMO)"
+      ],
+      "themes": [
+        "Action",
+        "Party"
+      ],
+      "trailerId": "rFzF_5CRN64",
+      "cover": "assets/game-details/jy0470/cover.webp",
+      "hero": "assets/game-details/jy0470/screenshots/01.webp",
+      "screenshots": [
+        "assets/game-details/jy0470/screenshots/01.webp",
+        "assets/game-details/jy0470/screenshots/02.webp",
+        "assets/game-details/jy0470/screenshots/03.webp",
+        "assets/game-details/jy0470/screenshots/04.webp",
+        "assets/game-details/jy0470/screenshots/05.webp"
+      ]
     },
     "jy0186": {
       "gameKey": "jy0186",
@@ -8094,30 +8356,56 @@
     "jy0281": {
       "gameKey": "jy0281",
       "name": "Overcooked 2",
-      "matchName": "",
-      "gameNexusId": null,
-      "source": "Stratus fallback",
-      "description": "Overcooked returns with a brand-new helping of chaotic cooking action! Journey back to the Onion Kingdom and assemble your team of chefs in classic couch co-op or online play for up to four players. Hold onto your aprons… it’s time to save the world again!",
-      "rating": null,
-      "releaseDate": "",
-      "developers": [],
-      "publishers": [],
-      "platforms": [],
+      "matchName": "Overcooked! 2",
+      "gameNexusId": 103341,
+      "source": "GameNexus / IGDB",
+      "description": "Overcooked 2 is a cooperative cooking simulation game for up to four players. Teams work together to prepare and serve food orders in increasingly chaotic kitchen environments, coordinating tasks like chopping, cooking, plating, and dishwashing under time pressure. Levels feature dynamic obstacles such as moving floors, portals, fires, and shifting layouts that complicate coordination. The sequel to Overcooked introduces a throwing mechanic for tossing ingredients across the kitchen and adds online multiplayer alongside local co-op.",
+      "rating": 80,
+      "releaseDate": "August 7, 2018",
+      "developers": [
+        "Ghost Town Games"
+      ],
+      "publishers": [
+        "Team17"
+      ],
+      "platforms": [
+        "PlayStation 4",
+        "Linux",
+        "Nintendo Switch 2",
+        "PC (Microsoft Windows)",
+        "Mac",
+        "Xbox One",
+        "Nintendo Switch",
+        "Trailer for Overcooked! 2"
+      ],
       "genres": [
-        "Puzzle",
-        "Multiplayer",
-        "Offline",
-        "Online",
+        "Simulator",
         "Strategy",
-        "Easy"
+        "Tactical",
+        "Indie",
+        "Arcade"
       ],
       "franchises": [],
-      "gameModes": [],
-      "themes": [],
-      "trailerId": "",
-      "cover": "assets/stratus-covers/jy0281.jpg",
-      "hero": "assets/game-details/jy0281/hero.webp",
-      "screenshots": []
+      "gameModes": [
+        "Single player",
+        "Multiplayer",
+        "Co-operative",
+        "Split screen"
+      ],
+      "themes": [
+        "Action",
+        "Comedy",
+        "Kids",
+        "Party"
+      ],
+      "trailerId": "uKLb8D36YKk",
+      "cover": "assets/game-details/jy0281/cover.webp",
+      "hero": "assets/game-details/jy0281/screenshots/01.webp",
+      "screenshots": [
+        "assets/game-details/jy0281/screenshots/01.webp",
+        "assets/game-details/jy0281/screenshots/02.webp",
+        "assets/game-details/jy0281/screenshots/03.webp"
+      ]
     },
     "jy0244": {
       "gameKey": "jy0244",
@@ -8456,52 +8744,132 @@
     "jy0273": {
       "gameKey": "jy0273",
       "name": "Batman™: Arkham Origins",
-      "matchName": "",
-      "gameNexusId": null,
-      "source": "Stratus fallback",
-      "description": "As of December 4, 2016, the online services portion of Batman: Arkham Origins will be retired. We thank those that have joined us to battle over the last 3 years. The Single player campaign may still be played and enjoyed offline. For any questions relating to Batman: Arkham Origins, please contact WB",
-      "rating": null,
-      "releaseDate": "",
-      "developers": [],
-      "publishers": [],
-      "platforms": [],
-      "genres": [
-        "3A",
-        "RPG",
-        "Action"
+      "matchName": "Batman: Arkham Origins",
+      "gameNexusId": 2003,
+      "source": "GameNexus / IGDB",
+      "description": "Batman: Arkham Origins features an expanded Gotham City and introduces an original prequel storyline occurring several years before the events of Batman: Arkham Asylum and Batman: Arkham City.",
+      "rating": 73,
+      "releaseDate": "October 24, 2013",
+      "developers": [
+        "WB Games Montréal"
       ],
-      "franchises": [],
-      "gameModes": [],
-      "themes": [],
-      "trailerId": "",
-      "cover": "assets/stratus-covers/jy0273.jpg",
-      "hero": "assets/game-details/jy0273/hero.webp",
-      "screenshots": []
+      "publishers": [
+        "WB Games",
+        "Warner Bros. Interactive Entertainment"
+      ],
+      "platforms": [
+        "PlayStation 3",
+        "PC (Microsoft Windows)",
+        "Wii U",
+        "Xbox 360",
+        "Trailer for Batman: Arkham Origins"
+      ],
+      "genres": [
+        "Hack and slash/Beat 'em up",
+        "Adventure"
+      ],
+      "franchises": [
+        "Batman",
+        "DC Comics"
+      ],
+      "gameModes": [
+        "Single player",
+        "Multiplayer"
+      ],
+      "themes": [
+        "Action",
+        "Stealth",
+        "Open world"
+      ],
+      "trailerId": "9pnK8akbd2M",
+      "cover": "assets/game-details/jy0273/cover.webp",
+      "hero": "assets/game-details/jy0273/screenshots/01.webp",
+      "screenshots": [
+        "assets/game-details/jy0273/screenshots/01.webp",
+        "assets/game-details/jy0273/screenshots/02.webp",
+        "assets/game-details/jy0273/screenshots/03.webp",
+        "assets/game-details/jy0273/screenshots/04.webp",
+        "assets/game-details/jy0273/screenshots/05.webp",
+        "assets/game-details/jy0273/screenshots/06.webp",
+        "assets/game-details/jy0273/screenshots/07.webp",
+        "assets/game-details/jy0273/screenshots/08.webp",
+        "assets/game-details/jy0273/screenshots/09.webp",
+        "assets/game-details/jy0273/screenshots/10.webp",
+        "assets/game-details/jy0273/screenshots/11.webp",
+        "assets/game-details/jy0273/screenshots/12.webp",
+        "assets/game-details/jy0273/screenshots/13.webp",
+        "assets/game-details/jy0273/screenshots/14.webp",
+        "assets/game-details/jy0273/screenshots/15.webp",
+        "assets/game-details/jy0273/screenshots/16.webp",
+        "assets/game-details/jy0273/screenshots/17.webp",
+        "assets/game-details/jy0273/screenshots/18.webp"
+      ]
     },
     "jy0272": {
       "gameKey": "jy0272",
       "name": "Batman™: Arkham Knight",
-      "matchName": "",
-      "gameNexusId": null,
-      "source": "Stratus fallback",
-      "description": "Batman™: Arkham Knight brings the award-winning Arkham trilogy from Rocksteady Studios to its epic conclusion. Developed exclusively for New-Gen platforms, Batman: Arkham Knight introduces Rocksteady's uniquely designed version of the Batmobile.",
-      "rating": null,
-      "releaseDate": "",
-      "developers": [],
-      "publishers": [],
-      "platforms": [],
-      "genres": [
-        "3A",
-        "RPG",
-        "Action"
+      "matchName": "Batman: Arkham Knight",
+      "gameNexusId": 5503,
+      "source": "GameNexus / IGDB",
+      "description": "Batman: Arkham Knight is an action-adventure game developed by Rocksteady Studios, released in 2015. It is the final installment in the Arkham series. Players control Batman as he faces Scarecrow, who unites Gotham's criminals to destroy the Dark Knight. The mysterious Arkham Knight, a new adversary, aids Scarecrow in his plan. The game features open-world exploration, stealth, combat, and puzzle-solving. A key addition is the Batmobile, used for traversal and combat. The story explores Batman’s psychological struggles and the collapse of his alliances as Gotham spirals into chaos.",
+      "rating": 88,
+      "releaseDate": "June 23, 2015",
+      "developers": [
+        "Rocksteady Studios"
       ],
-      "franchises": [],
-      "gameModes": [],
-      "themes": [],
-      "trailerId": "",
-      "cover": "assets/stratus-covers/jy0272.jpg",
-      "hero": "assets/game-details/jy0272/hero.webp",
-      "screenshots": []
+      "publishers": [
+        "Warner Bros. Interactive Entertainment"
+      ],
+      "platforms": [
+        "PlayStation 4",
+        "PC (Microsoft Windows)",
+        "Xbox One",
+        "Nintendo Switch",
+        "Trailer for Batman: Arkham Knight"
+      ],
+      "genres": [
+        "Hack and slash/Beat 'em up",
+        "Adventure"
+      ],
+      "franchises": [
+        "Batman",
+        "DC Comics"
+      ],
+      "gameModes": [
+        "Single player"
+      ],
+      "themes": [
+        "Action",
+        "Thriller",
+        "Stealth",
+        "Drama",
+        "Open world"
+      ],
+      "trailerId": "WvcwgUQgRFI",
+      "cover": "assets/game-details/jy0272/cover.webp",
+      "hero": "assets/game-details/jy0272/screenshots/01.webp",
+      "screenshots": [
+        "assets/game-details/jy0272/screenshots/01.webp",
+        "assets/game-details/jy0272/screenshots/02.webp",
+        "assets/game-details/jy0272/screenshots/03.webp",
+        "assets/game-details/jy0272/screenshots/04.webp",
+        "assets/game-details/jy0272/screenshots/05.webp",
+        "assets/game-details/jy0272/screenshots/06.webp",
+        "assets/game-details/jy0272/screenshots/07.webp",
+        "assets/game-details/jy0272/screenshots/08.webp",
+        "assets/game-details/jy0272/screenshots/09.webp",
+        "assets/game-details/jy0272/screenshots/10.webp",
+        "assets/game-details/jy0272/screenshots/11.webp",
+        "assets/game-details/jy0272/screenshots/12.webp",
+        "assets/game-details/jy0272/screenshots/13.webp",
+        "assets/game-details/jy0272/screenshots/14.webp",
+        "assets/game-details/jy0272/screenshots/15.webp",
+        "assets/game-details/jy0272/screenshots/16.webp",
+        "assets/game-details/jy0272/screenshots/17.webp",
+        "assets/game-details/jy0272/screenshots/18.webp",
+        "assets/game-details/jy0272/screenshots/19.webp",
+        "assets/game-details/jy0272/screenshots/20.webp"
+      ]
     },
     "jy0252": {
       "gameKey": "jy0252",
@@ -9588,25 +9956,50 @@
     "jy0118": {
       "gameKey": "jy0118",
       "name": "Doraemon: Story of Seasons",
-      "matchName": "",
-      "gameNexusId": null,
-      "source": "Stratus fallback",
-      "description": "Classic!",
-      "rating": null,
-      "releaseDate": "",
-      "developers": [],
-      "publishers": [],
-      "platforms": [],
-      "genres": [
-        "Strategy"
+      "matchName": "Doraemon Story of Seasons",
+      "gameNexusId": 115286,
+      "source": "GameNexus / IGDB",
+      "description": "Nobita and friends carefree and heartwarming farm life begin in Natura, the game's original town where a mysterious big tree rises. Grow crops and take care of horses, cows, and other animals, all of which are unique to the \"Story of Season\" series. Explore the town, go on adventures, catch bugs, and do many more on the vast map of Natura. The game is a heartwarming story significant of Doraemon, which revolves around the themes of friendship, hard work, challenge, and the bonds between Nobita and the townsfolk. Of course, the \"Secret Gadgets\" will be making its appearance to make farm life even more convenient. Expect a heartfelt farm game like never before, depicted in a unique, nostalgic, and warm visual presentation.",
+      "rating": 71,
+      "releaseDate": "June 13, 2019",
+      "developers": [
+        "Brownies"
       ],
-      "franchises": [],
-      "gameModes": [],
-      "themes": [],
-      "trailerId": "",
-      "cover": "assets/stratus-covers/jy0118.jpg",
-      "hero": "assets/game-details/jy0118/hero.webp",
-      "screenshots": []
+      "publishers": [
+        "Bandai Namco Entertainment"
+      ],
+      "platforms": [
+        "PlayStation 4",
+        "PC (Microsoft Windows)",
+        "Nintendo Switch",
+        "Trailer for Doraemon Story of Seasons"
+      ],
+      "genres": [
+        "Role-playing (RPG)",
+        "Simulator",
+        "Adventure"
+      ],
+      "franchises": [
+        "Doraemon",
+        "Story of Seasons"
+      ],
+      "gameModes": [
+        "Single player"
+      ],
+      "themes": [
+        "Fantasy",
+        "Business"
+      ],
+      "trailerId": "bNd5xfqVw1M",
+      "cover": "assets/game-details/jy0118/cover.webp",
+      "hero": "assets/game-details/jy0118/screenshots/01.webp",
+      "screenshots": [
+        "assets/game-details/jy0118/screenshots/01.webp",
+        "assets/game-details/jy0118/screenshots/02.webp",
+        "assets/game-details/jy0118/screenshots/03.webp",
+        "assets/game-details/jy0118/screenshots/04.webp",
+        "assets/game-details/jy0118/screenshots/05.webp"
+      ]
     },
     "jy0123": {
       "gameKey": "jy0123",
@@ -9844,29 +10237,56 @@
     "jy0103": {
       "gameKey": "jy0103",
       "name": "NieR:Automata™",
-      "matchName": "",
-      "gameNexusId": null,
-      "source": "Stratus fallback",
+      "matchName": "NieR: Automata",
+      "gameNexusId": 11208,
+      "source": "GameNexus / IGDB",
       "description": "NieR: Automata tells the story of androids 2B, 9S and A2 and their battle to reclaim the machine-driven dystopia overrun by powerful machines.",
-      "rating": null,
-      "releaseDate": "",
-      "developers": [],
-      "publishers": [],
-      "platforms": [],
-      "genres": [
-        "Challenge",
-        "Fighting",
-        "RPG",
-        "Action",
-        "3A"
+      "rating": 88,
+      "releaseDate": "February 23, 2017",
+      "developers": [
+        "PlatinumGames",
+        "Square Enix Business Division 6"
       ],
-      "franchises": [],
-      "gameModes": [],
-      "themes": [],
-      "trailerId": "",
-      "cover": "assets/stratus-covers/jy0103.jpg",
-      "hero": "assets/game-details/jy0103/hero.webp",
-      "screenshots": []
+      "publishers": [
+        "Square Enix"
+      ],
+      "platforms": [
+        "PlayStation 4",
+        "PC (Microsoft Windows)",
+        "Xbox One",
+        "Trailer for NieR: Automata"
+      ],
+      "genres": [
+        "Role-playing (RPG)",
+        "Hack and slash/Beat 'em up"
+      ],
+      "franchises": [
+        "Drakengard"
+      ],
+      "gameModes": [
+        "Single player"
+      ],
+      "themes": [
+        "Action",
+        "Fantasy",
+        "Science fiction",
+        "Drama",
+        "Open world"
+      ],
+      "trailerId": "brp-8Xq9tGw",
+      "cover": "assets/game-details/jy0103/cover.webp",
+      "hero": "assets/game-details/jy0103/screenshots/01.webp",
+      "screenshots": [
+        "assets/game-details/jy0103/screenshots/01.webp",
+        "assets/game-details/jy0103/screenshots/02.webp",
+        "assets/game-details/jy0103/screenshots/03.webp",
+        "assets/game-details/jy0103/screenshots/04.webp",
+        "assets/game-details/jy0103/screenshots/05.webp",
+        "assets/game-details/jy0103/screenshots/06.webp",
+        "assets/game-details/jy0103/screenshots/07.webp",
+        "assets/game-details/jy0103/screenshots/08.webp",
+        "assets/game-details/jy0103/screenshots/09.webp"
+      ]
     },
     "jy0094": {
       "gameKey": "jy0094",
