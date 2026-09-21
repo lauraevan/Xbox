@@ -1773,3 +1773,96 @@ body[data-view="store"] .legend{
     gap:.8rem;
   }
 }
+
+
+/* ───────── Catalog correction: four large portrait covers ─────────
+   Keep the original Store game-card aspect ratio and metadata layout. */
+.xstore-browse .xstore-grid{
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:2rem 1.15rem;
+}
+.xstore-browse .store-grid-card{
+  width:100%;
+  min-width:0;
+  padding:0;
+  background:transparent;
+}
+.xstore-browse .store-grid-card .store-cover{
+  position:relative;
+  width:100%;
+  height:auto;
+  aspect-ratio:3/4;
+  overflow:hidden;
+  border-radius:.72rem;
+  background:#1a1b1c;
+  box-shadow:0 .35rem 1.1rem rgba(0,0,0,.2);
+}
+.xstore-browse .store-grid-card .store-cover::after{
+  display:none;
+}
+.xstore-browse .store-grid-card .store-game-meta{
+  position:static;
+  min-height:4.4rem;
+  padding:.72rem .12rem .2rem;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:.16rem;
+  background:transparent;
+  opacity:1;
+  transform:none;
+  pointer-events:auto;
+}
+.xstore-browse .store-grid-card .store-game-title{
+  width:100%;
+  overflow:hidden;
+  color:#fff;
+  font-size:1.24rem;
+  font-weight:570;
+  line-height:1.2;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  text-shadow:none;
+}
+.xstore-browse .store-grid-card .store-game-price{
+  color:rgba(255,255,255,.78);
+  font-size:1rem;
+}
+.xstore-browse .store-grid-card .store-game-sub{
+  width:100%;
+  overflow:hidden;
+  color:rgba(255,255,255,.43);
+  font-size:.96rem;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.xstore-browse .store-grid-card .store-cloud-mark{
+  z-index:3;
+  top:.65rem;
+  right:.65rem;
+  opacity:1;
+  transform:none;
+}
+.xstore-browse .store-grid-card:hover,
+.xstore-browse .store-grid-card[data-focused]{
+  transform:translate3d(0,-.14rem,0) scale(1.012);
+}
+.xstore-browse .store-grid-card:hover .store-cover img,
+.xstore-browse .store-grid-card[data-focused] .store-cover img{
+  transform:scale(1.025);
+}
+.xstore-browse .store-grid-card[data-focused] .store-cover,
+.xstore-browse .store-grid-card:focus-visible .store-cover{
+  outline:.22rem solid rgba(255,255,255,.94);
+  outline-offset:.2rem;
+  box-shadow:0 .65rem 1.8rem rgba(0,0,0,.34);
+}
+@media(max-width:900px){
+  .xstore-browse .xstore-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:620px){
+  .xstore-browse .xstore-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:1.4rem .75rem;
+  }
+}
