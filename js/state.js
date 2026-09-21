@@ -40,7 +40,7 @@ const DEFAULTS = {
 
   /* ── console-wide, shared by every profile ── */
   settings: {
-    theme:     'dark',
+    theme:     'light',
     onboardingComplete:false,
     accent:    '#107c10',
     sounds:    true,
