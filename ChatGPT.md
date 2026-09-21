@@ -1148,7 +1148,7 @@ The project succeeds when someone can look at it and immediately feel that it is
 
 ### 2026-09-20 — Xbox version snapshot boot notification
 
-Current snapshot: `hv7q2m`
+Current snapshot: `m8d4bx`
 
 After every successful Xbox boot, show a compact green-and-black build notification in the **bottom-right corner** of the screen. It must have a clearly visible Xbox-green outline, rounded corners, dark black surface, and restrained Windows/Xbox styling. The notification uses the repo-local Xbox logo and reads `Xbox Version 1.5` and `Snapshot <random-code>`.
 
@@ -1254,7 +1254,7 @@ Important: GameNexus and IGDB are source-time references only. The Xbox runtime 
 
 The launcher exposes every captured screenshot in a horizontal local gallery and uses the selected screenshot as the launcher hero. Do not replace this with a remote GameNexus embed or runtime API request.
 
-Current snapshot: `hv7q2m`.
+Current snapshot: `m8d4bx`.
 
 
 ### 2026-09-20 — rich details across the full Stratus catalog
@@ -1265,7 +1265,7 @@ The GameNexus vendor workflow now enumerates the entire Stratus catalog. It sear
 
 The rich launcher is now shared beyond the Home row. Stratus games opened from My games & apps use the same rich launcher before Play, and Microsoft Store product pages are asynchronously enriched with the local developer/publisher/release/platform/genre/mode/theme metadata plus a selectable local screenshot rail.
 
-Current snapshot: `hv7q2m`.
+Current snapshot: `m8d4bx`.
 
 
 ### 2026-09-21 — Store motion/performance rework
@@ -1276,7 +1276,7 @@ Motion is deliberately restrained and Xbox-like: fast page entrances, subtle car
 
 Browse images remain lazy/async so the full 225-title Stratus catalog does not decode at once. Rich local product metadata and screenshot galleries remain intact.
 
-Current snapshot: `hv7q2m`.
+Current snapshot: `m8d4bx`.
 
 
 ### 2026-09-21 — Figure-clean Store refinement fg6n2k
@@ -1285,7 +1285,7 @@ The Store was visually refined after studying Figure Cloud's public UI structure
 
 Changes reduce visual noise and perceived latency: darker flatter surfaces, denser rails, smaller gaps, quieter metadata, faster focus transitions, restrained scale, cleaner search/filter controls, simplified product detail surfaces, and fewer continuous decorative animations. Automatic progressive catalogue loading remains in place with no manual load-more control.
 
-Current snapshot: `hv7q2m`.
+Current snapshot: `m8d4bx`.
 
 
 ### 2026-09-21 — four-column artwork catalog c4x7pv
@@ -1294,25 +1294,34 @@ The Store Games catalog now uses four large landscape artwork cards per desktop 
 
 Automatic progressive catalogue loading remains unchanged, so all Stratus titles continue loading without a manual load-more action.
 
-Current snapshot: `hv7q2m`.
+Current snapshot: `m8d4bx`.
 
 
 ### 2026-09-21 — catalog portrait correction p4k8vx
 
 The Store catalog keeps the original portrait game-card aspect ratio and original metadata-below-artwork structure. Desktop catalog sizing is now four large games per row, with responsive three- and two-column fallbacks. The temporary 16:9 artwork-overlay catalog experiment was removed.
 
-Current snapshot: `hv7q2m`.
+Current snapshot: `m8d4bx`.
 
 
 ### 2026-09-21 — supplied Store catalog reference g5r2mq
 
 The Games catalog now follows the supplied reference more closely: portrait artwork with the original card ratio, five large games across at the reference desktop width, persistent title/price/tag text underneath, and responsive four/three/two-column fallbacks. The top genre filter/sorter row has been removed from the Games catalog.
 
-Current snapshot: `hv7q2m`.
+Current snapshot: `m8d4bx`.
 
 
 ### 2026-09-21 — catalog hover-only details hv7q2m
 
 The Games catalog remains five large portrait cards across at the reference desktop width, but all per-game catalog details now live inside the cover artwork. The resting grid is artwork-only. Pointer hover, keyboard focus, or controller focus reveals a restrained bottom gradient with title, Free/Owned price state, genre tags, cloud indicator, and ownership/deal badges. No permanent metadata is reserved underneath the covers.
 
-Current snapshot: `hv7q2m`.
+Current snapshot: `m8d4bx`.
+
+
+### 2026-09-21 — manual BlizzCon + Minecraft Dungeons entries m8d4bx
+
+BlizzCon 2026 and Minecraft Dungeons are explicitly curated in Store code instead of depending on an external catalog/details URL at runtime. BlizzCon uses repository-local artwork at `assets/store/blizzcon-2026.svg` and manual event metadata. Minecraft Dungeons keeps its Stratus launch key `jy0402`, but its Store artwork and rich metadata are overridden with repository-local Minecraft launcher assets and a manual metadata record. Manual rich records bypass the GameNexus details lookup.
+
+BlizzCon is a Store-only event entry, so it does not expose cloud-play/purchase behavior. Minecraft Dungeons remains cloud-playable through its existing Stratus key.
+
+Current snapshot: `m8d4bx`.
