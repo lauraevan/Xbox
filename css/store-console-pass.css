@@ -809,3 +809,364 @@
 .xstore-discovery-home .xstore-shelf-motion{
   display:none!important;
 }
+
+
+/* Purchase flow rework ---------------------------------------------------- */
+.xproduct{
+  background:#050505!important;
+}
+.xproduct-art{
+  inset:0!important;
+  opacity:.72!important;
+  filter:saturate(.82) brightness(.52)!important;
+}
+.xproduct-scrim{
+  background:
+    linear-gradient(90deg,rgba(3,3,3,.99) 0%,rgba(3,3,3,.94) 33%,rgba(3,3,3,.72) 62%,rgba(3,3,3,.36) 100%),
+    linear-gradient(0deg,rgba(0,0,0,.62),transparent 48%)!important;
+}
+.xproduct-body{
+  height:100%!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) 35rem!important;
+  gap:4.2rem!important;
+  align-items:center!important;
+  padding:7.2rem 7rem 5.8rem 8rem!important;
+}
+.xproduct-main{
+  min-width:0;
+  display:grid;
+  grid-template-columns:22rem minmax(0,1fr);
+  align-items:center;
+  gap:3.4rem;
+}
+.xproduct-cover{
+  width:22rem!important;
+  border-radius:.7rem!important;
+  box-shadow:0 2.2rem 5.8rem rgba(0,0,0,.62)!important;
+}
+.xproduct-copy{
+  min-width:0;
+  max-width:66rem!important;
+  max-height:78vh;
+  overflow-y:auto;
+  padding:.4rem .5rem 2rem 0;
+  scrollbar-width:none;
+}
+.xproduct-copy::-webkit-scrollbar{display:none}
+.xproduct-type{
+  margin-bottom:.75rem!important;
+  font-size:1.08rem!important;
+  letter-spacing:.12rem!important;
+}
+.xproduct-title{
+  max-width:62rem!important;
+  font-size:4.45rem!important;
+  line-height:1.02!important;
+  margin-bottom:1rem!important;
+}
+.xproduct-meta{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:.55rem 1.2rem;
+}
+.xproduct-rating{
+  margin-top:0!important;
+}
+.xproduct-badges{
+  margin:1.15rem 0 1.3rem!important;
+}
+.xproduct-desc{
+  max-width:60rem!important;
+  font-size:1.42rem!important;
+  line-height:1.44!important;
+  -webkit-line-clamp:3!important;
+}
+.xproduct-cloud-row{
+  margin-top:1.4rem!important;
+  max-width:56rem!important;
+}
+.xproduct-rich-details{
+  margin-top:1.6rem!important;
+}
+.xproduct-rich-facts{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+}
+.xproduct-rich-gallery{
+  max-width:56rem;
+}
+
+.xproduct-buy-card{
+  width:100%;
+  align-self:center;
+  padding:2.8rem 2.8rem 2.5rem;
+  border-radius:1.15rem;
+  background:rgba(17,17,17,.94);
+  border:.1rem solid rgba(255,255,255,.11);
+  box-shadow:0 2.5rem 8rem rgba(0,0,0,.55);
+  backdrop-filter:blur(1.6rem) saturate(1.15);
+  -webkit-backdrop-filter:blur(1.6rem) saturate(1.15);
+}
+.xproduct-buy-kicker{
+  color:rgba(255,255,255,.52);
+  font-size:1.05rem;
+  font-weight:700;
+  letter-spacing:.11rem;
+}
+.xproduct-buy-title{
+  margin-top:.55rem;
+  font-size:2.15rem;
+  line-height:1.12;
+  font-weight:600;
+}
+.xproduct-buy-card .xproduct-price{
+  margin-top:2rem!important;
+  display:flex;
+  align-items:baseline;
+  gap:.8rem;
+  font-size:3.15rem!important;
+  line-height:1;
+  font-weight:650!important;
+}
+.xproduct-buy-card .xproduct-price-old{
+  font-size:1.35rem!important;
+  color:rgba(255,255,255,.4)!important;
+}
+.xproduct-buy-card .xproduct-price-now{
+  font-size:3.15rem!important;
+  color:#fff!important;
+}
+.xproduct-buy-card .xproduct-ownership{
+  margin-top:.65rem!important;
+  color:rgba(255,255,255,.56)!important;
+}
+.xproduct-buy-rule{
+  height:.1rem;
+  margin:2rem 0 1.7rem;
+  background:rgba(255,255,255,.1);
+}
+.xproduct-buy-benefits{
+  display:grid;
+  gap:.9rem;
+  color:rgba(255,255,255,.78);
+  font-size:1.15rem;
+}
+.xproduct-buy-card .xproduct-actions{
+  display:grid!important;
+  grid-template-columns:1fr!important;
+  gap:.8rem!important;
+  margin-top:2.1rem!important;
+}
+.xproduct-buy-card .xproduct-action{
+  width:100%;
+  min-width:0!important;
+  min-height:5rem!important;
+  border-radius:.55rem!important;
+  font-size:1.22rem!important;
+}
+.xproduct-buy-card .xproduct-action.primary{
+  background:#107c10!important;
+}
+.xproduct-buy-card .xproduct-action.secondary{
+  background:rgba(255,255,255,.1)!important;
+  color:#fff!important;
+}
+.xproduct-buy-foot{
+  margin-top:1.25rem;
+  color:rgba(255,255,255,.36);
+  font-size:.98rem;
+}
+
+/* Purchase confirmation layer */
+.xcheckout{
+  position:absolute;
+  inset:0;
+  z-index:220;
+  display:grid;
+  place-items:center;
+  animation:xcheckoutIn .16s ease-out both;
+}
+.xcheckout.out{animation:xcheckoutOut .16s ease-in both}
+.xcheckout-scrim{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,.72);
+  backdrop-filter:blur(.7rem);
+  -webkit-backdrop-filter:blur(.7rem);
+}
+.xcheckout-panel{
+  position:relative;
+  z-index:1;
+  width:min(52rem,calc(100vw - 5rem));
+  max-height:calc(100vh - 6rem);
+  overflow:auto;
+  padding:3.2rem;
+  border-radius:1.1rem;
+  background:#171717;
+  border:.1rem solid rgba(255,255,255,.12);
+  box-shadow:0 3rem 9rem rgba(0,0,0,.7);
+}
+.xcheckout-kicker{
+  color:#9bf00b;
+  font-size:1rem;
+  font-weight:800;
+  letter-spacing:.12rem;
+}
+.xcheckout-head h2{
+  margin:.55rem 0 2.4rem;
+  font-size:3rem;
+  font-weight:600;
+}
+.xcheckout-game{
+  display:flex;
+  align-items:center;
+  gap:1.5rem;
+  padding:1.2rem;
+  background:rgba(255,255,255,.055);
+  border-radius:.8rem;
+}
+.xcheckout-game img{
+  width:7.2rem;
+  height:9.6rem;
+  object-fit:cover;
+  border-radius:.45rem;
+}
+.xcheckout-game div{
+  display:grid;
+  gap:.45rem;
+}
+.xcheckout-game strong{
+  font-size:1.65rem;
+}
+.xcheckout-game span{
+  color:rgba(255,255,255,.52);
+  font-size:1.05rem;
+}
+.xcheckout-line{
+  min-height:5.3rem;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:2rem;
+  border-bottom:.1rem solid rgba(255,255,255,.08);
+  color:rgba(255,255,255,.7);
+  font-size:1.2rem;
+}
+.xcheckout-line > span:last-child{
+  display:flex;
+  align-items:baseline;
+  gap:.75rem;
+  color:#fff;
+}
+.xcheckout-line del{
+  color:rgba(255,255,255,.38);
+}
+.xcheckout-line.total{
+  min-height:6.6rem;
+  font-size:1.4rem;
+  color:#fff;
+}
+.xcheckout-line.total strong{
+  font-size:2rem;
+}
+.xcheckout-profile{
+  display:flex;
+  align-items:center;
+  gap:1.1rem;
+  margin-top:1.8rem;
+}
+.xcheckout-profile-dot{
+  width:3.8rem;
+  height:3.8rem;
+  border-radius:50%;
+  background:#000;
+  border:.12rem solid rgba(255,255,255,.18);
+}
+.xcheckout-profile div{
+  display:grid;
+  gap:.2rem;
+}
+.xcheckout-profile strong{font-size:1.2rem}
+.xcheckout-profile small{
+  color:rgba(255,255,255,.45);
+  font-size:.95rem;
+}
+.xcheckout-note{
+  margin-top:1.7rem;
+  padding:1.15rem 1.25rem;
+  border-radius:.65rem;
+  background:rgba(255,255,255,.05);
+  color:rgba(255,255,255,.55);
+  font-size:1rem;
+  line-height:1.4;
+}
+.xcheckout-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:.9rem;
+  margin-top:2.2rem;
+}
+.xcheckout-confirm,
+.xcheckout-cancel{
+  min-height:5rem;
+  border-radius:.55rem;
+  font-size:1.2rem;
+  font-weight:750;
+}
+.xcheckout-confirm{
+  background:#107c10;
+  color:#fff;
+}
+.xcheckout-cancel{
+  background:#efefef;
+  color:#111;
+}
+.xcheckout-confirm[data-focused],
+.xcheckout-cancel[data-focused]{
+  outline:.35rem solid #fff;
+  outline-offset:.22rem;
+}
+@keyframes xcheckoutIn{
+  from{opacity:0;transform:scale(.985)}
+  to{opacity:1;transform:none}
+}
+@keyframes xcheckoutOut{
+  from{opacity:1;transform:none}
+  to{opacity:0;transform:scale(.985)}
+}
+
+@media (max-width:1100px){
+  .xproduct-body{
+    grid-template-columns:1fr!important;
+    align-content:start!important;
+    overflow-y:auto;
+    padding:7rem 3rem 4rem!important;
+  }
+  .xproduct-main{
+    grid-template-columns:17rem minmax(0,1fr);
+    gap:2.4rem;
+  }
+  .xproduct-cover{width:17rem!important}
+  .xproduct-copy{max-height:none}
+  .xproduct-buy-card{width:min(48rem,100%);margin:0 auto}
+}
+
+@media (max-width:720px){
+  .xproduct-body{
+    padding:7rem 1.6rem 3rem!important;
+    gap:2.4rem!important;
+  }
+  .xproduct-main{
+    grid-template-columns:1fr;
+    justify-items:center;
+  }
+  .xproduct-cover{width:15.5rem!important}
+  .xproduct-copy{width:100%;max-width:none!important}
+  .xproduct-title{font-size:3.4rem!important}
+  .xproduct-buy-card{padding:2rem}
+  .xcheckout-panel{padding:2.2rem}
+  .xcheckout-actions{grid-template-columns:1fr}
+}
