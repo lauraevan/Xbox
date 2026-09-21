@@ -83,7 +83,7 @@ for (const def of games) {
       await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 120000 });
       await page.waitForFunction(() => {
         const text = document.body?.innerText || '';
-        return /Screenshots|Captures d'écran/i.test(text) && document.querySelector('h1');
+        return /Screenshots|Captures d'écran/i.test(text) && document.querySelector('main h1');
       }, { timeout: 120000 });
       loaded = true;
     } catch (err) {
@@ -116,7 +116,7 @@ for (const def of games) {
     const bodyText = document.body?.innerText || '';
     const scoreMatch = bodyText.match(/(\d+(?:\.\d+)?)\s*\/\s*100\s*\(Metascore\)/i);
 
-    const title = norm(document.querySelector('h1')?.textContent);
+    const title = norm(document.querySelector('main h1')?.textContent);
     const description =
       norm(document.querySelector('p.text-lg.text-muted-foreground.mb-8.max-w-3xl')?.textContent) ||
       '';
@@ -133,7 +133,7 @@ for (const def of games) {
       .map(el => norm(el.getAttribute('title')))
       .filter(Boolean);
 
-    const coverSrc = document.querySelector('aside img')?.getAttribute('src') || '';
+    const coverSrc = document.querySelector('main aside img')?.getAttribute('src') || '';
 
     const screenshotsHeading =
       headingByText('h2', 'Screenshots') ||
