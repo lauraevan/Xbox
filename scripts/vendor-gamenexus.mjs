@@ -1,222 +1,369 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import sharp from 'sharp';
 import { chromium } from 'playwright';
 
+const BASE = 'https://gamenexus.geek-factory.xyz';
 const OUT = path.resolve('assets/game-details');
-const games = [
-  { id: 141503, slug: 'forza-horizon-5', expected: 'Forza Horizon 5' },
-  { id: 1020, slug: 'grand-theft-auto-v', expected: 'Grand Theft Auto V' },
-  { id: 115289, slug: 'hollow-knight-silksong', expected: 'Hollow Knight: Silksong' },
-  { id: 119133, slug: 'elden-ring', expected: 'Elden Ring' },
-  { id: 434, slug: 'red-dead-redemption', expected: 'Red Dead Redemption' },
-  { id: 135400, slug: 'minecraft', expected: 'Minecraft' },
-  { id: 1905, slug: 'fortnite', expected: 'Fortnite' },
-  { id: 1877, slug: 'cyberpunk-2077', expected: 'Cyberpunk 2077' },
-];
+const cloud = JSON.parse(await fs.readFile('stratus/cloud.json', 'utf8'));
+const coverManifest = JSON.parse(await fs.readFile('assets/stratus-covers/manifest.json', 'utf8'));
+
+const ALIASES = new Map(Object.entries({
+  'god of war 4':'God of War',
+  'witchers 3':'The Witcher 3: Wild Hunt',
+  'subnautica zero':'Subnautica: Below Zero',
+  'sniper ghost warrior contracts2':'Sniper Ghost Warrior Contracts 2',
+  'tekken8':'Tekken 8',
+  'fifa23':'FIFA 23',
+  'fifa19':'FIFA 19',
+  'pes 2017':'Pro Evolution Soccer 2017',
+  'football pes 2021':'eFootball PES 2021 Season Update',
+  'cod6 modern warfare':'Call of Duty: Modern Warfare 2',
+  'attack on titan2':'Attack on Titan 2',
+  'minecraft dungeons':'Minecraft Dungeons',
+  'dead space tm 3':'Dead Space 3',
+  'the last of us tm part i':'The Last of Us Part I',
+  'the last of us tm part ii':'The Last of Us Part II',
+  'nier automata tm':'NieR: Automata',
+  'batman tm arkham origins':'Batman: Arkham Origins',
+  'batman tm arkham knight':'Batman: Arkham Knight',
+  'tom clancy s ghost recon r wildlands':'Tom Clancy\'s Ghost Recon Wildlands',
+  'resident evil 2 remake':'Resident Evil 2',
+  'resident evil 7 biohazard':'Resident Evil 7: Biohazard',
+  'one piece pirate warriors 4':'One Piece: Pirate Warriors 4',
+  'one piece burning blood':'One Piece: Burning Blood',
+  'final fantasy vii remake intergrade':'Final Fantasy VII Remake Intergrade',
+  'assassin s creed odyssey the fate of atlantis':'Assassin\'s Creed Odyssey',
+  'assassin s creed odyssey':'Assassin\'s Creed Odyssey',
+  'assassin s creed brotherhood':'Assassin\'s Creed: Brotherhood',
+  'assassin s creed revelations':'Assassin\'s Creed: Revelations',
+  'assassin s creed black flag':'Assassin\'s Creed IV: Black Flag',
+  'assassin s creed syndicate':'Assassin\'s Creed Syndicate'
+}));
+
+const RETIRED = new Set(['bs0096','jy0333','jy0532']);
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
+const clean = value => String(value || '').replace(/\s+/g, ' ').trim();
+const norm = value => clean(value)
+  .toLowerCase()
+  .normalize('NFKD')
+  .replace(/[™®©]/g,' ')
+  .replace(/[^a-z0-9]+/g,' ')
+  .trim();
 
-function unwrapImage(src) {
+function searchTitle(name){
+  return ALIASES.get(norm(name)) || name;
+}
+
+function unique(values){
+  return [...new Set((values || []).map(clean).filter(Boolean).filter(v => v !== 'N/A'))];
+}
+
+function sourceUrl(src){
   if (!src) return '';
   try {
-    const u = new URL(src, 'https://gamenexus.geek-factory.xyz');
-    const nested = u.searchParams.get('url');
-    return nested || u.href;
+    const url = new URL(src, BASE);
+    return url.searchParams.get('url') || url.href;
   } catch {
-    return src;
+    return '';
   }
 }
 
-function extFor(url) {
-  try {
-    const ext = path.extname(new URL(url).pathname).toLowerCase();
-    return ['.jpg','.jpeg','.png','.webp'].includes(ext) ? ext : '.jpg';
-  } catch {
-    return '.jpg';
-  }
+function tokenScore(a,b){
+  const aa = new Set(norm(a).split(' ').filter(Boolean));
+  const bb = new Set(norm(b).split(' ').filter(Boolean));
+  if (!aa.size || !bb.size) return 0;
+  let same = 0;
+  for (const token of aa) if (bb.has(token)) same++;
+  return same / Math.max(aa.size, bb.size);
 }
 
-async function download(url, destination) {
-  const res = await fetch(url, {
-    headers: {
-      'user-agent': 'Mozilla/5.0 (Xbox GameNexus vendor; local asset capture)',
-      'accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8'
-    },
-    redirect: 'follow'
-  });
-  if (!res.ok) throw new Error(`HTTP ${res.status} for ${url}`);
-  const type = res.headers.get('content-type') || '';
-  if (!type.startsWith('image/')) throw new Error(`Expected image, got ${type || 'unknown'} from ${url}`);
-  const data = Buffer.from(await res.arrayBuffer());
-  if (data.length < 1024) throw new Error(`Image too small (${data.length} bytes): ${url}`);
-  await fs.mkdir(path.dirname(destination), { recursive: true });
-  await fs.writeFile(destination, data);
-}
-
-function cleanList(values) {
-  return [...new Set(values.map(v => String(v || '').trim()).filter(Boolean).filter(v => v !== 'N/A'))];
-}
-
-const browser = await chromium.launch({ headless: true });
-const context = await browser.newContext({
-  locale: 'en-US',
-  viewport: { width: 1920, height: 1080 },
-  deviceScaleFactor: 1,
-  userAgent: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/140 Safari/537.36'
-});
-
-await context.addInitScript(() => {
-  try { localStorage.setItem('gamenexus_lang', 'en'); } catch {}
-});
-
-const manifest = { version: 1, source: 'GameNexus / IGDB', games: {} };
-
-for (const def of games) {
-  const page = await context.newPage();
-  const url = `https://gamenexus.geek-factory.xyz/games/${def.id}`;
-  console.log(`\n=== ${def.expected} (${def.id}) ===`);
-
-  let loaded = false;
-  let lastError;
-  for (let attempt = 1; attempt <= 4 && !loaded; attempt++) {
+async function fetchBuffer(url, attempts=3){
+  let last;
+  for (let i=0;i<attempts;i++){
     try {
-      await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 120000 });
-      await page.waitForFunction(() => {
-        const text = document.body?.innerText || '';
-        return /Screenshots|Captures d'écran/i.test(text) && document.querySelector('main h1');
-      }, { timeout: 120000 });
-      loaded = true;
-    } catch (err) {
-      lastError = err;
-      console.warn(`Attempt ${attempt} failed for ${def.expected}: ${err.message}`);
-      await sleep(3000 * attempt);
+      const res = await fetch(url, {
+        headers:{
+          'user-agent':'Mozilla/5.0 (Xbox local asset vendor)',
+          'accept':'image/avif,image/webp,image/apng,image/*,*/*;q=0.8'
+        },
+        redirect:'follow'
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const type = res.headers.get('content-type') || '';
+      if (!type.startsWith('image/')) throw new Error(`not an image: ${type}`);
+      const buffer = Buffer.from(await res.arrayBuffer());
+      if (buffer.length < 512) throw new Error('image payload too small');
+      return buffer;
+    } catch (err){
+      last = err;
+      await sleep(700 * (i+1));
     }
   }
-  if (!loaded) throw lastError || new Error(`Could not load ${def.expected}`);
+  throw last || new Error('download failed');
+}
 
-  const data = await page.evaluate(() => {
-    const norm = value => String(value || '').replace(/\s+/g, ' ').trim();
+async function saveWebp(url, destination, {width=1280,height=720,quality=68}={}){
+  const buffer = await fetchBuffer(url);
+  await fs.mkdir(path.dirname(destination), {recursive:true});
+  await sharp(buffer)
+    .rotate()
+    .resize({width,height,fit:'inside',withoutEnlargement:true})
+    .webp({quality,effort:4})
+    .toFile(destination);
+}
 
-    const headingByText = (tag, wanted) =>
-      [...document.querySelectorAll(tag)].find(el => norm(el.textContent).toLowerCase() === wanted.toLowerCase());
+async function findGame(searchPage, wanted){
+  const query = searchTitle(wanted);
+  const input = searchPage.locator('#search-game');
+  await input.fill('');
+  await input.fill(query);
+  await sleep(650);
 
-    const valueForHeading = label => {
-      const h = headingByText('h3', label);
-      if (!h) return { text: '', list: [] };
-      const wrap = h.parentElement;
-      const value = [...(wrap?.children || [])].find(el => el !== h) || h.nextElementSibling;
-      if (!value) return { text: '', list: [] };
-      const children = [...value.children].map(el => norm(el.textContent)).filter(Boolean);
-      return {
-        text: norm(value.textContent),
-        list: children.length ? children : (norm(value.textContent) ? [norm(value.textContent)] : [])
-      };
+  let results = [];
+  for (let attempt=0;attempt<4;attempt++){
+    try {
+      await searchPage.waitForFunction(q => {
+        const input = document.querySelector('#search-game');
+        if (!input || input.value !== q) return false;
+        const links = [...document.querySelectorAll('a[href^="/games/"]')];
+        const noResults = /No games found|Aucun jeu trouvé/i.test(document.body.innerText || '');
+        return links.length > 0 || noResults;
+      }, query, {timeout:12000});
+
+      results = await searchPage.evaluate(() => {
+        const found = new Map();
+        for (const link of document.querySelectorAll('a[href^="/games/"]')){
+          const href = link.getAttribute('href') || '';
+          if (!/^\/games\/\d+$/.test(href)) continue;
+          const card = link.closest('[class*="card"]') || link.parentElement?.parentElement;
+          const name =
+            card?.querySelector('[class*="CardTitle"], .text-lg')?.textContent ||
+            [...(card?.querySelectorAll('a') || [])].map(a => a.textContent).find(Boolean) ||
+            link.textContent || '';
+          if (!found.has(href)) found.set(href,{href,name:String(name).trim()});
+        }
+        return [...found.values()];
+      });
+      break;
+    } catch {
+      await sleep(1000);
+    }
+  }
+
+  if (!results.length) return null;
+  const exactWanted = norm(wanted);
+  const exactQuery = norm(query);
+  let best = results.find(r => norm(r.name) === exactWanted) ||
+             results.find(r => norm(r.name) === exactQuery) || null;
+  if (best) return best;
+
+  const ranked = results
+    .map(r => ({...r,score:Math.max(tokenScore(wanted,r.name),tokenScore(query,r.name))}))
+    .sort((a,b)=>b.score-a.score);
+  return ranked[0]?.score >= .5 ? ranked[0] : null;
+}
+
+async function readDetails(detailPage, href){
+  await detailPage.goto(new URL(href,BASE).href,{waitUntil:'domcontentloaded',timeout:90000});
+  await detailPage.waitForSelector('main h1',{timeout:60000});
+  await sleep(350);
+
+  return detailPage.evaluate(() => {
+    const clean = value => String(value || '').replace(/\s+/g,' ').trim();
+    const heading = (tag,label) => [...document.querySelectorAll(`main ${tag}`)]
+      .find(el => clean(el.textContent).toLowerCase() === label.toLowerCase());
+
+    const valueFor = label => {
+      const h = heading('h3',label);
+      if (!h) return [];
+      const box = h.parentElement;
+      const value = [...(box?.children || [])].find(el => el !== h) || h.nextElementSibling;
+      if (!value) return [];
+      const childText = [...value.children].map(el => clean(el.textContent)).filter(Boolean);
+      return childText.length ? childText : (clean(value.textContent) ? [clean(value.textContent)] : []);
     };
 
-    const bodyText = document.body?.innerText || '';
-    const scoreMatch = bodyText.match(/(\d+(?:\.\d+)?)\s*\/\s*100\s*\(Metascore\)/i);
+    const body = document.body?.innerText || '';
+    const score = body.match(/(\d+(?:\.\d+)?)\s*\/\s*100\s*\(Metascore\)/i);
+    const title = clean(document.querySelector('main h1')?.textContent);
 
-    const title = norm(document.querySelector('main h1')?.textContent);
     const description =
-      norm(document.querySelector('p.text-lg.text-muted-foreground.mb-8.max-w-3xl')?.textContent) ||
-      '';
-
-    const release = valueForHeading('Release Date');
-    const developers = valueForHeading('Developers');
-    const publishers = valueForHeading('Publishers');
-    const genres = valueForHeading('Genres');
-    const franchise = valueForHeading('Franchise');
-    const gameModes = valueForHeading('Game Modes');
-    const themes = valueForHeading('Themes');
-
-    const platformTitles = [...document.querySelectorAll('main [title]')]
-      .map(el => norm(el.getAttribute('title')))
-      .filter(Boolean);
+      clean(document.querySelector('main p.text-lg.text-muted-foreground.mb-8.max-w-3xl')?.textContent) ||
+      [...document.querySelectorAll('main p')].map(p=>clean(p.textContent)).find(t=>t.length>80) || '';
 
     const coverSrc = document.querySelector('main aside img')?.getAttribute('src') || '';
 
     const screenshotsHeading =
-      headingByText('h2', 'Screenshots') ||
-      [...document.querySelectorAll('h2')].find(el => /screenshots|captures d'écran/i.test(norm(el.textContent)));
-    const screenshotWrap = screenshotsHeading?.parentElement;
-    const screenshots = [...(screenshotWrap?.querySelectorAll('img') || [])]
-      .map(img => img.getAttribute('src') || '')
-      .filter(Boolean);
+      heading('h2','Screenshots') ||
+      [...document.querySelectorAll('main h2')].find(el => /screenshots|captures d'écran/i.test(clean(el.textContent)));
+    const screenshots = [...(screenshotsHeading?.parentElement?.querySelectorAll('img') || [])]
+      .map(img => img.getAttribute('src') || '').filter(Boolean);
 
-    const trailerSrc = document.querySelector('iframe[src*="youtube.com/embed/"]')?.getAttribute('src') || '';
+    const trailerSrc = document.querySelector('main iframe[src*="youtube.com/embed/"]')?.getAttribute('src') || '';
     const trailerId = trailerSrc.match(/\/embed\/([^?&#/]+)/)?.[1] || '';
 
     return {
       title,
       description,
-      rating: scoreMatch ? Number(scoreMatch[1]) : null,
-      releaseDate: release.text,
-      developers: developers.list,
-      publishers: publishers.list,
-      platforms: platformTitles,
-      genres: genres.list,
-      franchises: franchise.list,
-      gameModes: gameModes.list,
-      themes: themes.list,
+      rating: score ? Number(score[1]) : null,
+      releaseDate: valueFor('Release Date')[0] || '',
+      developers: valueFor('Developers'),
+      publishers: valueFor('Publishers'),
+      genres: valueFor('Genres'),
+      franchises: valueFor('Franchise'),
+      gameModes: valueFor('Game Modes'),
+      themes: valueFor('Themes'),
+      platforms:[...document.querySelectorAll('main [title]')]
+        .map(el=>clean(el.getAttribute('title')))
+        .filter(Boolean),
       trailerId,
       coverSrc,
       screenshots
     };
   });
+}
 
-  if (!data.title || !data.title.toLowerCase().includes(def.expected.split(':')[0].toLowerCase())) {
-    throw new Error(`Unexpected title for ${def.id}: ${data.title || '(blank)'}`);
-  }
+await fs.mkdir(OUT,{recursive:true});
 
-  const dir = path.join(OUT, def.slug);
-  await fs.rm(dir, { recursive: true, force: true });
-  await fs.mkdir(path.join(dir, 'screenshots'), { recursive: true });
+const browser = await chromium.launch({headless:true});
+const context = await browser.newContext({
+  locale:'en-US',
+  viewport:{width:1440,height:1000},
+  userAgent:'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/140 Safari/537.36'
+});
+await context.addInitScript(() => {
+  try { localStorage.setItem('gamenexus_lang','en'); } catch {}
+});
 
-  const coverUrl = unwrapImage(data.coverSrc);
-  let coverPath = '';
-  if (coverUrl) {
-    const ext = extFor(coverUrl);
-    const dest = path.join(dir, `cover${ext}`);
-    await download(coverUrl, dest);
-    coverPath = path.posix.join('assets/game-details', def.slug, `cover${ext}`);
-  }
+const searchPage = await context.newPage();
+const detailPage = await context.newPage();
+await searchPage.goto(`${BASE}/games`,{waitUntil:'domcontentloaded',timeout:90000});
+await searchPage.waitForSelector('#search-game',{timeout:60000});
 
-  const screenshotPaths = [];
-  const sourceScreenshots = cleanList(data.screenshots.map(unwrapImage));
-  for (let i = 0; i < sourceScreenshots.length; i++) {
-    const source = sourceScreenshots[i];
-    const ext = extFor(source);
-    const filename = `${String(i + 1).padStart(2, '0')}${ext}`;
-    const dest = path.join(dir, 'screenshots', filename);
-    console.log(`Downloading screenshot ${i + 1}/${sourceScreenshots.length}`);
-    await download(source, dest);
-    screenshotPaths.push(path.posix.join('assets/game-details', def.slug, 'screenshots', filename));
-  }
+const manifest = {
+  version:3,
+  source:'GameNexus / IGDB, vendored at build time',
+  gameCount:cloud.length,
+  games:{},
+  byName:{}
+};
 
-  if (!screenshotPaths.length) throw new Error(`No screenshots found for ${def.expected}`);
+let matched = 0;
+let screenshotCount = 0;
+let failures = 0;
 
-  manifest.games[def.expected] = {
-    id: def.id,
-    name: data.title,
-    rating: data.rating,
-    releaseDate: data.releaseDate,
-    developers: cleanList(data.developers),
-    publishers: cleanList(data.publishers),
-    platforms: cleanList(data.platforms),
-    genres: cleanList(data.genres),
-    franchises: cleanList(data.franchises),
-    gameModes: cleanList(data.gameModes),
-    themes: cleanList(data.themes),
-    trailerId: data.trailerId,
-    cover: coverPath,
-    screenshots: screenshotPaths
+for (let index=0; index<cloud.length; index++){
+  const raw = cloud[index];
+  const key = String(raw.game_key || raw.key || `game-${index+1}`);
+  const name = clean(raw.name || key);
+  const localCover = coverManifest[key]?.path || '';
+  const dir = path.join(OUT,key);
+  await fs.mkdir(path.join(dir,'screenshots'),{recursive:true});
+  console.log(`\n[${index+1}/${cloud.length}] ${name} (${key})`);
+
+  const fallback = {
+    gameKey:key,
+    name,
+    matchName:'',
+    gameNexusId:null,
+    source:RETIRED.has(key) ? 'Stratus fallback (retired)' : 'Stratus fallback',
+    description:clean(raw.description || raw.desc || ''),
+    rating:null,
+    releaseDate:'',
+    developers:[],
+    publishers:[],
+    platforms:[],
+    genres:unique(raw.tags || []),
+    franchises:[],
+    gameModes:[],
+    themes:[],
+    trailerId:'',
+    cover:localCover,
+    hero:localCover,
+    screenshots:[]
   };
 
-  console.log(JSON.stringify(manifest.games[def.expected], null, 2));
-  await page.close();
+  try {
+    if (raw.image){
+      const heroPath = path.posix.join('assets/game-details',key,'hero.webp');
+      await saveWebp(String(raw.image), path.join(dir,'hero.webp'), {width:1600,height:900,quality:70});
+      fallback.hero = heroPath;
+    }
+  } catch (err){
+    console.warn(`  hero fallback failed: ${err.message}`);
+  }
+
+  let row = fallback;
+  try {
+    const match = await findGame(searchPage,name);
+    if (!match) throw new Error('no close GameNexus match');
+
+    const id = Number(match.href.split('/').pop());
+    const detail = await readDetails(detailPage,match.href);
+    if (!detail.title) throw new Error('detail page had no title');
+
+    const score = Math.max(tokenScore(name,detail.title),tokenScore(searchTitle(name),detail.title));
+    if (score < .5) throw new Error(`weak match: ${detail.title}`);
+
+    matched++;
+    const screenshotPaths = [];
+    const shots = unique(detail.screenshots.map(sourceUrl));
+    for (let i=0;i<shots.length;i++){
+      const target = path.join(dir,'screenshots',`${String(i+1).padStart(2,'0')}.webp`);
+      try {
+        await saveWebp(shots[i],target,{width:1280,height:720,quality:66});
+        screenshotPaths.push(path.posix.join('assets/game-details',key,'screenshots',`${String(i+1).padStart(2,'0')}.webp`));
+        screenshotCount++;
+      } catch (err){
+        console.warn(`  screenshot ${i+1} failed: ${err.message}`);
+      }
+    }
+
+    let nexusCover = '';
+    const coverSource = sourceUrl(detail.coverSrc);
+    if (coverSource){
+      try {
+        await saveWebp(coverSource,path.join(dir,'cover.webp'),{width:720,height:1080,quality:76});
+        nexusCover = path.posix.join('assets/game-details',key,'cover.webp');
+      } catch (err){
+        console.warn(`  cover failed: ${err.message}`);
+      }
+    }
+
+    row = {
+      ...fallback,
+      matchName:detail.title,
+      gameNexusId:Number.isFinite(id) ? id : null,
+      source:'GameNexus / IGDB',
+      description:clean(detail.description) || fallback.description,
+      rating:detail.rating,
+      releaseDate:clean(detail.releaseDate),
+      developers:unique(detail.developers),
+      publishers:unique(detail.publishers),
+      platforms:unique(detail.platforms),
+      genres:unique(detail.genres).length ? unique(detail.genres) : fallback.genres,
+      franchises:unique(detail.franchises),
+      gameModes:unique(detail.gameModes),
+      themes:unique(detail.themes),
+      trailerId:clean(detail.trailerId),
+      cover:nexusCover || fallback.cover,
+      hero:screenshotPaths[0] || fallback.hero || nexusCover || fallback.cover,
+      screenshots:screenshotPaths
+    };
+
+    console.log(`  matched -> ${detail.title}; ${screenshotPaths.length} screenshots`);
+  } catch (err){
+    failures++;
+    console.warn(`  GameNexus fallback: ${err.message}`);
+  }
+
+  manifest.games[key] = row;
+  manifest.byName[norm(name)] = key;
 }
 
 await browser.close();
-await fs.mkdir(OUT, { recursive: true });
-await fs.writeFile(path.join(OUT, 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
-console.log('\nGameNexus launcher assets captured locally.');
+await fs.writeFile(path.join(OUT,'manifest.json'),JSON.stringify(manifest,null,2)+'\n');
+console.log(`\nDone: ${cloud.length} games, ${matched} GameNexus matches, ${screenshotCount} screenshots, ${failures} fallbacks.`);
+if (Object.keys(manifest.games).length !== cloud.length) process.exitCode = 1;
