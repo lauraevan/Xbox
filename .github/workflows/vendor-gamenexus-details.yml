@@ -1,0 +1,48 @@
+name: Vendor GameNexus launcher details
+
+on:
+  push:
+    paths:
+      - .github/workflows/vendor-gamenexus-details.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  vendor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: claude/xbox-web-replica-v4s0jk
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install one-time browser
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Capture GameNexus details and screenshots
+        shell: bash
+        run: node scripts/vendor-gamenexus.mjs
+
+      - name: Commit local GameNexus assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'xbox-build-bot'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/game-details
+          if git diff --cached --quiet; then
+            echo 'GameNexus assets already match.'
+            exit 0
+          fi
+          git commit -m 'Vendor GameNexus launcher details'
+          git push origin HEAD:claude/xbox-web-replica-v4s0jk
