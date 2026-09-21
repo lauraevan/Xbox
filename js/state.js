@@ -7,6 +7,21 @@
 'use strict';
 
 const KEY = 'xbox.web.profile.v1';
+const GLOBAL_RESET_MARKER = 'xbox.reset.20260920.zr6p1d';
+
+/* One-time fleet reset. Every browser that loads this build clears all prior
+   Xbox-local state before defaults are read, then records this reset marker. */
+try {
+  if (!localStorage.getItem(GLOBAL_RESET_MARKER)){
+    const stale = [];
+    for (let i = 0; i < localStorage.length; i++){
+      const key = localStorage.key(i);
+      if (key && key.startsWith('xbox.')) stale.push(key);
+    }
+    stale.forEach(key => localStorage.removeItem(key));
+    localStorage.setItem(GLOBAL_RESET_MARKER, '1');
+  }
+} catch {}
 
 const DEFAULTS = {
   /* ── the signed-in profile ── */
