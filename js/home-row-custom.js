@@ -147,25 +147,39 @@ async function openGamePreview(title){
   closeGamePreview();
   window.Sound?.gameSelect?.();
 
-  const [cloud, local] = await Promise.all([
+  const known = canonicalTitle(title) || window.GameDetails?.canonical?.(title) || title;
+  const [cloud, local, rich] = await Promise.all([
     cloudGame(title),
-    Promise.resolve(localGame(title))
+    Promise.resolve(localGame(title)),
+    window.GameDetails?.get?.(known) || Promise.resolve(null)
   ]);
 
   const game = cloud || local || { name:title };
-  const known = canonicalTitle(title) || title;
-  const cover = COVER[known] || game.cover || game.image || '';
-  const hero = HERO[known] || game.image || game.cover || cover;
-  const tags = Array.isArray(game.tags) ? game.tags.filter(Boolean).slice(0, 4) : [];
-  const provider = cloud ? 'Xbox Cloud' : (game.author || 'Xbox');
+  const screenshots = Array.isArray(rich?.screenshots) ? rich.screenshots.filter(Boolean) : [];
+  const cover = rich?.cover || COVER[known] || game.cover || game.image || '';
+  const hero = rich?.hero || screenshots[0] || HERO[known] || game.image || game.cover || cover;
   const availability = cloud ? 'Cloud playable' : 'Ready to play';
+  const fallbackTags = Array.isArray(game.tags) ? game.tags.filter(Boolean) : [];
+  const genres = Array.isArray(rich?.genres) ? rich.genres.filter(Boolean) : fallbackTags;
+  const modes = Array.isArray(rich?.gameModes) ? rich.gameModes.filter(Boolean) : [];
+  const themes = Array.isArray(rich?.themes) ? rich.themes.filter(Boolean) : [];
+  const platforms = Array.isArray(rich?.platforms) ? rich.platforms.filter(Boolean) : [];
+  const franchises = Array.isArray(rich?.franchises) ? rich.franchises.filter(Boolean) : [];
+  const developers = Array.isArray(rich?.developers) ? rich.developers.filter(Boolean) : [];
+  const publishers = Array.isArray(rich?.publishers) ? rich.publishers.filter(Boolean) : [];
+  const developer = developers.join(', ') || (cloud ? 'Xbox Cloud' : (game.author || 'Xbox'));
+  const publisher = publishers.join(', ') || 'Xbox';
+  const rating = Number.isFinite(Number(rich?.rating)) ? `${Math.round(Number(rich.rating))} / 100` : '—';
+  const release = String(rich?.releaseDate || '').trim() || '—';
   const descriptionText = String(
+    rich?.summary ||
     game.description ||
     game.desc ||
     game.summary ||
     game.overview ||
     ''
   ).trim();
+
   const layer = document.createElement('section');
   layer.className = 'home-game-preview';
   layer.setAttribute('role', 'dialog');
@@ -180,6 +194,7 @@ async function openGamePreview(title){
 
   const card = document.createElement('div');
   card.className = 'home-game-preview-card';
+  if (rich) card.classList.add('has-rich-details');
 
   const share = document.createElement('button');
   share.type = 'button';
@@ -236,7 +251,7 @@ async function openGamePreview(title){
 
   const kicker = document.createElement('div');
   kicker.className = 'home-game-preview-kicker';
-  kicker.textContent = provider;
+  kicker.textContent = developer;
 
   const heading = document.createElement('h2');
   heading.textContent = title;
@@ -247,19 +262,75 @@ async function openGamePreview(title){
 
   const chips = document.createElement('div');
   chips.className = 'home-game-preview-chips';
-  [availability, ...tags].slice(0, 5).forEach(text => {
+  const chipValues = [availability, ...genres, ...modes, ...themes];
+  [...new Set(chipValues.filter(Boolean))].slice(0, 8).forEach(text => {
     const chip = document.createElement('span');
     chip.textContent = text;
     chips.append(chip);
   });
 
   const facts = document.createElement('div');
-  facts.className = 'home-game-preview-facts';
+  facts.className = 'home-game-preview-facts rich';
   facts.append(
-    previewFact(window.Views?.ICON?.play || '', 'Play', cloud ? 'Stream instantly' : 'Launch locally'),
-    previewFact(window.Views?.ICON?.games || '', 'Type', cloud ? 'Cloud game' : 'Game'),
-    previewFact(window.Views?.ICON?.person || '', 'Provider', provider)
+    previewFact(window.Views?.ICON?.person || '', 'Developer', developer),
+    previewFact(window.Views?.ICON?.games || '', 'Publisher', publisher),
+    previewFact('', 'Release', release),
+    previewFact('', 'Rating', rating)
   );
+
+  const submeta = document.createElement('div');
+  submeta.className = 'home-game-preview-submeta';
+  if (platforms.length){
+    const row = document.createElement('p');
+    row.innerHTML = '<strong>Platforms</strong>';
+    row.append(document.createTextNode(platforms.join(' · ')));
+    submeta.append(row);
+  }
+  if (franchises.length){
+    const row = document.createElement('p');
+    row.innerHTML = '<strong>Franchise</strong>';
+    row.append(document.createTextNode(franchises.join(' · ')));
+    submeta.append(row);
+  }
+
+  const gallery = document.createElement('section');
+  gallery.className = 'home-game-preview-gallery';
+  if (screenshots.length){
+    const galleryTitle = document.createElement('div');
+    galleryTitle.className = 'home-game-preview-gallery-title';
+    galleryTitle.innerHTML = `<strong>Screenshots</strong><span>${screenshots.length} local</span>`;
+
+    const rail = document.createElement('div');
+    rail.className = 'home-game-preview-gallery-rail';
+    const selectShot = (src, button) => {
+      visual.style.backgroundImage = src ? `url("${src}")` : '';
+      rail.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
+      button?.classList.add('selected');
+    };
+
+    screenshots.forEach((src, index) => {
+      const shot = document.createElement('button');
+      shot.type = 'button';
+      shot.className = 'home-game-preview-shot' + (index === 0 ? ' selected' : '');
+      shot.dataset.nav = '';
+      shot.dataset.ringRadius = '.55rem';
+      shot.setAttribute('aria-label', `Screenshot ${index + 1} of ${screenshots.length}`);
+      shot.innerHTML = `<img src="${esc(src)}" alt="" loading="${index < 4 ? 'eager' : 'lazy'}" decoding="async">`;
+      shot._navActivate = () => selectShot(src, shot);
+      shot.addEventListener('click', event => {
+        event.preventDefault();
+        event.stopPropagation();
+        shot._navActivate();
+      });
+      shot.addEventListener('pointerenter', () => selectShot(src, shot));
+      shot.addEventListener('focus', () => {
+        shot.scrollIntoView({ block:'nearest', inline:'nearest', behavior:'smooth' });
+      });
+      rail.append(shot);
+    });
+
+    gallery.append(galleryTitle, rail);
+  }
 
   const actions = document.createElement('div');
   actions.className = 'home-game-preview-actions';
@@ -282,9 +353,6 @@ async function openGamePreview(title){
     closeGamePreview();
     if (selected) await activateTitle(selected);
   };
-  /* iOS/iPadOS can lose the delayed synthetic click when this modal removes
-     itself during activation. Handle the primary touch pointer directly and
-     keep click for mouse, keyboard, accessibility, and older browsers. */
   start.addEventListener('pointerup', event => {
     if (event.isPrimary !== false && (event.pointerType === 'touch' || event.pointerType === 'pen'))
       void start._navActivate(event);
@@ -305,7 +373,10 @@ async function openGamePreview(title){
   });
 
   actions.append(start, close);
-  info.append(kicker, heading, description, chips, facts, actions);
+  info.append(kicker, heading, description, chips, facts);
+  if (submeta.childElementCount) info.append(submeta);
+  if (screenshots.length) info.append(gallery);
+  info.append(actions);
   card.append(visual, coverWrap, info, share);
   layer.append(scrim, card);
   document.body.append(layer);
