@@ -1148,7 +1148,7 @@ The project succeeds when someone can look at it and immediately feel that it is
 
 ### 2026-09-20 — Xbox version snapshot boot notification
 
-Current snapshot: `on7x3f`
+Current snapshot: `xb5n8w`
 
 After every successful Xbox boot, show a compact green-and-black build notification in the **bottom-right corner** of the screen. It must have a clearly visible Xbox-green outline, rounded corners, dark black surface, and restrained Windows/Xbox styling. The notification uses the repo-local Xbox logo and reads `Xbox Version 1.5` and `Snapshot <random-code>`.
 
@@ -1187,3 +1187,8 @@ On the first load of this build, every client removes prior `xbox.*` localStorag
 First run after the reset now includes a dedicated Xbox-styled onboarding phase after the Microsoft credit screen and before Home. Sequence: Connecting to network → connected confirmation → choose gamertag → choose gamerpic/profile → Xbox preferences → welcome/finish. It uses Xbox green, black surfaces, square controls, Segoe-style typography, and the repo Xbox logo. Completion is persisted with `settings.onboardingComplete`.
 
 The Xbox personalization preset must retain Xbox Waves. Do not change the Xbox preset back to game artwork unless explicitly requested.
+
+
+### 2026-09-20 — Xbox is the default theme + onboarding reset
+
+Default personalization preset is now `xbox`, with Xbox green and Xbox Waves retained as the default wallpaper. A new fleet reset marker `xb5n8w` intentionally clears existing `xbox.*` local state once on every client so onboarding runs again for everyone. After that first reset/load, state persists normally.
