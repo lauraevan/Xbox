@@ -139,12 +139,17 @@
 }
 .reference-home .ref-tile[data-ref-title]{
   transform-origin:center bottom!important;
-  transition:transform .17s cubic-bezier(.2,.8,.2,1), box-shadow .17s ease!important;
+  margin-inline:0!important;
+  transition:
+    transform .17s cubic-bezier(.2,.8,.2,1),
+    margin-inline .17s cubic-bezier(.2,.8,.2,1),
+    box-shadow .17s ease!important;
   will-change:transform;
 }
 .reference-home .ref-tile[data-ref-title][data-focused],
 .reference-home .ref-tile[data-ref-title]:hover{
   transform:scale(1.25)!important;
+  margin-inline:2.25rem!important;
   z-index:12!important;
 }
 
