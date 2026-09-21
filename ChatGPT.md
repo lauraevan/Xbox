@@ -1148,7 +1148,7 @@ The project succeeds when someone can look at it and immediately feel that it is
 
 ### 2026-09-20 — Xbox version snapshot boot notification
 
-Current snapshot: `dk4m7p`
+Current snapshot: `fw9q3n`
 
 After every successful Xbox boot, show a compact green-and-black build notification in the **bottom-right corner** of the screen. It must have a clearly visible Xbox-green outline, rounded corners, dark black surface, and restrained Windows/Xbox styling. The notification uses the repo-local Xbox logo and reads `Xbox Version 1.5` and `Snapshot <random-code>`.
 
@@ -1207,3 +1207,8 @@ A new one-time global client reset epoch `rs8k2v` clears prior `xbox.*` localSto
 ### 2026-09-20 — darker functional onboarding pass
 
 The onboarding backdrop and panels were darkened to better match the supplied photos. The Gamertag step now has a real editable text input, the keyboard step has a visible functional input plus an Enter action, color swatches are clickable/selectable, privacy rows toggle on click, and Complete Setup finishes onboarding. Preserve the reference geometry and controller prompts. Avoid bright gray backgrounds or generic rounded setup cards.
+
+
+### 2026-09-20 — fleet data reset fw9q3n
+
+A new one-time global reset marker `xbox.reset.20260920.fw9q3n` clears every prior `xbox.*` localStorage entry on each client before defaults load. This resets onboarding completion, gamertag/profile-local state, personalization, Home layout, pins, recents, and settings for everyone once, then persists normally after setup.
