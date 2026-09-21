@@ -1148,7 +1148,7 @@ The project succeeds when someone can look at it and immediately feel that it is
 
 ### 2026-09-20 — Xbox version snapshot boot notification
 
-Current snapshot: `ms4c7q`
+Current snapshot: `zr6p1d`
 
 After every successful Xbox boot, show a compact green-and-black build notification in the **bottom-right corner** of the screen. It must have a clearly visible Xbox-green outline, rounded corners, dark black surface, and restrained Windows/Xbox styling. The notification uses the repo-local Xbox logo and reads `Xbox Version 1.5` and `Snapshot <random-code>`.
 
@@ -1173,3 +1173,10 @@ Keep this as a distinct boot phase:
 ### 2026-09-20 — Microsoft credit logo color correction
 
 The Microsoft credit interstitial uses the standard four-square Microsoft palette in reading order: red/orange `#F25022`, green `#7FBA00`, blue `#00A4EF`, yellow `#FFB900`. Keep the mark flat and crisp on pure black, with the white Microsoft wordmark beside it.
+
+
+### 2026-09-20 — one-time global client data reset
+
+Reset epoch: `zr6p1d`.
+
+On the first load of this build, every client removes prior `xbox.*` localStorage state before State defaults are read. This resets Home game layout/order, personalization/layout mode, profile-local state, settings, pins/recents, and other Xbox-local persisted state back to current defaults. A reset marker prevents the wipe from repeating on every reload. Do not remove or rename the marker unless another intentional global reset is requested.
