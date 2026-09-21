@@ -18,8 +18,6 @@ const TABS = [
   { id:'home',          icon:ICON.home,    label:'Home' },
   { id:'people',        icon:ICON.party,   label:'People' },
   { id:'party',         icon:ICON.mic,     label:'Parties & chats' },
-  { id:'achievements',  icon:ICON.trophy,  label:'Achievements' },
-  { id:'capture',       icon:ICON.capture, label:'Capture & share' },
   { id:'notifications', icon:ICON.bell,    label:'Notifications' },
   { id:'settings',      icon:ICON.gear,    label:'Settings', bottom:true },
   { id:'power',         icon:ICON.power,   label:'Power',    bottom:true }
