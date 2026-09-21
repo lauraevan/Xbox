@@ -188,6 +188,7 @@ async function openGamePreview(title){
   window.Sound?.gameSelect?.();
 
   const known = canonicalTitle(title) || window.GameDetails?.canonical?.(title) || title;
+  previewBackdropTitle = title;
   const defaultHero = HERO[known] || '';
   if (defaultHero) paintSelectedGameBackdrop(title, defaultHero);
 
