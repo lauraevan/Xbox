@@ -762,3 +762,69 @@
     touch-action:manipulation;
   }
 }
+
+
+/* Ultrawide Home scaling -------------------------------------------------- */
+/* The base console canvas intentionally keys rem sizing to the shorter screen
+   dimension. On 21:9+ displays that keeps vertical proportions correct but
+   leaves Home feeling undersized horizontally. This tier expands the actual
+   content surfaces without globally zooming the app or distorting 16:9. */
+@media (min-width:2200px) and (min-aspect-ratio:2/1){
+  :root{
+    --safe-x:clamp(10rem,4.5vw,15rem);
+    --x-ultra-home-tile:clamp(19.5rem,7.8vw,22rem);
+  }
+
+  .reference-home .ref-strip{
+    gap:clamp(2.2rem,1.05vw,3rem)!important;
+  }
+
+  .reference-home .ref-tile,
+  .reference-home .ref-tile.ref-hero,
+  .reference-home .ref-friends{
+    width:var(--x-ultra-home-tile)!important;
+    margin-top:5.4rem!important;
+  }
+
+  .reference-home .ref-tile .tile-face,
+  .reference-home .ref-tile.ref-hero .tile-face,
+  .reference-home .ref-friends .tile-face{
+    width:var(--x-ultra-home-tile)!important;
+    height:var(--x-ultra-home-tile)!important;
+  }
+
+  .reference-home .ref-tile[data-ref-title][data-focused],
+  .reference-home .ref-tile[data-ref-title]:hover{
+    transform:scale(1.22)!important;
+    margin-inline:clamp(2.5rem,1.15vw,3.4rem)!important;
+  }
+
+  .reference-home .ref-cards{
+    top:61rem!important;
+    grid-template-columns:minmax(36rem,.78fr) .96fr 1.12fr 1.12fr!important;
+    gap:clamp(2rem,.95vw,2.8rem)!important;
+  }
+
+  .reference-home .ref-card{
+    height:21.5rem!important;
+  }
+
+  .reference-home .ref-card .card-label{
+    font-size:2.18rem!important;
+  }
+}
+
+@media (min-width:3000px) and (min-aspect-ratio:2.25/1){
+  :root{
+    --safe-x:clamp(12rem,4.8vw,18rem);
+    --x-ultra-home-tile:clamp(21rem,6.8vw,23.5rem);
+  }
+
+  .reference-home .ref-strip{
+    gap:clamp(2.6rem,1vw,3.5rem)!important;
+  }
+
+  .reference-home .ref-cards{
+    grid-template-columns:minmax(40rem,.82fr) 1fr 1.15fr 1.15fr!important;
+  }
+}
