@@ -1170,3 +1170,79 @@
   .xcheckout-panel{padding:2.2rem}
   .xcheckout-actions{grid-template-columns:1fr}
 }
+
+
+/* Rounder purchase surfaces ------------------------------------------------ */
+.xproduct-cover{
+  border-radius:1.25rem!important;
+}
+.xproduct-buy-card{
+  border-radius:2rem!important;
+  padding:3rem 3rem 2.7rem!important;
+}
+.xproduct-buy-card .xproduct-action{
+  border-radius:1rem!important;
+}
+.xproduct-buy-rule{
+  margin:2.1rem 0 1.8rem!important;
+}
+.xproduct-buy-benefits{
+  padding:1rem 1.15rem;
+  border-radius:1.15rem;
+  background:rgba(255,255,255,.045);
+}
+.xproduct-badges span{
+  border-radius:.8rem!important;
+}
+.xproduct-deal-strip{
+  border-radius:1rem!important;
+}
+
+.xcheckout-panel{
+  border-radius:2rem!important;
+  padding:3.4rem!important;
+}
+.xcheckout-game{
+  border-radius:1.35rem!important;
+  padding:1.35rem!important;
+}
+.xcheckout-game img{
+  border-radius:.9rem!important;
+}
+.xcheckout-line{
+  margin-top:.65rem;
+  padding:0 1.15rem;
+  border-bottom:0!important;
+  border-radius:1rem;
+  background:rgba(255,255,255,.035);
+}
+.xcheckout-line.total{
+  margin-top:.9rem;
+  background:rgba(255,255,255,.065);
+}
+.xcheckout-profile{
+  padding:1rem 1.1rem;
+  border-radius:1rem;
+  background:rgba(255,255,255,.035);
+}
+.xcheckout-profile-dot{
+  border-radius:1.05rem!important;
+}
+.xcheckout-note{
+  border-radius:1.15rem!important;
+}
+.xcheckout-confirm,
+.xcheckout-cancel{
+  border-radius:1rem!important;
+}
+
+@media (max-width:720px){
+  .xproduct-buy-card{
+    border-radius:1.6rem!important;
+    padding:2.2rem!important;
+  }
+  .xcheckout-panel{
+    border-radius:1.6rem!important;
+    padding:2.3rem!important;
+  }
+}
