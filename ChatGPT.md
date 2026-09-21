@@ -1148,7 +1148,7 @@ The project succeeds when someone can look at it and immediately feel that it is
 
 ### 2026-09-20 — Xbox version snapshot boot notification
 
-Current snapshot: `fw9q3n`
+Current snapshot: `kb2x7d`
 
 After every successful Xbox boot, show a compact green-and-black build notification in the **bottom-right corner** of the screen. It must have a clearly visible Xbox-green outline, rounded corners, dark black surface, and restrained Windows/Xbox styling. The notification uses the repo-local Xbox logo and reads `Xbox Version 1.5` and `Snapshot <random-code>`.
 
@@ -1212,3 +1212,8 @@ The onboarding backdrop and panels were darkened to better match the supplied ph
 ### 2026-09-20 — fleet data reset fw9q3n
 
 A new one-time global reset marker `xbox.reset.20260920.fw9q3n` clears every prior `xbox.*` localStorage entry on each client before defaults load. This resets onboarding completion, gamertag/profile-local state, personalization, Home layout, pins, recents, and settings for everyone once, then persists normally after setup.
+
+
+### 2026-09-20 — dark onboarding + working on-screen keyboard
+
+The onboarding is intentionally much darker: near-black charcoal background, darker translucent Xbox panels, and darker keyboard keys while retaining the supplied screenshot geometry. The on-screen keyboard is now functional. Tapping letter/number/punctuation keys appends to the real Gamertag input, Backspace deletes, Shift/Caps toggles letter case, Space inserts a space, typing with the native keyboard still works, and Enter advances. The color screen now advances only through an explicit Next action instead of an automatic timeout.
