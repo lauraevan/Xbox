@@ -1148,7 +1148,7 @@ The project succeeds when someone can look at it and immediately feel that it is
 
 ### 2026-09-20 — Xbox version snapshot boot notification
 
-Current snapshot: `rd4m8q`
+Current snapshot: `off6p3`
 
 After every successful Xbox boot, show a compact green-and-black build notification in the **bottom-right corner** of the screen. It must have a clearly visible Xbox-green outline, rounded corners, dark black surface, and restrained Windows/Xbox styling. The notification uses the repo-local Xbox logo and reads `Xbox Version 1.5` and `Snapshot <random-code>`.
 
@@ -1237,3 +1237,10 @@ The previous onboarding was visually wrong because it treated the project rem sc
 ### 2026-09-20 — fleet data reset rd4m8q
 
 A fresh one-time reset marker `xbox.reset.20260920.rd4m8q` clears all prior `xbox.*` localStorage data for every client on next load, including onboarding completion, profile state, personalization, Home layout, pins, recents, and settings. After the reset runs once, state persists normally.
+
+
+### 2026-09-20 — onboarding temporarily disabled
+
+Onboarding is temporarily disabled with `ONBOARDING_ENABLED = false` in `js/app.js`. The existing onboarding implementation remains in place for later re-enabling, but boot currently skips it and proceeds to the dashboard.
+
+Per the standing onboarding workflow, this onboarding change also advances the fleet reset epoch to `off6p3`, so all existing `xbox.*` local state is cleared once on next load.
