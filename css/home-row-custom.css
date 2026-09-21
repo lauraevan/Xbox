@@ -588,3 +588,179 @@
   height:100%;
   object-fit:contain;
 }
+
+/* Rich launcher details captured locally from GameNexus. */
+.home-game-preview-card.has-rich-details{
+  width:min(134rem,92vw);
+  min-height:68rem;
+  grid-template-columns:23rem minmax(0,1fr);
+}
+.home-game-preview-card.has-rich-details .home-game-preview-visual{
+  inset:0 0 0 23rem;
+}
+.home-game-preview-card.has-rich-details .home-game-preview-cover{
+  width:19rem;
+  height:28.5rem;
+  margin:0 0 4rem 2.8rem;
+}
+.home-game-preview-card.has-rich-details .home-game-preview-info{
+  padding:5rem 5.5rem 3.5rem 2.8rem;
+}
+.home-game-preview-card.has-rich-details .home-game-preview-info h2{
+  font-size:4.6rem;
+}
+.home-game-preview-card.has-rich-details .home-game-preview-description{
+  max-width:82rem;
+  -webkit-line-clamp:3;
+}
+.home-game-preview-facts.rich{
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  max-width:92rem;
+  margin:1.5rem 0 1.1rem;
+}
+.home-game-preview-facts.rich .home-game-preview-fact{
+  min-height:5.2rem;
+}
+.home-game-preview-submeta{
+  max-width:92rem;
+  display:grid;
+  grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);
+  gap:.75rem 1.2rem;
+  margin:.8rem 0 1.25rem;
+}
+.home-game-preview-submeta p{
+  min-width:0;
+  margin:0;
+  display:flex;
+  gap:.7rem;
+  align-items:baseline;
+  overflow:hidden;
+  color:rgba(255,255,255,.67);
+  font-size:1.14rem;
+  line-height:1.35;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+.home-game-preview-submeta strong{
+  flex:none;
+  color:rgba(255,255,255,.94);
+  font-size:1.08rem;
+  font-weight:700;
+}
+.home-game-preview-gallery{
+  max-width:94rem;
+  margin:1.15rem 0 1.2rem;
+}
+.home-game-preview-gallery-title{
+  display:flex;
+  align-items:baseline;
+  gap:.8rem;
+  margin-bottom:.75rem;
+  color:#fff;
+}
+.home-game-preview-gallery-title strong{
+  font-size:1.25rem;
+  font-weight:700;
+}
+.home-game-preview-gallery-title span{
+  color:rgba(255,255,255,.5);
+  font-size:1.02rem;
+  font-weight:500;
+}
+.home-game-preview-gallery-rail{
+  display:flex;
+  gap:.75rem;
+  padding:.35rem .25rem .55rem;
+  overflow-x:auto;
+  overflow-y:hidden;
+  overscroll-behavior-inline:contain;
+  scroll-snap-type:x proximity;
+  scrollbar-width:none;
+  -webkit-overflow-scrolling:touch;
+}
+.home-game-preview-gallery-rail::-webkit-scrollbar{display:none}
+.home-game-preview-shot{
+  position:relative;
+  width:13.4rem;
+  height:7.55rem;
+  flex:0 0 13.4rem;
+  padding:0;
+  overflow:hidden;
+  border:.14rem solid rgba(255,255,255,.16);
+  border-radius:.65rem;
+  background:#101214;
+  scroll-snap-align:center;
+  opacity:.72;
+  transform:scale(.985);
+  transition:opacity .12s ease,transform .14s var(--ease-decel),border-color .12s ease;
+}
+.home-game-preview-shot img{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+}
+.home-game-preview-shot:hover,
+.home-game-preview-shot.selected,
+.home-game-preview-shot[data-focused]{
+  opacity:1;
+  transform:scale(1);
+  border-color:rgba(255,255,255,.7);
+}
+.home-game-preview-shot.selected::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  box-shadow:inset 0 0 0 .22rem #fff;
+  pointer-events:none;
+}
+.home-game-preview-shot[data-focused]{
+  outline:.3rem solid #fff!important;
+  outline-offset:.2rem!important;
+}
+.home-game-preview-card.has-rich-details .home-game-preview-actions{
+  margin-top:1.4rem;
+}
+
+@media (max-aspect-ratio:16/10){
+  .home-game-preview-card.has-rich-details{
+    width:min(132rem,94vw);
+    min-height:70rem;
+  }
+  .home-game-preview-card.has-rich-details .home-game-preview-info{
+    padding-right:4rem;
+  }
+  .home-game-preview-shot{
+    width:12.2rem;
+    height:6.9rem;
+    flex-basis:12.2rem;
+  }
+}
+
+@media (hover:none), (pointer:coarse){
+  .home-game-preview-card.has-rich-details{
+    width:min(134rem,94vw);
+    min-height:68rem;
+    grid-template-columns:23rem minmax(0,1fr);
+  }
+  .home-game-preview-card.has-rich-details .home-game-preview-visual{
+    inset:0 0 0 23rem;
+  }
+  .home-game-preview-card.has-rich-details .home-game-preview-cover{
+    width:19rem;
+    height:28.5rem;
+    margin:0 0 4rem 2.8rem;
+  }
+  .home-game-preview-card.has-rich-details .home-game-preview-info{
+    padding:5rem 5.5rem 8.6rem 2.8rem;
+  }
+  .home-game-preview-facts.rich{
+    grid-template-columns:repeat(4,minmax(0,1fr));
+  }
+  .home-game-preview-shot{
+    width:max(13.4rem,118px);
+    height:max(7.55rem,66px);
+    flex-basis:max(13.4rem,118px);
+    touch-action:manipulation;
+  }
+}
