@@ -41,7 +41,7 @@ const PRESETS = {
     animationStrength:'normal',
     motionBlurStrength:'off',
     accent:'#107c10',
-    theme:'dark'
+    theme:'light'
   },
   minimal: {
     personalizationPreset:'minimal',
@@ -244,7 +244,7 @@ function apply(){
   body.dataset.transparencyStrength = s.transparencyStrength || 'normal';
   body.dataset.animationStrength = s.animationStrength || 'normal';
   body.dataset.motionBlur = s.motionBlurStrength || 'off';
-  body.dataset.theme = s.theme || 'dark';
+  body.dataset.theme = s.theme || 'light';
 
   root.style.setProperty('--accent',s.accent || '#4ade4a');
   root.style.setProperty('--text-scale',String((s.textScale || 1) * (s.uiScale || 1)));
