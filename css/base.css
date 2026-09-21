@@ -459,15 +459,15 @@ body[data-transparency="reduced"] .backdrop-layer{ filter:none; opacity:.18; }
 .microsoft-credit-grid{
   width:8.2rem;height:8.2rem;
   display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;
-  gap:.3rem;filter:drop-shadow(0 .12rem .2rem rgba(0,0,0,.2));
+  gap:.32rem;filter:none;
 }
 .microsoft-credit-grid i{display:block}
-.microsoft-credit-grid i:nth-child(1){background:#f25f5c}
-.microsoft-credit-grid i:nth-child(2){background:#f2d84f}
-.microsoft-credit-grid i:nth-child(3){background:#44c7c9}
-.microsoft-credit-grid i:nth-child(4){background:#d9e35f}
+.microsoft-credit-grid i:nth-child(1){background:#f25022}
+.microsoft-credit-grid i:nth-child(2){background:#7fba00}
+.microsoft-credit-grid i:nth-child(3){background:#00a4ef}
+.microsoft-credit-grid i:nth-child(4){background:#ffb900}
 .microsoft-credit-word{
-  font-size:7.2rem;line-height:1;font-weight:600;letter-spacing:-.12rem;
+  font-size:7.2rem;line-height:1;font-weight:600;letter-spacing:-.18rem;
   text-shadow:0 .12rem .32rem rgba(0,0,0,.28);
 }
 @media(max-width:720px){
