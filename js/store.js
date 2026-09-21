@@ -589,6 +589,107 @@ function refreshProductOwnership(node, game){
   }
 }
 
+async function enrichProductDetails(node, game){
+  const rich = await window.GameDetails?.get?.(game);
+  if (!rich || !node?.isConnected || node.dataset.richDetails === '1') return;
+  node.dataset.richDetails = '1';
+
+  const hero = rich.hero || rich.screenshots?.[0] || rich.cover || game.image || game.cover || '';
+  const cover = rich.cover || game.cover || game.image || '';
+  const art = node.querySelector('.xproduct-art');
+  const coverImg = node.querySelector('.xproduct-cover');
+  const publisher = node.querySelector('.xproduct-publisher');
+  const rating = node.querySelector('.xproduct-rating');
+  const desc = node.querySelector('.xproduct-desc');
+
+  if (art && hero) art.style.backgroundImage = `url("${hero}")`;
+  if (coverImg && cover) coverImg.src = cover;
+
+  const dev = Array.isArray(rich.developers) ? rich.developers.filter(Boolean) : [];
+  const pubs = Array.isArray(rich.publishers) ? rich.publishers.filter(Boolean) : [];
+  if (publisher){
+    const studio = dev.join(', ') || pubs.join(', ') || 'Stratus Cloud';
+    publisher.textContent = studio;
+  }
+
+  if (rating && Number.isFinite(Number(rich.rating))){
+    rating.innerHTML = `<span>★★★★★</span><b>${Math.round(Number(rich.rating))}</b><small>/ 100</small>`;
+  }
+
+  const copyText = String(rich.summary || rich.description || game.description || '').trim();
+  if (desc && copyText) desc.textContent = copyText;
+
+  const details = document.createElement('section');
+  details.className = 'xproduct-rich-details';
+
+  const facts = document.createElement('div');
+  facts.className = 'xproduct-rich-facts';
+  const rows = [
+    ['Release', rich.releaseDate],
+    ['Developer', dev.join(', ')],
+    ['Publisher', pubs.join(', ')],
+    ['Platforms', (rich.platforms || []).filter(Boolean).join(' · ')],
+    ['Genres', (rich.genres || []).filter(Boolean).join(' · ')],
+    ['Modes', (rich.gameModes || []).filter(Boolean).join(' · ')],
+    ['Themes', (rich.themes || []).filter(Boolean).join(' · ')],
+    ['Franchise', (rich.franchises || []).filter(Boolean).join(' · ')]
+  ].filter(([,value]) => String(value || '').trim());
+
+  rows.forEach(([label,value]) => {
+    const row = document.createElement('div');
+    row.className = 'xproduct-rich-fact';
+    row.innerHTML = `<small>${escapeHtml(label)}</small><strong>${escapeHtml(value)}</strong>`;
+    facts.append(row);
+  });
+  if (facts.childElementCount) details.append(facts);
+
+  const screenshots = Array.isArray(rich.screenshots) ? rich.screenshots.filter(Boolean) : [];
+  if (screenshots.length){
+    const head = document.createElement('div');
+    head.className = 'xproduct-rich-head';
+    head.innerHTML = `<strong>Screenshots</strong><span>${screenshots.length} local</span>`;
+
+    const rail = document.createElement('div');
+    rail.className = 'xproduct-rich-gallery';
+
+    const selectShot = (src,button) => {
+      if (art) art.style.backgroundImage = `url("${src}")`;
+      rail.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
+      button?.classList.add('selected');
+    };
+
+    screenshots.forEach((src,index) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'xproduct-rich-shot' + (index === 0 ? ' selected' : '');
+      button.dataset.nav = '';
+      button.dataset.ringRadius = '.5rem';
+      button.setAttribute('aria-label', `Screenshot ${index + 1} of ${screenshots.length}`);
+      button.innerHTML = `<img src="${escapeHtml(src)}" alt="" loading="${index < 4 ? 'eager' : 'lazy'}" decoding="async">`;
+      button._navActivate = () => selectShot(src,button);
+      button.addEventListener('click',event => {
+        event.preventDefault();
+        event.stopPropagation();
+        button._navActivate();
+      });
+      button.addEventListener('pointerenter',() => selectShot(src,button));
+      button.addEventListener('focus',() => button.scrollIntoView({block:'nearest',inline:'nearest',behavior:'smooth'}));
+      rail.append(button);
+    });
+
+    details.append(head,rail);
+  }
+
+  const copy = node.querySelector('.xproduct-copy');
+  if (copy && details.childElementCount){
+    const cloudRow = copy.querySelector('.xproduct-cloud-row');
+    if (cloudRow) cloudRow.insertAdjacentElement('beforebegin',details);
+    else copy.append(details);
+  }
+
+  window.Nav?.repaint?.();
+}
+
 function openProduct(game){
   closeProduct();
   const root = lastRoot || document.getElementById('view-store');
@@ -647,6 +748,7 @@ function openProduct(game){
   root.append(node);
   product = node;
   refreshProductOwnership(node, game);
+  void enrichProductDetails(node, game);
   window.Nav?.pushLayer?.(node);
   window.Nav?.focusFirst?.('.xproduct-action.primary');
 }
