@@ -937,6 +937,52 @@ function applySettings(){
   applyNightMode();
 }
 
+
+async function runXboxOnboarding(){
+  if (window.State.settings.onboardingComplete) return;
+  const root=$('#xbox-onboarding'), content=$('#onboard-content');
+  if(!root||!content) return;
+  root.hidden=false;
+
+  const wait=ms=>new Promise(r=>setTimeout(r,ms));
+  const screen=(eyebrow,title,body,inner='')=>{
+    content.classList.remove('ready'); void content.offsetWidth;
+    content.innerHTML='<div class="onboard-eyebrow">'+eyebrow+'</div><h1>'+title+'</h1><p>'+body+'</p>'+inner;
+    requestAnimationFrame(()=>content.classList.add('ready'));
+  };
+  const nextClick=()=>new Promise(resolve=>{
+    const btn=content.querySelector('[data-onboard-next]');
+    btn?.addEventListener('click',resolve,{once:true});
+  });
+
+  screen('SETUP','Connecting to network','Checking your connection…','<div class="onboard-loader"><i></i><i></i><i></i><i></i></div>');
+  await wait(1500);
+  screen('YOU’RE CONNECTED','Let’s get you signed in','Your console is online and ready to finish setup.','<button class="onboard-primary" data-onboard-next>Next</button>');
+  await nextClick();
+
+  screen('YOUR XBOX','Choose your gamertag','This is the name people will see when you play.','<label class="onboard-field"><span>Gamertag</span><input id="onboard-gamertag" maxlength="15" value="'+escapeHtml(window.State.data.gamertag==='NewSasquatch'?'Xboxtest':window.State.data.gamertag)+'"></label><button class="onboard-primary" data-onboard-next>Next</button>');
+  await nextClick();
+  const tag=(content.querySelector('#onboard-gamertag')?.value||'Xboxtest').trim().slice(0,15)||'Xboxtest';
+  window.State.setGamertag(tag);
+
+  let seed=window.State.data.avatarSeed;
+  const avatar=()=>window.State.avatarFor(seed);
+  screen('YOUR PROFILE','Choose your gamerpic','Pick the profile picture you want to use on this Xbox.','<div class="onboard-profile"><img id="onboard-avatar" src="'+avatar()+'" alt=""><strong>'+escapeHtml(tag)+'</strong></div><div class="onboard-actions"><button class="onboard-secondary" id="onboard-reroll">Try another</button><button class="onboard-primary" data-onboard-next>Use this gamerpic</button></div>');
+  content.querySelector('#onboard-reroll')?.addEventListener('click',()=>{ window.State.rerollAvatar(); seed=window.State.data.avatarSeed; content.querySelector('#onboard-avatar').src=window.State.avatar(); });
+  await nextClick();
+
+  screen('PREFERENCES','How do you want to play?','You can change these options later in Settings.','<div class="onboard-choice-grid"><button class="onboard-choice selected"><b>Xbox theme</b><span>Xbox Waves, standard layout</span></button><button class="onboard-choice"><b>Keep games updated</b><span>Recommended</span></button><button class="onboard-choice"><b>Allow notifications</b><span>Game and system alerts</span></button></div><button class="onboard-primary" data-onboard-next>Next</button>');
+  await nextClick();
+
+  screen('ALL DONE','Welcome to Xbox, '+escapeHtml(tag),'Your profile and console are ready.','<button class="onboard-primary" data-onboard-next>Take me home</button>');
+  await nextClick();
+  window.State.setSetting('onboardingComplete',true);
+  root.classList.add('out');
+  await wait(260);
+  root.remove();
+  syncProfile();
+}
+
 async function boot(){
   applySettings();
   paintIcons();
@@ -970,6 +1016,7 @@ async function boot(){
     credit.remove();
   }
 
+  await runXboxOnboarding();
   $('#stage').hidden = false;
 
   if (loadError){
@@ -995,7 +1042,7 @@ async function boot(){
   // Version stamp shown once after every full console boot.
   setTimeout(() => {
     const node = el('div', 'version-snapshot-toast');
-    node.innerHTML = '<div class="version-snapshot-mark"><img src="assets/pwa/xbox-logo.svg" alt="" aria-hidden="true"></div><div class="version-snapshot-copy"><strong>Xbox Version 1.5</strong><span>Snapshot zr6p1d</span></div>';
+    node.innerHTML = '<div class="version-snapshot-mark"><img src="assets/pwa/xbox-logo.svg" alt="" aria-hidden="true"></div><div class="version-snapshot-copy"><strong>Xbox Version 1.5</strong><span>Snapshot on7x3f</span></div>';
     $('#toasts').append(node);
     requestAnimationFrame(() => node.classList.add('show'));
     setTimeout(() => {
