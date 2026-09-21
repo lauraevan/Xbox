@@ -40,9 +40,6 @@ struct DashboardView: View {
             model.selectedGameID = id
             UIImpactFeedbackGenerator(style: .soft).impactOccurred()
         }
-        .onExitCommand {
-            withAnimation(.snappy) { model.guidePresented.toggle() }
-        }
     }
 
     private var topBar: some View {
