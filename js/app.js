@@ -1053,12 +1053,24 @@ async function runXboxOnboarding(){
   `,'color');
   let chosen='#efb249';
   const swatches=[...content.querySelectorAll('.color-grid button')];
-  swatches.forEach(btn=>btn.addEventListener('click',()=>{
-    swatches.forEach(b=>b.classList.remove('selected'));
-    btn.classList.add('selected');
-    chosen=btn.dataset.color;
-  }));
-  await new Promise(resolve=>{ const grid=content.querySelector('.color-grid'); const done=()=>resolve(); grid?.addEventListener('dblclick',done,{once:true}); const key=e=>{ if(e.key==='Enter'||e.key==='a'||e.key==='A'){document.removeEventListener('keydown',key); resolve();} }; document.addEventListener('keydown',key); });
+  let colorConfirmed=false;
+  await new Promise(resolve=>{
+    const confirm=()=>{ if(colorConfirmed) return; colorConfirmed=true; resolve(); };
+    swatches.forEach(btn=>btn.addEventListener('click',()=>{
+      const wasSelected=btn.classList.contains('selected');
+      swatches.forEach(b=>b.classList.remove('selected'));
+      btn.classList.add('selected');
+      chosen=btn.dataset.color;
+      if(wasSelected) confirm();
+    }));
+    const key=e=>{
+      if(e.key==='Enter'||e.key==='a'||e.key==='A'){
+        document.removeEventListener('keydown',key);
+        confirm();
+      }
+    };
+    document.addEventListener('keydown',key);
+  });
   window.State.setSetting('accent',chosen);
 
   show(`
@@ -1141,7 +1153,7 @@ async function boot(){
   // Version stamp shown once after every full console boot.
   setTimeout(() => {
     const node = el('div', 'version-snapshot-toast');
-    node.innerHTML = '<div class="version-snapshot-mark"><img src="assets/pwa/xbox-logo.svg" alt="" aria-hidden="true"></div><div class="version-snapshot-copy"><strong>Xbox Version 1.5</strong><span>Snapshot pp3v8m</span></div>';
+    node.innerHTML = '<div class="version-snapshot-mark"><img src="assets/pwa/xbox-logo.svg" alt="" aria-hidden="true"></div><div class="version-snapshot-copy"><strong>Xbox Version 1.5</strong><span>Snapshot tv7p2x</span></div>';
     $('#toasts').append(node);
     requestAnimationFrame(() => node.classList.add('show'));
     setTimeout(() => {
