@@ -1148,7 +1148,7 @@ The project succeeds when someone can look at it and immediately feel that it is
 
 ### 2026-09-20 — Xbox version snapshot boot notification
 
-Current snapshot: `gn8r4k`
+Current snapshot: `rv6k2p`
 
 After every successful Xbox boot, show a compact green-and-black build notification in the **bottom-right corner** of the screen. It must have a clearly visible Xbox-green outline, rounded corners, dark black surface, and restrained Windows/Xbox styling. The notification uses the repo-local Xbox logo and reads `Xbox Version 1.5` and `Snapshot <random-code>`.
 
@@ -1255,3 +1255,14 @@ Important: GameNexus and IGDB are source-time references only. The Xbox runtime 
 The launcher exposes every captured screenshot in a horizontal local gallery and uses the selected screenshot as the launcher hero. Do not replace this with a remote GameNexus embed or runtime API request.
 
 Current snapshot: `gn8r4k`.
+
+
+### 2026-09-20 — rich details across the full Stratus catalog
+
+Rich launcher records now cover all 225 entries in `stratus/cloud.json`, keyed by `gameKey` so duplicate or oddly formatted titles do not collide. Every Stratus title has a local detail record immediately, using its local Stratus cover, description, and tags as a safe fallback.
+
+The GameNexus vendor workflow now enumerates the entire Stratus catalog. It searches GameNexus title-by-title, captures factual metadata and every available screenshot, compresses those images to local WebP assets, and writes them into `assets/game-details/<gameKey>/`. Runtime code must never hotlink or query GameNexus/IGDB.
+
+The rich launcher is now shared beyond the Home row. Stratus games opened from My games & apps use the same rich launcher before Play, and Microsoft Store product pages are asynchronously enriched with the local developer/publisher/release/platform/genre/mode/theme metadata plus a selectable local screenshot rail.
+
+Current snapshot: `rv6k2p`.
