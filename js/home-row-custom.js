@@ -212,7 +212,9 @@ async function openGamePreview(input){
   const genres = Array.isArray(rich?.genres) ? rich.genres.filter(Boolean) : fallbackTags;
   const modes = Array.isArray(rich?.gameModes) ? rich.gameModes.filter(Boolean) : [];
   const themes = Array.isArray(rich?.themes) ? rich.themes.filter(Boolean) : [];
-  const platforms = Array.isArray(rich?.platforms) ? rich.platforms.filter(Boolean) : [];
+  const platforms = Array.isArray(rich?.platforms)
+    ? rich.platforms.filter(value => value && !/^trailer for\b/i.test(String(value)))
+    : [];
   const franchises = Array.isArray(rich?.franchises) ? rich.franchises.filter(Boolean) : [];
   const developers = Array.isArray(rich?.developers) ? rich.developers.filter(Boolean) : [];
   const publishers = Array.isArray(rich?.publishers) ? rich.publishers.filter(Boolean) : [];
