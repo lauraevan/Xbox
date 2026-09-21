@@ -1148,7 +1148,7 @@ The project succeeds when someone can look at it and immediately feel that it is
 
 ### 2026-09-20 — Xbox version snapshot boot notification
 
-Current snapshot: `bk9t2m`
+Current snapshot: `ms4c7q`
 
 After every successful Xbox boot, show a compact green-and-black build notification in the **bottom-right corner** of the screen. It must have a clearly visible Xbox-green outline, rounded corners, dark black surface, and restrained Windows/Xbox styling. The notification uses the repo-local Xbox logo and reads `Xbox Version 1.5` and `Snapshot <random-code>`.
 
@@ -1168,3 +1168,8 @@ Keep this as a distinct boot phase:
 2. Microsoft credit interstitial, 2 seconds
 3. Dashboard reveal
 4. Existing post-boot greeting / version snapshot behavior
+
+
+### 2026-09-20 — Microsoft credit logo color correction
+
+The Microsoft credit interstitial uses the standard four-square Microsoft palette in reading order: red/orange `#F25022`, green `#7FBA00`, blue `#00A4EF`, yellow `#FFB900`. Keep the mark flat and crisp on pure black, with the white Microsoft wordmark beside it.
