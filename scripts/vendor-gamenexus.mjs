@@ -7,9 +7,41 @@ const BASE = 'https://gamenexus.geek-factory.xyz';
 const OUT = path.resolve('assets/game-details');
 const cloud = JSON.parse(await fs.readFile('stratus/cloud.json', 'utf8'));
 const coverManifest = JSON.parse(await fs.readFile('assets/stratus-covers/manifest.json', 'utf8'));
+let existingManifest = null;
+try {
+  existingManifest = JSON.parse(await fs.readFile(path.join(OUT,'manifest.json'),'utf8'));
+} catch {}
+
 
 const ALIASES = new Map(Object.entries({
   'god of war 4':'God of War',
+  'world war z aftermath':'World War Z: Aftermath',
+  'diablo ii resurrected':'Diablo II: Resurrected',
+  'tomb raider definitive edition':'Tomb Raider: Definitive Edition',
+  'guilty gear strive':'Guilty Gear Strive',
+  'schedule 1':'Schedule I',
+  'cities skylines 2':'Cities: Skylines II',
+  'dead space 3':'Dead Space 3',
+  'the last of us part ii':'The Last of Us Part II',
+  'the last of us part i':'The Last of Us Part I',
+  'uncharted 4':'Uncharted 4: A Thief\'s End',
+  'god of war ragnarok':'God of War Ragnarök',
+  'alan wake 2':'Alan Wake II',
+  'marvel s spider man miles morales':'Marvel\'s Spider-Man: Miles Morales',
+  'ranch simulator22':'Ranch Simulator',
+  'marvel s spider man remastered':'Marvel\'s Spider-Man Remastered',
+  'subnautica zero':'Subnautica: Below Zero',
+  'assassin s creed revelations':'Assassin\'s Creed: Revelations',
+  'assassin s creed black flag':'Assassin\'s Creed IV: Black Flag',
+  'football pes 2021':'eFootball PES 2021 Season Update',
+  'party hard2':'Party Hard 2',
+  'overcooked 2':'Overcooked! 2',
+  'batman arkham origins':'Batman: Arkham Origins',
+  'batman arkham knight':'Batman: Arkham Knight',
+  'tom clancy s ghost recon wildlands':'Tom Clancy\'s Ghost Recon Wildlands',
+  'doraemon story of seasons':'Doraemon Story of Seasons',
+  'nier automata':'NieR: Automata',
+  'baldur s gate 3':'Baldur\'s Gate 3',
   'witchers 3':'The Witcher 3: Wild Hunt',
   'subnautica zero':'Subnautica: Below Zero',
   'sniper ghost warrior contracts2':'Sniper Ghost Warrior Contracts 2',
@@ -242,54 +274,78 @@ const detailPage = await context.newPage();
 await searchPage.goto(`${BASE}/games`,{waitUntil:'domcontentloaded',timeout:90000});
 await searchPage.waitForSelector('#search-game',{timeout:60000});
 
-const manifest = {
-  version:3,
-  source:'GameNexus / IGDB, vendored at build time',
-  gameCount:cloud.length,
-  games:{},
-  byName:{}
-};
+const manifest = existingManifest?.version === 3 && existingManifest?.games
+  ? {
+      ...existingManifest,
+      version:3,
+      source:'GameNexus / IGDB, vendored at build time',
+      gameCount:cloud.length,
+      games:{...existingManifest.games},
+      byName:{...(existingManifest.byName || {})}
+    }
+  : {
+      version:3,
+      source:'GameNexus / IGDB, vendored at build time',
+      gameCount:cloud.length,
+      games:{},
+      byName:{}
+    };
+
+const missingOnly = existingManifest?.version === 3 && process.env.FULL_REFRESH !== '1';
+const targets = missingOnly
+  ? cloud.filter(raw => {
+      const key = String(raw.game_key || raw.key || '');
+      return manifest.games?.[key]?.source !== 'GameNexus / IGDB';
+    })
+  : cloud;
 
 let matched = 0;
 let screenshotCount = 0;
 let failures = 0;
 
-for (let index=0; index<cloud.length; index++){
-  const raw = cloud[index];
+for (let index=0; index<targets.length; index++){
+  const raw = targets[index];
   const key = String(raw.game_key || raw.key || `game-${index+1}`);
   const name = clean(raw.name || key);
   const localCover = coverManifest[key]?.path || '';
   const dir = path.join(OUT,key);
   await fs.mkdir(path.join(dir,'screenshots'),{recursive:true});
-  console.log(`\n[${index+1}/${cloud.length}] ${name} (${key})`);
+  console.log(`\n[${index+1}/${targets.length}] ${name} (${key})`);
 
+  const previous = manifest.games?.[key] || {};
   const fallback = {
+    ...previous,
     gameKey:key,
     name,
-    matchName:'',
-    gameNexusId:null,
-    source:RETIRED.has(key) ? 'Stratus fallback (retired)' : 'Stratus fallback',
-    description:clean(raw.description || raw.desc || ''),
-    rating:null,
-    releaseDate:'',
-    developers:[],
-    publishers:[],
-    platforms:[],
-    genres:unique(raw.tags || []),
-    franchises:[],
-    gameModes:[],
-    themes:[],
-    trailerId:'',
-    cover:localCover,
-    hero:localCover,
-    screenshots:[]
+    matchName:previous.matchName || '',
+    gameNexusId:previous.gameNexusId ?? null,
+    source:previous.source || (RETIRED.has(key) ? 'Stratus fallback (retired)' : 'Stratus fallback'),
+    description:clean(previous.description || raw.description || raw.desc || ''),
+    rating:previous.rating ?? null,
+    releaseDate:previous.releaseDate || '',
+    developers:unique(previous.developers || []),
+    publishers:unique(previous.publishers || []),
+    platforms:unique(previous.platforms || []),
+    genres:unique(previous.genres?.length ? previous.genres : (raw.tags || [])),
+    franchises:unique(previous.franchises || []),
+    gameModes:unique(previous.gameModes || []),
+    themes:unique(previous.themes || []),
+    trailerId:previous.trailerId || '',
+    cover:previous.cover || localCover,
+    hero:previous.hero || localCover,
+    screenshots:Array.isArray(previous.screenshots) ? previous.screenshots : []
   };
 
   try {
-    if (raw.image){
+    const heroDisk = path.join(dir,'hero.webp');
+    let hasHero = false;
+    try { await fs.access(heroDisk); hasHero = true; } catch {}
+    if (raw.image && !hasHero){
       const heroPath = path.posix.join('assets/game-details',key,'hero.webp');
-      await saveWebp(String(raw.image), path.join(dir,'hero.webp'), {width:1600,height:900,quality:70});
+      await saveWebp(String(raw.image), heroDisk, {width:1600,height:900,quality:70});
       fallback.hero = heroPath;
+    } else if (hasHero && !fallback.hero) {
+      fallback.hero = path.posix.join('assets/game-details',key,'hero.webp');
     }
   } catch (err){
     console.warn(`  hero fallback failed: ${err.message}`);
@@ -364,6 +420,16 @@ for (let index=0; index<cloud.length; index++){
 }
 
 await browser.close();
+
+for (const raw of cloud){
+  const key = String(raw.game_key || raw.key || '');
+  const name = clean(raw.name || key);
+  if (key && name) manifest.byName[norm(name)] = key;
+}
+
 await fs.writeFile(path.join(OUT,'manifest.json'),JSON.stringify(manifest,null,2)+'\n');
-console.log(`\nDone: ${cloud.length} games, ${matched} GameNexus matches, ${screenshotCount} screenshots, ${failures} fallbacks.`);
+const allRows = Object.values(manifest.games || {});
+const totalEnriched = allRows.filter(row => row?.source === 'GameNexus / IGDB').length;
+const totalScreenshots = allRows.reduce((sum,row) => sum + (Array.isArray(row?.screenshots) ? row.screenshots.length : 0),0);
+console.log(`\nDone: ${cloud.length} games total; retried ${targets.length}; ${matched} newly matched; ${totalEnriched} enriched total; ${totalScreenshots} local screenshots; ${failures} retry fallbacks.`);
 if (Object.keys(manifest.games).length !== cloud.length) process.exitCode = 1;
